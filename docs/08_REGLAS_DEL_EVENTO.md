@@ -104,6 +104,8 @@ Dichas en vivo por la organización; no las verificamos contra la página oficia
 
 ## Antes de subir esto a GitHub, revisar
 
+> **Estado 14-nov:** el repositorio ya está en GitHub (`mauriciovalenzuela742/SPHEREX`), con `LICENSE` y un `.gitignore` que cubre `data/cache/`, `.env`, `node_modules/` y `__pycache__/`. Las casillas de abajo no se marcaron porque nadie las revisó una por una.
+
 - [ ] No hay claves, tokens ni credenciales en ningún archivo.
 - [ ] No hay datos personales de los integrantes (correos, teléfonos, direcciones).
 - [ ] No hay archivos de datos pesados ni FITS.
