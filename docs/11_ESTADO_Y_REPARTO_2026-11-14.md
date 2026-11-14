@@ -64,7 +64,7 @@ Estado: **Hecho** · **Parcial** · **Falta** · **Con fallo**.
 | Espectros al vuelo | Parcial | Huella espectral calculada en el navegador, aproximada y rotulada como tal (`prisma/fotometria.ts`, `prisma/HuellaEspectral.tsx`). No existe `/api/spectrum` |
 | Sumar o restar imágenes de distintas fechas | Parcial | Resta contra la primera fecha del rango (el rango se elige con Desde/Hasta). No hay suma de fechas ni resta entre dos fechas cualesquiera |
 | Elegir el campo de visión | Con fallo | El selector ofrece 1° (`Visor.tsx:46`) y el servidor acepta hasta 0,5° (`prototipos/rango_fechas/servidor.py:89`): el explorador falla con «[object Object]» |
-| Superponer Gaia y WISE | Hecho, con un fallo menor | `sky/capas/gaia.ts`, `sky/capas/catwise.ts`, `sky/capas/simbad.ts`. CatWISE dibuja un fragmento (J085507.45-071437.8) a 50″ de WISE 0855 (revisión científica) |
+| Superponer Gaia y WISE | Hecho, con un fallo menor | `sky/capas/gaia.ts`, `sky/capas/catwise.ts`, `sky/capas/simbad.ts`. CatWISE dibuja un fragmento (J085507.45-071437.8) a 50″ de WISE 0855 (revisión científica). Falta la imagen de WISE en sí: ver tarea #13 (HiPS AllWISE W2 de IRSA) |
 | Coordenadas en la URL / insertar en otras páginas | Hecho | `state/url.ts`; probado: `?ra=133.757785&dec=-7.242023&size=0.1&band=5` abre directo el visor. La respuesta no trae `X-Frame-Options` (curl); no lo probé dentro de un iframe |
 | Mostrar metadatos (marcas de contaminación) | Falta | Fecha, λ, observación y colección sí se muestran. Contaminación: «lector rápido no la lee» y recuadro «por definir» (`Visor.tsx:106`) |
 | Usar Astropy y Aladin | Hecho | Aladin Lite 3.8.2 (`scaffold/frontend/package.json`); astropy en el prototipo y el backend |
@@ -97,13 +97,34 @@ confirma cada persona. **Congelación de alcance: domingo 05:00.** Después de e
 | 9 | Resta con escala de color común para todas las fechas (`render.ts:92`) e igualar con estrellas vecinas, no con el objeto (`render.ts:49-61`, `spherex.py:442-453`) | D2 Bryan + C Mauricio | 1,5 | Texto que explique la pareja falsa de las estrellas saturadas |
 | 10 | Revisar con V1 la rama `v/v2-clic-visor` (clic en el cielo mueve el explorador; 8 líneas) | V1 Antonia decide | 0,25 | Se queda fuera |
 | 11 | Quitar el fragmento de CatWISE a 50″ de WISE 0855 | V2 Juan Pablo | 0,5 | Se apaga la capa CatWISE en la demo |
-| 12 | Entrega en la plataforma: formulario, README, **declaración de uso de IA** (skill `entrega-nasa`) | N Javiera | 2 | Sin esto no hay entrega: empieza a las 05:00 sí o sí |
+| 12 | Entrega en la plataforma: formulario, README, **declaración de uso de IA** (skill `entrega-nasa`) y **lista de todas las fuentes de datos citadas** (ver abajo) | N Javiera | 2 | Sin esto no hay entrega: empieza a las 05:00 sí o sí |
+
+### Datos de otros instrumentos: qué conviene sumar
+
+Datos que verificó hoy el orquestador del frente V2 (no los volví a medir; la búsqueda de origen la verificó en
+parte). Las imágenes de la herramienta siguen siendo solo de SPHEREx; esto es un extra.
+
+**Regla que obliga a todos:** los términos de Space Apps (spaceappschallenge.org/legal) permiten datos de la NASA y
+de sus agencias socias (en 2026, entre otras: ESA, CSA, JAXA, ISRO, ASI, UKSA y CONAE; el CNES no está). Los de
+terceros (ZTF, PanSTARRS, AAVSO, unWISE) se pueden usar si son públicos, pero **hay que citar todas las fuentes, o
+la NASA puede quitar el premio**. Hoy eso ya incluye Gaia DR3 (ESA), CatWISE2020 y SIMBAD (CDS): van en el README
+y en el formulario (tarea #12).
+
+| # | Qué | Por qué rinde | Dueño | Horas | Decisión |
+|---|---|---|---|---|---|
+| 13 | **Parpadeo «hace 25 años contra hoy» en Aladin** con los HiPS de 2MASS (1997–2001) y AllWISE W2 (2010) que sirve IRSA: `https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color` y `.../CDS/AllWISE/W2` (respondieron 200 con CORS abierto) | Barnard se mueve ~265″ y WISE 0855 ~122″ desde 2010: **el movimiento se ve a simple vista**, justo en el objeto obligatorio que SPHEREx muestra débil. Cubre la sugerencia de superponer WISE | V2 Juan Pablo | 1–2 | **Prioridad 2, la más rentable de esta tabla.** Si no está a las 05:00, se apaga |
+| 14 | Enlace a WiseView con las coordenadas (`http://byw.tools/wiseview#ra=..&dec=..`) | Herramienta de referencia del campo (ver `biblio/fichas/wiseview-el-precedente.md`); solo es un enlace | V2 Juan Pablo o V1 Antonia | 0,25 | Prioridad 2 |
+| 15 | Curva de brillo ZTF de R Dra (828 puntos; sin CORS, hay que pasarla a un JSON estático) | Llena el hueco de las variables: hoy no hay curva de brillo | C Mauricio o D2 Bryan, solo si las tareas 1–3 ya están | 1–3 | Opcional; si se hace, citar ZTF |
+| — | Espectro JWST NIRSpec PRISM de WISE 0855 (MAST, Luhman et al. 2024; sin CORS) | Bonito sobre el espectro de SPHEREx | — | 2–3 | **Se recorta**: depende de `/api/spectrum`, que también se recorta |
+| — | NEOSSat de la CSA (recurso socio oficial; 641 observaciones de Barnard, 2018–2019) | Es el recurso socio del desafío | — | alto | **Se recorta**: bajar los archivos falló dos veces. Se puede nombrar en el pitch como siguiente paso |
+| — | unWISE y PanSTARRS en HiPS, imágenes NEOWISE por época | — | — | — | **Descartado hoy**: solo están en el CDS (caído) o IRSA respondió 502 |
 
 ### Se recorta (no se empieza)
 
 `/api/spectrum` en el servidor (el plazo de las 04:00 de `docs/pedidos` se adelanta: queda fuera ya) · suma de
 todas las visitas de un detector · recuadro «Contaminación» · traducción a 5 idiomas y sección educativa · Spherix
-con un modelo de lenguaje · conectar `BlinkPanel` al backend oficial. Pueden ir al pitch como «siguiente paso».
+con un modelo de lenguaje · conectar `BlinkPanel` al backend oficial · espectro JWST y NEOSSat. Pueden ir al pitch
+como «siguiente paso».
 
 ---
 
@@ -136,6 +157,7 @@ si se fusiona o se le manda el texto a Mauricio directamente; es lo que necesita
 |---|---|---|---|
 | `v/v2-clic-visor` | Juan Pablo | 8 líneas en `Visor.tsx` (archivo de Antonia) | Antonia decide (tarea #10) |
 | `n/pedidos-v2` | Juan Pablo | 3 commits con la revisión científica | Ver punto 3 |
+| `v/wise0855-movimiento` | Juan Pablo | `docs/hallazgos/2026-11-14_wise0855_movimiento.md`: cómo se ve el movimiento de WISE 0855 en SPHEREx, con medición | Fusionar antes de la tarea #1: es la configuración de la demo |
 | `d/educacion-preliminar` | Vladimir | 5 archivos en `docs/educacion/` | Fuera de alcance; no se fusiona antes del cierre |
 | `d/i18n-documentacion` | Vladimir | 251 archivos, 31.040 líneas: traducción a 5 idiomas | Fuera de alcance; no se fusiona antes del cierre |
 
