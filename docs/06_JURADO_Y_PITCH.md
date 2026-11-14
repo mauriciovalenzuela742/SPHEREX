@@ -68,10 +68,20 @@ explicación**, porque si te cortan, al menos vieron la herramienta.
 
 **0:20 – 1:10 · La demo, en vivo** *(la mitad del tiempo; esto es lo que se juzga)*
 
-1. Escribir `WISE 0855`. Nombre, no coordenadas: demuestra que es para cualquiera.
-2. Darle play. **La enana marrón se mueve.** Punto.
+1. Escribir `WISE 0855`. Nombre, no coordenadas: demuestra que es para cualquiera. Es caso obligatorio
+   (uno de los objetos de prueba de la organización) y se muestra siempre.
+2. Darle play y luego la resta primera − última. **La enana marrón se mueve** (~1,3 px en todo el
+   período): un par rojo/azul. Se dice con honestidad que en una exposición suelta se ve débil y que
+   la suma por barrido lo mejorará. Después, **eps Ind B**, donde el movimiento se ve más claro
+   (−0,85/−0,71 px medido contra −0,92/−0,57 predicho).
+   Para WISE 0855 el plan tiene dos complementos: el overlay de CatWISE2020 (no está
+   en Gaia y CatWISE trae su movimiento propio; dueño V2 Juan Pablo; **hecho en la rama `v/v2-catwise`,
+   pendiente de PR**: marca WISE 0855 a 2,6″ de la posición propagada desde SIMBAD) y la suma por barrido
+   con pesos 1/VARIANCE (dueño D2 Bryan; `docs/10` y `docs/09`; **pendiente**). La guía del desafío valora
+   superponer Gaia y WISE. Hasta que entren a `main`, no se presentan como parte del visor desplegado.
 3. Mover el selector de banda. La misma zona del cielo en otra longitud de onda.
-4. Encender el overlay de Gaia. Los puntos caen donde deben. *«Así sabemos que es correcto.»*
+4. Encender el overlay de Gaia sobre Barnard o eps Ind B (WISE 0855 no está en Gaia: su overlay es
+   CatWISE2020). Los puntos caen donde deben. *«Así sabemos que es correcto.»*
 5. Copiar la URL. *«Esto es compartible y embebible.»*
 
 **1:10 – 1:35 · Por qué importa**
@@ -79,7 +89,7 @@ explicación**, porque si te cortan, al menos vieron la herramienta.
 > La mayoría de las enanas marrones y los cometas conocidos los encontraron voluntarios mirando
 > parpadeos de imágenes. Esa comunidad existe y hoy no tiene cómo mirar SPHEREx. El candidato a
 > Planet Nine más citado salió de comparar dos sondeos infrarrojos separados en el tiempo: la misma
-> técnica. Nosotros la abrimos a cualquiera, con el eje espectral que ninguna herramienta pública tiene.
+> técnica. Nosotros la abrimos a cualquiera, con el eje espectral de las 102 bandas (hasta donde pudimos comprobar, ninguna herramienta pública lo combina con el blink temporal en una sola pantalla).
 
 **1:35 – 2:00 · Qué construimos y qué sigue**
 

@@ -109,7 +109,7 @@ El círculo naranjo es la posición propagada con el movimiento propio de SIMBAD
 | R Dra | D4 | Sí | Pendiente medir brillo |
 | WISE 0855 | D5 y D6 | **Apenas** en exposiciones sueltas | No en una sola exposición |
 
-**WISE 0855 no sirve como demo principal con exposiciones sueltas**: es demasiado débil por
+**WISE 0855 es caso obligatorio (objeto de prueba de la organización) y se muestra siempre, pero con exposiciones sueltas se ve débil**: es demasiado débil por
 exposición. Para verla habría que sumar las exposiciones de cada barrido (la viñeta del desafío
 «add together all the data taken by each of the six detector arrays»).
 

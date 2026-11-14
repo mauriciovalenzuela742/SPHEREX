@@ -6,7 +6,7 @@ Recorre la demo entera como la hará el equipo ante el jurado y reporta qué se 
 **antes de cada congelación y antes de grabar el vídeo**.
 
 El guion está en `.claude/skills/demo-y-pitch/SKILL.md`. Si el argumento del comando trae una URL,
-usa esa; si no, usa la aplicación desplegada, y si no hay, la local.
+usa esa; si no, usa la aplicación desplegada (https://spherex-planet-x-tau.vercel.app), y si no hay, la local (`npm run dev` en `scaffold/frontend`, http://localhost:5173). Ojo: mientras el reproductor y los fotogramas sean huecos, el paso 3 falla por diseño y no por una regresión.
 
 Recorre los diez pasos del guion, uno por uno, con el navegador. En cada paso anota:
 

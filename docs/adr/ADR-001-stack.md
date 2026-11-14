@@ -1,12 +1,12 @@
 # ADR-001 — Stack del proyecto
 
 - **Fecha:** 2026-11-14 (propuesta pre-evento)
-- **Estado:** **propuesta**; actualizada el 14-nov con los datos del EDA (ver «Actualización 14-nov-2026, tarde»)
-- **Decide:** por firmar en la hora 0
+- **Estado:** **propuesta**; actualizada el 14-nov con los datos del EDA (ver «Actualización 14-nov-2026, tarde»). **Pendiente de firma de C (Mauricio).**
+- **Decide:** C (Mauricio); pendiente de firma
 
 ## Contexto
 
-Hay que construir una herramienta web pública en ~24 horas, con cuatro personas que programan y sus
+Hay que construir una herramienta web pública en ~24 horas, con seis personas que programan y sus
 agentes. Los datos están en el archivo IRSA/IPAC y las bibliotecas que saben leerlos
 (`astropy`, `pyvo`, `astroquery`) existen **solo en Python**. El enunciado sugiere explícitamente
 Astropy y Aladin.
@@ -14,7 +14,7 @@ Astropy y Aladin.
 Restricciones:
 
 - 24 horas y una hora de cierre de entregas fija.
-- Cuatro personas en paralelo: el trabajo tiene que poder separarse.
+- Seis personas en paralelo: el trabajo tiene que poder separarse.
 - Tiene que quedar una URL pública que el jurado pueda abrir.
 - No hay presupuesto de infraestructura ni GPU utilizable para nada pesado.
 
@@ -24,7 +24,7 @@ Restricciones:
 |---|---|---|---|
 | **Python/FastAPI + React/Vite + Aladin Lite** | Separa backend y frontend, dos personas en paralelo desde la hora 1; se ve como una herramienta pública; Aladin resuelve el cielo | Dos despliegues, CORS, un contrato que mantener | Medio |
 | Streamlit | Todo en Python, se levanta en minutos | Difícil de pulir; no se ve como herramienta pública; el parpadeo fluido cuesta | Bajo |
-| Front estático + Aladin Lite, sin backend | Despliegue trivial, nada que mantener | **Depende de que IRSA responda con CORS**; no se puede recortar, normalizar ni restar del lado del servidor | Bajo, pero con un riesgo que no controlamos |
+| Front estático + Aladin Lite, sin backend | Despliegue trivial, nada que mantener | **Depende de que IRSA responda con CORS** (descartada el 14-nov: IRSA no da CORS fuera del HiPS, `docs/09`); no se puede recortar, normalizar ni restar del lado del servidor | Bajo, pero con un riesgo que no controlamos |
 
 ## Actualización 14-nov-2026, tarde — decisión de despliegue (C, con los datos del EDA)
 
@@ -53,8 +53,10 @@ Reglas que salen de esto:
   dependa de la caché para la demo: para eso está el precalculado.
 - **Tiempo máximo de función:** se fija con `maxDuration` en `vercel.json`. Antes de depender de un valor,
   **comprobar el máximo vigente del plan Hobby en la documentación de Vercel** (D1, en el primer despliegue de `api/`).
-- **Objetos de la demo:** eps Ind B (movimiento medido por el EDA) y Barnard (visible). WISE 0855 solo
-  cuando exista la suma por barrido. Centrar siempre en la **posición propagada**, no en la J2000.
+- **Objetos de la demo:** los cinco objetos de prueba deben funcionar. WISE 0855 es caso obligatorio y se
+  muestra siempre, diciendo que en una exposición suelta se ve débil (su movimiento se ve con la resta y, cuando
+  exista, con la suma por barrido de D2, pendiente, y el overlay de CatWISE2020 de V2, hecho en la rama `v/v2-catwise` y pendiente de PR). eps Ind B es donde el
+  movimiento se ve más claro; Barnard se ve pero satura. Centrar siempre en la **posición propagada**, no en la J2000.
 - **Despliegues:** Vercel Hobby solo construye commits de Mauricio; producción sale de sus merges.
   Ver README §2.
 
@@ -68,8 +70,8 @@ Reglas que salen de esto:
 
 ## Decisión
 
-**Python 3.11 + FastAPI en el backend; React + Vite + TypeScript con Aladin Lite v3 en el frontend.**
-Caché en disco. Frontend estático en un CDN, backend en un contenedor.
+**Python 3.11 + FastAPI en el backend; React + Vite + TypeScript con Aladin Lite 3.8.2 en el frontend.**
+Caché en disco. Frontend en Vercel (decidido el 14-nov). El backend para coordenadas arbitrarias: propuesta de C de la actualización de arriba (Vercel Python Functions con presupuesto de tiempo; plan B, el mismo FastAPI en un contenedor), con el tiempo de cutout medido: mediana 7,3 s, p90 10,8 s, máx. 29 s, ~3,9 MB sin importar el tamaño, 503 a ratos (`docs/09` §6). Los 5 campos de prueba se sirven precalculados como estáticos.
 
 El contrato de la API, que es lo que permite trabajar en paralelo, está en
 [`../03_ARQUITECTURA.md`](../03_ARQUITECTURA.md).
@@ -88,5 +90,5 @@ mostrar. Ese es el seguro de esta decisión.
 
 ## Cuándo se revisa
 
-**Hora 3 del evento**, con el checklist de datos de [`../02_DATOS_SPHEREX.md`](../02_DATOS_SPHEREX.md).
+**Hora 3 del evento** (ya medido el 14-nov: ver `docs/09`), con el checklist de datos de [`../02_DATOS_SPHEREX.md`](../02_DATOS_SPHEREX.md).
 Si los cutouts resultan demasiado lentos o IRSA no responde con CORS, se revisa aquí y no después.

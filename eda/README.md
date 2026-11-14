@@ -6,7 +6,7 @@ Scripts que responden, con datos reales de IRSA, el checklist de la hora 1
 sale de ellas, en [`docs/10_REPARTO_DE_TRABAJO.md`](../docs/10_REPARTO_DE_TRABAJO.md).
 
 Esto **no es código de producción**. Es para entender los datos. El backend se escribe en
-`backend/app/` siguiendo el contrato de `docs/03_ARQUITECTURA.md`; lo que sirva de aquí se copia
+`scaffold/backend/app/` siguiendo el contrato de `docs/03_ARQUITECTURA.md`; lo que sirva de aquí se copia
 allá con tests.
 
 ## Cómo correrlo
@@ -17,7 +17,7 @@ py -3.11 -m venv .venv
 .venv/Scripts/python eda/01_inventario.py         # ~1 min   SIA2 en los 5 campos
 .venv/Scripts/python eda/02_longitud_de_onda.py   # ~3 min   1 header por archivo (HTTP Range)
 .venv/Scripts/python eda/03_recortes_y_figuras.py # ~1 min   cutouts reales + figuras
-.venv/Scripts/python eda/04_infraestructura.py    # ~15 s    CORS, cubo DR1, HiPS del CDS
+.venv/Scripts/python eda/04_infraestructura.py    # ~15 s    CORS, cubo DR1 (SIA2 y HiPS de IRSA), HiPS del CDS
 .venv/Scripts/python eda/05_centroides.py         # ~10 s    movimiento medido vs SIMBAD
 ```
 

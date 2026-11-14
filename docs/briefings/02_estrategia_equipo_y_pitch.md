@@ -1,7 +1,7 @@
 # Audio 2 de 2 — SPHEREx: estrategia, equipo y pitch
 
 Material de preparación para Juan Pablo, camino al NASA Space Apps Challenge 2026, donde su equipo
-de cuatro personas del laboratorio de astronomía va a tomar el desafío **Planet X and SPHEREx**.
+de seis personas del laboratorio de astronomía va a tomar el desafío **Planet X and SPHEREx**.
 
 Este es el segundo de dos audios. El primero cubre qué pide el desafío y con qué datos se trabaja.
 Este cubre **cómo organizarse, qué construir primero, qué premia el jurado y cómo presentarlo**.
@@ -55,7 +55,7 @@ mostrar.
 
 El stack decidido: Python con FastAPI en el backend, porque las bibliotecas que saben leer estos
 datos solo existen en Python; React con Vite y Aladin Lite en el frontend; caché en disco; y
-despliegue del frontend estático en un CDN con el backend en un contenedor.
+despliegue del frontend en Vercel, con el backend por decidir (Vercel Functions o un contenedor, según el tiempo medido de un recorte).
 
 Una decisión de diseño que ahorra mucho trabajo: **el backend devuelve imágenes PNG ya renderizadas,
 no archivos FITS.** Mandar FITS al navegador obliga a escribir un lector de FITS en JavaScript y a
@@ -70,7 +70,7 @@ movimiento real de un cambio de escala.
 
 ## 3. Lo primero que hay que fijar: el contrato de la API
 
-Esto es lo que permite que cuatro personas avancen en paralelo desde la primera hora.
+Esto es lo que permite que seis personas avancen en paralelo desde la primera hora.
 
 En la hora uno se escribe el contrato: qué endpoints hay, qué parámetros toman y qué devuelven
 exactamente. Mientras el backend no exista, el frontend trabaja contra un simulador que devuelve
@@ -88,10 +88,10 @@ herramienta no funciona.
 
 ---
 
-## 4. Cuatro personas, cuatro agentes, y el riesgo real
+## 4. Seis personas, sus agentes, y el riesgo real
 
-El riesgo principal de un equipo de cuatro con asistentes de IA no es quedarse sin ideas. Es
-**pisarse**. Cuatro agentes escribiendo rápido sobre el mismo repositorio producen conflictos,
+El riesgo principal de un equipo de seis con asistentes de IA no es quedarse sin ideas. Es
+**pisarse**. Varios agentes escribiendo rápido sobre el mismo repositorio producen conflictos,
 código duplicado y una rama principal rota de madrugada.
 
 El reparto propuesto son cuatro roles, cada uno dueño de unos archivos. Dueño significa que esa
@@ -155,7 +155,7 @@ Noventa minutos es suficiente para terminar algo y corto para que un camino equi
 media noche.
 
 **La hora cero es alinear.** Leer el enunciado juntos en voz alta, repartir roles, confirmar la hora
-exacta del cierre de entregas, y levantar el esqueleto en los cuatro computadores. Si el esqueleto
+exacta del cierre de entregas, y levantar el esqueleto en los seis computadores. Si el esqueleto
 no levanta, nadie avanza hasta que levante.
 
 **Las horas uno a tres son la hora de la verdad con los datos.** Consultas reales, cuántas épocas
@@ -165,7 +165,7 @@ lentitud, **el plan cambia ahí, no a la hora quince**.
 
 **Hasta la hora ocho, el camino crítico**, y el hito es muy concreto: *una coordenada escrita a mano
 produce un videíto en pantalla*. Feo, lento, una sola banda, da igual. Si a la hora ocho no hay
-videíto, todo lo demás se suspende y los cuatro se ponen en eso.
+videíto, todo lo demás se suspende y los seis se ponen en eso.
 
 **De la ocho a la catorce, que sea bueno**, por orden de valor: selector de banda, luego los
 controles, luego la resta de imágenes, luego resolver nombres, luego la URL compartible, luego el
@@ -187,7 +187,7 @@ Después se puede seguir editando, pero ya está entregado.
 
 ## 7. Lo que puede salir mal
 
-Nueve riesgos identificados; vale la pena tener los cuatro primeros presentes.
+Diez riesgos identificados; vale la pena tener los cuatro primeros presentes.
 
 **Que los recortes del archivo sean demasiado lentos.** Es el supuesto sobre el que descansa todo.
 Se decide a la hora tres. Si lo son, el plan B es caché agresiva, precalentado y mostrar los
@@ -278,8 +278,10 @@ seis meses en 102 colores de infrarrojo, y nadie lo está mirando así.
 
 **Cincuenta segundos de demostración en vivo**, que es la mitad del tiempo y es lo que se juzga.
 Escribir "WISE 0855" —el nombre, no las coordenadas, para demostrar que es para cualquiera—. Darle
-play: la enana marrón se mueve. Mover el selector de banda: la misma zona en otra longitud de onda.
-Encender el overlay de Gaia: los marcadores caen sobre las fuentes, *así sabemos que es correcto*.
+play y mostrar la resta de la primera y la última imagen: la enana marrón se mueve —un par rojo y azul, sutil, y
+se dice con honestidad que en una exposición suelta se ve débil—. Mostrar también eps Ind B, donde el movimiento se ve
+más claro. Mover el selector de banda: la misma zona en otra longitud de onda.
+Encender el overlay de Gaia (WISE 0855 no está en Gaia: ahí el overlay es CatWISE2020; en Barnard o eps Ind B): los marcadores caen sobre las fuentes, *así sabemos que es correcto*.
 Copiar la URL: esto es compartible y embebible.
 
 **Veinticinco segundos de por qué importa.** La mayoría de las enanas marrones y los cometas

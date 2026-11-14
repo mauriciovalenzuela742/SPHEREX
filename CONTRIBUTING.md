@@ -1,6 +1,6 @@
 # Cómo trabajamos en este repositorio
 
-Cuatro personas y sus agentes, 24 horas, una rama `main` que tiene que levantar siempre.
+Seis personas y sus agentes, 24 horas, una rama `main` que tiene que levantar siempre.
 Esto es corto a propósito.
 
 ## Lo no negociable
@@ -28,7 +28,7 @@ Roles en [`docs/04_METODOLOGIA.md`](docs/04_METODOLOGIA.md): **D** datos, **V** 
 Dos agentes sobre la misma carpeta se sobreescriben sin avisar y sin que ninguno te lo diga.
 
 ```bash
-git worktree add ../spherex-d d/sia2-epochs
+git worktree add -b d/sia2-epochs ../spherex-d main
 cd ../spherex-d
 ```
 
@@ -57,7 +57,8 @@ que nadie lo haya mirado de verdad.
 
 ## Antes de pedir revisión
 
-- [ ] Corre en limpio (`docker compose up` o el equivalente).
+- [ ] Corre en limpio: frontend `cd scaffold/frontend && npm ci && npm run build && npm run preview`; backend `cd scaffold && docker compose up`.
+- Si Vercel muestra *Blocked* en tu PR, es esperado (solo se construyen commits de Mauricio; ver README §2). No despliegues tú.
 - [ ] Si toca coordenadas o imágenes, probado con **al menos un campo de `data/campos_de_prueba.yml`**.
 - [ ] No rompiste nada que ya funcionaba (`/chequeo-demo` si tocaste la interfaz).
 - [ ] Sin secretos, sin datos personales, sin FITS.

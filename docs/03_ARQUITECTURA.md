@@ -22,9 +22,7 @@ cielo y mueve un deslizador de longitud de onda. **Cero backend.**
 - **Qué da:** las 102 bandas, contexto de todo el cielo, overlays de Gaia y de catálogos del CDS.
 - **Qué no da:** el eje del tiempo. El cubo es un mosaico combinado, no una serie de épocas.
 - **Costo:** horas, no días. Riesgo técnico bajo.
-- **Riesgo real:** que el HiPS de IRSA no sirva con CORS o que Aladin Lite no maneje bien un cubo
-  de 102 planos. **Comprobar en la hora 1.** Plan B: el HiPS de SPHEREx del CDS
-  (`alasky.cds.unistra.fr`), que sirve para el contexto aunque sea de una versión anterior.
+- **Riesgo resuelto (14-nov):** el HiPS de IRSA (`/data/hips/SPHEREx/spherex_allsky_cube`, PNG, 102 planos, el 50 y el 51 vacíos) carga en Aladin Lite 3.8.2 con CORS abierto (`09_EDA_HALLAZGOS.md` §6). El plan B del CDS (`alasky.cds.unistra.fr`) no se pudo comprobar: ese día devolvió 404.
 
 ### Vía B — el blink temporal, con backend
 
@@ -93,6 +91,8 @@ fechas en **ISO 8601 UTC**.
 { "ok": true, "version": "0.1.0", "irsa_reachable": true, "cache_entries": 128 }
 ```
 
+> **Nota (14-nov):** el esqueleto del backend expone hoy `/health` (sin `/api`) y responde `{ "ok": true }`. Si pasa a `/api/health` lo decide D1.
+
 ### `GET /api/resolve?q=<texto>`
 
 Resuelve un nombre a coordenadas (vía SIMBAD). Hace que la herramienta sea usable por cualquiera.
@@ -153,7 +153,7 @@ El corazón. Devuelve los fotogramas listos para pintar.
 ```json
 {
   "ra": 133.7951, "dec": -7.2452, "size": 0.1, "band": 4, "mode": "zodi_subtracted",
-  "pixel_scale_arcsec": 6.2,
+  "pixel_scale_arcsec": 6.15,
   "wcs": { "crval1": 133.7951, "crval2": -7.2452, "cdelt1": -0.0017, "cdelt2": 0.0017 },
   "n_frames": 9,
   "frames": [
@@ -163,7 +163,7 @@ El corazón. Devuelve los fotogramas listos para pintar.
       "wavelength_um": 3.41,
       "bandwidth_um": 0.031,
       "png": "/static/cache/ab12cd/0001.png",
-      "flagged_fraction": 0.004,
+      "flagged_fraction": 0.04,
       "vmin": -0.8, "vmax": 12.3
     }
   ],
@@ -182,7 +182,7 @@ Decisiones del contrato, y por qué:
   entendemos el instrumento.
 - **`warnings` es un array, no un error.** Faltan bandas constantemente; si eso rompe la petición,
   la herramienta no funciona.
-- **`flagged_fraction`** cubre la viñeta de los *contamination flags* con un campo.
+- **`flagged_fraction`** cubre la viñeta de los *contamination flags* con un campo. (Medido: con máscara por bits es ~4 % del recorte; contar `FLAGS != 0` daría ~72 %, porque el bit SOURCE no es un error; `09_EDA_HALLAZGOS.md`.)
 
 ### `GET /api/spectrum?ra=&dec=&aperture=`
 
@@ -212,7 +212,7 @@ Aditivos: nada de lo anterior cambia de forma, así que el mock y el código exi
 - **Animación centrada en una estrella** (clic en la imagen): no hay endpoint nuevo. El frontend llama a
   `/api/frames` con `ra`/`dec` de la estrella y un `size` chico (p. ej. `0.02`).
 - **Burbuja con el nombre al pasar sobre una estrella:** `/api/resolve` acepta también `ra`/`dec`
-  (búsqueda por cono en SIMBAD, radio 10″) y devuelve el objeto más cercano con la misma forma de respuesta.
+  (búsqueda por cono en SIMBAD, radio 10″) y devuelve el objeto más cercano con la misma forma de respuesta. **Nota (14-nov):** hoy el visor consulta SIMBAD directo desde el navegador (TAP, CDS primero y el espejo de Harvard de respaldo; `scaffold/frontend/src/sky/capas/simbad.ts`), no por `/api/resolve`.
 - **Gamma:** se aplica en el cliente sobre el PNG; no viaja al servidor.
 - **Precalculado para Vercel:** los 5 campos de prueba se publican como archivos estáticos con exactamente
   estas mismas formas JSON, en `/precalc/<id>/epochs.json`, `/precalc/<id>/frames-b<band>.json` y sus PNG.
@@ -271,3 +271,17 @@ Escrito de antemano para que a las 4 de la mañana nadie lo reabra:
 - **No vamos a hacer fotometría de calidad científica.** Para eso está la Spectrophotometry Tool de IRSA.
 - **No vamos a montar cuentas de usuario.** Si hace falta guardar un hallazgo, se guarda como URL.
 - **No vamos a reprocesar nada de nivel 1.** Partimos de nivel 2, que es lo publicado.
+
+
+---
+
+## Pendiente de acuerdo del equipo (14-nov)
+
+Propuestas que salen de la revisión de documentación ([`REVISION_DOCUMENTACION_2026-11-14.md`](REVISION_DOCUMENTACION_2026-11-14.md)) y de los datos medidos en el EDA. **No cambian el contrato vigente** de arriba: se aplican solo cuando el equipo lo acuerde (README §5, regla 4).
+
+1. **Nombres de los filtros de fecha.** El contrato dice `from` y `to`; el prototipo de la rama `d/prototipo-rango-fechas` usa `start` y `end`. Acordar uno.
+2. **Rutas nuevas del prototipo.** `/api/grid` (visitas por banda y columna de fecha), `/api/frame` (un fotograma por visita) y `/api/presets` (los 5 campos con la posición propagada) existen en esa rama y no figuran aquí. `docs/10` ya cita `/api/presets`.
+3. **Pedir λ igualada y suma por barrido.** `/api/frames` no tiene forma de pedir épocas a λ igualada ni la suma de exposiciones por barrido; el EDA concluye que la unidad natural del video es el barrido (3-4 fotogramas) y que hay que igualar λ (`09_EDA_HALLAZGOS.md` §2).
+4. **Colecciones por defecto.** `collections=spherex_dr1,spherex_qr3` deja casi sin datos a R Dra, que está sobre todo en los `_deep` (1.233 + 733 archivos contra 422 + 126 normales; `09_EDA_HALLAZGOS.md` §1).
+5. **Caché en disco frente a Vercel.** Vercel Functions no tiene disco persistente; si `/api` corre allí, la caché (`data/cache/`) tiene que ser en memoria o almacenamiento externo (ADR-001, actualización 14-nov).
+6. **Máscara de contaminación.** Documentar en el contrato que `flagged_fraction` se calcula con máscara por bits y nunca con `FLAGS != 0`.

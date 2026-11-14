@@ -47,7 +47,7 @@ campos:
     verificado_el: "2026-11-14"
     fuente: "Enunciado del desafío (coord. de época WISE) + SIMBAD/CfA (coord. J2000 y movimiento propio)"
     tipo: "Enana marrón (BD*), una de las más frías conocidas, a ~2,3 parsec"
-    que_demuestra: "Movimiento propio enorme. Es LA demo principal."
+    que_demuestra: "Movimiento propio enorme. Caso obligatorio (objeto de prueba de la organización): se muestra siempre. En una exposición suelta se ve débil (docs/09 §4); su movimiento se ve con la resta primera-última y, cuando exista, con la suma por barrido (pendiente, D2 Bryan, pesos 1/VARIANCE). Su overlay es CatWISE2020 (hecho en la rama v/v2-catwise, pendiente de PR; V2 Juan Pablo): no está en Gaia. eps Ind B es donde el movimiento se ve más claro."
     posiciones_calculadas:
       # Propagadas desde J2000 con el movimiento propio de SIMBAD.
       "2010.45": {ra: 133.795137, dec: -7.245094, nota: "coincide con el enunciado dentro de 0,2 arcsec"}
@@ -171,8 +171,8 @@ campos:
 #   R Dra              0,02        ~0             ~0
 #
 # CONSECUENCIA, y conviene asumirla desde la hora 0: incluso en los objetos MÁS RÁPIDOS
-# del cielo, el movimiento entre dos barridos consecutivos es de MENOS DE UN PÍXEL. Solo
-# con la base temporal completa de la misión se llega a 1-2,5 píxeles.
+# del cielo, el movimiento entre dos barridos consecutivos es de MENOS DE UN PÍXEL. Medido
+# en el EDA (docs/09), en todo el período disponible (1,0-1,4 años) se mueven 1,1-1,8 píxeles.
 #
 # Qué implica para el proyecto:
 #   - El parpadeo "a ojo" va a mostrar un desplazamiento sutil, no un salto evidente.
@@ -184,9 +184,8 @@ campos:
 #     de lóbulos positivo y negativo.
 #   - Y sube el valor del zoom: hay que poder ampliar el recorte, no mostrarlo a 1:1.
 #
-# VERIFICAR EN LA HORA 1: la escala de píxel real y cuántas épocas hay por campo. Si la
-# base temporal total es menor de ~1 año, el movimiento es sub-píxel en todos los casos y
-# hay que replantear la demo hacia variabilidad (RW Aur, R Dra) en vez de movimiento.
+# VERIFICADO el 14-nov (docs/09): escala 6,15"/px y base temporal de 1,0-1,4 años; el
+# movimiento total es de 1,1-1,8 píxeles. Se mantiene la demo de movimiento con la resta.
 # ======================================================================================
 
 campos_extra:

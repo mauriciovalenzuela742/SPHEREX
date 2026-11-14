@@ -17,7 +17,7 @@ con datos reales, con tareas concretas y cómo comprobarlas.
 | Agrupar por banda | Además hay que **igualar la λ** entre épocas: dentro de un detector varía ~16 anchos de banda | D1, **D2** |
 | Reproyectar a grilla común | Confirmado e imprescindible: el detector **gira ~180° entre barridos** | **D2** |
 | `flagged_fraction` para «Contaminación» | `FLAGS != 0` marca el 72 % del recorte (bit SOURCE, que no es un error); los píxeles malos son ~4 % | **D2**, C, V1 |
-| WISE 0855 es la demo principal | En una sola exposición casi no se ve. **eps Ind B** muestra el movimiento medido; Barnard se ve pero satura | C, N |
+| WISE 0855 es la demo principal | WISE 0855 es caso obligatorio y se muestra siempre, diciendo que en una sola exposición se ve débil (su movimiento se ve con la resta y con la suma por barrido). **eps Ind B** es donde el movimiento medido se ve más claro; Barnard se ve pero satura | C, N |
 | El movimiento se ve en el blink | Es de **1–2 px en todo el período**: la resta (`diff_first`) es la vista que lo muestra | D2, V1, N |
 
 ## El flujo de datos, de punta a punta
@@ -100,7 +100,12 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
 
 ## V2 · Juan Pablo — visor del cielo
 
-- **El cubo HiPS de IRSA carga en Aladin** y Mauricio ya lo dejó funcionando en `src/sky/AladinView.tsx`
+> **Hecho en el PR #6 (fusionado el 14-nov):** deslizador de λ sobre los 102 planos (sin 50 y 51), marca
+> del objeto y cuadro del recorte propagados a 2026, capa Gaia DR3 propagada (tope de 300 estrellas) y capa
+> SIMBAD con rótulo al pasar y clic que elige posición. **Hecho en la rama `v/v2-catwise`, pendiente de PR:** capa CatWISE2020, que marca WISE 0855 a 2,6″ de la posición propagada desde SIMBAD (según V2). **Falta:** gráfico de bandas (con D2), clic →
+> animación recortada, Spherix.
+
+- **El cubo HiPS de IRSA carga en Aladin** y Mauricio ya lo dejó funcionando en `scaffold/frontend/src/sky/AladinView.tsx`
   (Aladin Lite 3.8.2, un plano por banda). Es un mosaico de todas las épocas, a 12,9″/px: contexto y
   102 bandas, no tiempo. El HiPS del CDS (QR2) queda como plan B.
 - Para el **gráfico de bandas** el cubo no sirve (son PNG estirados, sin flujos); el espectro sale de
@@ -116,7 +121,7 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
   «propagada». A 2026, WISE 0855 está a 212″ y Barnard a 270″ de esas coordenadas: con recortes de 0,1°
   (medio lado 180″) quedan **fuera del recorte**. Usar posiciones propagadas (el `/api/presets` de la
   rama de Bryan ya las entrega).
-- Demo: eps Ind B (movimiento medido) y Barnard (visible); WISE 0855 cuando exista la suma por barrido.
+- Demo: los cinco objetos de prueba deben funcionar. WISE 0855 se muestra siempre (con la resta, y con la suma por barrido de D2 cuando exista, más el overlay de CatWISE2020 de V2, hecho en la rama `v/v2-catwise` y pendiente de PR; se dice que en una exposición suelta se ve débil); eps Ind B es donde el movimiento se ve más claro; Barnard se ve pero satura.
 - Las pruebas de D2 de arriba son las de aceptación.
 
 ## N · Javiera — narrativa

@@ -3,7 +3,7 @@
 ## Qué va aquí
 
 - `campos_de_prueba.yml` — los cinco objetos del enunciado, con coordenadas y qué debería verse en
-  cada uno. **Lee la cabecera del archivo: casi todas las coordenadas están sin verificar.**
+  cada uno. **Lee la cabecera del archivo: las cinco coordenadas están verificadas (14-nov, SIMBAD vía espejo de Harvard); los `campos_extra`, no.**
 - Tablas pequeñas de referencia (catálogos recortados, listas de objetivos).
 
 ## Qué NO va aquí

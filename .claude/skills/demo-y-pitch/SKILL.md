@@ -34,12 +34,12 @@ Cada paso tiene un propósito. El orden no es casual: lo más impactante va prim
 |---|---|---|
 | 1 | Abrir la URL. Ya hay un campo parpadeando | Que funciona de verdad, sin configurar nada |
 | 2 | Escribir **`WISE 0855`** (el nombre, no coordenadas) | Que es para cualquiera, no para astrónomos |
-| 3 | Play. **La enana marrón se mueve** | El desafío, cumplido. Es el momento de la demo |
+| 3 | Play y luego **Modo diferencia** (primera − última). **WISE 0855 es caso obligatorio y se muestra siempre**: decir con honestidad que en una exposición suelta se ve débil y que el movimiento (~1,3 px en todo el período) se ve en la resta (y con la suma por barrido cuando exista). Complementos: overlay CatWISE2020 (V2 Juan Pablo; WISE 0855 no está en Gaia, CatWISE trae su movimiento propio; **hecho en la rama `v/v2-catwise`, pendiente de PR**; skill `coordenadas-astro`) y suma por barrido con pesos 1/VARIANCE (D2 Bryan; **pendiente**; `docs/10`, `docs/09`). La guía del desafío valora superponer Gaia y WISE; no presentarlos como parte del visor desplegado hasta que entren a `main` | El desafío, cumplido sin exagerar. Es el momento de la demo |
 | 4 | Bajar los fps y volver a verlo | Que los controles importan y sabemos por qué |
-| 5 | Cambiar la banda. La misma zona en otra λ | **Las 102 bandas: lo que ninguna otra herramienta pública da** |
-| 6 | Encender el overlay de Gaia. Los marcadores caen sobre las fuentes | *«Así sabemos que es correcto.»* Responde la pregunta antes de que la hagan |
-| 7 | Modo diferencia | Viñeta del desafío, y es espectacular |
-| 8 | Cargar **RW Aurigae**: cambia de brillo sin moverse | Que el visor distingue movimiento de variabilidad |
+| 5 | Cambiar la banda. La misma zona en otra λ | Las 102 bandas. Hasta donde pudimos comprobar, ninguna herramienta pública las combina con el blink temporal en una sola pantalla |
+| 6 | Encender el overlay de Gaia (en WISE 0855 no hay Gaia: usar CatWISE2020; hacerlo sobre Barnard o eps Ind B). Los marcadores caen sobre las fuentes | *«Así sabemos que es correcto.»* Responde la pregunta antes de que la hagan |
+| 7 | Cargar **eps Ind B** en modo diferencia | Es donde el movimiento se ve más claro (−0,85/−0,71 px medido). Viñeta del desafío |
+| 8 | Cargar **RW Aurigae**: cambia de brillo sin moverse. Ojo: satura y en la resta deja un par rojo/azul aunque no se mueva; su fotometría no se midió, así que no se presenta como prueba de variabilidad | Que el visor avisa cuando un objeto satura |
 | 9 | Copiar la URL y abrirla en otra pestaña | Compartible y embebible. Viñeta del desafío |
 | 10 | Si hay espectro: pinchar una fuente | El «extra kudos» |
 

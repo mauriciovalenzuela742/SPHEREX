@@ -14,8 +14,8 @@ banda), controles conectados a la URL y huecos punteados con el nombre de quien 
 Este README es **el plan principal del equipo**. El detalle vive en `docs/` (fuente de verdad),
 y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
 
-> Antes del inicio oficial no hay aquí código que resuelva el desafío: solo documentación, convenciones
-> y andamiaje genérico. Ver [`docs/08_REGLAS_DEL_EVENTO.md`](docs/08_REGLAS_DEL_EVENTO.md).
+> Hasta el 13-nov no había aquí código que resuelva el desafío; desde el inicio oficial (14-nov) sí
+> (`eda/` y el visor en `scaffold/frontend/`). Ver [`docs/08_REGLAS_DEL_EVENTO.md`](docs/08_REGLAS_DEL_EVENTO.md).
 
 ---
 
@@ -30,7 +30,7 @@ y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
   mostrar las 102 bandas (co-add por detector; **extra kudos: espectro al vuelo**) · sumar/restar épocas ·
   campo de visión elegible · overlays de Gaia/WISE · coordenadas en la URL · flags de contaminación ·
   usar Astropy y Aladin. Modelo de inspiración: [WiseView](http://byw.tools/wiseview).
-- **Evento (Santiago):** trabajo sáb 14 10:00 → **cierre de entregas dom 15 11:00** (comunicado en vivo
+- **Evento (Santiago):** trabajo sáb 14 10:00 → **cierre de entregas dom 15 11:00** (confirmado por JP el 14-nov; comunicado en vivo
   por la organización; ver [`docs/08`](docs/08_REGLAS_DEL_EVENTO.md#reglas-comunicadas-en-el-evento-14-nov-2026)),
   pitch de **2 min + 2 preguntas**. Uso de IA permitido **y su declaración es obligatoria** en la entrega.
 - **Se sube:** nombre y resumen, enlace a la demo final, datos de la NASA y otras fuentes, y cómo se usó IA.
@@ -48,6 +48,7 @@ y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
    agrupar por banda/λ (`WCS-WAVE`) da una secuencia que muestra color, no tiempo.
 3. **Usar DR1 + QR3.** QR2 ya no es buscable por SIA2.
 4. **WISE 0855 no está en Gaia:** su overlay usa CatWISE2020.
+5. **WISE 0855 es caso obligatorio y se ve débil en una exposición suelta.** Se muestra siempre, y se dice con honestidad: su movimiento (~1,3 px en todo el período) se ve con la resta primera − última y, cuando exista, con la suma por barrido (overlay CatWISE2020 de V2: hecho en la rama `v/v2-catwise`, pendiente de PR; suma con pesos 1/VARIANCE de D2: pendiente). eps Ind B es donde el movimiento se ve más claro (`docs/09` §4).
 
 ---
 
@@ -254,7 +255,7 @@ claude            # comprobación: /standup debe existir
 ## 9. Pendientes del Bloque 0
 
 - [ ] Javiera y Vladimir: leer este README, [`docs/00_DESAFIO.md`](docs/00_DESAFIO.md) y [`docs/briefings/`](docs/briefings/) (20 min).
-- [ ] Mauricio: crear el proyecto en Vercel conectado al repo (raíz `scaffold/frontend`) y compartir la URL.
+- [x] Mauricio: crear el proyecto en Vercel conectado al repo (raíz `scaffold/frontend`) y compartir la URL (hecho el 14-nov: https://spherex-planet-x-tau.vercel.app).
 - [ ] En el standup: aclarar el recuadro «Contaminación: % agua, % nube, % polvo» (¿flags o composición?).
 - [ ] Javiera: elegir las ODS y escribir el guion de Spherix (bienvenida, «¿Qué parte del cielo quieres ver hoy?», 5 sugerencias).
 - [ ] Bloque 1: con el tiempo medido de un cutout, decidir si `/api` corre en Vercel Functions o en un contenedor (ADR-001).
@@ -275,3 +276,7 @@ Material de la reunión de preparación (13-nov): [`docs/reuniones/`](docs/reuni
 
 Código bajo licencia MIT ([`LICENSE`](LICENSE)). Los datos de SPHEREx son públicos y requieren la nota de
 agradecimiento de [`docs/02_DATOS_SPHEREX.md`](docs/02_DATOS_SPHEREX.md) §8 en el README final y en el pie de la herramienta.
+
+> This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.
+>
+> *(Pendiente en el código: el pie del visor, `scaffold/frontend/src/content/textos.ts`, todavía trae una paráfrasis en español en vez de este texto.)*

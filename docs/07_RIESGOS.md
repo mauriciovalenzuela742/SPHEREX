@@ -9,6 +9,10 @@ Orden: por cuánto duele, no por probabilidad.
 
 ## R1 · Los cutouts de IRSA son demasiado lentos para una herramienta interactiva
 
+> **Estado 14-nov: se materializó.** Mediana 7,3 s, p90 10,8 s, máximo 29 s, ~3,9 MB sin importar el
+> tamaño, 503 a ratos (`docs/09` §6). Mitigación decidida: caché + 5 campos precalculados como estáticos
+> (ADR-001, actualización 14-nov). Falta decidir dónde corre `/api` para coordenadas arbitrarias (C).
+
 **Impacto: crítico.** Es el supuesto sobre el que descansa todo el proyecto.
 
 Un MEF completo pesa ~70 MB; el servicio de cutouts existe precisamente para no bajarlos enteros,
@@ -26,6 +30,9 @@ pero no sabemos cuánto tarda **por época** ni qué pasa con 15 peticiones en p
 ---
 
 ## R2 · Las épocas no son comparables entre sí por el filtro lineal variable
+
+> **Estado 14-nov: resuelto en el EDA.** Se eligen épocas a λ igualada (dispersión 0,474 → 0,035 µm en
+> WISE 0855 D5); ver `docs/09` §2. Mostrar la λ por fotograma sigue siendo parte del diseño.
 
 **Impacto: alto.** Es el riesgo más sutil y el que más probablemente arruine el resultado sin que
 nadie entienda por qué.
@@ -46,6 +53,9 @@ el brillo salta sin que nada haya cambiado. Explicado en [`02_DATOS_SPHEREX.md`]
 ---
 
 ## R3 · DR1 acabó de salir y la documentación o los ejemplos no cuadran
+
+> **Ojo con el plan B de más abajo (14-nov):** `spherex_qr3` sola deja a WISE 0855 sin datos (0 filas).
+> Hay que consultar `spherex_dr1` **y** `spherex_qr3` juntas (`docs/09` §1).
 
 **Impacto: medio-alto.** DR1 se publicó en noviembre de 2026, este mismo mes. Los tutoriales que
 circulan apuntan mayormente a QR2, que ya no es buscable por SIA2.
@@ -130,12 +140,15 @@ de video. La arquitectura de [`03_ARQUITECTURA.md`](03_ARQUITECTURA.md) no lo ne
 
 ## R10 · El movimiento es sub-píxel y el parpadeo no impresiona
 
+> **Estado 14-nov: medido.** Base real 1,0-1,4 años; desplazamiento total 1,1-1,8 px (`docs/09` §4).
+> Se adopta el plan B de abajo (primera contra última + resta + zoom).
+
 **Impacto: alto para la demo, medio para el proyecto.** Identificado el 14-nov-2026, antes del evento.
 
-Con una escala de píxel de unos 6,2 arcsec, y SPHEREx barriendo el cielo entero cada 6 meses, el
+Con una escala de píxel de 6,15 arcsec (SIA2; `eda/03_recortes_y_figuras.py:42`), y SPHEREx barriendo el cielo entero cada 6 meses, el
 desplazamiento entre dos barridos consecutivos es de **menos de un píxel incluso para los objetos
 más rápidos del cielo**: 0,84 px para la estrella de Barnard, 0,66 px para WISE 0855, 0,38 px para
-Epsilon Indi B. Con la base temporal completa de la misión se llega a 1-2,5 px.
+Epsilon Indi B. Medido el 14-nov: con todo el período disponible se llega a 1,1-1,8 px.
 
 - **Señal de alarma:** el parpadeo funciona, los datos son correctos, y aun así «no se ve que se
   mueva». Es lo que va a pasar si se comparan épocas consecutivas.
@@ -146,8 +159,30 @@ Epsilon Indi B. Con la base temporal completa de la misión se llega a 1-2,5 px.
 - **Plan C:** mover el eje de la demo hacia la **variabilidad** (RW Aurigae, R Draconis), que sí es
   evidente, y hacia el **cometa 3I/ATLAS**, que se mueve muchísimo más que cualquier estrella.
 - **Y una regla para el pitch:** no prometer que «el objeto salta a la vista» hasta haberlo visto.
-- **Cuándo se decide:** hora 3, al saber cuántas épocas hay y qué base temporal cubren. Si la base
-  total es menor de un año, el movimiento es sub-píxel en todos los casos.
+- **Cuándo se decide:** decidido el 14-nov (base de 1,0-1,4 años; 1,1-1,8 px en total): se adopta el plan B.
+
+---
+
+## R11 · Vercel depende de una sola cuenta
+
+**Qué puede fallar:** solo Mauricio tiene acceso al proyecto de Vercel (plan gratuito Hobby; agregar miembros exige pagar). Las vistas previas de los PR de los demás salen *Blocked* y solo él ve los logs.
+- **Señal de alarma:** producción no se actualiza, o Mauricio no está disponible cerca del cierre.
+- **Plan B:** cada quien prueba en local (`npm ci && npm run build && npm run preview`); video de demo grabado y modo estático con los 5 campos precalculados.
+- **Cuándo se decide:** antes de la congelación de alcance (T−6 h). Responsable: C.
+
+## R12 · El CDS de Estrasburgo cae (SIMBAD, VizieR)
+
+**Qué puede fallar:** el 14-nov el CDS de Estrasburgo estaba caído; el overlay de Gaia y la burbuja de SIMBAD dependen de él.
+- **Señal de alarma:** las capas Gaia/SIMBAD quedan vacías o tardan más que el tiempo de espera.
+- **Plan B:** el código ya prueba primero el espejo de Harvard (`vizier.cfa.harvard.edu`, `simbad.cfa.harvard.edu`) y el CDS de respaldo; para la demo, precalcular los 5 campos.
+- **Cuándo se decide:** en el ensayo de la demo. Responsable: V2.
+
+## R13 · Una estrella saturada engaña la resta
+
+**Qué puede fallar:** en objetos saturados (Barnard, RW Aur) el núcleo queda enmascarado y la resta deja un par rojo/azul aunque no se muevan (RW Aur «se mueve» 1,4 px sin moverse).
+- **Señal de alarma:** un objeto de control (RW Aur) «se mueve» en la resta.
+- **Plan B:** avisar en la interfaz cuando el objeto satura y no usar RW Aur como prueba de variabilidad ni de movimiento (`docs/09`).
+- **Cuándo se decide:** antes de grabar la demo. Responsable: D2 y V1.
 
 ---
 

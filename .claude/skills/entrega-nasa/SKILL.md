@@ -26,7 +26,7 @@ Lo de aquí es lo que sabemos; la plataforma manda.
 - Recursos y datos usados, con sus fuentes.
 
 Se entrega desde la página del proyecto del equipo en spaceappschallenge.org, según la hora de cierre
-del evento local. **Confirma esa hora el primer día.**
+del evento local: **domingo 15-nov, 11:00** (confirmado por JP el 14-nov). Entregar a las 09:00 (T − 2 h).
 
 ---
 
@@ -38,8 +38,8 @@ del evento local. **Confirma esa hora el primer día.**
 >
 > `<Nombre>` es una herramienta web pública que muestra cualquier trozo del cielo tal como lo ve
 > SPHEREx a lo largo del tiempo, como un videíto, para que cualquiera pueda detectar objetos que se
-> mueven o que cambian de brillo. Añade un eje que ninguna herramienta pública tiene: las 102 bandas
-> de infrarrojo de la misión, con espectros generados al vuelo.
+> mueven o que cambian de brillo. Añade el eje espectral: las 102 bandas de infrarrojo de la misión
+> *(incluir «con espectros generados al vuelo» solo si `/api/spectrum` llega a la demo)*.
 
 ### Descripción
 
@@ -81,13 +81,13 @@ desperdicia una oportunidad.
 >   dónde sí aportaría un modelo —cribado de candidatos con redes pequeñas sobre recortes, al estilo
 >   del broker ALeRCE— como trabajo siguiente.
 >
-> *(Ajustar a lo que realmente pasó. Si se usó otra cosa, se dice.)*
+> *(Ajustar a lo que realmente pasó. Si se usó otra cosa, se dice. Si Spherix usa un LLM en producción, declararlo aquí con el modelo y qué datos recibe.)*
 
 ### Datos y recursos usados
 
 Listar con enlace: la página de misión de SPHEREx en IRSA, la release concreta (DR1 / QR3) y las
-colecciones SIA2, los servicios de IRSA usados (cutouts, cubo HiPS, MOST…), Aladin Lite y los HiPS
-del CDS, Gaia DR3, SIMBAD, Astropy. Si se usó algún recurso de la agencia socia (CSA/NEOSSat),
+colecciones SIA2, los servicios de IRSA usados (cutouts, cubo HiPS, MOST…), Aladin Lite 3.8.2, el cubo
+HiPS de SPHEREx DR1 (IRSA), Gaia DR3 (VizieR, espejo de Harvard/CfA), SIMBAD (CDS y espejo de Harvard), Astropy. Si se usó algún recurso de la agencia socia (CSA/NEOSSat),
 nombrarlo: **suma en el criterio *Global Connection***.
 
 ### Atribución obligatoria

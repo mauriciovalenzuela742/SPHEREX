@@ -54,8 +54,9 @@ Si es no (un cliente de SIA2, un componente de blink), es trabajo sobre el desaf
 | `scaffold/` | «Hola mundo» genérico de FastAPI y Vite, sin nada de SPHEREx. Entorno |
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `CONTRIBUTING.md` | Convenciones de equipo. Preparación |
 
-**No hay en este repositorio una sola línea de código que consulte IRSA, lea un FITS o pinte un
-fotograma.** Está dicho en el README y se mantiene así hasta el inicio oficial.
+**Hasta el 13-nov no había en este repositorio una sola línea de código que consulte IRSA, lea un FITS
+o pinte un fotograma.** Desde el inicio oficial (14-nov, 10:00) el equipo trabaja en el desafío:
+ver `eda/` y `scaffold/frontend/src/sky/`, y [`09_EDA_HALLAZGOS.md`](09_EDA_HALLAZGOS.md).
 
 Si alguien del equipo tiene dudas sobre un caso concreto, la regla es: **se pregunta al organizador
 del evento local antes de hacerlo.** Perder diez minutos preguntando es más barato que una
@@ -95,13 +96,15 @@ Dichas en vivo por la organización; no las verificamos contra la página oficia
 3. **Qué se sube:** nombre y resumen del proyecto, enlace a la demo final, datos de la NASA y
    otras fuentes usadas, y cómo se usó IA.
 4. **Criterios del jurado:** impacto, creatividad, validez, relevancia y presentación.
-5. **Despliegue:** Vercel. Pendiente decidir cómo corre el backend; el ADR-001 (frontend
-   estático + backend en contenedor) queda por revisar. Nada se despliega sin aprobación de una
+5. **Despliegue:** Vercel. El frontend ya está desplegado (https://spherex-planet-x-tau.vercel.app).
+   Pendiente decidir cómo corre el backend; el ADR-001 queda por cerrar. Nada se despliega sin aprobación de una
    persona del equipo.
 
 ---
 
 ## Antes de subir esto a GitHub, revisar
+
+> **Estado 14-nov:** el repositorio ya está en GitHub (`mauriciovalenzuela742/SPHEREX`), con `LICENSE` y un `.gitignore` que cubre `data/cache/`, `.env`, `node_modules/` y `__pycache__/`. Las casillas de abajo no se marcaron porque nadie las revisó una por una.
 
 - [ ] No hay claves, tokens ni credenciales en ningún archivo.
 - [ ] No hay datos personales de los integrantes (correos, teléfonos, direcciones).

@@ -11,7 +11,7 @@ volver con una respuesta corta y verificada.
 
 1. **Lee primero** `.claude/skills/spherex-datos/SKILL.md`. Tiene los endpoints, las colecciones y
    la estructura de archivos ya verificados. **No inventes rutas ni parámetros que no estén ahí o en
-   la documentación oficial de IRSA.**
+   la documentación oficial de IRSA.** Antes de medir algo, mira `eda/espectral.py` (`pedir`, `cabecera_imagen`) y `eda/resultados/` (latencias, inventario por campo): ya está medido.
 2. Haz la consulta o la descarga mínima que responda la pregunta. Si puedes responder con una
    consulta a SIA2, no bajes un archivo.
 3. Guarda cualquier archivo que descargues en `data/cache/`. **Nunca en el repositorio.**

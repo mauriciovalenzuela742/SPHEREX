@@ -7,7 +7,7 @@ Antigravity / Gemini.
 ## Lo específico
 
 - Este repositorio también lo trabajan agentes de Claude Code. **Trabaja siempre en tu propia rama**
-  (`git switch -c <tu-nombre>/<tema>`) y no toques archivos fuera de tu frente sin avisar.
+  (`git switch -c <inicial-del-rol>/<tema-corto>`, p. ej. `v/panel-blink`; ver `CONTRIBUTING.md`) y no toques archivos fuera de tu frente sin avisar.
 - `.claude/` es configuración de la otra herramienta. **No la edites**, pero sí puedes leerla:
   `.claude/skills/spherex-datos/SKILL.md` es la mejor referencia corta de cómo se piden los datos
   de IRSA, y vale igual para ti.
@@ -19,8 +19,9 @@ Antigravity / Gemini.
 
 Si Claude Code y Antigravity trabajan a la vez, el reparto por defecto es:
 
-- **Claude Code** — backend de datos (IRSA, FITS, WCS) y la lógica del visor.
+- **Claude Code** — backend de datos (IRSA, FITS, WCS), tests y documentación (`docs/04`).
 - **Antigravity** — frontend, estilos y la revisión de la interfaz en el navegador.
+- Por encima de este reparto manda el de cada rol y sus carpetas (`README.md` §3): p. ej. `src/sky/` es de V2 y `src/blink/` de V1, trabajen con la herramienta que trabajen.
 
 Es un reparto **por archivos**, no por tema: dos agentes editando el mismo archivo se sobreescriben
 sin aviso. Si necesitas tocar un archivo del otro frente, pídelo en el canal del equipo.

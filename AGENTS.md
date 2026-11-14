@@ -32,8 +32,8 @@ no lo es. El entregable que se juzga es el visor.
    Un MEF de SPHEREx pesa unos 70 MB.
 7. **No publiques nada hacia afuera** —desplegar a un dominio público, subir a redes, enviar
    correos, abrir issues en repositorios ajenos— sin que una persona lo apruebe explícitamente.
-8. **Reglas del evento:** antes del inicio oficial del hackatón no se escribe código que resuelva
-   el desafío. Ver `docs/08_REGLAS_DEL_EVENTO.md`.
+8. **Reglas del evento:** el hackatón empezó el 14-nov-2026 a las 10:00; antes no se escribía código que
+   resuelva el desafío. Ver `docs/08_REGLAS_DEL_EVENTO.md`.
 
 ## 3. Stack decidido
 
@@ -43,9 +43,9 @@ no lo es. El entregable que se juzga es el visor.
 | Acceso a datos | `pyvo` (SIA2) y HTTP directo al servicio de cutouts de IRSA | Es la vía documentada por IRSA |
 | Imagen | `astropy.io.fits`, `astropy.wcs`, `astropy.visualization` | Estándar de la comunidad |
 | Frontend | React + Vite + TypeScript | Rápido de levantar, el equipo lo conoce |
-| Cielo | Aladin Lite v3 (HiPS, CDS) | Resuelve contexto del cielo y overlays sin escribirlos |
+| Cielo | Aladin Lite 3.8.2 (fijada) sobre el cubo HiPS de IRSA; Gaia y SIMBAD con espejos de Harvard | Resuelve contexto del cielo y overlays sin escribirlos |
 | Caché | Disco local (`data/cache/`), opcional Redis | Los cutouts son lentos; sin caché la demo se cae |
-| Despliegue | Frontend estático + backend en contenedor | Ver `docs/03_ARQUITECTURA.md` |
+| Despliegue | Frontend en Vercel (solo Mauricio tiene acceso); backend por decidir (ADR-001) | Ver `docs/03_ARQUITECTURA.md` |
 
 Esta decisión está en `docs/adr/ADR-001-stack.md`. **No la cambies solo.** Si crees que está
 equivocada, escribe un ADR nuevo y plantéalo al equipo.
@@ -96,6 +96,10 @@ Para que un agente sin contexto astronómico no escriba cosas absurdas.
   el error más común**: hay un factor 15 entre ambas.
 - **Época** — una observación en un instante dado. El "videíto" es la misma zona del cielo en
   distintas épocas, ordenadas en el tiempo.
+- **Apuntado / barrido** — un apuntado es una posición del telescopio (una posición del cielo cae en 2
+  archivos por apuntado: pares D1+D4, D2+D5, D3+D6); un barrido es una pasada completa del cielo
+  (1-6 semanas, ~6 meses entre barridos). **Un barrido no es una época**: para el video, la unidad es
+  el barrido (`docs/09`).
 - **Movimiento propio** — desplazamiento aparente de una estrella en el cielo, en milisegundos de
   arco por año (mas/yr). Es lo que hace que una estrella cercana se mueva entre épocas.
 - **Paralaje** — bamboleo aparente por el movimiento de la Tierra alrededor del Sol. Período de un
@@ -128,6 +132,9 @@ Para que un agente sin contexto astronómico no escriba cosas absurdas.
 | ¿Qué podemos hacer legalmente y cuándo? | `docs/08_REGLAS_DEL_EVENTO.md` |
 | ¿Qué mostraron los datos reales? | `docs/09_EDA_HALLAZGOS.md` |
 | ¿Quién hace qué después del EDA? | `docs/10_REPARTO_DE_TRABAJO.md` |
+| ¿Cómo se midió y cómo se repite? | `eda/README.md` |
+| ¿Cómo es la interfaz? | `docs/diseno/` |
+| ¿Cómo se usa el kit? | `docs/KIT.md` |
 | Papers y repositorios | `biblio/README.md` |
 
 Si un documento contradice a este archivo, **manda el documento** y corrige este.
