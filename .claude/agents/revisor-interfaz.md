@@ -35,6 +35,8 @@ que nunca la vio: un juez con dos minutos, sin contexto y sin paciencia.
 
 **Consola y red**
 - Lee los mensajes de consola: ¿errores, advertencias, llamadas fallidas?
+- Aladin solo pide teselas si la pestaña está visible: con el panel oculto «no carga el cielo» y no es un fallo.
+- El error `ERR_BLOCKED_BY_CLIENT` de `tg.log` es inofensivo (lo bloquea una extensión).
 - Mira las peticiones: ¿cuántas se hacen, cuánto tardan, se repite alguna sin necesidad?
 
 **Las viñetas del desafío**
