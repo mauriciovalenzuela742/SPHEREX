@@ -41,7 +41,7 @@ export function escalaDe(frames: Frame[]): { vmin: number; vmax: number } {
   return { vmin, vmax };
 }
 
-const asinh01 = (x: number, a: number, z: number) => {
+export const asinh01 = (x: number, a: number, z: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (z - a)));
   return Math.asinh(t / 0.1) / Math.asinh(10);
 };
