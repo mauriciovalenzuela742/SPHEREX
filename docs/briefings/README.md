@@ -6,8 +6,9 @@ los once documentos numerados de `docs/`.
 
 > **Ojo:** los briefings se escribieron antes del EDA del 14-nov. Donde difieran de
 > [`09_EDA_HALLAZGOS.md`](../09_EDA_HALLAZGOS.md) o [`10_REPARTO_DE_TRABAJO.md`](../10_REPARTO_DE_TRABAJO.md),
-> mandan esos dos (p. ej.: el cubo no da el espectro; WISE 0855 apenas se ve en una exposición suelta;
-> el equipo es de seis; el backend está por decidir).
+> mandan esos dos (p. ej.: el cubo no da el espectro; WISE 0855 es caso obligatorio y en una exposición suelta se ve débil;
+> el equipo es de seis; el backend está por decidir). **Los audios ya generados con NotebookLM quedan
+> desactualizados en esos puntos** y habría que regenerarlos.
 
 | Briefing | Qué cubre | Para quién |
 |---|---|---|
