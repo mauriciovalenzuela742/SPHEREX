@@ -143,23 +143,21 @@ level2_[Observation ID]D[Detector]_spx_l2b-v[Version]-[Processing Date].fits
 
 ## 6. El cubo de todo el cielo (solo DR1)
 
-Mosaicos de todo el cielo, uno por cada uno de los 102 canales, publicados como **HiPS de orden 5**:
+Mosaicos de todo el cielo, uno por cada uno de los 102 canales. **Hay dos versiones** (comprobado el 14-nov, `docs/09`):
 
-```
-https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir[N]/
-```
-
-Buscable como `COLLECTION=spherex_dr1_cube`.
-
-**Que sea HiPS significa que Aladin Lite puede mostrarlo directamente en el navegador.**
-Ver la skill `visor-sky-blink`.
+1. **La de SIA2** (`COLLECTION=spherex_dr1_cube`, directorio `.../ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir[N]/`):
+   FITS de ~320 MB por tesela; el servicio de recortes la rechaza. **No sirve para Aladin.** (La raíz
+   de ese directorio como HiPS, `.../properties`, da 404.)
+2. **La HiPS para navegador:** `https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube`
+   (PNG, orden 5, 102 planos, 50 y 51 vacíos, CORS abierto). **Esta es la que carga Aladin Lite.**
+   Ver la skill `visor-sky-blink`.
 
 No confundir los dos productos:
 
 | | Nivel 2 | Cubo de todo el cielo |
 |---|---|---|
 | Eje que aporta | **Tiempo** | **Longitud de onda** |
-| Para | El blink, el movimiento | El espectro, el color, el contexto |
+| Para | El blink, el movimiento | El color y el contexto (PNG sin flujos: el espectro **no** sale de aquí, sale de nivel 2) |
 | Resolución | Nativa | HEALPix orden 5 (gruesa) |
 | Dónde | DR1, QR3 | Solo DR1 |
 
