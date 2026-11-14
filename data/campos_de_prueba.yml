@@ -47,7 +47,7 @@ campos:
     verificado_el: "2026-11-14"
     fuente: "Enunciado del desafío (coord. de época WISE) + SIMBAD/CfA (coord. J2000 y movimiento propio)"
     tipo: "Enana marrón (BD*), una de las más frías conocidas, a ~2,3 parsec"
-    que_demuestra: "Movimiento propio enorme. Caso obligatorio (objeto de prueba de la organización): se muestra siempre. En una exposición suelta se ve débil (docs/09 §4); su movimiento se ve con la resta primera-última y, cuando exista, con la suma por barrido (pendiente, D2 Bryan, pesos 1/VARIANCE). Su overlay es CatWISE2020 (pendiente, V2 Juan Pablo): no está en Gaia. eps Ind B es donde el movimiento se ve más claro."
+    que_demuestra: "Movimiento propio enorme. Caso obligatorio (objeto de prueba de la organización): se muestra siempre. En una exposición suelta se ve débil (docs/09 §4); su movimiento se ve con la resta primera-última y, cuando exista, con la suma por barrido (pendiente, D2 Bryan, pesos 1/VARIANCE). Su overlay es CatWISE2020 (hecho en la rama v/v2-catwise, pendiente de PR; V2 Juan Pablo): no está en Gaia. eps Ind B es donde el movimiento se ve más claro."
     posiciones_calculadas:
       # Propagadas desde J2000 con el movimiento propio de SIMBAD.
       "2010.45": {ra: 133.795137, dec: -7.245094, nota: "coincide con el enunciado dentro de 0,2 arcsec"}
