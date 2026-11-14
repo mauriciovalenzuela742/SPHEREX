@@ -32,6 +32,10 @@ export type Nivel = {
   pregunta: string;
   opciones: Opcion[];
   esDuda?: boolean;
+  /** Exposiciones sumadas (mediana) por visita: los objetos débiles necesitan más (docs/hallazgos). */
+  porVisita: number;
+  /** Oculto en el recorrido: lo que muestran los datos no permite una pregunta honesta (docs/pedidos §3). */
+  oculto?: boolean;
   verificado: boolean;
 };
 
@@ -61,6 +65,7 @@ export const mision = {
   niveles: [
     {
       id: "barnard",
+      porVisita: 1,
       titulo: "La estrella con prisa",
       banda: "2",
       size: 0.05,
@@ -79,6 +84,7 @@ export const mision = {
     },
     {
       id: "wise_0855",
+      porVisita: 10,
       titulo: "La enana marrón invisible",
       banda: "5",
       size: 0.05,
@@ -95,6 +101,7 @@ export const mision = {
     },
     {
       id: "eps_ind_b",
+      porVisita: 10,
       titulo: "¿Todo lo que se mueve es un descubrimiento?",
       banda: "5",
       size: 0.05,
@@ -113,6 +120,7 @@ export const mision = {
     },
     {
       id: "rw_aur",
+      porVisita: 1,
       titulo: "La estrella que cambia sola",
       banda: "2",
       size: 0.05,
@@ -128,6 +136,7 @@ export const mision = {
     },
     {
       id: "r_dra",
+      porVisita: 1,
       titulo: "El latido de R Draconis",
       banda: "2",
       size: 0.05,
@@ -168,6 +177,9 @@ export const mision = {
     resta: "Resta",
     pausa: "Pausa",
     leyendaResta: "Rojo: aparece en la última foto · Azul: estaba en la primera",
+    sumaExposiciones: (n: number) => `${n} fotos sumadas por visita`,
+    avisoLambda: (a: number, z: number) =>
+      `Las dos fotos son en colores algo distintos (${a.toFixed(2)} y ${z.toFixed(2)} µm): un cambio de brillo puede venir del filtro, no del objeto.`,
     compartir: "Copiar enlace de este nivel",
     copiado: "¡Enlace copiado!",
     nivelDuda: "Nivel de la duda",
