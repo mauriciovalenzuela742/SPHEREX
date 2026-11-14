@@ -1,0 +1,13 @@
+{
+  "name": "spherex-kit-marketplace",
+  "owner": {
+    "name": "Equipo SPHEREx Kit"
+  },
+  "plugins": [
+    {
+      "name": "spherex-kit",
+      "source": "./",
+      "description": "Skills, subagentes y comandos para el desafio Planet X and SPHEREx del NASA Space Apps Challenge 2026."
+    }
+  ]
+}

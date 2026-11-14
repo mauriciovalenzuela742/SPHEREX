@@ -1,0 +1,236 @@
+# Campos de prueba del desafío "Planet X and SPHEREx"
+#
+# Los cinco objetos que el enunciado nombra. Funcionan como criterio de aceptación del visor:
+# si se comporta bien en los cinco, está terminado.
+#
+# ======================================================================================
+# VERIFICADO el 14-nov-2026 contra SIMBAD (espejo de Harvard/CfA, simbad.cfa.harvard.edu),
+# contrastado con el resolvedor de nombres de MAST. El servicio del CDS en Estrasburgo
+# estaba caído ese día; el espejo del CfA sirve los mismos datos.
+#
+# Coordenadas en grados decimales, ICRS, época del catálogo J2000.0.
+# pmra incluye el factor cos(dec). Unidades: pm en mas/yr, paralaje en mas.
+# ======================================================================================
+#
+# ------------------------------- LEER ESTO PRIMERO -----------------------------------
+# DOS TRAMPAS VERIFICADAS QUE CUESTAN HORAS:
+#
+# 1) La coordenada que el ENUNCIADO da para WISE 0855 es de la época de WISE (~2010,4),
+#    NO de hoy. El objeto se mueve 8,15 arcsec por año. A finales de 2026 está a unos
+#    127-134 arcsec de esa coordenada. Con un campo de 0,05 grados o menor, APUNTAR A LA
+#    COORDENADA DEL ENUNCIADO DEJA EL OBJETO FUERA DEL CAMPO. Detalle abajo.
+#
+# 2) "eps Ind B" (mayúscula) es el par de enanas marrones, que es lo que pide el desafío.
+#    "eps Ind b" (minúscula) es un PLANETA, y está a 402 arcsec (6,7 arcmin) de distancia,
+#    en la posición de la estrella. El resolvedor de MAST, que no distingue mayúsculas,
+#    devuelve el PLANETA. Verificado el 14-nov-2026.
+# -------------------------------------------------------------------------------------
+
+campos:
+
+  - id: wise_0855
+    nombre: "WISE 0855-0714"
+    nombre_simbad: "WISEA J085510.74-071442.5"
+    alias: ["WISE 0855", "WISE J085510.83-071442.5"]
+    # Coordenada TAL COMO LA DA EL ENUNCIADO (época ~2010,4, la de WISE):
+    ra_enunciado_deg: 133.795129
+    dec_enunciado_deg: -7.245147
+    ra_enunciado_sexagesimal: "08h55m10.831s"
+    dec_enunciado_sexagesimal: "-07d14m42.53s"
+    # Coordenada de catálogo SIMBAD, época J2000.0:
+    ra_deg: 133.81890825
+    dec_deg: -7.247048
+    pmra: -8123.7
+    pmdec: 673.2
+    paralaje_mas: 439.0
+    verificado: true
+    verificado_el: "2026-11-14"
+    fuente: "Enunciado del desafío (coord. de época WISE) + SIMBAD/CfA (coord. J2000 y movimiento propio)"
+    tipo: "Enana marrón (BD*), una de las más frías conocidas, a ~2,3 parsec"
+    que_demuestra: "Movimiento propio enorme. Es LA demo principal."
+    posiciones_calculadas:
+      # Propagadas desde J2000 con el movimiento propio de SIMBAD.
+      "2010.45": {ra: 133.795137, dec: -7.245094, nota: "coincide con el enunciado dentro de 0,2 arcsec"}
+      "2025.40": {ra: 133.761129, dec: -7.242298, sep_del_enunciado_arcsec: 122}
+      "2026.87": {ra: 133.757786, dec: -7.242023, sep_del_enunciado_arcsec: 134}
+    aviso_campo: >
+      Centrando en la coordenada DEL ENUNCIADO, con size=0.02 o 0.05 grados el objeto queda
+      FUERA del campo. Con size=0.1 entra, pero descentrado unos 2 arcmin. Para la demo:
+      o se usa size>=0.1, o se centra en la posición propagada a la época observada.
+      Si no se ve nada en WISE 0855, esta es la primera causa a descartar.
+    banda_recomendada: 5
+    size_recomendado_deg: 0.1
+
+  - id: barnard
+    nombre: "Estrella de Barnard"
+    nombre_simbad: "NAME Barnard's star"
+    alias: ["Barnard's Star", "GJ 699", "V2500 Oph"]
+    ra_deg: 269.4520769586187
+    dec_deg: 4.693364966576667
+    pmra: -801.551
+    pmdec: 10362.394
+    paralaje_mas: 546.9759
+    verificado: true
+    verificado_el: "2026-11-14"
+    fuente: "SIMBAD (espejo CfA), confirmado con el resolvedor de MAST"
+    tipo: "Enana roja variable (BY Dra), a ~1,8 parsec"
+    que_demuestra: "El mayor movimiento propio conocido de cualquier estrella. Caso de control."
+    que_deberia_verse: >
+      Desplazamiento entre épocas. Si en Barnard no se ve movimiento, el problema es del
+      visor, no del objeto.
+    banda_recomendada: 2
+    size_recomendado_deg: 0.1
+    nota_epoca: >
+      Época del catálogo J2000.0. Entre J2000 y 2026 se ha desplazado unos 270 arcsec,
+      casi todo en declinación. Para centrar bien en los datos de SPHEREx hay que propagar
+      el movimiento propio, igual que con WISE 0855.
+
+  - id: eps_ind_b
+    nombre: "Epsilon Indi B"
+    nombre_simbad: "* eps Ind B"
+    alias: ["eps Ind B", "eps Ind Ba", "eps Ind Bb"]
+    ra_deg: 331.04414658852124
+    dec_deg: -56.782844195116105
+    pmra: 3981.977
+    pmdec: -2466.832
+    paralaje_mas: 270.658
+    verificado: true
+    verificado_el: "2026-11-14"
+    fuente: "SIMBAD (espejo CfA)"
+    tipo: "Par de enanas marrones (BD*), a ~3,7 parsec"
+    que_demuestra: "Objeto rojo y frío: luce en las bandas largas. El mejor campo para el selector de banda."
+    aviso_nombre: >
+      NO confundir con "eps Ind b" (minúscula), que es un planeta y está en la posición de
+      la estrella eps Ind, a 402 arcsec (6,7 arcmin) de aquí: RA 330.840223, Dec -56.785979.
+      El resolvedor de MAST devuelve el planeta al buscar "eps Ind B". Verificado.
+    aviso_contaminacion: >
+      La estrella eps Ind A es muy brillante y está a esos mismos 402 arcsec. Con un campo
+      grande puede saturar o contaminar. Empezar con campo pequeño centrado en B.
+    banda_recomendada: 5
+    size_recomendado_deg: 0.1
+
+  - id: rw_aur
+    nombre: "RW Aurigae"
+    nombre_simbad: "V* RW Aur"
+    alias: ["RW Aur"]
+    ra_deg: 76.95652603458333
+    dec_deg: 30.401438173888888
+    pmra: 7.23
+    pmdec: -20.33
+    paralaje_mas: 15.42
+    verificado: true
+    verificado_el: "2026-11-14"
+    fuente: "SIMBAD (espejo CfA), confirmado con el resolvedor de MAST"
+    tipo: "Estrella variable T Tauri (TT*), a ~65 parsec"
+    que_demuestra: "Variabilidad SIN movimiento. Es el caso de control opuesto."
+    que_deberia_verse: >
+      Cambia de brillo entre épocas pero NO se desplaza: su movimiento propio es de
+      0,022 arcsec/yr, o sea nada a la escala de píxel de SPHEREx. Si el visor la muestra
+      moviéndose, hay un error de alineación o de WCS.
+    banda_recomendada: 3
+    size_recomendado_deg: 0.1
+    nota: >
+      Clave para la demo: junto con WISE 0855 demuestra que la herramienta distingue
+      "se mueve" de "cambia de brillo". Cuidado con confundir su variabilidad real con el
+      salto de brillo que produce el filtro lineal variable al cambiar la longitud de onda
+      entre épocas (ver docs/02 §2).
+
+  - id: r_dra
+    nombre: "R Draconis"
+    nombre_simbad: "V* R Dra"
+    alias: ["R Dra"]
+    ra_deg: 248.16761083295
+    dec_deg: 66.75497941722
+    pmra: -20.643
+    pmdec: 6.149
+    paralaje_mas: 1.2509
+    verificado: true
+    verificado_el: "2026-11-14"
+    fuente: "SIMBAD (espejo CfA), confirmado con el resolvedor de MAST"
+    tipo: "Variable Mira (Mi*), de período largo, lejana (~800 parsec)"
+    que_demuestra: "Variabilidad de gran amplitud, sin movimiento apreciable."
+    que_deberia_verse: >
+      Cambios de brillo grandes y lentos entre épocas, sin desplazamiento
+      (0,022 arcsec/yr). Las Mira varían muchísimo; en infrarrojo la amplitud es menor que
+      en visible pero sigue siendo notoria.
+    banda_recomendada: 4
+    size_recomendado_deg: 0.1
+
+# ======================================================================================
+# DESPLAZAMIENTO ESPERADO — la expectativa realista del parpadeo
+#
+# Escala de píxel de SPHEREx usada: 6,2 arcsec/px. [DERIVADO, no citado: 2040 px sobre un
+# campo de ~3,5 grados. CONFIRMAR con el Explanatory Supplement en la hora 1.]
+# SPHEREx barre el cielo entero cada ~6 meses, así que entre barridos consecutivos:
+#
+#   objeto        pm (arcsec/yr)   6 meses        18 meses
+#   WISE 0855          8,15        4,1" = 0,66px  12,2" = 1,97px
+#   Barnard           10,39        5,2" = 0,84px  15,6" = 2,51px
+#   eps Ind B          4,68        2,3" = 0,38px   7,0" = 1,13px
+#   RW Aur             0,02        ~0             ~0
+#   R Dra              0,02        ~0             ~0
+#
+# CONSECUENCIA, y conviene asumirla desde la hora 0: incluso en los objetos MÁS RÁPIDOS
+# del cielo, el movimiento entre dos barridos consecutivos es de MENOS DE UN PÍXEL. Solo
+# con la base temporal completa de la misión se llega a 1-2,5 píxeles.
+#
+# Qué implica para el proyecto:
+#   - El parpadeo "a ojo" va a mostrar un desplazamiento sutil, no un salto evidente.
+#     No prometer en el pitch que "el objeto salta a la vista" sin haberlo visto antes.
+#   - Conviene usar la MAYOR base temporal disponible (primera época contra última),
+#     no épocas consecutivas.
+#   - Esto sube mucho el valor de la resta de imágenes (`diff_first`): un desplazamiento
+#     de un píxel se ve fatal en un parpadeo y se ve clarísimo en una resta, como un par
+#     de lóbulos positivo y negativo.
+#   - Y sube el valor del zoom: hay que poder ampliar el recorte, no mostrarlo a 1:1.
+#
+# VERIFICAR EN LA HORA 1: la escala de píxel real y cuántas épocas hay por campo. Si la
+# base temporal total es menor de ~1 año, el movimiento es sub-píxel en todos los casos y
+# hay que replantear la demo hacia variabilidad (RW Aur, R Dra) en vez de movimiento.
+# ======================================================================================
+
+campos_extra:
+
+  - id: comet_3i_atlas
+    nombre: "Cometa 3I/ATLAS"
+    verificado: false
+    fuente: "IRSA tiene una colección dedicada de imágenes espectrales de SPHEREx de este objeto."
+    notas: >
+      Objeto interestelar, se mueve RÁPIDO (mucho más que cualquier estrella de la lista) y
+      el público lo conoce. Dado el problema de movimiento sub-píxel de los campos de
+      arriba, este es probablemente EL objeto para una demo de movimiento evidente.
+      Su posición cambia con la fecha: no es una coordenada fija. Usar la colección dedicada
+      de IRSA o la herramienta MOST, que encuentra las imágenes que cubrieron la posición
+      predicha de un objeto del sistema solar en cada época.
+
+  - id: campo_vacio
+    nombre: "Campo de control sin fuentes brillantes"
+    verificado: false
+    notas: >
+      Elegir en el evento un campo a gran latitud galáctica sin nada notable. Sirve para
+      probar el estado vacío y para ver el nivel de fondo y de luz zodiacal.
+
+  - id: plano_galactico
+    nombre: "Campo denso en el plano galáctico"
+    verificado: false
+    notas: >
+      Caso duro: miles de fuentes solapadas. El enunciado menciona que los objetos
+      "often overlap". Probar que el visor no se cae y que el estiramiento sigue siendo útil.
+
+# ======================================================================================
+# Cómo se verificó (14-nov-2026), por si hay que repetirlo:
+#
+#   El servicio del CDS (simbad.cds.unistra.fr) estaba caído. El espejo del CfA sí responde:
+#
+#   curl -sS -G "https://simbad.cfa.harvard.edu/simbad/sim-tap/sync" \
+#     --data-urlencode "request=doQuery" --data-urlencode "lang=adql" \
+#     --data-urlencode "format=csv" \
+#     --data-urlencode "query=SELECT i.id, b.main_id, b.ra, b.dec, b.pmra, b.pmdec,
+#        b.plx_value, b.otype_txt FROM basic AS b JOIN ident AS i ON b.oid=i.oidref
+#        WHERE i.id IN ('NAME Barnard star','* eps Ind B','V* RW Aur','V* R Dra')"
+#
+#   WISE 0855 no se resuelve por nombre en ese espejo: se encontró con una búsqueda de cono
+#   de 0,15 grados alrededor de la coordenada del enunciado, filtrando por paralaje > 50 mas.
+#   Esa búsqueda de cono es, además, la forma de verificar que una coordenada apunta a lo
+#   que uno cree: una coordenada equivocada no falla, devuelve otro trozo de cielo.
+# ======================================================================================

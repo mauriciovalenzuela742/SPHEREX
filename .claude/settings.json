@@ -1,0 +1,51 @@
+{
+  "$comment": [
+    "Permisos compartidos del equipo. Solo lecturas y comandos seguros y repetitivos,",
+    "para que nadie pierda tiempo aprobando lo mismo cada diez minutos durante 24 horas.",
+    "NO agregues aqui nada que escriba fuera del repo, publique, despliegue o borre.",
+    "Lo personal va en .claude/settings.local.json, que esta en .gitignore."
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git switch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(pytest:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(ruff:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm ci:*)",
+      "WebFetch(domain:irsa.ipac.caltech.edu)",
+      "WebFetch(domain:caltech-ipac.github.io)",
+      "WebFetch(domain:spherex.caltech.edu)",
+      "WebFetch(domain:docs.astropy.org)",
+      "WebFetch(domain:aladin.cds.unistra.fr)",
+      "WebFetch(domain:cds-astro.github.io)",
+      "WebFetch(domain:spxquery.readthedocs.io)",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:www.spaceappschallenge.org)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push:* main)",
+      "Bash(git reset --hard:*)",
+      "Bash(rm -rf:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/*.key)",
+      "Read(./**/*.pem)"
+    ]
+  }
+}

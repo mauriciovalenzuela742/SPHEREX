@@ -1,0 +1,11 @@
+{
+  "name": "spherex-kit",
+  "version": "0.1.0",
+  "description": "Kit de trabajo para el desafio Planet X and SPHEREx del NASA Space Apps Challenge 2026: skills sobre los datos de SPHEREx en IRSA, el visor de parpadeo, coordenadas del cielo, demo y entrega; subagentes de exploracion de datos y revision cientifica; y comandos de coordinacion de equipo.",
+  "author": {
+    "name": "Equipo SPHEREx Kit"
+  },
+  "homepage": "https://github.com/jpcastillo714/spherex-kit",
+  "license": "MIT",
+  "keywords": ["spherex", "nasa", "space-apps", "astronomia", "irsa", "hackathon"]
+}

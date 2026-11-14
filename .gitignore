@@ -1,0 +1,44 @@
+# Datos: NUNCA se versionan. Un MEF de SPHEREx pesa ~70 MB.
+data/cache/
+data/raw/
+*.fits
+*.fits.gz
+*.fz
+
+# Secretos
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Claude Code: la configuración compartida SÍ se versiona,
+# la local de cada persona no.
+.claude/settings.local.json

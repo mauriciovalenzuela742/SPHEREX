@@ -1,0 +1,10 @@
+# Dependencias astronómicas. Están aparte para poder descargarlas e instalarlas
+# ANTES del evento (preparar el entorno es legítimo) sin que el esqueleto las use.
+# Fija las versiones en la hora 0 del evento con `pip freeze`.
+numpy
+astropy
+pyvo
+astroquery
+pillow
+matplotlib
+PyYAML
