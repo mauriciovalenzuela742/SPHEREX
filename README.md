@@ -70,15 +70,15 @@ React + Vite + TypeScript + Aladin Lite v3 · Docker · frontend estático en CD
 
 | # | Frente · prefijo de rama | Responsable | Carpeta que es suya | Entregables, en orden de prioridad |
 |---|---|---|---|---|
-| 1 | **D1 Datos-acceso** · `d/…` (`d/sia2-epochs`, `d/cache`) | Javiera | `scaffold/backend/app/irsa/`, `app/cache/`; rutas `resolve`, `epochs`, `health` | Checklist de la hora 1 ([`docs/02`](docs/02_DATOS_SPHEREX.md) §9) con C; SIA2 sobre `spherex_dr1`+`spherex_qr3`; cutouts en paralelo con reintento; caché; **precalentar los 5 campos**; resolución de nombres (SIMBAD); re-consulta de nuevos releases |
+| 1 | **D1 Datos-acceso** · `d/…` (`d/sia2-epochs`, `d/cache`) | Vladimir (programador) | `scaffold/backend/app/irsa/`, `app/cache/`; rutas `resolve`, `epochs`, `health` | Checklist de la hora 1 ([`docs/02`](docs/02_DATOS_SPHEREX.md) §9) con C; SIA2 sobre `spherex_dr1`+`spherex_qr3`; cutouts en paralelo con reintento; caché; **precalentar los 5 campos**; resolución de nombres (SIMBAD); re-consulta de nuevos releases |
 | 2 | **D2 Datos-fotogramas** · `d/…` (`d/frames-banda`, `d/diff`, `d/spectrum`) | Bryan | `scaffold/backend/app/frames/`, `app/spectrum/`; rutas `frames`, `spectrum` | Agrupar por banda y λ (`WCS-WAVE`); restar ZODI; reproyectar a grilla común; estiramiento → PNG; `wavelength_um` + `flagged_fraction`; `diff_first`/`diff_prev`; co-add por detector; `/api/spectrum` al final |
 | 3 | **V1 Visor-blink** · `v/…` (`v/panel-blink`, `v/url`) | Antonia | `scaffold/frontend/src/blink/`, `src/controls/`, `src/state/` | Mock del contrato desde la hora 1; coordenada → canvas → play/pausa; controles (stretch, cmap, fps, **campo de visión**, banda, modo); URL ↔ estado; estados vacío/error; móvil; pie con atribución; extra: modo «¿cambió?» de votación humana |
 | 4 | **V2 Visor-cielo** · `v/…` (`v/aladin-hips`, `v/overlay-gaia`) | Juan Pablo | `scaffold/frontend/src/sky/` | **Vía A**: Aladin Lite + cubo HiPS DR1 con deslizador de λ (CORS en la hora 1); overlay Gaia DR3 **propagado a la época del fotograma**; overlay WISE/CatWISE; marcadores de flags |
 | 5 | **C Ciencia, verificación y despliegue** · `c/…` | Mauricio | `data/campos_de_prueba.yml`, `docs/02`, `docs/07`, `scaffold/docker-compose.yml`, config de despliegue | Checklist de la hora 1 con D1; verificar cada función en los 5 campos + controles (`campo_vacio`, `plano_galactico`); `revisor-cientifico` antes de cada merge que se ve en la demo; **despliegue** (sin que el contenedor se duerma) y **modo degradado offline**; revisar PRs |
-| 6 | **N Narrativa y entrega** · `n/…` | Vladimir | `README.md`, `docs/06`, video de demo, formulario de entrega | Frase de una línea; README + atribución SPHEREx; video de demo (`demo-y-pitch`); entrega + **declaración de uso de IA** (`entrega-nasa`); ensayar el pitch 3 veces con las preguntas incómodas |
+| 6 | **N Narrativa y entrega** · `n/…` | Javiera (divulgadora) | `README.md`, `docs/06`, video de demo, formulario de entrega | Frase de una línea; README + atribución SPHEREx; video de demo (`demo-y-pitch`); entrega + **declaración de uso de IA** (`entrega-nasa`); ensayar el pitch 3 veces con las preguntas incómodas |
 
-> Asignación inicial de Javiera (D1) y Vladimir (N): se confirma o se intercambia en el Bloque 0 según
-> experiencia de cada uno. Equipo completo: 6 personas, el máximo del evento.
+> Vladimir (programador) toma D1; Javiera (divulgadora) toma N: el pitch, el guion de la demo y que la
+> herramienta se entienda sin saber astronomía. Equipo completo: 6 personas, el máximo del evento.
 >
 > Los roles no son jaulas: desde la hora 12, D1/D2/V1/V2 se reparten las viñetas extra. **C y N no se disuelven.**
 > La detección automática (clasificador de recortes estilo ALeRCE, idea de Bryan) queda como «con 6 horas más».
@@ -170,7 +170,6 @@ claude            # comprobación: /standup debe existir
 ## 9. Pendientes del Bloque 0
 
 - [ ] Javiera y Vladimir: leer este README, [`docs/00_DESAFIO.md`](docs/00_DESAFIO.md) y [`docs/briefings/`](docs/briefings/) (20 min).
-- [ ] Confirmar o intercambiar los roles D1/N según experiencia.
 - [ ] Decidir dónde corre el backend (Vercel para el frontend) y actualizar el ADR-001.
 - [ ] Juan Pablo: confirmar con la organización comida y si se puede quedar de noche.
 - [ ] Todos: clonar el repo, abrir `claude` en la raíz y comprobar `/standup`.
