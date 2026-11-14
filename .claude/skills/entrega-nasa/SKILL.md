@@ -38,8 +38,8 @@ del evento local: **domingo 15-nov, 11:00** (confirmado por JP el 14-nov). Entre
 >
 > `<Nombre>` es una herramienta web pública que muestra cualquier trozo del cielo tal como lo ve
 > SPHEREx a lo largo del tiempo, como un videíto, para que cualquiera pueda detectar objetos que se
-> mueven o que cambian de brillo. Añade un eje que ninguna herramienta pública tiene: las 102 bandas
-> de infrarrojo de la misión, con espectros generados al vuelo.
+> mueven o que cambian de brillo. Añade el eje espectral: las 102 bandas de infrarrojo de la misión
+> *(incluir «con espectros generados al vuelo» solo si `/api/spectrum` llega a la demo)*.
 
 ### Descripción
 
@@ -81,7 +81,7 @@ desperdicia una oportunidad.
 >   dónde sí aportaría un modelo —cribado de candidatos con redes pequeñas sobre recortes, al estilo
 >   del broker ALeRCE— como trabajo siguiente.
 >
-> *(Ajustar a lo que realmente pasó. Si se usó otra cosa, se dice.)*
+> *(Ajustar a lo que realmente pasó. Si se usó otra cosa, se dice. Si Spherix usa un LLM en producción, declararlo aquí con el modelo y qué datos recibe.)*
 
 ### Datos y recursos usados
 
