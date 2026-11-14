@@ -8,6 +8,7 @@ import { CAMPOS, posicionActual } from "../content/campos";
 import { textos } from "../content/textos";
 import type { Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
+import MisionPanel from "../mision/MisionPanel";
 import type { Accion } from "../spherix/motor";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
@@ -22,6 +23,7 @@ function Hueco({ titulo, quien }: { titulo: string; quien: string }) {
 }
 
 export default function Visor({ estado, set, asistido }: Props) {
+  const enMision = Boolean(estado.mision);
   return (
     <section className="visor">
       <div className="barra">
@@ -72,7 +74,7 @@ export default function Visor({ estado, set, asistido }: Props) {
         ))}
       </div>
 
-      <div className="cuerpo">
+      <div className={enMision ? "cuerpo cuerpo-mision" : "cuerpo"}>
         <div className="principal">
           <AladinView
             ra={estado.ra}
@@ -83,31 +85,42 @@ export default function Visor({ estado, set, asistido }: Props) {
           <p className="quien">
             Cielo: cubo SPHEREx DR1 de IRSA (mosaico de todas las épocas, sin eje de tiempo). Banda {estado.band === "all" ? "D2" : `D${estado.band}`}, canal central.
           </p>
-          <div className="reproductor">
-            <button disabled aria-label="Anterior">◁</button>
-            <button disabled aria-label="Reproducir">▶</button>
-            <button disabled aria-label="Siguiente">▷</button>
-            <input type="range" disabled aria-label="Línea de tiempo" />
-            <span>1x</span>
-            <span className="quien">Blink por épocas: Antonia + Bryan (/api/frames)</span>
-          </div>
-          <div className="tira">
-            {[1, 2, 3, 4].map((i) => (
-              <Hueco key={i} titulo={`Época ${i}`} quien="Tira de fotogramas" />
-            ))}
-          </div>
-          <Hueco titulo="Gráfico de bandas (espectro, 0,75–5 µm) + barra UV · V · IR · X" quien="Juan Pablo + Bryan (/api/spectrum)" />
+          {!enMision && (
+            <>
+            <div className="reproductor">
+              <button disabled aria-label="Anterior">◁</button>
+              <button disabled aria-label="Reproducir">▶</button>
+              <button disabled aria-label="Siguiente">▷</button>
+              <input type="range" disabled aria-label="Línea de tiempo" />
+              <span>1x</span>
+              <span className="quien">Blink por épocas: Antonia + Bryan (/api/frames)</span>
+            </div>
+            <div className="tira">
+              {[1, 2, 3, 4].map((i) => (
+                <Hueco key={i} titulo={`Época ${i}`} quien="Tira de fotogramas" />
+              ))}
+            </div>
+            <Hueco titulo="Gráfico de bandas (espectro, 0,75–5 µm) + barra UV · V · IR · X" quien="Juan Pablo + Bryan (/api/spectrum)" />
+            </>
+          )}
         </div>
-        <aside className="lateral">
-          <div className="tarjeta">
-            <strong>¿Qué es SPHEREx?</strong>
-            <p>{textos.queEsSpherex}</p>
-          </div>
-          <Hueco titulo="Épocas y metadatos (fecha, λ, flags)" quien="Vladimir + Bryan (/api/epochs)" />
-          <Hueco titulo="Contaminación (% …) — por definir" quien="Mauricio + Bryan" />
-        </aside>
+        {enMision ? (
+          <aside className="lateral lateral-mision">
+            <MisionPanel estado={estado} set={set} />
+          </aside>
+        ) : (
+          <aside className="lateral">
+            <div className="tarjeta">
+              <strong>¿Qué es SPHEREx?</strong>
+              <p>{textos.queEsSpherex}</p>
+            </div>
+            <Hueco titulo="Épocas y metadatos (fecha, λ, flags)" quien="Vladimir + Bryan (/api/epochs)" />
+            <Hueco titulo="Contaminación (% …) — por definir" quien="Mauricio + Bryan" />
+          </aside>
+        )}
       </div>
 
+      {!enMision && (
       <Spherix
         asistido={asistido}
         contexto={{ ra: estado.ra, dec: estado.dec, size: estado.size }}
@@ -117,6 +130,7 @@ export default function Visor({ estado, set, asistido }: Props) {
           else set({ size: a.size });
         }}
       />
+      )}
     </section>
   );
 }

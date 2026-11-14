@@ -3,5 +3,11 @@
   "installCommand": "cd scaffold/frontend && npm ci",
   "buildCommand": "cd scaffold/frontend && npm run build",
   "outputDirectory": "scaffold/frontend/dist",
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/proto-api/:path*",
+      "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
+    }
+  ]
 }

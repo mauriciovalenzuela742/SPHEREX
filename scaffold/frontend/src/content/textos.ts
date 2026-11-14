@@ -21,6 +21,9 @@ export const textos = {
   empecemos: "Empecemos",
   empecemosAsistido: "Empecemos con Spherix",
   conceptosBasicos: "Conceptos básicos",
+  // Texto oficial de atribución de SPHEREx (docs/02_DATOS_SPHEREX.md §8), sin traducir.
   atribucion:
-    "Este trabajo usa datos de SPHEREx, misión de la NASA, obtenidos del NASA/IPAC Infrared Science Archive (IRSA).",
+    "This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of " +
+    "Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California " +
+    "Institute of Technology, and is funded by the National Aeronautics and Space Administration. Datos vía NASA/IPAC IRSA.",
 };
