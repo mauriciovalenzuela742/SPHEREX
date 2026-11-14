@@ -17,6 +17,23 @@
 Todo eso va a `data/cache/`, que está en `.gitignore`. Si un archivo de datos aparece en un `git
 status`, algo se hizo mal.
 
+## data/demo/ (la única excepción versionada)
+
+Respuestas ya calculadas de `/api/epochs` y `/api/frames` para los 5 campos de prueba (JSON con PNG
+de 58×58 px incrustados; pesan poco). Las sirve `scaffold/backend/app/demo.py` sin tocar IRSA, para
+que la demo y el despliegue serverless (cuya caché en `/tmp` arranca vacía) no dependan de la red.
+
+Se regenera con red, desde `scaffold/backend`:
+
+```
+python -m app.irsa.precalcular_demo              # banda recomendada de cada campo, 4 modos
+python -m app.irsa.precalcular_demo --todas-las-bandas
+python -m app.irsa.precalcular_demo --campo wise_0855
+```
+
+Falla (código ≠ 0) si algún campo queda con fotogramas pendientes. Regenerar si cambia
+`campos_de_prueba.yml` o si hay datos nuevos de IRSA. **No** meter aquí FITS ni nada de `data/cache/`.
+
 ## data/cache/
 
 Carpeta de trabajo local, no versionada. La crea el backend al arrancar.

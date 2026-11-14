@@ -2,7 +2,7 @@
   "builds": [{
     "src": "index.py",
     "use": "@vercel/python",
-    "config": { "maxDuration": 60, "includeFiles": ["scaffold/backend/app/**", "data/campos_de_prueba.yml"] }
+    "config": { "maxDuration": 60, "includeFiles": ["scaffold/backend/app/**", "data/campos_de_prueba.yml", "data/demo/**"] }
   }],
   "routes": [{ "src": "/(.*)", "dest": "index.py" }],
   "env": { "SPHEREX_CACHE": "/tmp/spherex-api-cache", "CORS_ORIGINS": "https://spherex-planet-x-tau.vercel.app" }

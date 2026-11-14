@@ -75,7 +75,8 @@ def test_api_epochs_respeta_el_contrato(monkeypatch):
     r = TestClient(app).get("/api/epochs", params={"ra": 133.76, "dec": -7.24, "size": 0.1})
     j = r.json()
     assert r.status_code == 200
-    assert set(j) == {"ra", "dec", "size", "n_epochs", "time_range", "bands_available", "epochs"}
+    assert set(j) == {"ra", "dec", "size", "n_epochs", "time_range", "bands_available", "epochs",
+                      "source"}
     assert set(j["epochs"][0]) == {"id", "t", "band", "detector", "collection", "access_url"}
 
 
