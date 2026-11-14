@@ -159,13 +159,13 @@ campos:
 # ======================================================================================
 # DESPLAZAMIENTO ESPERADO — la expectativa realista del parpadeo
 #
-# Escala de píxel de SPHEREx usada: 6,15 arcsec/px. [CONFIRMADA en SIA2 (s_pixel_scale) el
-# 14-nov-2026; antes se usaba 6,2 derivada. Ver docs/09 y eda/03_recortes_y_figuras.py.]
+# Escala de píxel de SPHEREx: 6,15 arcsec/px. [MEDIDO en los metadatos de SIA2 durante el EDA,
+# 14-nov-2026; antes figuraba 6,2, derivado de 2040 px sobre ~3,5 grados.]
 # SPHEREx barre el cielo entero cada ~6 meses, así que entre barridos consecutivos:
 #
 #   objeto        pm (arcsec/yr)   6 meses        18 meses
-#   WISE 0855          8,15        4,1" = 0,66px  12,2" = 1,99px
-#   Barnard           10,39        5,2" = 0,84px  15,6" = 2,53px
+#   WISE 0855          8,15        4,1" = 0,66px  12,2" = 1,98px
+#   Barnard           10,39        5,2" = 0,85px  15,6" = 2,54px
 #   eps Ind B          4,68        2,3" = 0,38px   7,0" = 1,14px
 #   RW Aur             0,02        ~0             ~0
 #   R Dra              0,02        ~0             ~0

@@ -4,9 +4,11 @@
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
 import AladinView, { planoDeBanda } from "../sky/AladinView";
-import { CAMPOS } from "../content/campos";
+import { CAMPOS, posicionActual } from "../content/campos";
 import { textos } from "../content/textos";
 import type { Estado } from "../state/url";
+import Spherix from "../spherix/Spherix";
+import type { Accion } from "../spherix/motor";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
 
@@ -64,7 +66,7 @@ export default function Visor({ estado, set, asistido }: Props) {
 
       <div className="objetos" role="group" aria-label="Objetos de prueba">
         {CAMPOS.map((c) => (
-          <button key={c.id} onClick={() => set({ ra: c.ra, dec: c.dec })} title={c.tipo}>
+          <button key={c.id} onClick={() => set(posicionActual(c))} title={`${c.tipo} · centrado en su posición de hoy`}>
             {c.nombre}
           </button>
         ))}
@@ -106,11 +108,15 @@ export default function Visor({ estado, set, asistido }: Props) {
         </aside>
       </div>
 
-      <div className={`spherix ${asistido ? "abierto" : ""}`}>
-        <strong>Spherix</strong>
-        <p>{asistido ? textos.spherixSaludo : textos.spherixChat}</p>
-        <input disabled placeholder="Ingresar texto (pendiente: Juan Pablo + Javiera)" />
-      </div>
+      <Spherix
+        asistido={asistido}
+        contexto={{ ra: estado.ra, dec: estado.dec, size: estado.size }}
+        onAccion={(a: Accion) => {
+          if (a.tipo === "ir") set({ ra: a.ra, dec: a.dec });
+          else if (a.tipo === "banda") set({ band: a.band });
+          else set({ size: a.size });
+        }}
+      />
     </section>
   );
 }
