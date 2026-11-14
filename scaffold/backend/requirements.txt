@@ -3,3 +3,6 @@ uvicorn[standard]==0.34.0
 httpx==0.28.1
 pytest==8.3.4
 ruff==0.8.6
+
+# Acceso a IRSA (D1): pyvo, astropy, PyYAML...
+-r requirements-astro.txt
