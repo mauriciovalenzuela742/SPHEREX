@@ -41,10 +41,10 @@ necesitas en tu propio contexto.
   el contexto se contamina y empiezan los errores tontos. Si el tema cambia, sesión nueva.
 - **Plan antes de tocar.** Para cualquier cambio que toque más de dos archivos, usa el modo plan
   y que una persona lo apruebe.
-- **Worktree por persona.** Cuatro agentes sobre la misma carpeta se pisan sin avisar.
+- **Worktree por persona.** Varios agentes sobre la misma carpeta se pisan sin avisar.
   Ver `CONTRIBUTING.md`.
-- **Permisos.** `.claude/settings.json` ya aprueba lo seguro y repetitivo (lecturas, `curl` a
-  dominios de IRSA y CDS, `pytest`, `npm run build`). Si algo pide permiso muy seguido y es
+- **Permisos.** `.claude/settings.json` ya aprueba lo seguro y repetitivo (lecturas, `WebFetch` a
+  dominios de IRSA, Caltech y Aladin, `pytest`, `npm run build`). Si algo pide permiso muy seguido y es
   inocuo, proponlo; no lo agregues por tu cuenta.
 - **El contexto es un recurso.** Si llevas media sesión corrigiendo lo mismo, propón empezar de
   nuevo con un traspaso (`/traspaso`) en vez de seguir.
