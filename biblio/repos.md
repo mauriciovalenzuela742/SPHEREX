@@ -29,7 +29,7 @@ Mosaic Cube, **HiPS All-Sky Cube**. Son el camino más corto a un ejemplo que fu
 El de cutouts muestra además cómo empaquetar varios recortes en un MEF nuevo.
 
 ### `aladin-lite` — el visor de cielo
-<https://github.com/cds-astro/aladin-lite> · npm `aladin-lite` · LGPL-3.0-or-later
+<https://github.com/cds-astro/aladin-lite> · npm `aladin-lite` · LGPL-3.0-or-later según GitHub; **ojo:** los metadatos de npm y `scaffold/frontend/package-lock.json:1248` dicen `GPL-3` (sin resolver: abrir el `LICENSE` del paquete 3.8.2)
 
 El visor HiPS del CDS. Lo sugiere el propio enunciado.
 
