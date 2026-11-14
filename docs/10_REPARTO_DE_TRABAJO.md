@@ -15,7 +15,7 @@ el equipo.
 | El frontend podría llamar a IRSA | **No hay CORS**: todo pasa por el backend |
 | «Agrupar por banda» bastaba | Hay que **igualar la λ** entre épocas, no solo el detector |
 | Parpadear recortes | Hay que **reproyectar** a una grilla común antes: la orientación gira 180° entre barridos |
-| WISE 0855 es la demo principal | **Barnard** es la demo de movimiento que se ve; WISE 0855 necesita sumar exposiciones |
+| WISE 0855 es la demo principal | **eps Ind B** es la demo de movimiento medido (coincide con SIMBAD); Barnard se ve pero satura; WISE 0855 necesita sumar exposiciones |
 | El movimiento salta a la vista | Es de 1–2 px en todo el período: **la resta es la vista principal**, no un extra |
 | Cutouts lentos, «medir» | 7 s de mediana, 3,9 MB, 503 a ratos: **caché y precalentado obligatorios** |
 
@@ -47,7 +47,7 @@ Dueño de `backend/app/irsa/`. Base: `eda/01_inventario.py`, `eda/espectral.py`,
 - SIA2 a `spherex_dr1` + `spherex_qr3` en paralelo, con la posición propagada si hay movimiento propio.
 - λ por archivo con HTTP Range + tabla `WCS-WAVE` por detector (cacheada).
 - Selección: un archivo por barrido a λ igualada (`elegir_lambda_igualada`), por detector.
-- **Listo cuando:** `/api/epochs` en Barnard devuelve 3 épocas en D2 con λ dentro de 0,01 µm.
+- **Listo cuando:** `/api/epochs` en Barnard devuelve 3 épocas en D2 con λ dentro de 0,01 µm (el EDA obtuvo 0,005 µm).
 
 ### D2 — Recortes y caché (caja 3)
 Dueño de `backend/app/cache/`.
@@ -68,7 +68,8 @@ Dueño de `frontend/src/`. Trabaja contra el mock del contrato de [`03`](03_ARQU
 ### C — Verificación científica
 Dueño de `data/campos_de_prueba.yml`, `tests/`.
 - Corregir en el YAML la escala de píxel (6,15″ confirmada, estaba como 6,2 derivada).
-- Cambiar la demo principal a Barnard y dejar WISE 0855 para cuando exista la suma por barrido.
+- Cambiar la demo principal a eps Ind B (movimiento medido) y Barnard (movimiento visible); WISE 0855 cuando exista la suma por barrido.
+- Avisar en la interfaz cuando el objeto satura (núcleo con OVERFLOW): ahí la resta muestra pares aunque nada se mueva.
 - Overlay de Gaia: dónde debería estar cada estrella en la fecha de cada fotograma.
 
 ### N — Narrativa y entrega
@@ -101,18 +102,20 @@ Dueño de `data/campos_de_prueba.yml`, `tests/`.
    Mapa divergente centrado en 0, mismo rango para todas.
 6. **Suma por barrido:** promediar con pesos `1/VARIANCE` las exposiciones del mismo barrido y λ
    parecida. Es lo que haría visible WISE 0855 y es la viñeta del desafío sobre sumar detectores.
-7. **Entender los residuos en estrellas de campo** (pares rojo/azul donde nada se mueve). Hipótesis
-   a descartar en orden: error de reproyección sub-píxel, PSF distinta entre épocas, λ distinta.
+7. **Estrellas saturadas.** Ya se sabe por qué RW Aur deja un par rojo/azul sin moverse: el núcleo
+   saturado viene enmascarado y lo que queda es un anillo asimétrico (`eda/resultados/centroides.json`).
+   Falta decidir qué hace el visor: avisar, mostrar la máscara encima, o elegir un detector donde no
+   sature. Las estrellas de campo no saturadas ya se alinean a una o dos décimas de píxel.
 
 ### Cómo comprobarlo
 
 | Prueba | Debe pasar |
 |---|---|
-| Barnard, D2, resta última − primera | Par con el positivo hacia el **norte** (su movimiento es casi todo en +Dec) |
-| RW Aur, D3, resta | Plana en el objeto (|residuo| comparable al de estrellas de campo) |
-| eps Ind B, D5, resta | Par orientado al **este y sur** (pmRA +3,98″/a, pmDec −2,47″/a) |
-| Fracción enmascarada | ~4 % del recorte, y **0 %** en un radio de 2 px del objetivo |
-| Separación del par en Barnard | ≈ 1,8 px (11,2″ en 1,07 años) |
+| eps Ind B, D5, centroide última − primera | −0,92 / −0,57 px (oeste / norte) ± 0,2 px; el EDA midió −0,85 / −0,71 |
+| Estrellas de campo no saturadas | Desplazamiento mediano < 0,2 px |
+| Barnard, D2, resta última − primera | Par con el positivo hacia el **norte** (cualitativo: satura) |
+| RW Aur, D3 | Hoy deja un par rojo/azul por saturación: la prueba pasa cuando el visor **lo marca como saturada** |
+| Fracción enmascarada | ~4 % del recorte; en el objetivo, mostrar la máscara en vez de esconderla |
 
 ### SpacePixels como verificación independiente
 

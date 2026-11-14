@@ -13,11 +13,12 @@ allá con tests.
 
 ```bash
 py -3.11 -m venv .venv
-.venv/Scripts/python -m pip install astropy pyvo matplotlib numpy requests pyyaml reproject
+.venv/Scripts/python -m pip install astropy pyvo matplotlib numpy requests pyyaml reproject scipy
 .venv/Scripts/python eda/01_inventario.py         # ~1 min   SIA2 en los 5 campos
 .venv/Scripts/python eda/02_longitud_de_onda.py   # ~3 min   1 header por archivo (HTTP Range)
 .venv/Scripts/python eda/03_recortes_y_figuras.py # ~1 min   cutouts reales + figuras
 .venv/Scripts/python eda/04_infraestructura.py    # ~15 s    CORS, cubo DR1, HiPS del CDS
+.venv/Scripts/python eda/05_centroides.py         # ~10 s    movimiento medido vs SIMBAD
 ```
 
 (En Linux/Mac: `.venv/bin/python`.)
@@ -29,6 +30,7 @@ py -3.11 -m venv .venv
 | `01_inventario.py` | ¿Cuántos archivos, apuntados, detectores y pasadas hay en cada campo? ¿DR1 y QR3 se solapan? | `resultados/inventario.json` |
 | `02_longitud_de_onda.py` | ¿En qué λ quedó el objeto en cada archivo? ¿Cuánto varía entre épocas? | `resultados/lambda_por_archivo.csv`, `resultados/lambda_resumen.json` |
 | `03_recortes_y_figuras.py` | ¿Cuánto tarda un cutout? ¿Se ve el movimiento? ¿Qué pasa si no se iguala la λ? | `figuras/*.png`, `resultados/latencia_cutouts.json` |
+| `05_centroides.py` | ¿El desplazamiento medido coincide con el que predice SIMBAD? | `resultados/centroides.json` |
 | `04_infraestructura.py` | ¿IRSA tiene CORS? ¿El cubo DR1 se recorta? ¿Hay HiPS para Aladin? | `resultados/infraestructura.json` |
 
 Módulos de apoyo: `comun.py` (rutas, campos, propagación de movimiento propio) y `espectral.py`

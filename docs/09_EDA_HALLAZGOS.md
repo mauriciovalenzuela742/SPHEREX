@@ -14,8 +14,10 @@ y se pueden volver a correr.
    QR3 trae el barrido más reciente (salvo WISE 0855, que aún no tiene QR3).
 2. **El movimiento es de 1–2 píxeles en todo el período**, no un salto. Escala de píxel 6,15″
    (confirmada en SIA2), PSF de 7,5–8,7″. Barnard: 1,8 px; WISE 0855: 1,3 px; eps Ind B: 1,1 px.
-3. **La resta se ve; el parpadeo apenas.** En Barnard, la resta última − primera muestra el par
-   rojo/azul hacia el norte, que es la dirección de su movimiento propio. Comprobado a ojo.
+3. **El movimiento se mide, en estrellas que no saturan.** En eps Ind B el centroide se desplaza
+   −0,85 / −0,71 px (oeste / norte) entre 2025,31 y 2026,74; SIMBAD predice −0,92 / −0,57 px. Las
+   estrellas brillantes (Barnard, RW Aur) **saturan**: su núcleo viene marcado como malo y la resta
+   muestra un par rojo/azul **aunque no se muevan** (RW Aur). En ellas solo vale lo cualitativo.
 4. **La λ del objeto cambia en todo el ancho del detector entre archivos** (~16 anchos de banda
    dentro de un mismo detector). Un blink que no la iguale mezcla 16 «colores» distintos.
 5. **Pero igualarla es fácil:** en cada campo y detector hay decenas de pares de épocas con la misma
@@ -98,21 +100,37 @@ El círculo naranjo es la posición propagada con el movimiento propio de SIMBAD
 
 | Campo | Banda | ¿Se ve el objeto? | ¿Se ve el cambio? |
 |---|---|---|---|
-| Barnard | D2 (1,5 µm) | Sí, saturado | **Sí, en la resta**: par rojo arriba / azul abajo, hacia el norte, como su movimiento propio |
-| eps Ind B | D5 (3,86 µm) | Sí, pero **la máscara se come el centro del objeto** en algunas épocas | Hay un par rojo/azul en el objeto; dirección sin verificar |
-| RW Aur | D3 (1,94 µm) | Sí | La resta queda plana en el objeto: no se mueve, como se esperaba |
+| Barnard | D2 (1,5 µm) | Sí, **saturada**: 30–44 de los 49 píxeles del núcleo marcados como malos | Par rojo arriba / azul abajo (hacia el norte, como su movimiento), pero no medible: el centroide no existe con el núcleo enmascarado |
+| eps Ind B | D5 (3,86 µm) | Sí, sin saturar | **Sí, y medido**: −0,85 / −0,71 px contra −0,92 / −0,57 px predichos (ver abajo) |
+| RW Aur | D3 (1,94 µm) | Sí, saturada (6–8 píxeles malos en el núcleo) | **Par rojo/azul aunque no se mueve**: es el efecto de la saturación y la máscara, no movimiento |
 | R Dra | D4 | Sí | Pendiente medir brillo |
 | WISE 0855 | D5 y D6 | **Apenas** en exposiciones sueltas | No en una sola exposición |
 
 **WISE 0855 no sirve como demo principal con exposiciones sueltas**: es demasiado débil por
 exposición. Para verla habría que sumar las exposiciones de cada barrido (la viñeta del desafío
-«add together all the data taken by each of the six detector arrays»). **Barnard es hoy la mejor
-demo de movimiento**; RW Aur, el control de «no se mueve».
+«add together all the data taken by each of the six detector arrays»).
 
-Ojo: en RW Aur y en Barnard aparecen pares rojo/azul pequeños en **estrellas de campo** que no se
-mueven. Pueden ser residuos de la reproyección, diferencias de PSF entre épocas o λ algo distinta.
-**No está resuelto**; es lo primero que hay que entender en el frente de diferencias
-([`10_REPARTO_DE_TRABAJO.md`](10_REPARTO_DE_TRABAJO.md)).
+### Centroides: ¿el desplazamiento medido es el que predice SIMBAD?
+
+Fuente: `eda/resultados/centroides.json` (`eda/05_centroides.py`). Primera y última época a λ igualada,
+reproyectadas a la misma grilla; píxeles malos excluidos. x positivo = oeste, y positivo = norte.
+
+| Campo | Medido (px) | Predicho (px) | Estrellas de campo (mediana, px) | Píxeles malos en el núcleo |
+|---|---|---|---|---|
+| eps Ind B | −0,85 / −0,71 | −0,92 / −0,57 | +0,05 / −0,37 (3 estrellas) | 1 y 0 de 49 |
+| RW Aur | +0,73 / +1,22 | 0 / 0 | −0,01 / +0,07 (5 estrellas) | 6 y 8 de 49 |
+| Barnard | no se puede (núcleo vacío) | +0,14 / +1,81 | −0,14 / +0,04 (8 estrellas) | 44 y 44 de 49 |
+
+Lectura:
+
+- **La alineación funciona:** las estrellas de campo se desplazan una o dos décimas de píxel (hasta
+  0,37 px en eps Ind B, con solo 3 estrellas).
+- **eps Ind B se mueve lo que tiene que moverse**, dentro de ~0,15 px en cada eje. Es la prueba
+  cuantitativa de que λ igualada + reproyección + resta muestran movimiento real.
+- **Las estrellas que saturan engañan.** El núcleo de Barnard y de RW Aur viene marcado como malo
+  (OVERFLOW, TRANSIENT, SUR_ERROR). Al excluirlo, lo que queda es un anillo asimétrico y el
+  centroide se corre: RW Aur «se mueve» 1,4 px sin moverse. En la resta aparece el mismo par
+  rojo/azul que deja un objeto que sí se mueve. **El visor tiene que avisar cuando el objeto satura.**
 
 ## 5. Máscara de calidad (`FLAGS`)
 
@@ -161,6 +179,6 @@ Fuente: `eda/resultados/infraestructura.json`, `latencia_cutouts.json`.
 - El brillo: no se midió fotometría en ningún campo (variabilidad de RW Aur y R Dra sin medir).
 - Si el HiPS del CDS carga en Aladin Lite (servidor caído al momento de la prueba).
 - Las colecciones `_deep` no se usaron en el análisis de λ (solo DR1 y QR3).
-- La causa de los residuos en las estrellas de campo en la resta (§4).
+- Cómo medir la posición de una estrella saturada (ajuste de PSF a las alas, o usar un detector donde no sature).
 - Sumar exposiciones de un barrido para ver WISE 0855.
-- Los recortes de eps Ind B y R Dra se generaron pero no se revisó su resta con detalle.
+- La resta de R Dra no se revisó con detalle. Los centroides se midieron solo en la primera y la última época.
