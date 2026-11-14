@@ -82,8 +82,9 @@ export function apertura(arr: Float32Array, n: number, x0: number, y0: number): 
  * cielo (lejos del centro) y la dispersión robusta (MAD) de sus flujos. El ruido por píxel subestima el
  * error porque los fotogramas están reproyectados con interpolación y los píxeles quedan correlacionados.
  */
-const ruidoCache = new WeakMap<Float32Array, number>();
-export function ruidoApertura(fr: Frame): number {
+const ruidoCache = new WeakMap<Float32Array, { err: number; sesgo: number }>();
+/** Ruido (`err`) y sesgo (`sesgo`, mediana de aperturas en cielo vacío) de una apertura, en mJy. */
+export function cieloApertura(fr: Frame): { err: number; sesgo: number } {
   const enCache = ruidoCache.get(fr.arr);
   if (enCache !== undefined) return enCache;
   const n = fr.meta.n_px;
@@ -97,14 +98,21 @@ export function ruidoApertura(fr: Frame): number {
     }
   const med = mediana(flujos);
   const err = flujos.length >= 8 ? 1.4826 * mediana(flujos.map((f) => Math.abs(f - med))) : NaN;
-  const final = Number.isFinite(err) && err > 0 ? err : 1e-9;
+  const final = {
+    err: Number.isFinite(err) && err > 0 ? err : 1e-9,
+    // Las aperturas en cielo «vacío» salen algo positivas (fuentes débiles no resueltas sesgan el anillo):
+    // ese desplazamiento se resta también al objeto, si no los objetos débiles parecen detectados.
+    sesgo: flujos.length >= 8 ? med : 0,
+  };
   ruidoCache.set(fr.arr, final);
   return final;
 }
+export const ruidoApertura = (fr: Frame) => cieloApertura(fr).err;
 
-function conRuido(m: Medida, err: number): Medida {
-  const errMJy = Math.max(err, m.errMJy);
-  return { ...m, errMJy, snr: m.mJy / errMJy };
+function conRuido(m: Medida, cielo: { err: number; sesgo: number }): Medida {
+  const mJy = m.mJy - cielo.sesgo;
+  const errMJy = Math.max(cielo.err, m.errMJy);
+  return { ...m, mJy, errMJy, snr: mJy / errMJy };
 }
 
 /**
@@ -115,10 +123,10 @@ function conRuido(m: Medida, err: number): Medida {
 export function medirObjeto(fr: Frame): Medida {
   const n = fr.meta.n_px;
   const c = (n - 1) / 2;
-  const err = ruidoApertura(fr);
-  const centro = conRuido(apertura(fr.arr, n, Math.round(c), Math.round(c)), err);
+  const cielo = cieloApertura(fr);
+  const centro = conRuido(apertura(fr.arr, n, Math.round(c), Math.round(c)), cielo);
   const [x, y] = pico(fr.arr, n, c, c, R_BUSQUEDA);
-  const enPico = conRuido(apertura(fr.arr, n, x, y), err);
+  const enPico = conRuido(apertura(fr.arr, n, x, y), cielo);
   return enPico.snr >= SNR_MIN && enPico.snr > centro.snr ? enPico : centro;
 }
 
