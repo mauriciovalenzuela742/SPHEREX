@@ -7,3 +7,4 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]   # para que los tests importen «app» al correr «pytest» a secas (como en CI)
