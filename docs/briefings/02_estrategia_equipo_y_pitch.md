@@ -187,7 +187,7 @@ Después se puede seguir editando, pero ya está entregado.
 
 ## 7. Lo que puede salir mal
 
-Nueve riesgos identificados; vale la pena tener los cuatro primeros presentes.
+Diez riesgos identificados; vale la pena tener los cuatro primeros presentes.
 
 **Que los recortes del archivo sean demasiado lentos.** Es el supuesto sobre el que descansa todo.
 Se decide a la hora tres. Si lo son, el plan B es caché agresiva, precalentado y mostrar los
