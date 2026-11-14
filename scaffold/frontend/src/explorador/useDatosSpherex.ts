@@ -120,6 +120,7 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
           const [b, v] = tareas[i++];
           const q = new URLSearchParams({
             ...base, band: String(b), visit: String(v), size: String(size), per_visit: String(porVisita),
+            budget_s: String(size > 0.15 ? Math.min(55, Math.round(size * 80)) : 8),
           });
           try {
             const r = await fetch(`${API}/frame?${q}`, { signal: ctl.signal });
