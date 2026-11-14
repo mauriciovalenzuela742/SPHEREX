@@ -15,7 +15,19 @@
   position: relative; width: min(calc(100% - 24px), 640px); aspect-ratio: 1; margin: 12px auto;
   background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde);
 }
-.exp-lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.exp-lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; transform-origin: 50% 50%; transition: transform 0.08s ease-out; }
+/* Zoom: amplía hacia la mira (el centro), donde está el objeto pedido */
+.exp-zoom {
+  /* abajo a la derecha (sobre «cargando…»): arriba la tapaba el rótulo de fecha en pantallas angostas */
+  position: absolute; right: 10px; bottom: 36px; z-index: 2; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; background: rgba(0, 0, 0, 0.6); padding: 4px; border-radius: 6px;
+}
+.exp-zoom button { width: 32px; height: 32px; padding: 0; font-size: 1.1rem; line-height: 1; }
+.exp-zoom span { font: 12px var(--mono); color: var(--suave); }
+/* Arrastrar con zoom: mano abierta / cerrada, y sin animación mientras se arrastra (si no, se siente pegajoso) */
+.exp-lienzo.movible { cursor: grab; touch-action: none; }
+.exp-lienzo.arrastrando { cursor: grabbing; }
+.exp-lienzo.arrastrando canvas { transition: none; }
 .exp-lienzo.suave canvas { image-rendering: auto; }
 
 /* Mira: cuatro trazos con hueco al centro, para no tapar el objeto */
