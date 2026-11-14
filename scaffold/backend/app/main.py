@@ -1,7 +1,6 @@
 """Esqueleto genérico de backend. No contiene lógica del desafío."""
 
 import os
-
 import re
 
 from fastapi import FastAPI, HTTPException, Query
@@ -46,7 +45,8 @@ def _banda(detector: str) -> int | None:
 
 @app.get("/api/health")
 def api_health() -> dict:
-    return {"ok": True, "version": VERSION, "irsa_reachable": None, "cache_entries": cache.entradas()}
+    return {"ok": True, "version": VERSION, "irsa_reachable": None,
+            "cache_entries": cache.entradas()}
 
 
 @app.get("/api/epochs")

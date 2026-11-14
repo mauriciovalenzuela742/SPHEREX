@@ -51,4 +51,6 @@ def guardar_json(tipo: str, nombre: str, datos) -> None:
 
 
 def entradas() -> int:
-    return sum(1 for p in CACHE.rglob("*") if p.is_file() and not p.name.endswith(".tmp")) if CACHE.exists() else 0
+    if not CACHE.exists():
+        return 0
+    return sum(1 for p in CACHE.rglob("*") if p.is_file() and not p.name.endswith(".tmp"))

@@ -25,7 +25,7 @@ def cabecera_imagen(url: str) -> dict:
         return hit
     r = pedir(url, headers={"Range": f"bytes=0-{BYTES_CABECERA - 1}"})
     h = parsear_cabecera(r.content)
-    datos = {k: (h[k] if isinstance(h[k], (int, float, str)) else str(h[k]))
+    datos = {k: (h[k] if isinstance(h[k], int | float | str) else str(h[k]))
              for k in h.keys() if k and k not in ("COMMENT", "HISTORY")}
     cache.guardar_json("cabeceras", nombre, datos)
     return datos

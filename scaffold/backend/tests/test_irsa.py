@@ -26,7 +26,7 @@ def _fila(i, mjd, col="spherex_dr1"):
 def test_posicion_propagada_se_aleja_de_j2000(campo):
     c = CAMPOS[campo]
     ra, dec = posicion.posicion_en(c, 61000.0)
-    assert ra != pytest.approx(c["ra_deg"], abs=1e-9) or dec != pytest.approx(c["dec_deg"], abs=1e-9)
+    assert (ra, dec) != pytest.approx((c["ra_deg"], c["dec_deg"]), abs=1e-9)
 
 
 def test_wise_0855_coincide_con_posicion_calculada_del_yaml():
@@ -80,7 +80,8 @@ def test_api_epochs_respeta_el_contrato(monkeypatch):
 
 
 def test_api_epochs_filtra_por_fecha(monkeypatch):
-    monkeypatch.setattr(sia2, "_consultar", lambda c, ra, dec: [_fila(1, 60900, c), _fila(2, 61100, c)])
+    monkeypatch.setattr(
+        sia2, "_consultar", lambda c, ra, dec: [_fila(1, 60900, c), _fila(2, 61100, c)])
     desde = sia2.mjd_a_iso(61000)
     j = TestClient(app).get("/api/epochs", params={"ra": 1, "dec": 1, "from": desde}).json()
     assert {e["id"] for e in j["epochs"]} == {"obs2"}

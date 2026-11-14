@@ -7,7 +7,8 @@ import httpx
 
 from .config import offline
 
-_CLIENTE = httpx.Client(timeout=180, headers={"User-Agent": "spherex-visor/0.1 (hackaton NASA Space Apps)"})
+_CLIENTE = httpx.Client(
+    timeout=180, headers={"User-Agent": "spherex-visor/0.1 (hackaton NASA Space Apps)"})
 
 
 class IrsaNoDisponible(RuntimeError):

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC
 
 from . import cache
 from .config import COLECCIONES, RADIO_BUSQUEDA_DEG, SIA2_URL
@@ -10,15 +11,24 @@ MJD_UNIX = 40587.0   # MJD de 1970-01-01
 
 
 def mjd_a_iso(mjd: float) -> str:
-    from datetime import datetime, timezone
-    return datetime.fromtimestamp((mjd - MJD_UNIX) * 86400, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    from datetime import datetime
+    return datetime.fromtimestamp((mjd - MJD_UNIX) * 86400, UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _consultar(coleccion: str, ra: float, dec: float) -> list[dict]:
+    import time
+
     import pyvo
 
-    tabla = pyvo.dal.SIA2Service(SIA2_URL).search(
-        pos=(ra, dec, RADIO_BUSQUEDA_DEG), collection=coleccion).to_table()
+    for intento in range(4):      # IRSA devuelve 502 transitorios (visto el 14-nov)
+        try:
+            tabla = pyvo.dal.SIA2Service(SIA2_URL).search(
+                pos=(ra, dec, RADIO_BUSQUEDA_DEG), collection=coleccion).to_table()
+            break
+        except pyvo.dal.DALServiceError:
+            if intento == 3:
+                raise
+            time.sleep(2 * (intento + 1))
     filas = []
     for f in tabla:
         filas.append({
@@ -49,4 +59,5 @@ def buscar_epocas(ra: float, dec: float, size: float,
 
 def filtrar_fechas(epocas: list[dict], desde: str | None, hasta: str | None) -> list[dict]:
     """`desde`/`hasta` ISO 8601 UTC; la comparación de cadenas ISO equivale a la de fechas."""
-    return [e for e in epocas if (desde is None or e["t"] >= desde) and (hasta is None or e["t"] <= hasta)]
+    return [e for e in epocas
+            if (desde is None or e["t"] >= desde) and (hasta is None or e["t"] <= hasta)]
