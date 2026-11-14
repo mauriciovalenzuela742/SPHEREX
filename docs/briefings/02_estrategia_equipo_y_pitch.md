@@ -278,8 +278,10 @@ seis meses en 102 colores de infrarrojo, y nadie lo está mirando así.
 
 **Cincuenta segundos de demostración en vivo**, que es la mitad del tiempo y es lo que se juzga.
 Escribir "WISE 0855" —el nombre, no las coordenadas, para demostrar que es para cualquiera—. Darle
-play: la enana marrón se mueve. Mover el selector de banda: la misma zona en otra longitud de onda.
-Encender el overlay de Gaia: los marcadores caen sobre las fuentes, *así sabemos que es correcto*.
+play y mostrar la resta de la primera y la última imagen: la enana marrón se mueve —un par rojo y azul, sutil, y
+se dice con honestidad que en una exposición suelta se ve débil—. Mostrar también eps Ind B, donde el movimiento se ve
+más claro. Mover el selector de banda: la misma zona en otra longitud de onda.
+Encender el overlay de Gaia (WISE 0855 no está en Gaia: ahí el overlay es CatWISE2020; en Barnard o eps Ind B): los marcadores caen sobre las fuentes, *así sabemos que es correcto*.
 Copiar la URL: esto es compartible y embebible.
 
 **Veinticinco segundos de por qué importa.** La mayoría de las enanas marrones y los cometas
