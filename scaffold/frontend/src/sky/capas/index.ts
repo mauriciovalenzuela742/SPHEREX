@@ -12,6 +12,7 @@
  * Para que una capa se pueda apagar, usa un catálogo u overlay con nombre: aparece en el control de capas.
  */
 import type { Suscribir } from "../eventos";
+import { capaCatwise } from "./catwise";
 import { capaGaia } from "./gaia";
 import { capaObjetivo } from "./objetivo";
 import { capaSimbad } from "./simbad";
@@ -37,4 +38,4 @@ export type Capa = {
 };
 
 /** Orden de montaje: lo de abajo se dibuja encima. */
-export const CAPAS: Capa[] = [capaGaia, capaSimbad, capaObjetivo];
+export const CAPAS: Capa[] = [capaGaia, capaCatwise, capaSimbad, capaObjetivo];
