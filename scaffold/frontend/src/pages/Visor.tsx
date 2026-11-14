@@ -9,6 +9,7 @@ import { textos } from "../content/textos";
 import type { Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
+import BlinkPanel from "../blink/BlinkPanel";
 import type { Accion } from "../spherix/motor";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
@@ -87,19 +88,7 @@ export default function Visor({ estado, set, asistido }: Props) {
           </p>
           {!enMision && (
             <>
-            <div className="reproductor">
-              <button disabled aria-label="Anterior">◁</button>
-              <button disabled aria-label="Reproducir">▶</button>
-              <button disabled aria-label="Siguiente">▷</button>
-              <input type="range" disabled aria-label="Línea de tiempo" />
-              <span>1x</span>
-              <span className="quien">Blink por épocas: Antonia + Bryan (/api/frames)</span>
-            </div>
-            <div className="tira">
-              {[1, 2, 3, 4].map((i) => (
-                <Hueco key={i} titulo={`Época ${i}`} quien="Tira de fotogramas" />
-              ))}
-            </div>
+            <BlinkPanel ra={estado.ra} dec={estado.dec} size={estado.size} band={estado.band} />
             <Hueco titulo="Gráfico de bandas (espectro, 0,75–5 µm) + barra UV · V · IR · X" quien="Juan Pablo + Bryan (/api/spectrum)" />
             </>
           )}
@@ -114,7 +103,10 @@ export default function Visor({ estado, set, asistido }: Props) {
               <strong>¿Qué es SPHEREx?</strong>
               <p>{textos.queEsSpherex}</p>
             </div>
-            <Hueco titulo="Épocas y metadatos (fecha, λ, flags)" quien="Vladimir + Bryan (/api/epochs)" />
+            <div className="tarjeta">
+              <strong>Cómo leer el parpadeo</strong>
+              <p>Cada cuadro es una visita de SPHEREx, de la más antigua a la más reciente. En «Resta con la primera», lo que apareció queda de un color y lo que se fue, del otro: una pareja pegada es algo que se movió.</p>
+            </div>
             <Hueco titulo="Contaminación (% …) — por definir" quien="Mauricio + Bryan" />
           </aside>
         )}

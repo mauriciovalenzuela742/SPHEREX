@@ -162,3 +162,19 @@ footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-t
 .mision-final { align-items: center; text-align: center; }
 .insignia { width: 140px; height: 140px; }
 .boton-colab { display: inline-block; margin-top: 0.4rem; padding: 0.45rem 0.9rem; border: 1px solid var(--acento); border-radius: 8px; text-decoration: none; }
+
+/* ── Parpadeo por visitas (datos reales, /api/frames) ───────────────────────────────────────── */
+.blink { display: flex; flex-direction: column; gap: 0.5rem; background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; padding: 0.8rem; }
+.blink-cabecera { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: space-between; }
+.blink-modos { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.blink-modos button { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
+.blink-modos button[aria-pressed="true"] { border-color: var(--acento); background: var(--fondo); }
+.blink-img { position: relative; width: min(100%, 420px); aspect-ratio: 1; align-self: center; background: #000; border-radius: 8px; overflow: hidden; display: grid; place-items: center; }
+.blink-img img { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.blink-img .vacio { border: none; text-align: center; }
+.blink-meta { margin: 0; text-align: center; color: var(--suave); font-size: 0.9rem; }
+.blink-aviso { margin: 0; font-size: 0.85rem; color: var(--suave); }
+.tira-blink { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 0.4rem; }
+.tira-blink button { width: 100%; padding: 0.3rem; display: flex; flex-direction: column; align-items: center; gap: 0.15rem; font-size: 0.72rem; }
+.tira-blink button.actual { border-color: var(--acento); }
+.tira-blink img { width: 100%; aspect-ratio: 1; image-rendering: pixelated; border-radius: 4px; }

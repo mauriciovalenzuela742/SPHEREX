@@ -6,6 +6,10 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://spherex-api.vercel.app/api/:path*"
+    },
+    {
       "source": "/proto-api/:path*",
       "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
     }

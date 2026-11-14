@@ -13,3 +13,5 @@ scaffold/frontend/dist/
 .env
 .env.*
 .vercel/
+deploy/
+prototipos/

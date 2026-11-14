@@ -1,0 +1,7 @@
+fastapi
+httpx
+numpy
+scipy
+astropy
+pillow
+pyyaml

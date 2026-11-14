@@ -1,0 +1,9 @@
+{
+  "builds": [{
+    "src": "index.py",
+    "use": "@vercel/python",
+    "config": { "maxDuration": 300, "includeFiles": ["prototipos/rango_fechas/**", "data/campos_de_prueba.yml"] }
+  }],
+  "routes": [{ "src": "/(.*)", "dest": "index.py" }],
+  "env": { "SPHEREX_CACHE": "/tmp/spherex-cache" }
+}
