@@ -25,10 +25,10 @@
 
   /* ---------- Escena (izquierda) ---------- */
   .escena { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-  .titulo { display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--borde); }
+  .titulo { flex-shrink: 0; display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--borde); }
   .titulo h1 { margin: 0; font: 800 17px var(--display); }
   .titulo span { color: var(--tenue); font-size: 12px; }
-  .marco { flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px; }
+  .marco { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; place-items: center; padding: 12px; }
   .lienzo { position: relative; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); }
   .lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
   .ret { position: absolute; left: 50%; top: 50%; width: 12%; aspect-ratio: 1; transform: translate(-50%, -50%);
@@ -43,7 +43,7 @@
   .cargando-ov { position: absolute; right: 10px; bottom: 10px; font: 12px var(--mono); color: var(--fg); background: rgba(0,0,0,.65); padding: 3px 8px; border-radius: 4px; }
 
   /* ---------- Línea de tiempo ---------- */
-  .tiempo { border-top: 1px solid var(--borde); padding: 10px 16px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
+  .tiempo { flex-shrink: 0; border-top: 1px solid var(--borde); padding: 10px 16px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
   .tiempo .botones { display: flex; gap: 4px; }
   .pista { position: relative; height: 54px; cursor: ew-resize; touch-action: none; user-select: none; }
   .pista .eje { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--borde); }
