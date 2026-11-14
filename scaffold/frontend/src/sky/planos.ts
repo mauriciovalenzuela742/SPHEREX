@@ -25,12 +25,70 @@ export function bandaDePlano(plano: number): number {
 
 export type Plano = { indice: number; lambdaUm: number; banda: number };
 
+/** Factor para pasar la unidad de `data_cube_bunit3` a µm. IRSA trae «um» (comprobado el 14-nov-2026). */
+const A_MICRAS: Record<string, number> = {
+  um: 1,
+  "µm": 1,
+  micron: 1,
+  microns: 1,
+  nm: 1e-3,
+  angstrom: 1e-4,
+  m: 1e6,
+};
+
+/** Lee un archivo `properties` de HiPS («clave = valor», con # de comentario). */
+export function parsearProperties(texto: string): Record<string, string> {
+  const props: Record<string, string> = {};
+  for (const linea of texto.split(/\r?\n/)) {
+    const l = linea.trim();
+    if (!l || l.startsWith("#")) continue;
+    const i = l.indexOf("=");
+    if (i < 0) continue;
+    props[l.slice(0, i).trim()] = l.slice(i + 1).trim();
+  }
+  return props;
+}
+
 /**
- * TODO (S1): leer `${SURVEY_SPHEREX}/properties`, parsear `data_cube_crval3_arr` y devolver los planos
- * con su λ en µm, sin el 50 y 51. Comprobar la unidad que trae el archivo.
+ * Convierte las propiedades del cubo en la lista de planos con su λ en µm, sin los vacíos (50 y 51).
+ * Lanza un error con el motivo si falta la lista, la unidad es desconocida o el largo no calza.
  */
-export async function leerPlanos(_survey: string = SURVEY_SPHEREX): Promise<Plano[]> {
-  return [];
+export function planosDesdeProperties(props: Record<string, string>): Plano[] {
+  const arr = props["data_cube_crval3_arr"];
+  if (!arr) throw new Error("el properties no trae data_cube_crval3_arr");
+  const unidad = (props["data_cube_bunit3"] ?? "").trim().toLowerCase();
+  const factor = A_MICRAS[unidad];
+  if (factor === undefined) throw new Error(`unidad de λ desconocida: «${props["data_cube_bunit3"] ?? ""}»`);
+  const valores = arr.split(/\s+/).map(Number);
+  if (valores.some((v) => !Number.isFinite(v))) throw new Error("data_cube_crval3_arr trae valores no numéricos");
+  const profundidad = Number(props["hips_cube_depth"]);
+  if (Number.isFinite(profundidad) && profundidad !== valores.length) {
+    throw new Error(`data_cube_crval3_arr trae ${valores.length} valores y hips_cube_depth dice ${profundidad}`);
+  }
+  return valores
+    .map((v, indice) => ({ indice, lambdaUm: v * factor, banda: bandaDePlano(indice) }))
+    .filter((p) => !PLANOS_VACIOS.includes(p.indice));
+}
+
+const cache = new Map<string, Promise<Plano[]>>();
+
+/**
+ * Lee `${survey}/properties` en ejecución y devuelve los planos con su λ en µm, sin el 50 y 51.
+ * Se pide una sola vez por survey; si falla, se olvida para poder reintentar.
+ */
+export function leerPlanos(survey: string = SURVEY_SPHEREX): Promise<Plano[]> {
+  let p = cache.get(survey);
+  if (!p) {
+    p = fetch(`${survey.replace(/\/$/, "")}/properties`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`properties respondió ${r.status}`);
+        return r.text();
+      })
+      .then((t) => planosDesdeProperties(parsearProperties(t)));
+    p.catch(() => cache.delete(survey));
+    cache.set(survey, p);
+  }
+  return p;
 }
 
 /**
@@ -40,8 +98,9 @@ export async function leerPlanos(_survey: string = SURVEY_SPHEREX): Promise<Plan
  * y al agregarse Aladin la deja en el «primer plano» del cubo, que es el 50 (vacío). Por eso se reintenta
  * hasta que la capa esté lista y el plano quede puesto.
  *
- * TODO (S1): el truco de frecuencias de abajo NO está comprobado. Verificar en las 6 bandas leyendo de la
- * capa el plano activo y comparándolo con 17·(b−1)+8.
+ * Comprobado (S1, 14-nov-2026, Aladin 3.8.2): con band=1…6 las teselas pedidas llevan sufijo _8, _25, _42,
+ * _59, _76 y _93 (= 17·(b−1)+8); el sufijo del nombre de la tesela es el índice del plano. En cambio
+ * setSliceNumber(59) pide teselas _9: no usarlo. getFrequency() de la capa no es la λ real del plano.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ponerPlano(aladin: any, plano: number): () => void {
