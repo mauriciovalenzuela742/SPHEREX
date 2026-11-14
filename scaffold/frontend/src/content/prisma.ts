@@ -46,14 +46,6 @@ export const prisma = {
     pista: "Pasa el mouse por un punto para ver esa foto en el explorador.",
   },
 
-  sonido: {
-    titulo: "Escuchar el espectro",
-    texto:
-      "Cada punto suena de corto a largo: agudo = luz más «azul», grave = más «roja»; más fuerte = más brillo.",
-    tocar: "▶ Escuchar",
-    parar: "■ Parar",
-    sinAudio: "No hay puntos medidos para tocar, o este navegador no permite audio.",
-  },
 
   // Rangos aproximados (µm) donde suelen aparecer bandas de absorción en el infrarrojo cercano.
   moleculas: [

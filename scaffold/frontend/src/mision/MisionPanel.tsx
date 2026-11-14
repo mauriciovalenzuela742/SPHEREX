@@ -14,7 +14,9 @@ import { ConGlosario } from "./Glosario";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void };
 
-const TOTAL = mision.niveles.length;
+/** Los niveles del recorrido (los `oculto` no se muestran). */
+const NIVELES = mision.niveles.filter((nv) => !nv.oculto);
+const TOTAL = NIVELES.length;
 
 function Insignia() {
   return (
@@ -35,7 +37,7 @@ export default function MisionPanel({ estado, set }: Props) {
   const [copiado, setCopiado] = useState(false);
 
   const n = Number(paso);
-  const nivel = Number.isInteger(n) && n >= 1 && n <= TOTAL ? mision.niveles[n - 1] : null;
+  const nivel = Number.isInteger(n) && n >= 1 && n <= TOTAL ? NIVELES[n - 1] : null;
   const campo = nivel ? CAMPOS.find((c) => c.id === nivel.id) : undefined;
 
   // Al entrar a un nivel: el visor apunta al objeto (posición de hoy), banda y campo del nivel.
@@ -120,7 +122,7 @@ export default function MisionPanel({ estado, set }: Props) {
   return (
     <section className="mision" aria-label={`${mision.ui.nivel(n, TOTAL)}: ${nivel.titulo}`}>
       <div className="mision-progreso" aria-hidden="true">
-        {mision.niveles.map((_, i) => (
+        {NIVELES.map((_, i) => (
           <span key={i} className={i + 1 < n ? "hecho" : i + 1 === n ? "actual" : ""} />
         ))}
       </div>
@@ -133,7 +135,7 @@ export default function MisionPanel({ estado, set }: Props) {
         <ConGlosario texto={nivel.contexto} />
       </p>
 
-      <Comparador ra={estado.ra} dec={estado.dec} banda={nivel.banda} size={nivel.size} />
+      <Comparador id={nivel.id} ra={estado.ra} dec={estado.dec} banda={nivel.banda} size={nivel.size} porVisita={nivel.porVisita} />
 
       <p className="mision-mirar">
         <strong>{mision.ui.comoMirar}:</strong> <ConGlosario texto={nivel.comoMirar} />
