@@ -26,7 +26,7 @@ Lo de aquí es lo que sabemos; la plataforma manda.
 - Recursos y datos usados, con sus fuentes.
 
 Se entrega desde la página del proyecto del equipo en spaceappschallenge.org, según la hora de cierre
-del evento local. **Confirma esa hora el primer día.**
+del evento local: **domingo 15-nov, 11:00** (confirmado por JP el 14-nov). Entregar a las 09:00 (T − 2 h).
 
 ---
 
