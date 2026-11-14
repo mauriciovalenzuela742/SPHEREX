@@ -59,7 +59,7 @@ Estado: **Hecho** · **Parcial** · **Falta** · **Con fallo**.
 | **Objetivo:** que sea fácil ver lo que se mueve | Parcial | La resta contra t₀ lo muestra en Barnard, no en WISE 0855 ni (a simple vista) en eps Ind B con la configuración por defecto. El color de la resta se escala por cuadro, así que el ruido sale a color pleno (`explorador/render.ts:92`) |
 | **Objetivo:** probado en los 5 objetos | Parcial | Ver (b): los 5 cargan; 1 de 3 movedores se ve con lo que trae por defecto; las 2 variables necesitan explicación |
 | Actualizar con nuevas entregas de datos | Parcial | Se consulta SIA2 en vivo en `spherex_dr1` y `spherex_qr3`: aparecen visitas hasta oct-2026 de `spherex_qr3` (visto en el explorador). No hay nada escrito que diga cómo agregar una colección nueva |
-| Las 102 bandas de forma creativa | Hecho | Deslizador de λ sobre el cubo (`sky/LambdaSlider.tsx`, `sky/planos.ts`) y Prisma: ojo infrarrojo, huella espectral y sonido (`prisma/`) |
+| Las 102 bandas de forma creativa | Hecho | Deslizador de λ sobre el cubo (`sky/LambdaSlider.tsx`, `sky/planos.ts`) y Prisma: ojo infrarrojo y huella espectral (`prisma/`). El sonido se quita por pedido de JP (tarea #17); el deslizador se reemplaza por el acordeón (tarea #18) |
 | Sumar los datos de cada detector (más señal) | Parcial | «Exp. por visita» combina hasta 10 exposiciones de **una** visita (`prototipos/rango_fechas/servidor.py:89`, `per_visit`); no suma todas las visitas de un detector |
 | Espectros al vuelo | Parcial | Huella espectral calculada en el navegador, aproximada y rotulada como tal (`prisma/fotometria.ts`, `prisma/HuellaEspectral.tsx`). No existe `/api/spectrum` |
 | Sumar o restar imágenes de distintas fechas | Parcial | Resta contra la primera fecha del rango (el rango se elige con Desde/Hasta). No hay suma de fechas ni resta entre dos fechas cualesquiera |
@@ -87,6 +87,8 @@ confirma cada persona. **Congelación de alcance: domingo 05:00.** Después de e
 | 4 | **Video de respaldo de la demo** (2 min) con lo que ya funciona, y guion alineado con lo que hay | N Javiera + V2 Juan Pablo | 1,5 | No es opcional |
 | 5 | Selector de dimensión hasta 0,5° y mostrar el mensaje del servidor en vez de «[object Object]» | V1 Antonia | 0,25 | — |
 | 6 | Quitar «en construcción» de la cabecera y el recuadro «Contaminación — por definir» | V1 Antonia (`App.tsx`, `Visor.tsx`) | 0,25 | — |
+| 16 | **Catálogos apagados al iniciar** (pedido de JP: se ve muy cargado): círculos de Gaia (`sky/capas/gaia.ts`), triángulos de CatWISE (`sky/capas/catwise.ts`) y cuadrados de SIMBAD (`sky/capas/simbad.ts`) parten ocultos, con un botón «Mostrar catálogos». Ojo: hoy el clic en el cielo (`onSelect`) lo emite la capa SIMBAD; al apagarla hay que sacar ese oyente de la capa. **Absorbe la tarea #11** (el falso «objeto en movimiento» de CatWISE a 50″ de WISE 0855 deja de verse al iniciar) | V2 Juan Pablo | 1 | Se deja como está |
+| 17 | **Quitar el «espectro de audio»** (pedido de JP): `prisma/sonificar.ts`, el bloque `prisma-sonido` de `prisma/Prisma.tsx` y sus textos en `content/prisma.ts:49-55` | C Mauricio (es su código; los textos son de `src/content/`, avisar a Javiera) | 0,25 | — |
 
 ### Prioridad 2 · mejora clara para el jurado (antes de las 05:00)
 
@@ -96,8 +98,22 @@ confirma cada persona. **Congelación de alcance: domingo 05:00.** Después de e
 | 8 | eps Ind B: probar con 5–10 exposiciones por visita y fijar la configuración que muestra el movimiento | C Mauricio | 0,5 | Se usa Barnard como ejemplo principal |
 | 9 | Resta con escala de color común para todas las fechas (`render.ts:92`) e igualar con estrellas vecinas, no con el objeto (`render.ts:49-61`, `spherex.py:442-453`) | D2 Bryan + C Mauricio | 1,5 | Texto que explique la pareja falsa de las estrellas saturadas |
 | 10 | Revisar con V1 la rama `v/v2-clic-visor` (clic en el cielo mueve el explorador; 8 líneas) | V1 Antonia decide | 0,25 | Se queda fuera |
-| 11 | Quitar el fragmento de CatWISE a 50″ de WISE 0855 | V2 Juan Pablo | 0,5 | Se apaga la capa CatWISE en la demo |
+| 11 | ~~Quitar el fragmento de CatWISE a 50″ de WISE 0855~~ | — | — | **Absorbida por la tarea #16** (catálogos apagados al iniciar). Si se enciende CatWISE en la demo, el fragmento vuelve a verse: no encenderla sobre WISE 0855 |
+| 18 | **Selector de longitud de onda en acordeón**, reemplaza al deslizador (`sky/LambdaSlider.tsx`). Maqueta navegable acordada con JP: [`diseno/maqueta_acordeon_lambda.html`](diseno/maqueta_acordeon_lambda.html). Gráfico λ (0,75–5 µm) contra respuesta de cada canal, con los 102 canales como curvas de color por banda; clic en una banda la expande con animación (17 canales rotulados 3.1…3.17 con su λ) y encoge las otras; se elige un canal con clic o un tramo arrastrando (puede cruzar bandas) y abajo salen bandas, canales y rango en µm; con varios canales, el cielo los recorre como video (ya existe `ponerPlano`). Sumarlos queda fuera (necesita el servidor). **Pendientes de la maqueta:** la altura real necesita la curva oficial de respuesta (mientras, el eje dice «respuesta (ilustrativa)»); el ancho usa λ/R con R por banda de la literatura (39, 41, 41, 35, 112, 128), **sin verificar**; las λ sí son reales (`data_cube_crval3_arr` del `properties` del cubo de IRSA); los canales 3.17 y 4.1 (planos 50 y 51) vienen vacíos | V2 Juan Pablo | 3 | **Se apaga si no está a las 05:00**: queda el deslizador actual |
 | 12 | Entrega en la plataforma: formulario, README, **declaración de uso de IA** (skill `entrega-nasa`) y **lista de todas las fuentes de datos citadas** (ver abajo) | N Javiera | 2 | Sin esto no hay entrega: empieza a las 05:00 sí o sí |
+
+### Carga de V2 (Juan Pablo) después de los pedidos de JP
+
+Antes: #11 (0,5 h) + #13 (1–2 h) + #14 (0,25 h) + su parte del video #4 = 1,75–2,75 h más el video.
+Ahora: #16 catálogos (1 h, absorbe #11) + #13 parpadeo 2MASS/AllWISE (1–2 h) + #18 acordeón (3 h) = **5–6 h**,
+más la parte del video. Caben en las 11,5 h que quedan hasta las 05:00, pero Juan Pablo además coordina el frente.
+Por eso:
+
+- **Orden de V2:** #16 → #13 → #18. El parpadeo #13 va antes que el acordeón porque es lo que hace visible el
+  movimiento de WISE 0855, el objeto obligatorio; el acordeón mejora una sugerencia que ya está cubierta.
+- **Se mueve:** #14 (enlace a WiseView) pasa a V1 Antonia. En el video #4, Javiera lo arma y Juan Pablo solo lo revisa
+  (~0,5 h).
+- **Se recorta si aprieta:** #18 entero (queda el deslizador). Ninguna tarea de prioridad 1 depende de V2 salvo #16 y el video.
 
 ### Datos de otros instrumentos: qué conviene sumar
 
@@ -113,7 +129,7 @@ y en el formulario (tarea #12).
 | # | Qué | Por qué rinde | Dueño | Horas | Decisión |
 |---|---|---|---|---|---|
 | 13 | **Parpadeo «hace 25 años contra hoy» en Aladin** con los HiPS de 2MASS (1997–2001) y AllWISE W2 (2010) que sirve IRSA: `https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color` y `.../CDS/AllWISE/W2` (respondieron 200 con CORS abierto) | Barnard se mueve ~265″ y WISE 0855 ~122″ desde 2010: **el movimiento se ve a simple vista**, justo en el objeto obligatorio que SPHEREx muestra débil. Cubre la sugerencia de superponer WISE | V2 Juan Pablo | 1–2 | **Prioridad 2, la más rentable de esta tabla.** Si no está a las 05:00, se apaga |
-| 14 | Enlace a WiseView con las coordenadas (`http://byw.tools/wiseview#ra=..&dec=..`) | Herramienta de referencia del campo (ver `biblio/fichas/wiseview-el-precedente.md`); solo es un enlace | V2 Juan Pablo o V1 Antonia | 0,25 | Prioridad 2 |
+| 14 | Enlace a WiseView con las coordenadas (`http://byw.tools/wiseview#ra=..&dec=..`) | Herramienta de referencia del campo (ver `biblio/fichas/wiseview-el-precedente.md`); solo es un enlace | **V1 Antonia** (se le saca a V2, ver abajo) | 0,25 | Prioridad 2 |
 | 15 | Curva de brillo ZTF de R Dra (828 puntos; sin CORS, hay que pasarla a un JSON estático) | Llena el hueco de las variables: hoy no hay curva de brillo | C Mauricio o D2 Bryan, solo si las tareas 1–3 ya están | 1–3 | Opcional; si se hace, citar ZTF |
 | — | Espectro JWST NIRSpec PRISM de WISE 0855 (MAST, Luhman et al. 2024; sin CORS) | Bonito sobre el espectro de SPHEREx | — | 2–3 | **Se recorta**: depende de `/api/spectrum`, que también se recorta |
 | — | NEOSSat de la CSA (recurso socio oficial; 641 observaciones de Barnard, 2018–2019) | Es el recurso socio del desafío | — | alto | **Se recorta**: bajar los archivos falló dos veces. Se puede nombrar en el pitch como siguiente paso |
@@ -123,7 +139,7 @@ y en el formulario (tarea #12).
 
 `/api/spectrum` en el servidor (el plazo de las 04:00 de `docs/pedidos` se adelanta: queda fuera ya) · suma de
 todas las visitas de un detector · recuadro «Contaminación» · traducción a 5 idiomas y sección educativa · Spherix
-con un modelo de lenguaje · conectar `BlinkPanel` al backend oficial · espectro JWST y NEOSSat. Pueden ir al pitch
+con un modelo de lenguaje · conectar `BlinkPanel` al backend oficial · espectro JWST y NEOSSat · sumar los canales elegidos en el acordeón · sonido del Prisma. Pueden ir al pitch
 como «siguiente paso».
 
 ---
