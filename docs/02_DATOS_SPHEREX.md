@@ -352,13 +352,13 @@ calibración. Detalles en [`../biblio/README.md`](../biblio/README.md).
 
 Esto es lo que hay que comprobar con datos reales antes de decidir nada:
 
-- [ ] Una consulta SIA2 a `spherex_dr1` sobre WISE 0855 devuelve filas. Anotar cuántas.
-- [ ] Lo mismo sobre `spherex_qr3`. Anotar cuántas y si se solapan con las anteriores.
-- [ ] ¿Cuántas épocas distintas hay para un campo típico? Esto decide si el "video" tiene 5 o 50 fotogramas.
-- [ ] Un cutout de `size=0.1` se baja en menos de N segundos. Medirlo. **Decide si hace falta caché o cola.**
-- [ ] Abrir el MEF recortado y confirmar las 6 extensiones.
-- [ ] Leer `WCS-WAVE` de dos épocas distintas del mismo campo. **¿Cuánto cambia la λ?** (sección 2).
-- [ ] ¿El cubo HiPS de DR1 se carga en Aladin Lite apuntando al directorio de IRSA? Si sí, hay vía rápida.
-- [ ] ¿IRSA responde con CORS a una petición desde el navegador? Si no, **todo pasa por el backend**.
+- [x] Una consulta SIA2 a `spherex_dr1` sobre WISE 0855 devuelve filas. Anotar cuántas. **Sí: 258 archivos** (`docs/09` §1).
+- [x] Lo mismo sobre `spherex_qr3`. Anotar cuántas y si se solapan con las anteriores. **0 filas para WISE 0855; no se repiten archivos entre las dos** (`docs/09` §1).
+- [x] ¿Cuántas épocas distintas hay para un campo típico? Esto decide si el "video" tiene 5 o 50 fotogramas. **3-4 barridos por zona, base de 1,0-1,4 años** (`docs/09` §1).
+- [x] Un cutout de `size=0.1` se baja en menos de N segundos. Medirlo. **Decide si hace falta caché o cola.** *(Medido: mediana 7,3 s, p90 10,8 s, máx. 29 s, ~3,9 MB; hace falta caché; `docs/09` §6.)*
+- [ ] Abrir el MEF recortado y confirmar las 6 extensiones. *(Sin verificar en el EDA.)*
+- [x] Leer `WCS-WAVE` de dos épocas distintas del mismo campo. **¿Cuánto cambia la λ?** (sección 2). **~16 anchos de banda dentro de un detector** (`docs/09` §2).
+- [x] ¿El cubo HiPS de DR1 se carga en Aladin Lite apuntando al directorio de IRSA? Si sí, hay vía rápida. **Sí, el HiPS PNG de `/data/hips/SPHEREx/spherex_allsky_cube` (no el directorio `ibe/`).**
+- [x] ¿IRSA responde con CORS a una petición desde el navegador? Si no, **todo pasa por el backend**. **No: solo el HiPS tiene CORS; SIA2 y cutouts pasan por el backend** (`docs/09` §6).
 
-Las dos últimas son las que más pueden cambiar la arquitectura. Hacerlas primero.
+*Respondido el 14-nov en [`09_EDA_HALLAZGOS.md`](09_EDA_HALLAZGOS.md). Queda abierta solo la casilla de las 6 extensiones.*
