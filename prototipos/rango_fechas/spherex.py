@@ -122,9 +122,13 @@ def _buscar_sin_cache(ra: float, dec: float, banda: int, inicio: str, fin: str) 
             "BAND": f"{(lo + 0.01) * 1e-6} {(hi - 0.01) * 1e-6}",
             "TIME": f"{t0} {t1}",
         }
-        r = _cliente.get(SIA_URL, params=params)
-        r.raise_for_status()
-        return col, r.content
+        for intento in range(REINTENTOS):
+            r = _cliente.get(SIA_URL, params=params)
+            if r.status_code in (429, 500, 502, 503, 504) and intento < REINTENTOS - 1:
+                time.sleep(2 * 2**intento)  # IRSA dio 502 "Proxy Error" en SIA2 el 14-nov-2026
+                continue
+            r.raise_for_status()
+            return col, r.content
 
     with ThreadPoolExecutor(len(COLECCIONES)) as ex:
         respuestas = list(ex.map(una, COLECCIONES))
