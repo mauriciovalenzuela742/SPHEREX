@@ -155,7 +155,7 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
     <>
       <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" />
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 6, marginTop: 6 }}>
-        <ControlEpocas aladin={listo ? aladin.current : null} />
+        <ControlEpocas aladin={listo ? aladin.current : null} ra={ra} dec={dec} fovDeg={fovDeg} />
         <button
           type="button"
           aria-pressed={mostrarCatalogos}
