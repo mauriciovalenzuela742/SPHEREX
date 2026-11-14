@@ -18,12 +18,17 @@ import { crearRepartidor, type Suscribir } from "./eventos";
 import ControlEpocas from "./Epocas";
 import SelectorLambda from "./SelectorLambda";
 import { ponerPlano, SURVEY_SPHEREX } from "./planos";
+import { epocaDeFecha } from "./propagacion";
 
 // Visor.tsx importa planoDeBanda desde aquí: se mantiene la exportación.
 export { planoDeBanda } from "./planos";
 
-/** Época por defecto de la vista (año juliano decimal). */
-export const EPOCA_POR_DEFECTO = 2026.0;
+/**
+ * Época por defecto de la vista (año juliano decimal): la de hoy, calculada una vez al cargar el módulo.
+ * Así la marca del objeto cae en el centro que ponen los botones de Visor, que usan `posicionActual()`
+ * (también la fecha de hoy). Antes era 2026.0 fijo y la marca quedaba corrida 7–9″ (Barnard, WISE 0855).
+ */
+export const EPOCA_POR_DEFECTO = epocaDeFecha(new Date());
 
 type Props = {
   ra: number;
@@ -33,7 +38,7 @@ type Props = {
   plano: number;
   /** Lado del recorte en grados. Si no llega, se estima como fovDeg/4 (lo que hace hoy Visor). */
   size?: number;
-  /** Época de la vista, en años julianos decimales. Por defecto 2026.0. */
+  /** Época de la vista, en años julianos decimales. Por defecto, la de hoy (`EPOCA_POR_DEFECTO`). */
   epoca?: number;
   /** Se llama una vez, cuando Aladin está listo. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

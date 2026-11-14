@@ -3,10 +3,11 @@
  * Hoy: controles conectados a la URL + cielo de SPHEREx en Aladin (Vía A).
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
+import { useRef } from "react";
 import AladinView, { planoDeBanda } from "../sky/AladinView";
 import { CAMPOS, posicionActual } from "../content/campos";
 import { textos } from "../content/textos";
-import type { Estado } from "../state/url";
+import { TAMANOS, type Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
 import Explorador from "../explorador/Explorador";
@@ -29,6 +30,15 @@ export default function Visor({ estado, set, asistido }: Props) {
   const enMision = Boolean(estado.mision);
   // Un solo origen de datos para el Explorador (tiempo) y el Prisma (colores).
   const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, !enMision);
+  // El cielo solo se reencuadra cuando cambia la posición o la dimensión. Si la persona alejó el mapa a mano,
+  // volver a elegir la misma dimensión no cambia nada: este botón lo reencuadra.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const aladin = useRef<any>(null);
+  const fovDeg = Math.max(estado.size * 4, 0.3);
+  const encuadrar = () => {
+    aladin.current?.gotoRaDec(estado.ra, estado.dec);
+    aladin.current?.setFoV(fovDeg);
+  };
   return (
     <section className="visor">
       <div className="barra" data-tour="busqueda">
@@ -43,7 +53,7 @@ export default function Visor({ estado, set, asistido }: Props) {
         <label>
           Dimensión (°)
           <select value={estado.size} onChange={(e) => set({ size: Number(e.target.value) })}>
-            {[0.05, 0.1, 0.2, 0.5, 1].map((s) => (
+            {TAMANOS.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
@@ -73,11 +83,20 @@ export default function Visor({ estado, set, asistido }: Props) {
 
       <div className={enMision ? "cuerpo cuerpo-mision" : "cuerpo"}>
         <div className="principal">
+          {/* Arriba del mapa: así se ve justo después de escribir A.R./Dec o elegir la dimensión. */}
+          <button
+            className="encuadrar"
+            onClick={encuadrar}
+            title={`Vuelve al objeto y a la dimensión elegida (${estado.size}°)`}
+          >
+            ⤢ Encuadrar el recorte
+          </button>
           <AladinView
             ra={estado.ra}
             dec={estado.dec}
-            fovDeg={Math.max(estado.size * 4, 0.3)}
+            fovDeg={fovDeg}
             plano={planoDeBanda(estado.band)}
+            onReady={(a) => (aladin.current = a)}
           />
           <p className="quien">
             Cielo: cubo SPHEREx DR1 de IRSA (mosaico de todas las épocas, sin eje de tiempo). Banda {estado.band === "all" ? "D2" : `D${estado.band}`}, canal central.

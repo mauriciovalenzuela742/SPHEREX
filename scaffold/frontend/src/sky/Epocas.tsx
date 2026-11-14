@@ -1,5 +1,5 @@
 /**
- * Parpadeo entre épocas: SPHEREx (2025–26) contra 2MASS (~1999) o AllWISE (2010). Dueño: Juan Pablo (V2).
+ * Parpadeo entre épocas: SPHEREx (2025–26) contra 2MASS (1997–2001) o AllWISE (~2010). Dueño: Juan Pablo (V2).
  *
  * Cómo funciona: el cubo de SPHEREx se queda como capa BASE de Aladin, sin tocarlo, así que el plano de λ
  * (`ponerPlano`) y el deslizador siguen igual. Cada época antigua es una capa de imagen SUPERPUESTA
@@ -25,8 +25,10 @@ type EpocaAntigua = {
   urls: string[];
 };
 
-// Fechas desde t_min / t_max de cada `properties` (MJD → fecha, calculado el 14-nov-2026):
-// 2MASS 50600–51941 = 1997-06-01 a 2001-02-01; AllWISE W2 55378–55414 = 2010-07-01 a 2010-08-06.
+// 2MASS: t_min / t_max de su `properties` (MJD 50600–51941 = 1997-06-01 a 2001-02-01, calculado el 14-nov-2026);
+// la toma de cada objeto cae en ese rango (Barnard 2000,4; WISE 0855 1999,0).
+// AllWISE: se rotula «época ~2010». El t_min / t_max de su `properties` (MJD 55378–55414) NO es el periodo
+// de observación de AllWISE, así que no se usa para dar fechas.
 const EPOCAS: EpocaAntigua[] = [
   {
     id: "allwise",
@@ -37,7 +39,7 @@ const EPOCAS: EpocaAntigua[] = [
   },
   {
     id: "2mass",
-    boton: "2MASS ~1999",
+    boton: "2MASS ~2000",
     rotulo: "2MASS color J·H·K · 1997–2001",
     atribucion: "2MASS: UMass/IPAC-Caltech (NASA/NSF)",
     urls: ["https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color", "https://skies.esac.esa.int/2MASSColor"],
@@ -197,6 +199,11 @@ export default function ControlEpocas({ aladin }: Props) {
       {error && (
         <span role="alert" style={{ color: "var(--acento)", fontSize: "0.85rem" }}>
           {error}
+        </span>
+      )}
+      {elegida === "2mass" && (
+        <span style={{ color: "var(--suave)", fontSize: "0.85rem", flexBasis: "100%" }}>
+          En 2MASS no se ven objetos muy fríos como WISE 0855: compara con AllWISE.
         </span>
       )}
       <span style={{ color: "var(--suave)", fontSize: "0.75rem", flexBasis: "100%" }}>{atribuciones}</span>

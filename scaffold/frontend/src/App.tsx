@@ -41,7 +41,7 @@ export default function App() {
         <button className="marca" onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>
           {textos.titulo}
         </button>
-        <span className="etiqueta">NASA Space Apps Challenge 2026</span>
+        <span className="etiqueta">NASA Space Apps 2026</span>
         <button className="hamburguesa" data-tour="menu" aria-label="Menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>
           ☰
         </button>
