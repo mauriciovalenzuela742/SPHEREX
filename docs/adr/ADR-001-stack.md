@@ -1,12 +1,12 @@
 # ADR-001 — Stack del proyecto
 
 - **Fecha:** 2026-11-14 (propuesta pre-evento)
-- **Estado:** **propuesta** — se confirma o se corrige en la hora 1 del evento
-- **Decide:** por firmar en la hora 0
+- **Estado:** **propuesta**, con la actualización del 14-nov (abajo). **Pendiente de firma de C (Mauricio).**
+- **Decide:** C (Mauricio); pendiente de firma
 
 ## Contexto
 
-Hay que construir una herramienta web pública en ~24 horas, con cuatro personas que programan y sus
+Hay que construir una herramienta web pública en ~24 horas, con seis personas que programan y sus
 agentes. Los datos están en el archivo IRSA/IPAC y las bibliotecas que saben leerlos
 (`astropy`, `pyvo`, `astroquery`) existen **solo en Python**. El enunciado sugiere explícitamente
 Astropy y Aladin.
@@ -14,7 +14,7 @@ Astropy y Aladin.
 Restricciones:
 
 - 24 horas y una hora de cierre de entregas fija.
-- Cuatro personas en paralelo: el trabajo tiene que poder separarse.
+- Seis personas en paralelo: el trabajo tiene que poder separarse.
 - Tiene que quedar una URL pública que el jurado pueda abrir.
 - No hay presupuesto de infraestructura ni GPU utilizable para nada pesado.
 
@@ -37,8 +37,8 @@ Restricciones:
 
 ## Decisión
 
-**Python 3.11 + FastAPI en el backend; React + Vite + TypeScript con Aladin Lite v3 en el frontend.**
-Caché en disco. Frontend estático en un CDN, backend en un contenedor.
+**Python 3.11 + FastAPI en el backend; React + Vite + TypeScript con Aladin Lite 3.8.2 en el frontend.**
+Caché en disco. Frontend en Vercel (decidido el 14-nov). El backend para coordenadas arbitrarias sigue **por decidir** entre Vercel Python Functions y un contenedor, ahora con el tiempo de cutout medido: mediana 7,3 s, p90 10,8 s, máx. 29 s, ~3,9 MB sin importar el tamaño, 503 a ratos (`docs/09` §6). Los 5 campos de prueba se sirven precalculados como estáticos.
 
 El contrato de la API, que es lo que permite trabajar en paralelo, está en
 [`../03_ARQUITECTURA.md`](../03_ARQUITECTURA.md).
@@ -57,5 +57,5 @@ mostrar. Ese es el seguro de esta decisión.
 
 ## Cuándo se revisa
 
-**Hora 3 del evento**, con el checklist de datos de [`../02_DATOS_SPHEREX.md`](../02_DATOS_SPHEREX.md).
+**Hora 3 del evento** (ya medido el 14-nov: ver `docs/09`), con el checklist de datos de [`../02_DATOS_SPHEREX.md`](../02_DATOS_SPHEREX.md).
 Si los cutouts resultan demasiado lentos o IRSA no responde con CORS, se revisa aquí y no después.
