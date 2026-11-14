@@ -85,6 +85,20 @@ El plan es publicar el repositorio con licencia MIT al empezar el evento. Dos cu
   ([`02_DATOS_SPHEREX.md`](02_DATOS_SPHEREX.md) §8).
 - **No versionar datos**: los FITS y los PNG de caché quedan fuera del repositorio.
 
+## Reglas comunicadas en el evento (14-nov-2026)
+
+Dichas en vivo por la organización; no las verificamos contra la página oficial. Si difieren de
+`docs/00_DESAFIO.md` o de la plataforma, manda la plataforma.
+
+1. **Datos:** abiertos de la NASA y de sus agencias socias.
+2. **Cierre de envíos:** 11:00 de la mañana (hora local del evento).
+3. **Qué se sube:** nombre y resumen del proyecto, enlace a la demo final, datos de la NASA y
+   otras fuentes usadas, y cómo se usó IA.
+4. **Criterios del jurado:** impacto, creatividad, validez, relevancia y presentación.
+5. **Despliegue:** Vercel. Pendiente decidir cómo corre el backend; el ADR-001 (frontend
+   estático + backend en contenedor) queda por revisar. Nada se despliega sin aprobación de una
+   persona del equipo.
+
 ---
 
 ## Antes de subir esto a GitHub, revisar
