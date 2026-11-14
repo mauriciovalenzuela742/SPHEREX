@@ -102,7 +102,7 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
 
 > **Hecho en el PR #6 (fusionado el 14-nov):** deslizador de λ sobre los 102 planos (sin 50 y 51), marca
 > del objeto y cuadro del recorte propagados a 2026, capa Gaia DR3 propagada (tope de 300 estrellas) y capa
-> SIMBAD con rótulo al pasar y clic que elige posición. **Falta:** gráfico de bandas (con D2), clic →
+> SIMBAD con rótulo al pasar y clic que elige posición. **Hecho en la rama `v/v2-catwise`, pendiente de PR:** capa CatWISE2020, que marca WISE 0855 a 2,6″ de la posición propagada desde SIMBAD (según V2). **Falta:** gráfico de bandas (con D2), clic →
 > animación recortada, Spherix.
 
 - **El cubo HiPS de IRSA carga en Aladin** y Mauricio ya lo dejó funcionando en `scaffold/frontend/src/sky/AladinView.tsx`
@@ -121,7 +121,7 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
   «propagada». A 2026, WISE 0855 está a 212″ y Barnard a 270″ de esas coordenadas: con recortes de 0,1°
   (medio lado 180″) quedan **fuera del recorte**. Usar posiciones propagadas (el `/api/presets` de la
   rama de Bryan ya las entrega).
-- Demo: los cinco objetos de prueba deben funcionar. WISE 0855 se muestra siempre (con la resta, y con la suma por barrido de D2 cuando exista, más el overlay de CatWISE2020 de V2, ambos pendientes; se dice que en una exposición suelta se ve débil); eps Ind B es donde el movimiento se ve más claro; Barnard se ve pero satura.
+- Demo: los cinco objetos de prueba deben funcionar. WISE 0855 se muestra siempre (con la resta, y con la suma por barrido de D2 cuando exista, más el overlay de CatWISE2020 de V2, hecho en la rama `v/v2-catwise` y pendiente de PR; se dice que en una exposición suelta se ve débil); eps Ind B es donde el movimiento se ve más claro; Barnard se ve pero satura.
 - Las pruebas de D2 de arriba son las de aceptación.
 
 ## N · Javiera — narrativa
