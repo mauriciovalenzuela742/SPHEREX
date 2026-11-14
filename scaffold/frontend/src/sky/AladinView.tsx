@@ -1,73 +1,75 @@
 /**
  * Vía A: cielo de SPHEREx con Aladin Lite v3, sin backend. Dueño: Juan Pablo (V2).
- * Pendiente (V2): cubo HiPS DR1 de IRSA con deslizador de λ, overlay Gaia propagado,
- * burbuja al pasar sobre una estrella, clic → animación recortada.
+ *
+ * Punto de extensión: este componente no conoce el detalle de las capas. Monta las de `capas/index.ts`
+ * (objetivo, Gaia, SIMBAD), el deslizador de λ (`LambdaSlider`) y reparte los eventos de Aladin
+ * (`eventos.ts`). Las piezas se trabajan en sus propios archivos, sin tocar este.
  */
 import { useEffect, useRef, useState } from "react";
 import A from "aladin-lite"; // v3.8.2, fijada en package.json
+import { CAPAS, type ContextoCapa } from "./capas";
+import { crearRepartidor, type Suscribir } from "./eventos";
+import LambdaSlider from "./LambdaSlider";
+import { ponerPlano, SURVEY_SPHEREX } from "./planos";
 
-// Cubo HiPS de SPHEREx DR1 servido por IRSA: 102 planos (uno por canal), CORS abierto.
-// Alternativa (CDS, caído el 14-nov): "CDS/P/SPHEREx/QR2/color".
-const SURVEY_SPHEREX = "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube";
+// Visor.tsx importa planoDeBanda desde aquí: se mantiene la exportación.
+export { planoDeBanda } from "./planos";
 
-/** Plano del cubo para una banda D1–D6: el canal central (17 canales por banda). Los planos 50 y 51 vienen vacíos. */
-export function planoDeBanda(band: string): number {
-  const b = Number(band);
-  return Number.isInteger(b) && b >= 1 && b <= 6 ? 17 * (b - 1) + 8 : 25;
-}
+/** Época por defecto de la vista (año juliano decimal). */
+export const EPOCA_POR_DEFECTO = 2026.0;
 
-type Props = { ra: number; dec: number; fovDeg: number; plano: number };
+type Props = {
+  ra: number;
+  dec: number;
+  fovDeg: number;
+  /** Plano del cubo pedido desde fuera (p. ej. por la banda). El deslizador puede cambiarlo localmente. */
+  plano: number;
+  /** Lado del recorte en grados. Si no llega, se estima como fovDeg/4 (lo que hace hoy Visor). */
+  size?: number;
+  /** Época de la vista, en años julianos decimales. Por defecto 2026.0. */
+  epoca?: number;
+  /** Se llama una vez, cuando Aladin está listo. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onReady?: (aladin: any) => void;
+  /** Clic en el cielo (o en una estrella): posición elegida, en grados ICRS. */
+  onSelect?: (ra: number, dec: number) => void;
+};
 
-/**
- * setSliceNumber solo funciona cuando la capa ya está agregada (sus propiedades cargan en asíncrono),
- * y al agregarse Aladin la deja en el «primer plano» del cubo, que es el 50 (vacío). Por eso se reintenta
- * hasta que la capa esté lista y el plano quede puesto. Devuelve una función para cancelar.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ponerPlano(aladin: any, plano: number): () => void {
-  let intentos = 0;
-  const id = window.setInterval(() => {
-    const capa = aladin?.getBaseImageLayer?.();
-    intentos += 1;
-    if (capa?.added && capa.cubeDepth && capa.emMin && capa.emMax) {
-      // setSliceNumber de Aladin 3.8.2 interpola en λ, pero el motor elige el plano lineal en frecuencia:
-      // pedir 59 trae el plano 9. Se calcula la frecuencia del centro del plano deseado y se pasa su λ.
-      const C = 299792458;
-      const fMin = C / capa.emMax;
-      const fMax = C / capa.emMin;
-      const f = fMin + ((plano + 0.5) / capa.cubeDepth) * (fMax - fMin);
-      capa.setFrequency({ value: C / f, unit: "m" });
-      if (intentos > 4) window.clearInterval(id);
-    }
-    if (intentos > 60) window.clearInterval(id); // ~15 s
-  }, 250);
-  return () => window.clearInterval(id);
-}
-
-export default function AladinView({ ra, dec, fovDeg, plano }: Props) {
+export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA_POR_DEFECTO, onReady, onSelect }: Props) {
   const div = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aladin = useRef<any>(null);
-
+  const [listo, setListo] = useState<{ on: Suscribir } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [planoActivo, setPlanoActivo] = useState(plano);
+
+  // Las funciones de props pueden cambiar en cada render: se guardan en refs para no remontar capas.
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
 
   useEffect(() => {
     let cancel = false;
     if (!div.current) return;
-    A.init.then(() => {
-      if (cancel || !div.current) return;
-      aladin.current = A.aladin(div.current, {
-        survey: SURVEY_SPHEREX,
-        target: `${ra} ${dec}`,
-        fov: fovDeg,
-        cooFrame: "ICRS",
-        showReticle: true,
-        showZoomControl: true,
-        showFullscreenControl: true,
-        showLayersControl: true,
-        showCooGridControl: true,
-      });
-    }).catch((e: unknown) => setError(String(e)));
+    A.init
+      .then(() => {
+        if (cancel || !div.current) return;
+        aladin.current = A.aladin(div.current, {
+          survey: SURVEY_SPHEREX,
+          target: `${ra} ${dec}`,
+          fov: fovDeg,
+          cooFrame: "ICRS",
+          showReticle: true,
+          showZoomControl: true,
+          showFullscreenControl: true,
+          showLayersControl: true,
+          showCooGridControl: true,
+        });
+        setListo({ on: crearRepartidor(aladin.current) });
+        onReadyRef.current?.(aladin.current);
+      })
+      .catch((e: unknown) => setError(String(e)));
     return () => {
       cancel = true;
     };
@@ -79,23 +81,53 @@ export default function AladinView({ ra, dec, fovDeg, plano }: Props) {
     aladin.current?.setFoV(fovDeg);
   }, [ra, dec, fovDeg]);
 
+  // Si cambia el plano pedido desde fuera (la banda), manda sobre lo elegido en el deslizador.
+  useEffect(() => setPlanoActivo(plano), [plano]);
+
   useEffect(() => {
-    // El intervalo espera también a que Aladin exista (primer render).
-    let cancelar: () => void = () => {};
-    const espera = window.setInterval(() => {
-      if (aladin.current) {
-        window.clearInterval(espera);
-        cancelar = ponerPlano(aladin.current, plano);
-      }
-    }, 100);
-    return () => {
-      window.clearInterval(espera);
-      cancelar();
+    if (!listo) return;
+    return ponerPlano(aladin.current, planoActivo);
+  }, [listo, planoActivo]);
+
+  // Capas: se desmontan y vuelven a montar cuando cambia la posición, el recorte o la época.
+  const lado = size ?? fovDeg / 4;
+  useEffect(() => {
+    if (!listo) return;
+    const ctx: ContextoCapa = {
+      ra,
+      dec,
+      size: lado,
+      epoca,
+      on: listo.on,
+      onSelect: (r, d) => onSelectRef.current?.(r, d),
     };
-  }, [plano]);
+    const desmontar: (() => void)[] = [];
+    for (const capa of CAPAS) {
+      try {
+        const fin = capa.montar(aladin.current, ctx);
+        if (fin) desmontar.push(fin);
+      } catch (e) {
+        console.error(`[sky] no se pudo montar la capa «${capa.id}»:`, e);
+      }
+    }
+    return () => {
+      for (const fin of desmontar) {
+        try {
+          fin();
+        } catch (e) {
+          console.error("[sky] error al desmontar una capa:", e);
+        }
+      }
+    };
+  }, [listo, ra, dec, lado, epoca]);
 
   if (error) {
     return <div className="vacio">No se pudo iniciar el mapa del cielo: {error}</div>;
   }
-  return <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" />;
+  return (
+    <>
+      <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" />
+      <LambdaSlider plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
+    </>
+  );
 }
