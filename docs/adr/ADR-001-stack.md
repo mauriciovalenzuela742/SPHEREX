@@ -55,7 +55,7 @@ Reglas que salen de esto:
   **comprobar el máximo vigente del plan Hobby en la documentación de Vercel** (D1, en el primer despliegue de `api/`).
 - **Objetos de la demo:** los cinco objetos de prueba deben funcionar. WISE 0855 es caso obligatorio y se
   muestra siempre, diciendo que en una exposición suelta se ve débil (su movimiento se ve con la resta y, cuando
-  exista, con la suma por barrido de D2 y el overlay de CatWISE2020 de V2, ambos pendientes). eps Ind B es donde el
+  exista, con la suma por barrido de D2, pendiente, y el overlay de CatWISE2020 de V2, hecho en la rama `v/v2-catwise` y pendiente de PR). eps Ind B es donde el
   movimiento se ve más claro; Barnard se ve pero satura. Centrar siempre en la **posición propagada**, no en la J2000.
 - **Despliegues:** Vercel Hobby solo construye commits de Mauricio; producción sale de sus merges.
   Ver README §2.
