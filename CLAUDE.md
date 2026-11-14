@@ -12,6 +12,7 @@ el glosario astronómico. Este archivo solo añade lo específico de Claude Code
 | `coordenadas-astro` | RA/Dec, sexagesimal ↔ grados, WCS, campos de prueba, errores clásicos |
 | `demo-y-pitch` | Grabar la demo de 2 minutos y armar el guion del pitch |
 | `entrega-nasa` | Checklist de entrega en la plataforma, incluida la declaración de uso de IA |
+| `astropy`, `matplotlib`, `scikit-learn` | Genéricas (K-Dense AI); ver README §4 |
 
 No hace falta invocarlas: la descripción de cada una las dispara. Si una no se activa cuando
 debería, dilo y ajustamos la descripción.
