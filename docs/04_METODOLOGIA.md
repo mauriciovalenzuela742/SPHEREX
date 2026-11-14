@@ -157,8 +157,8 @@ Son las únicas cosas que no se negocian, pase lo que pase con el código:
 | **T − 4 h** | **Demo grabada.** El vídeo tiene que estar listo aunque la aplicación siga mejorando. Si después mejora, se regraba. Si no da tiempo, ya hay vídeo |
 | **T − 2 h** | **Entrega subida.** Formulario completo, enlaces puestos, declaración de uso de IA escrita. Si queda tiempo, se edita; pero **ya está entregado** |
 
-`T` es la hora de cierre de entregas del evento local. En el evento de Santiago, la organización
-comunicó en vivo (14-nov) que es a las **11:00 del domingo** ([`08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md)).
+`T` es la hora de cierre de entregas del evento local. En el evento de Santiago, JP confirmó el 14-nov
+(comunicado en vivo por la organización) que es a las **11:00 del domingo 15** ([`08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md)).
 Es el número que ordena todo lo demás.
 
 El proyecto que gana no es el que tiene más código. Es el que llega entero.
