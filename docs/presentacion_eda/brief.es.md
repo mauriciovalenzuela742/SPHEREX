@@ -9,7 +9,7 @@ Respuestas a las preguntas iniciales (skill presentation-kit), 14-nov-2026.
 - [x] HTML, con animaciones
 
 ## Audiencia y mensaje
-- Audiencia: el equipo del hackatón, 6 personas. Una de 17 años sin experiencia en astronomía; un informático
+- Audiencia: el equipo del hackatón, 6 personas. Una integrante sin experiencia en astronomía; un informático
   con más experiencia en computación que en astronomía; el resto conoce astronomía. El resto del equipo está
   diseñando el frontend mientras tanto: la charla tiene que dejar a todos entendiendo los datos.
 - La frase que debe recordar en una semana: «Las estrellas más rápidas se mueven 1–2 píxeles en un año de

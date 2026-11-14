@@ -89,6 +89,9 @@ con `wavelength_um` y `flagged_fraction` por fotograma.
 
 ## V1 · Antonia — visor del blink
 
+Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQUETA_V1.md`](diseno/REVISION_MAQUETA_V1.md).
+
+
 - La **resta** es la vista que muestra el movimiento: el blink solo de 1–2 px apenas se nota. Hace
   falta zoom (el EDA usó recortes de 18×18 px ampliados).
 - Mostrar siempre la **fecha y la λ** de cada fotograma: explican por qué cambia el brillo.
