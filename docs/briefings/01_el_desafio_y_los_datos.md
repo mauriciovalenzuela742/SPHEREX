@@ -250,9 +250,11 @@ un error de dieciséis años de movimiento propio.
 
 ## 11. Los cinco objetos de prueba, y qué demuestra cada uno
 
-**WISE 0855** es la demo principal: movimiento propio altísimo, uno de los objetos más fríos
-conocidos fuera del sistema solar y muy cercano. Debería lucir en las bandas largas y estar casi
-ausente en las cortas.
+**WISE 0855** es un caso obligatorio, uno de los objetos de prueba de la organización, y se muestra
+siempre: movimiento propio altísimo, uno de los objetos más fríos conocidos fuera del sistema solar y
+muy cercano. Debería lucir en las bandas largas y estar casi ausente en las cortas. Con honestidad: en
+una exposición suelta se ve débil; su movimiento se ve con la resta de la primera y la última imagen y,
+cuando exista, con la suma por barrido. En eps Ind B el movimiento se ve más claro.
 
 **La estrella de Barnard** tiene el mayor movimiento propio conocido de cualquier estrella. Es el
 caso de control: si en Barnard no se ve movimiento, el problema es del visor, no del objeto.
