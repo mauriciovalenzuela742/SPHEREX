@@ -24,7 +24,7 @@ Restricciones:
 |---|---|---|---|
 | **Python/FastAPI + React/Vite + Aladin Lite** | Separa backend y frontend, dos personas en paralelo desde la hora 1; se ve como una herramienta pública; Aladin resuelve el cielo | Dos despliegues, CORS, un contrato que mantener | Medio |
 | Streamlit | Todo en Python, se levanta en minutos | Difícil de pulir; no se ve como herramienta pública; el parpadeo fluido cuesta | Bajo |
-| Front estático + Aladin Lite, sin backend | Despliegue trivial, nada que mantener | **Depende de que IRSA responda con CORS**; no se puede recortar, normalizar ni restar del lado del servidor | Bajo, pero con un riesgo que no controlamos |
+| Front estático + Aladin Lite, sin backend | Despliegue trivial, nada que mantener | **Depende de que IRSA responda con CORS** (descartada el 14-nov: IRSA no da CORS fuera del HiPS, `docs/09`); no se puede recortar, normalizar ni restar del lado del servidor | Bajo, pero con un riesgo que no controlamos |
 
 ## Actualización 14-nov-2026 (equipo, en el evento)
 
