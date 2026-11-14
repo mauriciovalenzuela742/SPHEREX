@@ -9,6 +9,10 @@ Orden: por cuánto duele, no por probabilidad.
 
 ## R1 · Los cutouts de IRSA son demasiado lentos para una herramienta interactiva
 
+> **Estado 14-nov: se materializó.** Mediana 7,3 s, p90 10,8 s, máximo 29 s, ~3,9 MB sin importar el
+> tamaño, 503 a ratos (`docs/09` §6). Mitigación decidida: caché + 5 campos precalculados como estáticos
+> (ADR-001, actualización 14-nov). Falta decidir dónde corre `/api` para coordenadas arbitrarias (C).
+
 **Impacto: crítico.** Es el supuesto sobre el que descansa todo el proyecto.
 
 Un MEF completo pesa ~70 MB; el servicio de cutouts existe precisamente para no bajarlos enteros,
@@ -26,6 +30,9 @@ pero no sabemos cuánto tarda **por época** ni qué pasa con 15 peticiones en p
 ---
 
 ## R2 · Las épocas no son comparables entre sí por el filtro lineal variable
+
+> **Estado 14-nov: resuelto en el EDA.** Se eligen épocas a λ igualada (dispersión 0,474 → 0,035 µm en
+> WISE 0855 D5); ver `docs/09` §2. Mostrar la λ por fotograma sigue siendo parte del diseño.
 
 **Impacto: alto.** Es el riesgo más sutil y el que más probablemente arruine el resultado sin que
 nadie entienda por qué.
@@ -46,6 +53,9 @@ el brillo salta sin que nada haya cambiado. Explicado en [`02_DATOS_SPHEREX.md`]
 ---
 
 ## R3 · DR1 acabó de salir y la documentación o los ejemplos no cuadran
+
+> **Ojo con el plan B de más abajo (14-nov):** `spherex_qr3` sola deja a WISE 0855 sin datos (0 filas).
+> Hay que consultar `spherex_dr1` **y** `spherex_qr3` juntas (`docs/09` §1).
 
 **Impacto: medio-alto.** DR1 se publicó en noviembre de 2026, este mismo mes. Los tutoriales que
 circulan apuntan mayormente a QR2, que ya no es buscable por SIA2.
@@ -130,9 +140,12 @@ de video. La arquitectura de [`03_ARQUITECTURA.md`](03_ARQUITECTURA.md) no lo ne
 
 ## R10 · El movimiento es sub-píxel y el parpadeo no impresiona
 
+> **Estado 14-nov: medido.** Base real 1,0-1,4 años; desplazamiento total 1,1-1,8 px (`docs/09` §4).
+> Se adopta el plan B de abajo (primera contra última + resta + zoom).
+
 **Impacto: alto para la demo, medio para el proyecto.** Identificado el 14-nov-2026, antes del evento.
 
-Con una escala de píxel de unos 6,2 arcsec, y SPHEREx barriendo el cielo entero cada 6 meses, el
+Con una escala de píxel de 6,15 arcsec (SIA2; `eda/03_recortes_y_figuras.py:42`), y SPHEREx barriendo el cielo entero cada 6 meses, el
 desplazamiento entre dos barridos consecutivos es de **menos de un píxel incluso para los objetos
 más rápidos del cielo**: 0,84 px para la estrella de Barnard, 0,66 px para WISE 0855, 0,38 px para
 Epsilon Indi B. Con la base temporal completa de la misión se llega a 1-2,5 px.
