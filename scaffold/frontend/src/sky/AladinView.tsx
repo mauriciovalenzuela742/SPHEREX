@@ -8,11 +8,14 @@
  * Los catálogos de referencia (Gaia, CatWISE, SIMBAD) parten ocultos para que el cielo no se vea cargado al
  * abrir; el botón «Mostrar catálogos» los enciende sin volver a consultarlos. La marca del objeto y el cuadro
  * del recorte se ven siempre. El clic en el cielo funciona igual con los catálogos ocultos.
+ *
+ * Junto a ese botón, `ControlEpocas` (Epocas.tsx) superpone 2MASS o AllWISE sobre el cubo y los hace parpadear.
  */
 import { useEffect, useRef, useState } from "react";
 import A from "aladin-lite"; // v3.8.2, fijada en package.json
 import { CAPAS, type ContextoCapa } from "./capas";
 import { crearRepartidor, type Suscribir } from "./eventos";
+import ControlEpocas from "./Epocas";
 import LambdaSlider from "./LambdaSlider";
 import { ponerPlano, SURVEY_SPHEREX } from "./planos";
 
@@ -146,7 +149,8 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
   return (
     <>
       <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" />
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 6 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 6, marginTop: 6 }}>
+        <ControlEpocas aladin={listo ? aladin.current : null} />
         <button
           type="button"
           aria-pressed={mostrarCatalogos}
