@@ -9,7 +9,7 @@
  * Sigue la posición del visor (A.R./Dec/dimensión): botones de objetos, Spherix y la barra de arriba.
  * Dueña de la integración: Antonia (V1). Lógica de datos y render: Bryan (D2).
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { dibujar, type Frame, type Modo } from "./render";
 import { clave, type DatosSpherex } from "./useDatosSpherex";
 import "./explorador.css";
@@ -26,6 +26,18 @@ const LEYENDA: Record<Modo, string> = {
   color: "Primera visita en rojo, la actual en cian. Lo quieto se ve blanco.",
 };
 
+// Pasos de los botones y teclas. Con el touchpad (pellizcar) el zoom es continuo entre el primero y el último.
+const ZOOMS = [1, 2, 4, 8];
+const ZOOM_MIN = ZOOMS[0];
+const ZOOM_MAX = ZOOMS[ZOOMS.length - 1];
+const cambiarZoom = (z: number, paso: 1 | -1) =>
+  paso > 0 ? ZOOMS.find((v) => v > z + 0.01) ?? ZOOM_MAX : [...ZOOMS].reverse().find((v) => v < z - 0.01) ?? ZOOM_MIN;
+const textoZoom = (z: number) => `${Number(z.toFixed(1))}x`.replace(".", ",");
+type Punto = { x: number; y: number };
+const limitar = (p: Punto, z: number) => {
+  const m = (z - 1) / 2; // con zoom z, la imagen sobresale (z−1)/2 del cuadro por cada lado
+  return { x: Math.max(-m, Math.min(m, p.x)), y: Math.max(-m, Math.min(m, p.y)) };
+};
 const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 
 type Props = { datos: DatosSpherex };
@@ -36,6 +48,50 @@ export default function Explorador({ datos }: Props) {
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
   const [suave, setSuave] = useState(false);
+  const [zoom, setZoom] = useState(1); // ampliación hacia la mira: el movimiento es de 1–2 px (docs/09)
+  // Desplazamiento al arrastrar, en fracción del ancho del cuadro. Se limita para no dejar bordes negros.
+  const [pan, setPan] = useState<Punto>({ x: 0, y: 0 });
+  const arrastre = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const caja = useRef<HTMLDivElement>(null);
+  // Copia al día de zoom y pan: el touchpad manda muchos eventos seguidos y cada uno parte del anterior.
+  const vista = useRef({ zoom, pan });
+  vista.current = { zoom, pan };
+  /** Cambia el zoom dejando quieto el punto `s` del cuadro (fracción desde el centro; {0,0} = el centro). */
+  const aplicarZoom = useCallback((nuevo: number, s: Punto = { x: 0, y: 0 }) => {
+    const { zoom: z, pan: p } = vista.current;
+    const nz = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, nuevo));
+    const np = limitar({ x: s.x - ((s.x - p.x) * nz) / z, y: s.y - ((s.y - p.y) * nz) / z }, nz);
+    vista.current = { zoom: nz, pan: np };
+    setZoom(nz);
+    setPan(np);
+  }, []);
+  const mover = useCallback((p: Punto) => {
+    const np = limitar(p, vista.current.zoom);
+    vista.current = { ...vista.current, pan: np };
+    setPan(np);
+  }, []);
+
+  // Touchpad: pellizcar = zoom hacia los dedos (el navegador lo manda como rueda + Ctrl);
+  // dos dedos = mover la imagen (solo con zoom; sin zoom, la página se desplaza como siempre).
+  useEffect(() => {
+    const el = caja.current;
+    if (!el) return;
+    const rueda = (ev: WheelEvent) => {
+      const r = el.getBoundingClientRect();
+      const k = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? r.height : 1; // líneas o páginas → píxeles
+      if (ev.ctrlKey) {
+        ev.preventDefault(); // si no, el navegador amplía toda la página
+        const s = { x: (ev.clientX - r.left) / r.width - 0.5, y: (ev.clientY - r.top) / r.height - 0.5 };
+        aplicarZoom(vista.current.zoom * Math.exp((-ev.deltaY * k) / 100), s);
+      } else if (vista.current.zoom > 1) {
+        ev.preventDefault();
+        const { pan: p } = vista.current;
+        mover({ x: p.x - (ev.deltaX * k) / r.width, y: p.y - (ev.deltaY * k) / r.width });
+      }
+    };
+    el.addEventListener("wheel", rueda, { passive: false }); // passive: false para poder usar preventDefault
+    return () => el.removeEventListener("wheel", rueda);
+  }, [aplicarZoom, mover]);
   const [play, setPlay] = useState(false);
 
   useEffect(() => setPlay(false), [grid]);
@@ -58,6 +114,8 @@ export default function Explorador({ datos }: Props) {
         if (i >= 0 && i < filas.length) irA(filas[i], visitaMasCercana(filas[i], mjdActual));
       }
       if (ev.key === " " && tag !== "BUTTON") { ev.preventDefault(); setPlay((p) => !p); }
+      if (ev.key === "+" || ev.key === "=") aplicarZoom(cambiarZoom(vista.current.zoom, +1));
+      if (ev.key === "-" || ev.key === "_") aplicarZoom(cambiarZoom(vista.current.zoom, -1));
     };
     window.addEventListener("keydown", tecla);
     return () => window.removeEventListener("keydown", tecla);
@@ -79,7 +137,9 @@ export default function Explorador({ datos }: Props) {
 
   const error = errores.current.get(clave(banda, visita));
   const dias = actual && ref0 ? (Date.parse(actual.meta.t) - Date.parse(ref0.meta.t)) / 864e5 : 0;
-  const escalaPct = actual && grid ? (30 / grid.pixel_scale_arcsec / actual.meta.n_px) * 100 : 0;
+  // Barra de escala: 30″ sin zoom; con zoom fuerte, 10″ para que no se salga del cuadro.
+  const escalaArcsec = zoom >= 6 ? 10 : 30;
+  const escalaPct = actual && grid ? (escalaArcsec / grid.pixel_scale_arcsec / actual.meta.n_px) * 100 * zoom : 0;
 
   // ── Línea de tiempo ──
   const pista = useRef<HTMLDivElement>(null);
@@ -112,13 +172,46 @@ export default function Explorador({ datos }: Props) {
           <strong>Explorador SPHEREx</strong>
           <span>Arrastra o pasa el mouse por la línea de tiempo para cambiar la fecha.</span>
         </div>
-        <div className={`exp-lienzo ${suave ? "suave" : ""}`}>
-          <canvas ref={lienzo} width={59} height={59} aria-label={actual ? `Banda ${banda}, ${actual.meta.t.slice(0, 10)}` : "Sin imagen"} />
+        <div
+          ref={caja}
+          className={`exp-lienzo ${suave ? "suave" : ""} ${zoom > 1 ? "movible" : ""} ${arrastre.current ? "arrastrando" : ""}`}
+          onPointerDown={(ev) => {
+            if (zoom <= 1 || (ev.target as HTMLElement).closest("button")) return;
+            ev.currentTarget.setPointerCapture(ev.pointerId);
+            arrastre.current = { x: ev.clientX, y: ev.clientY, px: pan.x, py: pan.y };
+          }}
+          onPointerMove={(ev) => {
+            const a = arrastre.current;
+            if (!a) return;
+            const w = ev.currentTarget.getBoundingClientRect().width;
+            mover({ x: a.px + (ev.clientX - a.x) / w, y: a.py + (ev.clientY - a.y) / w });
+          }}
+          onPointerUp={() => { arrastre.current = null; setPan((p) => ({ ...p })); }}
+          onPointerCancel={() => { arrastre.current = null; }}
+          onDoubleClick={() => mover({ x: 0, y: 0 })}
+          title={zoom > 1 ? "Arrastra (o desliza con dos dedos) para moverte · pellizca para el zoom · doble clic: volver a la mira" : "Pellizca el touchpad o usa + para acercar"}
+        >
+          <canvas
+            ref={lienzo}
+            width={59}
+            height={59}
+            style={{ transform: `translate(${pan.x * 100}%, ${pan.y * 100}%) scale(${zoom})` }}
+            aria-label={actual ? `Banda ${banda}, ${actual.meta.t.slice(0, 10)}, zoom ${textoZoom(zoom)}` : "Sin imagen"}
+          />
           {actual && (
             <>
-              <div className="exp-ret" aria-hidden="true"><i /><i /><i /><i /></div>
-              <div className="exp-escala"><i style={{ width: `${escalaPct}%` }} />30″</div>
+              {/* La mira se mueve con la imagen: sigue marcando el objeto pedido. */}
+              <div className="exp-ret" aria-hidden="true" style={{ left: `${50 + pan.x * 100}%`, top: `${50 + pan.y * 100}%` }}><i /><i /><i /><i /></div>
+              <div className="exp-escala"><i style={{ width: `${escalaPct}%` }} />{escalaArcsec}″</div>
             </>
+          )}
+          {grid && (
+            <div className="exp-zoom" role="group" aria-label="Zoom">
+              <button aria-label="Acercar" title="Acercar (tecla +)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, +1))} disabled={zoom >= ZOOM_MAX}>+</button>
+              <span aria-live="polite">{textoZoom(zoom)}</span>
+              <button aria-label="Alejar" title="Alejar (tecla −)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, -1))} disabled={zoom <= ZOOM_MIN}>−</button>
+              <button aria-label="Volver a la mira" title="Volver a la mira (doble clic)" onClick={() => mover({ x: 0, y: 0 })} disabled={!pan.x && !pan.y}>⌖</button>
+            </div>
           )}
           {grid && banda > 0 && visitas[visita] && (
             <div className="exp-rot">
