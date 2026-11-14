@@ -17,7 +17,7 @@ con datos reales, con tareas concretas y cómo comprobarlas.
 | Agrupar por banda | Además hay que **igualar la λ** entre épocas: dentro de un detector varía ~16 anchos de banda | D1, **D2** |
 | Reproyectar a grilla común | Confirmado e imprescindible: el detector **gira ~180° entre barridos** | **D2** |
 | `flagged_fraction` para «Contaminación» | `FLAGS != 0` marca el 72 % del recorte (bit SOURCE, que no es un error); los píxeles malos son ~4 % | **D2**, C, V1 |
-| WISE 0855 es la demo principal | En una sola exposición casi no se ve. **eps Ind B** muestra el movimiento medido; Barnard se ve pero satura | C, N |
+| WISE 0855 es la demo principal | WISE 0855 es caso obligatorio y se muestra siempre, diciendo que en una sola exposición se ve débil (su movimiento se ve con la resta y con la suma por barrido). **eps Ind B** es donde el movimiento medido se ve más claro; Barnard se ve pero satura | C, N |
 | El movimiento se ve en el blink | Es de **1–2 px en todo el período**: la resta (`diff_first`) es la vista que lo muestra | D2, V1, N |
 
 ## El flujo de datos, de punta a punta
@@ -121,7 +121,7 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
   «propagada». A 2026, WISE 0855 está a 212″ y Barnard a 270″ de esas coordenadas: con recortes de 0,1°
   (medio lado 180″) quedan **fuera del recorte**. Usar posiciones propagadas (el `/api/presets` de la
   rama de Bryan ya las entrega).
-- Demo: eps Ind B (movimiento medido) y Barnard (visible); WISE 0855 cuando exista la suma por barrido.
+- Demo: los cinco objetos de prueba deben funcionar. WISE 0855 se muestra siempre (con la resta, y con la suma por barrido cuando exista; se dice que en una exposición suelta se ve débil); eps Ind B es donde el movimiento se ve más claro; Barnard se ve pero satura.
 - Las pruebas de D2 de arriba son las de aceptación.
 
 ## N · Javiera — narrativa
