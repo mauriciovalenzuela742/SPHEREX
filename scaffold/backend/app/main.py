@@ -72,3 +72,31 @@ def epochs(
         "bands_available": sorted({e["band"] for e in salida if e["band"]}),
         "epochs": salida,
     }
+
+
+@app.get("/api/frames")
+def frames(
+    ra: float = Query(ge=0, lt=360),
+    dec: float = Query(ge=-90, le=90),
+    size: float = Query(0.1, gt=0.005, le=0.5),
+    band: int = Query(4, ge=1, le=6),
+    stretch: str = Query("asinh", pattern="^(asinh|linear)$"),
+    mode: str = Query("zodi_subtracted", pattern="^(zodi_subtracted|raw|diff_first|diff_prev)$"),
+    desde: str | None = Query(None, alias="from"),
+    hasta: str | None = Query(None, alias="to"),
+    per_visit: int = Query(1, ge=1, le=10),
+    budget_s: float = Query(8.0, gt=0, le=55),
+    epochs: str | None = None,
+    vmin: float | None = None,
+    vmax: float | None = None,
+    fast: bool = True,
+) -> dict:
+    """Un fotograma por visita, alineado norte-arriba (D2). Respuesta parcial: ver `pending` (docs/03)."""
+    from app.frames.servicio import fotogramas
+    from app.irsa.descarga import IrsaNoDisponible
+
+    try:
+        return fotogramas(ra, dec, size, band, mode, stretch, desde, hasta, per_visit, budget_s,
+                          [e for e in epochs.split(",") if e] if epochs else None, vmin, vmax, fast)
+    except (cache.FueraDeCache, IrsaNoDisponible) as e:
+        raise HTTPException(status_code=503, detail=f"IRSA no está disponible ahora: {e}") from e
