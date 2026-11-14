@@ -107,6 +107,7 @@ function comandoCampo(t: string, sizeActual: number): Respuesta | undefined {
 
 // ── Preguntas frecuentes ───────────────────────────────────────────────────────────────────────────
 const FAQ: [RegExp, keyof typeof spherix.faq, string[]][] = [
+  [/(prisma|espectro|huella|de que esta hecho|de que estan hechos|composicion|escuchar|sonido)/, "prisma", ["¿Qué son las bandas?", "R Draconis"]],
   [/(que es|que son|cuentame|que hace).*(spherex|esta mision|el telescopio)|^spherex\??$/, "queEsSpherex", ["¿Qué son las bandas?", "Estrella de Barnard"]],
   [/(como (se usa|funciona|uso|lo uso)|ayuda|tutorial|que hago|instrucciones)/, "comoSeUsa", ["¿Qué son las coordenadas?", "Estrella de Barnard"]],
   [/(coordenada|ascension|declinacion)/, "coordenadas", ["269.45 4.77", "¿Qué son las bandas?"]],
