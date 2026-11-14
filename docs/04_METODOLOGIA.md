@@ -8,17 +8,18 @@ una rama `main` rota a las tres de la mañana. Este documento es el acuerdo para
 
 ## Roles
 
-Cuatro roles, cada uno dueño de unos archivos. **Dueño** significa: esa persona decide, los demás
+Cuatro roles, cada uno dueño de unos archivos. (En este equipo de seis, D se parte en D1 acceso y D2
+fotogramas, y V en V1 blink y V2 cielo; ver [`README.md`](../README.md) §3.) **Dueño** significa: esa persona decide, los demás
 piden. No significa que trabaje sola.
 
 ### D — Datos (backend / IRSA)
-Dueño de `backend/app/irsa/`, `backend/app/cache/`.
+Dueño de `scaffold/backend/app/irsa/`, `scaffold/backend/app/cache/`.
 Consulta SIA2, baja cutouts, lee los MEF, agrupa por banda, resuelve el WCS y las longitudes de onda.
 Es el camino crítico: **si esto no funciona, no hay proyecto.**
 Perfil que calza: quien tenga más soltura con Python científico y con astronomía observacional.
 
 ### V — Visor (frontend)
-Dueño de `frontend/src/`.
+Dueño de `scaffold/frontend/src/`.
 Aladin Lite, el panel de blink, los controles (estiramiento, color, fps), la URL consultable.
 Perfil que calza: quien tenga más soltura con web moderna.
 
@@ -156,7 +157,8 @@ Son las únicas cosas que no se negocian, pase lo que pase con el código:
 | **T − 4 h** | **Demo grabada.** El vídeo tiene que estar listo aunque la aplicación siga mejorando. Si después mejora, se regraba. Si no da tiempo, ya hay vídeo |
 | **T − 2 h** | **Entrega subida.** Formulario completo, enlaces puestos, declaración de uso de IA escrita. Si queda tiempo, se edita; pero **ya está entregado** |
 
-`T` es la hora de cierre de entregas del evento local. En el evento de Santiago está anunciado a las
-**13:00 del domingo**. **Confírmalo el primer día**: es el número que ordena todo lo demás.
+`T` es la hora de cierre de entregas del evento local. En el evento de Santiago, la organización
+comunicó en vivo (14-nov) que es a las **11:00 del domingo** ([`08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md)).
+Es el número que ordena todo lo demás.
 
 El proyecto que gana no es el que tiene más código. Es el que llega entero.
