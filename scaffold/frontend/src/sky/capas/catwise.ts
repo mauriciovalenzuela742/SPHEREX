@@ -121,6 +121,7 @@ export const capaCatwise: Capa = {
     const radio = Math.max(ctx.size, RADIO_MIN_GRADOS);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let catalogo: any = null;
+    let bajaCatalogo: (() => void) | null = null;
 
     consultar(ctx.ra, ctx.dec, radio, control.signal)
       .then((moviles) => {
@@ -132,6 +133,7 @@ export const capaCatwise: Capa = {
           shape: "triangle",
         });
         aladin.addCatalog(catalogo);
+        bajaCatalogo = ctx.registrarCatalogo(catalogo);
         catalogo.addSources(
           moviles.map((m) => {
             // pm en ″/año → mas/año para propagar().
@@ -153,6 +155,7 @@ export const capaCatwise: Capa = {
 
     return () => {
       control.abort();
+      bajaCatalogo?.();
       if (catalogo) {
         try {
           aladin.removeLayer(catalogo);

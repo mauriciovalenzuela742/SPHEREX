@@ -128,6 +128,7 @@ export const capaGaia: Capa = {
     const radio = Math.max(ctx.size, RADIO_MIN_GRADOS);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let catalogo: any = null;
+    let bajaCatalogo: (() => void) | null = null;
 
     consultar(ctx.ra, ctx.dec, radio, control.signal)
       .then((estrellas) => {
@@ -154,6 +155,7 @@ export const capaGaia: Capa = {
           });
         });
         aladin.addCatalog(catalogo);
+        bajaCatalogo = ctx.registrarCatalogo(catalogo);
         catalogo.addSources(fuentes);
         console.info(`[gaia] ${fuentes.length} estrellas de Gaia DR3 (radio ${radio}°)`);
       })
@@ -164,6 +166,7 @@ export const capaGaia: Capa = {
 
     return () => {
       control.abort();
+      bajaCatalogo?.();
       if (catalogo) {
         try {
           aladin.removeLayer(catalogo);

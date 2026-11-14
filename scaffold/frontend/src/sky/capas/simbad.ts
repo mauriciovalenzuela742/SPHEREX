@@ -116,6 +116,7 @@ export const capaSimbad: Capa = {
 
     const catalogo = A.catalog({ name: "SIMBAD", sourceSize: 12, color: "#ffb000", hoverColor: "#ff4040" });
     aladin.addCatalog(catalogo);
+    const bajaCatalogo = ctx.registrarCatalogo(catalogo);
 
     pedirSimbad(ctx.ra, ctx.dec, radio, fin.signal)
       .then((objetos) => {
@@ -202,6 +203,7 @@ export const capaSimbad: Capa = {
       quitarZoom();
       quitarObjClic();
       quitarClic();
+      bajaCatalogo();
       rotulo?.remove();
       try {
         aladin.removeLayer(catalogo);
