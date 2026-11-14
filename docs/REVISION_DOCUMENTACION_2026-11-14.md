@@ -5,6 +5,8 @@ lectores en paralelo (cada uno con un grupo de documentos) y consolidada aquí. 
 cita archivo y línea del documento y el dato que lo contradice. Las líneas se comprobaron a mano en los
 documentos que se corrigieron; donde un lector dio un número de línea que no calzaba, se usó el real.
 
+> **Nota de vigencia (14-nov, tarde):** después de esta revisión `equipo/main` avanzó (PR #7 «campos centrados en su posición de hoy» y PR #8 «Spherix»). Por eso la fila 12 y la tabla de código pendiente sobre `campos.ts` y `url.ts` hay que releerlas contra `b115fc0`: `campos.ts` ya trae `posicionActual()` y documenta que `ra`/`dec` son J2000. Además, `data/campos_de_prueba.yml` y `docs/adr/ADR-001-stack.md` cambiaron en ambos lados: **al unir esta rama con `equipo/main` hay conflicto en esos dos archivos** y hay que resolverlo a mano (conservar lo que Mauricio escribió en el ADR y mi marca «pendiente de firma de C»).
+
 ## (a) Resumen en 5 líneas
 
 1. La documentación se quedó atrás en cuatro cosas: **la hora de cierre** (varios documentos dicen 13:00; la organización dijo 11:00), **el cubo del cielo** (se confunden dos productos distintos de DR1), **lo que ya está hecho** (siguen como «pendiente» el visor, Vercel, el PR #6) y **el tamaño del equipo** (seis, no cuatro).
