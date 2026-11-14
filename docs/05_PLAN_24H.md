@@ -110,7 +110,8 @@ termina o se saca. Una funcionalidad a medias resta: el jurado hace clic justo a
 ## Bloque 4 · T − 6 h a T − 4 h · **Pulir y verificar**
 
 - **C corre los cinco campos de prueba, uno por uno, en la aplicación desplegada.** No en local.
-- Precalentar la caché de los cinco. La demo nunca se hace con una consulta fría.
+- Precalentar la caché de los cinco. La demo nunca se hace con una consulta fría. Hecho como paquete
+  versionado: `python -m app.irsa.precalcular_demo` → `data/demo/` (ver `data/README.md`).
 - Estados vacíos y de error: ¿qué ve el usuario si no hay datos en esa coordenada? ¿Si IRSA no responde?
   **El jurado va a escribir coordenadas al azar.** Que no vea una pantalla en blanco.
 - Que funcione en un móvil, aunque sea a medias. Alguien del jurado lo va a abrir en el teléfono.
