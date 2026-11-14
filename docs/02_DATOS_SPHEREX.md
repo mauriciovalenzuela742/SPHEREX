@@ -68,7 +68,11 @@ Las tres salidas posibles, en orden de costo:
    nivel no domine. Es un parche visual, no una solución física, pero en 24 horas puede ser lo que
    salve la demo.
 
-**Esto hay que comprobarlo con datos reales en la hora 1 del evento**, no discutirlo. Bajar los
+> **Comprobado el 14-nov ([`09_EDA_HALLAZGOS.md`](09_EDA_HALLAZGOS.md) §2):** agrupar solo por detector
+> **no** iguala la λ (dentro de un detector varía ~16 anchos de banda). Hay que elegir épocas a λ
+> igualada; es barato porque la λ sale de `WCS-WAVE` con una petición HTTP Range de ~35 KB.
+
+**Esto había que comprobarlo con datos reales en la hora 1 del evento**, no discutirlo. Bajar los
 cutouts de un mismo campo, leer `WCS-WAVE` de cada uno y ver cuánta λ varía entre épocas.
 
 ---
@@ -258,25 +262,32 @@ nombre y leer la fecha del header, pero para ordenar rápido sirve.
 ### El cubo de todo el cielo (solo DR1)
 
 DR1 trae un **All-Sky Cube**: mosaicos de todo el cielo interpolados espacial y espectralmente, uno
-por cada uno de los 102 canales. Se publica como **HiPS de orden 5**, en
-`hips5_cube/hips_20261026/Norder5/`, y es buscable por SIA2 con `COLLECTION=spherex_dr1_cube`.
+por cada uno de los 102 canales. Existe en **dos versiones** (comprobado el 14-nov, ver
+[`09_EDA_HALLAZGOS.md`](09_EDA_HALLAZGOS.md)):
 
-**Que sea HiPS es la mejor noticia técnica del desafío.** HiPS es el formato que consume Aladin Lite
-directamente en el navegador. Significa que hay un camino para mostrar las 102 bandas de todo el
-cielo **sin escribir backend**. Ver [`03_ARQUITECTURA.md`](03_ARQUITECTURA.md), donde esto es la vía
-rápida del plan.
+1. **La que entrega SIA2** (`COLLECTION=spherex_dr1_cube`, directorio `hips5_cube/hips_20261026/Norder5/`):
+   teselas FITS de 512×512×102, ~320 MB cada una. El servicio de recortes las rechaza (422/503) y
+   Aladin no las usa. No sirve para el visor.
+2. **La HiPS para navegador**, en `https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube`:
+   teselas **PNG**, orden 5, 102 planos (los 50 y 51 vienen vacíos), píxel de 12,9″, CORS abierto.
+   **Esta es la que carga Aladin Lite 3.8.2** sin backend. Es un mosaico de todas las épocas (sin eje
+   de tiempo) y en PNG ya estirado (sin flujos).
+
+Que se pueda mostrar en Aladin sin backend es la mejor noticia técnica del desafío para la vía A.
+Ver [`03_ARQUITECTURA.md`](03_ARQUITECTURA.md).
 
 Ojo con no confundir los dos productos, porque responden a preguntas distintas:
 
 | | Imágenes de nivel 2 | Cubo de todo el cielo |
 |---|---|---|
 | Eje que da | **Tiempo** (muchas épocas) | **Longitud de onda** (102 canales) |
-| Para qué | El blink, detectar movimiento | El espectro, el color, el contexto |
+| Para qué | El blink, detectar movimiento | Contexto y las 102 bandas como imagen (PNG sin flujos: **no** sirve para el espectro) |
 | Resolución | Nativa del detector | Orden 5 de HEALPix (gruesa) |
 | Disponible en | DR1, QR3 (y QR2 descargable) | **Solo DR1** |
 
-**El visor que pide el desafío necesita las dos cosas.** El tiempo viene de nivel 2; las 102 bandas,
-del cubo.
+**El visor que pide el desafío necesita las dos cosas.** El tiempo viene de nivel 2; las 102 bandas
+como imagen, del cubo. El espectro (flujo contra λ) sale de los archivos de nivel 2 o del
+Spectrophotometry Tool de IRSA, no del cubo ([`10_REPARTO_DE_TRABAJO.md`](10_REPARTO_DE_TRABAJO.md)).
 
 ---
 
