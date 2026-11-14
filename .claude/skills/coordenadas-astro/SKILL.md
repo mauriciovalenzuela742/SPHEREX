@@ -102,6 +102,9 @@ c_en_2026 = c.apply_space_motion(new_obstime=Time("2026-10-02"))
 
 - **Gaia DR3 tiene época de referencia J2016.0.** No J2000. Confundirlas mete un error de 16 años de
   movimiento propio.
+- **WISE 0855−0714 no está en Gaia** (es demasiado fría y débil en el óptico). Para su overlay y su
+  posición propagada usa CatWISE2020 (`catwise_2020` en IRSA), que trae movimientos propios; su época
+  de referencia es ~MJD 57170 (~2015,4). Confirma unidades y época en el esquema de la tabla.
 - `pm_ra_cosdec` ya incluye el factor `cos(dec)`. Los catálogos suelen darlo así; si tu fuente da
   `pmra` «crudo», conviértelo.
 - Escala de magnitudes: 100 mas/yr son 0,1 arcsec por año. Con píxeles de ~6 arcsec como los de

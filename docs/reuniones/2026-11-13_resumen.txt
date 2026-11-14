@@ -1,0 +1,53 @@
+Análisis de Imágenes de SphereX
+Fri, Nov 13, 2026
+
+Summary:
+
+El equipo definió una propuesta inicial para el desafío de imágenes astronómicas.
+• Planet X y SpherX fue la opción preferida.
+• Se propuso una herramienta web pública para visualizar cambios.
+• Los datos serían públicos y descargables.
+• La evaluación de la herramienta sigue sin definirse.
+• El horario y las condiciones de la jacatón no están confirmados.
+
+
+Action Items:
+
+* Juan Pablo Castillo Zepeda: Consulta a la persona a cargo en Chile si es posible reemplazar a Andrés por Steve en el equipo.
+* Mauricio Osvaldo Valenzuela: Prepara una transcripción de la conversación y un plan de trabajo para el día siguiente.
+* Juan Pablo Castillo Zepeda: Informa al equipo sobre la respuesta del organizador
+* Bryan Cabezas: Envía el modelo para que el equipo lo revise
+* Juan Pablo Castillo Zepeda: Consulta al organizador sobre el horario oficial, la estadía, la alimentación, qué llevar y la posibilidad de cambiar un cupo para incorporar a Steve
+* Juan Pablo Castillo Zepeda: Lleva una zapatilla eléctrica al evento
+
+
+Key Discussion Points:
+
+Preparativos y temas del desafío
+Tras los saludos y comentarios informales, Mauricio y Bryan revisaron la plataforma y el estado de la votación de temas. El grupo conversó sobre la posible composición del equipo, los recursos disponibles y las dudas sobre almacenamiento y herramientas.
+
+Experiencia previa con AWS
+Mauricio explicó que el trabajo anterior con AWS se presentaría a Integra y que AWS adaptaría la solución para entregársela a la organización. También comentó que les ofrecieron cursos o certificaciones, no premios en tokens.
+
+Selección y alcance de Planet X
+Mauricio compartió la hora y el lugar de la acreditación y resumió los resultados de la votación, que favorecían Planet X y SpherX. El equipo valoró el acceso público a los datos y conversó sobre la herramienta web, los objetos de prueba y los criterios para mostrar y evaluar los resultados.
+
+Organización del trabajo técnico
+Juan Pablo preguntó cómo organizar el trabajo y Mauricio describió la división por etapas, ramas de GitHub y responsables por área. Bryan complementó con su experiencia separando carpetas para reducir conflictos de integración y explicó que el equipo primero entendió el problema antes de distribuir tareas.
+
+Definición del plan de trabajo
+El equipo comparó experiencias sobre cómo aterrizar una solución y repartir el trabajo, desde una lluvia de ideas hasta la asignación de tareas. Mauricio propuso preparar una transcripción y un plan para el día siguiente, considerando que la acreditación podía aportar nuevos detalles; la conversación queda abierta en torno al horario del desafío.
+
+Logística y horario de la jacatón
+El equipo revisó la duración, el horario y la posibilidad de quedarse en el lugar durante la jacatón, sin llegar a una confirmación. Juan Pablo estaba reuniendo preguntas para el organizador sobre alojamiento, alimentación y otros detalles prácticos.
+
+Enfoque para el desafío de imágenes
+El equipo intercambió ideas sobre cómo detectar cambios en imágenes astronómicas y seguir objetos en movimiento. Antonia planteó una opción de revisión humana mediante video, mientras Bryan mencionó modelos temporales que consideran el contexto entre fotogramas.
+
+Coordinación y cierre
+Mauricio pidió compartir el modelo y mantener la coordinación por WhatsApp antes de retomar la planificación al día siguiente. Juan Pablo repasó las dudas logísticas pendientes y mencionó que llevaría una zapatilla eléctrica.
+
+
+Notepad:
+
+* No notes

@@ -1,0 +1,455 @@
+Análisis de Imágenes de SphereX
+Fri, Nov 13, 2026
+
+0:27 - mauricio valenzuela corvalan
+Hola MAURICIO, ¿cómo estás? Bueno Bryan, ¿y tú?
+
+0:32 - Bryan Cabezas
+Que bueno, ¿y tú también?
+
+0:34 - Juan Pablo Castillo Zepeda
+Hola Hola Juan, ¿qué tal?
+
+0:37 - mauricio valenzuela corvalan
+¿Qué tal? A ver, me voy a meter al tiro con la cámara, que en mi compu no tengo cámara yo.
+
+0:49 - Bryan Cabezas
+Sí, que hace calor, la embarró.
+
+0:53 - Unidentified Speaker
+Sí.
+
+0:54 - Juan Pablo Castillo Zepeda
+Sí, la cagó.
+
+0:55 - mauricio valenzuela corvalan
+Me he engañado como dos veces ya así con la abuela. Me encima ahora a las 4 juega la pelota.
+
+1:04 - Unidentified Speaker
+Fue mala idea.
+
+1:05 - mauricio valenzuela corvalan
+No, ahora hay que reírle, hombre. No, eso es la peor idea.
+
+1:11 - Juan Pablo Castillo Zepeda
+Ahora almorzando dije como, oh, pero yo juego la pelota a las 4.
+
+1:16 - mauricio valenzuela corvalan
+Me hablaron mis amigos y yo como, conchetumadre. Sí, Arta Witte, bloqueador solar, no mames.
+
+1:25 - Unidentified Speaker
+Sí, literal.
+
+1:26 - mauricio valenzuela corvalan
+Buscando la sombra, si es que hay.
+
+1:30 - Bryan Cabezas
+En la esquina del... No, parece que hay una cancha de cemento, parece.
+
+1:38 - mauricio valenzuela corvalan
+Así como en una... Bueno.
+
+1:40 - Bryan Cabezas
+Te caes al sol y te atrasai.
+
+1:44 - mauricio valenzuela corvalan
+Sí. Oye, entonces, mientras esperamos a Lando, de dice que viene ahí en cinco estamos como listos con el tema de cualquier cosa plataforma cierto a mí me sale como todavía como zumbi a proyect creo que siempre aparece eso ¿en qué parte aparece? Ah si en el como en el inicio inicio cachai como la página principal de la space app challenge ¿qué te dice? Ah, no, pero es que hasta el noviembre 15 dice.
+
+
+
+2:21 - Unidentified Speaker
+Ah, es lo que nosotros vamos a subir.
+
+2:24 - mauricio valenzuela corvalan
+Ah, yeah. No, no, era como lo que habíamos hecho.
+
+2:29 - Bryan Cabezas
+Igual, yo caché que en el grupo como que votamos y ya hay uno que tiene mayoría, pero igual podríamos conversarlo porque hay dos que tienen como cuatro, uno que cuatro y el otro tiene tres.
+
+2:45 - Unidentified Speaker
+De los temas. Sí, ah, de la votación. Sí.
+
+2:49 - mauricio valenzuela corvalan
+Y al final van a ser nosotros cuatro entonces. Al parecer sí. Sí, ¿cierto? Porque Andrés dijo que no podía.
+
+2:58 - Juan Pablo Castillo Zepeda
+Sí, yo estoy que le mando un correo a la persona que está a cargo de esta cuestión en Chile para ver si...
+
+3:10 - mauricio valenzuela corvalan
+Si, como sacar al Andrés y quedar de meter el Steve.
+
+3:22 - Unidentified Speaker
+Estaría bueno. Si podía hacerlo, creo que no perdemos nada. Igual estaría genial. Sí.
+
+3:38 - Bryan Cabezas
+dificultad media, o sea avanzada.
+
+3:41 - Juan Pablo Castillo Zepeda
+Sí, de hecho yo creo que ya libraron los datos.
+
+3:47 - Bryan Cabezas
+Sí, yo los estaba viendo.
+
+3:50 - mauricio valenzuela corvalan
+Son imágenes y en verdad hay harto dato.
+
+3:54 - Juan Pablo Castillo Zepeda
+Ah, mira.
+
+3:55 - mauricio valenzuela corvalan
+¿Dónde? ¿Dónde metió el proyecto? Ah, Resources. Claro, como va a ser el tutorial.
+
+4:07 - Bryan Cabezas
+Claro, y aquí está la parte que dice Infractor. Ahí en el primer archivo está el archivo.
+
+4:20 - mauricio valenzuela corvalan
+Tenemos del 2025 al 2027. Bueno, planeados.
+
+4:25 - Juan Pablo Castillo Zepeda
+Sería 2025 o 2026 ahora mismo.
+
+4:30 - Bryan Cabezas
+Ahora, yo supongo que... Nos van a entregar herramientas para llevar a cabo todo el proyecto, ¿no? Como AWS, quizá, no sé, algún lugar donde vamos a almacenar los datos.
+
+4:45 - Juan Pablo Castillo Zepeda
+¿O será local todo?
+
+4:46 - Bryan Cabezas
+No lo sé. Pero acá, mirá, acá hay un ejemplo que se descarga los datos en AWS.
+
+4:54 - Unidentified Speaker
+No sé si es que nosotros los... ¿Dónde los guardaremos?
+
+4:58 - mauricio valenzuela corvalan
+Hay caleta de equipos. Sí, ¿no?
+
+5:03 - Juan Pablo Castillo Zepeda
+Es escaleta.
+
+5:04 - Unidentified Speaker
+Como todo el mundo, la verdad.
+
+5:08 - Bryan Cabezas
+A mí no sé si es cosa mía, pero me parece, no sé, con este equipo chino o japonés, no sé.
+
+5:24 - mauricio valenzuela corvalan
+Sí. Turco, indio.
+
+5:26 - Bryan Cabezas
+Claro. Suamés. Por el sur.
+
+6:02 - Unidentified Speaker
+Bueno, gracias.
+
+6:34 - Bryan Cabezas
+Oye MAURICIO, ¿cómo les fue con el tema del proyecto de AWS?
+
+6:39 - mauricio valenzuela corvalan
+Bien, el otro día le presentamos lo que hicimos a AWS y el lunes tenemos reunión con los de Integra para venir a mostrarles lo que hicimos y que al final lo que va a pasar es como que AWS va a tomar todo lo que hicimos, va a implementar y se lo va a pasar a Integra. Entonces ahí entramos nosotros como los integradores en Integra. Pero hacemos el trato como con Integra, no con AWS. ¿Y qué?
+
+7:13 - Bryan Cabezas
+¿AWS era como que querían ir la data, no más?
+
+7:17 - mauricio valenzuela corvalan
+O sea, es que por lo que nos contaban, como que en Ojagatón en general, lo que pasaba era mucho que el equipo y es como ya listo, fin, chao, no te quiero ver más, entonces AWS como que lo toma y ellos siguen con la acción y muy bien, gracias por participar, y no era como común que sucediera un poco lo que pasó con el equipo de nosotros, que básicamente queríamos que el agua funcione y hacerlo a nosotros, ser atado, pero ahí nos dijeron así como en verdad tienen que hablar con la contraparte, Sería la fundación en este caso.
+
+ Igual nos prestaron harta ropa, así que eso básicamente... Igual entreten. Sí. Igual me dijeron que la fundación estaba motivada igual, para continuar. Sí, no sé si les gustó la letal... Les gustó la letal... Como la solución misma.
+
+8:19 - Unidentified Speaker
+Bueno.
+
+8:20 - Bryan Cabezas
+No, igual está buena la solución.
+
+8:25 - mauricio valenzuela corvalan
+Esa había que mencionar.
+
+8:28 - Bryan Cabezas
+Gracias. Sí, estuvo...
+
+8:31 - Unidentified Speaker
+Igual entretenido.
+
+8:32 - mauricio valenzuela corvalan
+¿Ella y AWS se les dio, entonces, como más crédito o cosas así en el... No, básicamente como que lo que hicimos es un github, entonces ellos como que lo adaptaron, tomaron la weá y le metieron esteroides.
+
+8:59 - Bryan Cabezas
+No entiendo. ¿No le dieron tokens de premio?
+
+9:05 - mauricio valenzuela corvalan
+No, como que nos ofrecieron unos cursos o algo así como gratis. Igual le pone, si es que algún curso de ese, como certificaciones, ¿cachai? Oye, los cursos de la masa son carísimos, hueón.
+
+9:24 - Juan Pablo Castillo Zepeda
+Sí, por eso.
+
+9:26 - Bryan Cabezas
+La certificación igual, así que ahí, ojo.
+
+9:30 - Juan Pablo Castillo Zepeda
+Sí. Estamos usando lo que están llamando.
+
+9:33 - Unidentified Speaker
+Hijo, ¿cuánto? Muchas gracias.
+
+10:33 - mauricio valenzuela corvalan
+ahí está, ahí llegó la... Ya no sé si se va a enterar de estar Estoy tratando de descargar una imagen a ver si puedo.
+
+11:06 - MAURICIO OSVALDO VALENZUELA
+es el silo de gato va dice que hay un trago de gato Hola.
+
+11:42 - Juan Pablo Castillo Zepeda
+Hola. ¿No se te escucha?
+
+11:48 - MAURICIO OSVALDO VALENZUELA
+Yo no lo escucho. Ahí sí.
+
+11:57 - Antonia Del Castillo Alvarez
+Muertos del calor. Hace calor.
+
+12:04 - MAURICIO OSVALDO VALENZUELA
+Ya, entonces... Mañana empieza la acreditación a las ocho y media me imagino que igual les llegó el correo que es el parque la araucana en la florida walker martínez creo que en metro macule el que sirve si son si no son de la florida yo no soy de la florida pero como ya lo revisé así que ahí no sé más yo creo que va a ser igual algo similar a lo que pasó la otra vez en amazon y para contexto de antes como como que al principio una presentación, te presentan los casos y es como después ya como ya trabaje.
+
+ Y en cuanto ya después al proyecto, en la votación el más votado fue el de Planeta X and Spherx y después venía la armonización de Modis y Beers de los Hotspots y otros dos.
+
+13:05 - MAURICIO OSVALDO VALENZUELA
+Yo estoy de acuerdo igual con que sea el Planet X & Spherix. No me disgusta, lo encuentro igual súper interesante y creo que podríamos tener algunas ventajas competitivas porque son datos que igual algo conocemos o podríamos llegar a conocer.
+
+13:23 - Juan Pablo Castillo Zepeda
+Sí, sí.
+
+13:24 - Bryan Cabezas
+Yo igual creo lo mismo. El otro que también tenía hartas votaciones era el tema del incendio. Pero... Aquí hay un poco de astronomía igual.
+
+13:36 - MAURICIO OSVALDO VALENZUELA
+Claro, a mí me gusta más eso por eso mismo, además que ese tema de las diferencias de las imágenes es como que pega con lo que se hace en Alérsevo. Sí, creo que tiene sentido al perfil del equipo.
+
+13:54 - Juan Pablo Castillo Zepeda
+Y lo bueno es que los datos son públicos, por ejemplo ahora yo estoy y me está dejando descargarlo.
+
+14:03 - Bryan Cabezas
+Genial. Así que no vamos a tener tantos, pareciera, problemas así como con permisos.
+
+14:10 - MAURICIO OSVALDO VALENZUELA
+Ya, entonces al final, un poco lo que hay que pensar es cómo vamos a mostrar esto, porque al final como que ellos quieren verlo, ¿cierto? ¿En real time o no? ¿Entendí bien el problema?
+
+14:27 - Juan Pablo Castillo Zepeda
+Sí, crean una especie de video, por lo que tengo entendido. ¿Cierto? Sí. En la misma página, si no mal recuerdo, especifican qué es lo que quieren, que a diferencia de las que acabaron pasadas, son mucho más claros, como queremos un video de tal cosa, o queremos tal resultado, o queremos tal cosa.
+
+14:48 - MAURICIO OSVALDO VALENZUELA
+Claro, herramienta web pública que muestra imágenes del cielo capturadas por esto. Permitiendo observar cómo cambian el tiempo claro al final del día igual es como el desafío como sabiendo que son tantos datos igual a eso no es tan trivial según yo que se muestre como para que cualquier persona pueda observar rápidamente pero bueno ahí vamos a tener que conversarlo y darle una vuelta si por lo que entiendo y igual no se requiere que sean para todos los datos que están disponibles, como que nos piden específicamente que sean para ciertos astros en particular.
+
+
+
+15:37 - Juan Pablo Castillo Zepeda
+Estudia de Barnard, Epsilon, Indy B, Weiss, 0855, y otras. Cada una de estas por lo que tengo tiene su uso había dificultades y que son casos como creo que hay un par de casos más que ideales pero creo que el caso de guays en un caso no y bien ya y al final como que lo que van a hacer va a ser un poco después cuando nosotros le pasemos y como lo que lo que hagamos ellos van a meter estos pruebas de objetos a ver si se ven bien algo así si al menos el objetivo dice como prueba tu herramienta con estas cosas Yo creo que es como un conjunto de testeos que van a ocupar, para ver si funcionan.
+
+
+
+16:29 - Bryan Cabezas
+Claro, es cierto.
+
+16:31 - MAURICIO OSVALDO VALENZUELA
+Y esas son como cosas específicas o son... Ah, no. Para pensar en cómo lo vamos a entrenar nosotros igual. Probarlo y maximizar la métrica que usemos para ver si esto funciona o no.
+
+16:56 - Unidentified Speaker
+Estoy pensando en eso.
+
+16:59 - Bryan Cabezas
+No sé, igual a mí se me hace parecido al del jacatón de la AWS, o sea, imagen y metadatos.
+
+17:14 - MAURICIO OSVALDO VALENZUELA
+ahí tienen que guiar un poco más, yo desconozco, no voy a mentir.
+
+17:20 - Juan Pablo Castillo Zepeda
+Oye, a mí una de las cosas que me detuvo harto en la hackathon pasada, también en parte porque no todos sabían programar bien, el tema de cómo se organizaron ustedes, supongo que tienen como un github y ahí van subiendo cosas, pero ahí cuál es la estructura que Si, mira, pensamos en el flujo de los datos, primero, así como, dame un segundo.
+
+17:54 - MAURICIO OSVALDO VALENZUELA
+Ya, justo eso estaba viendo mi hermano. Entonces, pensamos en el flujo de los datos, así como ya, esto va a ser la primera etapa, después viene aquí. Entonces pensamos así como ya. Separamos en cómo llega la información, después qué vamos a hacer, dónde va a ser el modelo, después lo que se observa, así como los resultados, que estén bien y que se comprueben, ¿no? Y después cómo se demuestra eso. Entonces teníamos como estas cuatro etapas y cada uno tenía como esa rama.
+
+ Entonces en el GitHub, cada uno su rama y cuando ya se terminaba, le decíamos a Cloud que consolidara lo necesario y se metía en el main. Si no, quedaban en las ramas nomás. Pero fue como un poco de eso. Aquí me imagino que se puede como también separar en ese tipo de optimización y cada uno se dedica como a esto en específico, como a esta estación. Y claro, igual es importante, por ejemplo, la estación de los resultados si es que cómo va saliendo el modelo y qué modelo usa entonces hay que ir como conversando todo el rato y así un poco después terminamos viendo como cada uno lo que se le ocurría y se le dejaba como esa misión al que más se parecía a lo que se nos ocurría así como si queríamos algo en el visualizador que cambie hablábamos con quienes estaban cargados del frontend solo él hacía el frontend, solo él podía cambiar el frontend era parte igual un poco de la idea porque si no lo termina así como todo uno O que uno deja la cagada cuando está haciendo lo mismo.
+
+ Y lo mismo para atrás. Oye mira, en el frontend como que me están chocando estos datos, como que parece que está mal trackeado, no sé, por un GPS, por decirte un ejemplo burdo, entonces el de los datos va y dice, ah ya mira, fue porque, no sé, ingestamos mal aquí esta parte, entonces lo arreglaba y después venía aquí a visualizar, ah ya bueno, ahí funcionó, y así como que van y funcionó bastante bien la verdad, como que al menos nos dio un poco de pero igual había uno que era terrible, porfiado, que igual hacía como que quería ser de todo y nos decían, pero bueno, cálmate, para eso delegamos, que era el del bigote, pero no importa.
+
+
+
+20:21 - Bryan Cabezas
+Master bycoding.
+
+20:21 - MAURICIO OSVALDO VALENZUELA
+Master bycoder, claro, bycoder professional, pero está bien, igual era parte del desafío, yo lo pensaba así, para no salirme de mis cabales, pero igual por nosotros Nosotros igual en la U, no sé si la ha tocado mucho, pero en general como que tenemos igual como esas prácticas, así que no creo que nos funcione mal ese método.
+
+20:46 - Juan Pablo Castillo Zepeda
+No sé qué les parece. Yo no lo grabamos tanto, diría yo, menos como en... Hace poco empecé a usar Github, ¿cachai? Entonces, no soy como experto en Github, ni tampoco sé cómo tirar con un conjunto de ustedes que tienen que ir continuamente avanzando, nos funcionó en la jacatón como, desisto, como dividir, pero nos costó llegar como a esa conclusión, ¿cachai? Entonces, por eso como que creo que es bueno que lo discutamos como ahora el tema de cómo dividir el trabajo.
+
+
+
+21:18 - Bryan Cabezas
+Bueno, por mi parte fue lo mismo, o sea, nosotros lo que hicimos fue dividir en tres ramas del avance, donde uno avanzó el froning, otro avanzó la descarga de los datos, el otro el modelo, y el otro la presentación al final. Bueno, cuando estaba un poco más cerca, pero al principio eran dos que estábamos con el tema del modelo. Lo que encontramos que fue buena técnica para no tener problemas con el tema del merge, fue cada uno o cada parte hacer la encarpeta distinta.
+
+ Entonces al momento de hacer el merge no se pegan y no da el problema con el GitHub.
+
+21:51 - Unidentified Speaker
+Nosotros igual nuestro problema fue en este caso el tema del cuello botella de los datos, pero con el S3 logramos solucionar ese problema.
+
+21:58 - Bryan Cabezas
+Yo creo que en este caso no vamos a tener eso, así que debería poder trabajarse bien por ese lado. Pero al principio igual todos nos metimos directamente al problema para poder entenderlo y luego de eso empezamos a hacer las divisiones. Sí, claro, de hecho esa es la parte inicial.
+
+22:15 - Juan Pablo Castillo Zepeda
+Y en ese sentido, ¿cómo ustedes abordaron el problema? Porque me imagino que antes de empezar con la división del trabajo, hicieron con una especie como de plano.
+
+22:24 - MAURICIO OSVALDO VALENZUELA
+Sí, o sea, hicimos con una lluvia de ideas, así como ya, ¿qué nos tinca que podría ser? Ya, esto puede ser, esto puede ser, esto puede ser, usemos esto, usemos esto. Y después como que la primera pasada y después la aterrizada así como, ya, pero ¿cómo va a ser en verdad? No, podría ser con WhatsApp, una foto, ya. Entonces aquí fuimos como definiendo de a uno en uno y hasta que llegamos al final, por así decirlo.
+
+ Oye, ¿y en ese sentido se apoyaron con Nia como para hacer esa si le pedimos, al final pensamos harto rato como pedirle que nos hiciera un plan y que en el mismo plan estuviese ya separado en esta idea de cuatro ramas de avanzar cuatro en conjunto y ahí después el plan que salió nos dio misiones a cada uno y ahí empezamos a trabajar como cada uno y después se fue integrando y al final, digamos al cloud quiero juntar en el github como en la rama y no es necesario tampoco saber mucho github Sí o no, al final Claudio igual lo hace.
+
+
+
+23:26 - Juan Pablo Castillo Zepeda
+Eso lo tengo claro. Pero no sé, mira, yo tenía pensado, a mí al menos, como grupo nos costó harto como el tema de definir un plan, ¿cachai? Como que todos estábamos disparando un poco para todos lados, ¿cómo no? Hagamos esto, hagamos esto, hagamos esta cosa. Y a mí se me ocurre quizás ocupar la herramienta que tiene el club donde uno puede hablar directamente, grabar lo que estamos conversando y después en base a eso la gente nos tiene como un plan de cómo seguir, la idea y todo eso como grabarlo y después pasárselo al club.
+
+
+
+24:08 - MAURICIO OSVALDO VALENZUELA
+Ya genial, igual esto se está grabando por si acaso, o sea yo puedo después hacer el transcript, subirlo y un poco con lo que le metí de las indicaciones del proyecto al menos como de contexto y después ya después que empieza a pensar en un plan y lo dejamos listo como para mañana porque igual quizás nos den más detalles mañana en la idea de los jacatones de a poquitas cosas y de repente como ya hasta aquí te paso igual cuál es el horario de la jacatón porque yo vi que termina las ¿Los odios a las 5?
+
+ Ahí desconozco.
+
+24:50 - Juan Pablo Castillo Zepeda
+Es otra cosa que yo estoy haciendo el correo al... ¿Cómo se le dice su nombre? Tiene un nombre bien extraño. Nicolás, no sé cuánto. ¿Nicolás? Sí, creo que es el organizador de la jacaranda del cómodo que hay en Chile. De la Raucana. Porque... Por lo que yo entiendo, existe la posibilidad que sea con quedarse.
+
+25:21 - MAURICIO OSVALDO VALENZUELA
+Quedarse ahí. Sí.
+
+25:23 - Unidentified Speaker
+Pero no estoy seguro.
+
+25:25 - Bryan Cabezas
+Claro, porque yo vi esto de acá, este link de acá, pero parece que esos son como los eventos Oye, me dejo ahí.
+
+25:43 - MAURICIO OSVALDO VALENZUELA
+No voy a cachar.
+
+25:45 - Juan Pablo Castillo Zepeda
+O sea, puede que no sea necesario, pero quizás está la opción de quedarse, ¿cachai? No estoy seguro, la verdad.
+
+25:53 - MAURICIO OSVALDO VALENZUELA
+Al final es como un día, prácticamente un día de trabajo, porque...
+
+25:58 - Bryan Cabezas
+Sí, es harto menos. Sí, no, pero porque el domingo a la una ya cierra. O sea, como que es puro sábado, no es de trabajo.
+
+26:08 - MAURICIO OSVALDO VALENZUELA
+¿Ah, en serio? Sí. Me dejaste loco, no se es super corto, es que donde le llegó eso así como el schedule del evento, yo lo encontré apretando los botones que habían ahí, ah puede ser el local event, ahí lo mandaste No, no Bryan, igual no hay onda.
+
+26:38 - Bryan Cabezas
+Sí, es el mismo.
+
+26:39 - Unidentified Speaker
+Ahí está loca el Event Skewer. Ahí empieza a las 10.
+
+26:44 - Bryan Cabezas
+A las 10 es como que empezamos a meterle ya la mano, entonces... No es mucho tiempo, en verdad.
+
+26:52 - Juan Pablo Castillo Zepeda
+No, es poquito.
+
+26:54 - Bryan Cabezas
+25, 20 horas.
+
+26:55 - Unidentified Speaker
+Sí.
+
+26:55 - Juan Pablo Castillo Zepeda
+27 horas.
+
+26:56 - Bryan Cabezas
+27 horas.
+
+26:57 - Juan Pablo Castillo Zepeda
+Y en una parte dice como trabajo nocturno, así como... Eso mismo es...
+
+27:03 - MAURICIO OSVALDO VALENZUELA
+¿Qué es eso? ¿Trabajo nocturno? Yo creo que es lo que hacen. Hay zonas de descanso disponibles. Ah, entiendo lo que decís.
+
+27:15 - Juan Pablo Castillo Zepeda
+No sé si obligatoriamente hay que quedarse, pero es una de las cosas que le estoy mandando como dudas al Nicolás Gregoric. ¿Qué otras dudas tienen? Yo incluí sobre van a dar alimentación. No sé si hay que llevar comida o...
+
+27:37 - Bryan Cabezas
+Eso es importante, sí.
+
+27:38 - MAURICIO OSVALDO VALENZUELA
+No sé. ¿Pero dónde vieron que es hasta las 5?
+
+27:42 - Antonia Del Castillo Alvarez
+Porque aquí el sábado no tiene como hasta las 13.30 el break del almuerzo. Sí.
+
+27:49 - MAURICIO OSVALDO VALENZUELA
+Es que está bien raro el calendario que tienen. Yo asumí que era como hasta las 5 por el domingo, pero puede ser que el domingo Puede ser que empiece a las 10, después se trabaja hasta el almuerzo, se almuerza, volví hasta la hora que tú queráis y podés quedarte también hasta las 9, toda la noche podés quedarte parece. Pero sería una buena pregunta, toda la noche trabajando, así como ahí. Pero no estoy seguro.
+
+ Igual sería una buena pregunta esa, como si es que tienen el schedule más mejor, así el oficial.
+
+28:29 - Juan Pablo Castillo Zepeda
+2 minutos, 2 minutos de pitching.
+
+28:32 - MAURICIO OSVALDO VALENZUELA
+No sé, iba a estar bien salvaje la cuestión.
+
+28:38 - Juan Pablo Castillo Zepeda
+Pero igual vi los problemas y en general diré que están bastante más sencillos que los de la AWS.
+
+28:50 - MAURICIO OSVALDO VALENZUELA
+Es un problema muy difícil también.
+
+28:53 - Juan Pablo Castillo Zepeda
+Sí, porque por lo que yo entiendo del SphereX es como tomar imágenes y como restarlas. Sí, es cierto. Porque eso es lo que entiendo del problema.
+
+29:10 - Antonia Del Castillo Alvarez
+Pero es restarlas porque eso del video me hace sentido como Como más mostrar el video y que puedan reconocer que hay un cambio, más que restarlas como tal y encontrar el cambio por ellos. Como que se puede ver nomás. Sí, como un... Como el Galaxy Zoo, así como donde las personas clasifican galaxias no sé si lo conocen pero con cambios en el cielo así como que alguien pueda ver un vídeo y puede decir así eso cambió.
+
+ Pero como la persona, no como el programa en sí.
+
+29:59 - MAURICIO OSVALDO VALENZUELA
+Bueno, igual se puede añadir como extra. Siempre al final lo que ellos te dicen es como, es lo mínimo que al menos queremos que hagan. Hay que intentar hacerlo según yo si podemos hacerlo. Porque es lo mismo que hacerlerse, creo.
+
+30:22 - Bryan Cabezas
+El tema de la resta es como...
+
+30:26 - MAURICIO OSVALDO VALENZUELA
+El stand classifier, ¿no?
+
+30:29 - Bryan Cabezas
+Sí. Lo que habrá ahí es buscar la diferencia y luego seguirla.
+
+30:36 - MAURICIO OSVALDO VALENZUELA
+Por ejemplo, en el caso de que tenía el objeto, la WISE 0855, que es la que está moviéndose, efectivamente hay que seguirla.
+
+30:50 - Bryan Cabezas
+Hay unos modelos que estoy viendo que se llaman modelos de imágenes temporales. También pueden servir. Toma frames de la imagen, pero entiende como el contexto de lo que va cambiando en cada una de las imágenes, en vez de solo tomar una estática.
+
+31:12 - MAURICIO OSVALDO VALENZUELA
+Ah, ya. Suena bien, sí, suena... Esa es mi idea. Eso, teníamos que tener como la página del modelo o algo por ahí para leerlo, ahora que tengo que irme, tengo que irme, hermano. Sí. No sabía, me acabo de dar cuenta, se me ha olvidado que juega a las 4. Lo he hecho. Está entretenido pero si podéis mandarlo para definir entonces mañana en ocho y media ahí Juan avisa cómo te va con el tema del correo si es que te responde el Nicolai y que ojalá se pueda añadir al Steve como cambiar ese cupo ojalá que se pueda si no no importa hay que darle nomás para adelante entre nosotros Bryan si podéis mandar ese modelo para leer mientras para empezar a nosotros y también pensemos nosotros como que se nos ocurre el resumen que me hayan mandado tu Juan igual está súper bueno como para entenderlo y si ya empezaste a descargarse los datos Bryan si encontráis algo y que te tienen que contarnos nos vais hagamos un grupo como aparte en whatsapp si me parece ya yo o Antonia podías ser tu el grupo?
+
+ Si voy yo antes, ahí estamos todos entonces y nada, hablaremos por ahí por el grupo lo que se nos vaya ocurriendo y mañana descansen bien hoy tía porque quizás mañana no vamos a dormir pero existe esa posibilidad, si hay que tenerlo en cuenta si acaso pero nada, lo más importante es entretenerse, que salga bien, a mí igual me gustan estas cosas las dinámicas son entretenidas y ojalá que haya comida.
+
+
+
+33:01 - Bryan Cabezas
+Sí, ojalá. Una de las cosas mejores de la jacatona anterior.
+
+33:09 - MAURICIO OSVALDO VALENZUELA
+No sé si ustedes se quieren quedar, yo me tengo que ir. No sé si falta algo más.
+
+33:22 - Juan Pablo Castillo Zepeda
+No, yo creo que dejémonos por acá, ya que cerramos las principales dudas que teníamos, por lo menos yo. Ah, y dudas, aparte de, ya habíamos dicho, para mandarle al Nicolai, el tema de cambiar sandwiches por Steve, el tema de las comidas, el tema de si es con quedarse, si es que hay que llevar sacos o algo así. ¿Y qué más se le ocurrió o qué más tienen dudas?
+
+33:51 - MAURICIO OSVALDO VALENZUELA
+Para saber si es el día de término del sábado o como eso, porque no se entiende nada. Bueno, obviamente van a tener enchufes y un jacatón.
+
+34:05 - Juan Pablo Castillo Zepeda
+Sí, igual llevo una zapatilla. Sí, una zapatilla de todas formas.
+
+34:10 - MAURICIO OSVALDO VALENZUELA
+Genial, entonces, Kun y yo.
+
+34:13 - Juan Pablo Castillo Zepeda
+Nos vemos, descansen, chao, chao, nos vemos. Que traigan un partido maldicido.

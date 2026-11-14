@@ -26,6 +26,15 @@ Restricciones:
 | Streamlit | Todo en Python, se levanta en minutos | Difícil de pulir; no se ve como herramienta pública; el parpadeo fluido cuesta | Bajo |
 | Front estático + Aladin Lite, sin backend | Despliegue trivial, nada que mantener | **Depende de que IRSA responda con CORS**; no se puede recortar, normalizar ni restar del lado del servidor | Bajo, pero con un riesgo que no controlamos |
 
+## Actualización 14-nov-2026 (equipo, en el evento)
+
+- **Frontend: Vercel** (decidido por el equipo; también lo indicó la organización). Producción desde
+  `main`, preview por PR. Responsable: C (Mauricio).
+- **Los 5 campos de prueba se sirven precalculados como estáticos** desde Vercel: la demo no depende de IRSA.
+- **`/api` para coordenadas arbitrarias:** pendiente hasta medir un cutout en el Bloque 1.
+  Vercel Python Functions si cabe en el tiempo límite de la función (sin disco persistente: caché en
+  memoria o almacenamiento externo); si no, contenedor con el mismo FastAPI detrás de `/api`.
+
 ## Decisión
 
 **Python 3.11 + FastAPI en el backend; React + Vite + TypeScript con Aladin Lite v3 en el frontend.**
