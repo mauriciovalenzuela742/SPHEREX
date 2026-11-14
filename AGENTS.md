@@ -96,6 +96,10 @@ Para que un agente sin contexto astronómico no escriba cosas absurdas.
   el error más común**: hay un factor 15 entre ambas.
 - **Época** — una observación en un instante dado. El "videíto" es la misma zona del cielo en
   distintas épocas, ordenadas en el tiempo.
+- **Apuntado / barrido** — un apuntado es una posición del telescopio (una posición del cielo cae en 2
+  archivos por apuntado: pares D1+D4, D2+D5, D3+D6); un barrido es una pasada completa del cielo
+  (1-6 semanas, ~6 meses entre barridos). **Un barrido no es una época**: para el video, la unidad es
+  el barrido (`docs/09`).
 - **Movimiento propio** — desplazamiento aparente de una estrella en el cielo, en milisegundos de
   arco por año (mas/yr). Es lo que hace que una estrella cercana se mueva entre épocas.
 - **Paralaje** — bamboleo aparente por el movimiento de la Tierra alrededor del Sol. Período de un
@@ -128,6 +132,9 @@ Para que un agente sin contexto astronómico no escriba cosas absurdas.
 | ¿Qué podemos hacer legalmente y cuándo? | `docs/08_REGLAS_DEL_EVENTO.md` |
 | ¿Qué mostraron los datos reales? | `docs/09_EDA_HALLAZGOS.md` |
 | ¿Quién hace qué después del EDA? | `docs/10_REPARTO_DE_TRABAJO.md` |
+| ¿Cómo se midió y cómo se repite? | `eda/README.md` |
+| ¿Cómo es la interfaz? | `docs/diseno/` |
+| ¿Cómo se usa el kit? | `docs/KIT.md` |
 | Papers y repositorios | `biblio/README.md` |
 
 Si un documento contradice a este archivo, **manda el documento** y corrige este.
