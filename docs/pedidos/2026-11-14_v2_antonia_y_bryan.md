@@ -113,8 +113,21 @@ por una. Gravedad: **B** = bloquea la demo · **C** = confunde · **K** = cosmé
 | RW Aur (D2) | 124 | «En la resta no hay una pareja rojo-azul» | **Sí** hay una pareja rojo-azul pegada en el centro, aunque la estrella no se mueve: la produce la saturación o la máscara. `docs/09` §4 ya lo había medido: «se mueve» 1,4 px sin moverse. |
 | R Dra (D2) | 137-140 | «Es una mancha de un solo color» | El centro saturado viene enmascarado (entre 1,5 y 4,4 % de los píxeles marcados OVERFLOW), así que la resta muestra un **agujero** de ~10 px con arcos rojos arriba y azules abajo. La λ va de 1,19 a 1,64 µm entre esas 4 fotos. |
 
-Propuesta mientras no haya una configuración que sí lo muestre: cambiar `verificado` a `false` en WISE 0855 y
-reescribir los tres niveles para que la pregunta coincida con lo que se ve. Por ejemplo, en R Dra y RW Aur,
+**WISE 0855 sí se ve con otra configuración (probado el 14-nov, imágenes miradas):** banda D5, **10
+exposiciones por visita** en vez de 1, y la primera visita (6-may-2025, 4,22 µm) contra la última
+(13-may-2026, 4,30 µm). La resta muestra una pareja limpia en el centro: azul al este (donde estaba) y rojo al
+oeste (donde está), separados ~1,0 px. Ajuste gaussiano sobre las 5 visitas de D5: 1,04 px hacia el oeste y
+0,10 px hacia el norte en 1,02 años (lo predicho: 1,35 y 0,11; sale ~20 % corto y no se investigó por qué).
+En D6 la pareja no se distingue bien del ruido.
+- URL que lo muestra: `/proto-api/frames?ra=133.759765&dec=-7.242186&band=5&size=0.05&max_visits=20&per_visit=10`.
+  **Tardó 61,8 s**, y en las rutas por visita hubo tiempos agotados que pasaron al reintentar: para la demo
+  conviene dejarlo precalculado o en caché.
+- La resta del servidor sale descompensada (rojo fuerte, azul débil) por la igualación del punto 2e: factor
+  1,58 contra 0,85 si se iguala con el flujo del propio objeto.
+
+Propuesta: en el nivel de WISE 0855, usar `per_visit: 10` y comparar la primera visita con la última; mientras
+no esté, cambiar `verificado` a `false`. Reescribir los niveles de RW Aur y R Dra para que la pregunta coincida
+con lo que se ve. Por ejemplo, en R Dra y RW Aur,
 enseñar que una estrella saturada deja un agujero y una pareja falsa, y que por eso se compara con las vecinas.
 eps Ind B no se revisó en la misión (su movimiento está medido en `docs/09`).
 
