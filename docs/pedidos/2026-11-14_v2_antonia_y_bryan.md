@@ -97,7 +97,7 @@ hipótesis sacada del código: nadie midió el brillo.
 > Mauricio, hicimos una revisión científica del visor con los datos reales. El cielo está bien, pero tres niveles
 > de la misión (WISE 0855, RW Aur y R Dra) dan por correcta una respuesta que las imágenes contradicen. Te dejé
 > el detalle con archivo y línea en docs/pedidos. ¿Lo puedes corregir antes de la demo? Lo de WISE 0855 lo
-> estamos probando sumando exposiciones; te aviso qué configuración sí lo muestra.
+> se ve con 10 exposiciones por visita en la banda D5: también te dejé la configuración.
 
 ### Detalle para el agente
 
