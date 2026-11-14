@@ -2,8 +2,12 @@
  * Vía A: cielo de SPHEREx con Aladin Lite v3, sin backend. Dueño: Juan Pablo (V2).
  *
  * Punto de extensión: este componente no conoce el detalle de las capas. Monta las de `capas/index.ts`
- * (objetivo, Gaia, SIMBAD), el deslizador de λ (`LambdaSlider`) y reparte los eventos de Aladin
+ * (objetivo, Gaia, CatWISE, SIMBAD), el deslizador de λ (`LambdaSlider`) y reparte los eventos de Aladin
  * (`eventos.ts`). Las piezas se trabajan en sus propios archivos, sin tocar este.
+ *
+ * Los catálogos de referencia (Gaia, CatWISE, SIMBAD) parten ocultos para que el cielo no se vea cargado al
+ * abrir; el botón «Mostrar catálogos» los enciende sin volver a consultarlos. La marca del objeto y el cuadro
+ * del recorte se ven siempre. El clic en el cielo funciona igual con los catálogos ocultos.
  */
 import { useEffect, useRef, useState } from "react";
 import A from "aladin-lite"; // v3.8.2, fijada en package.json
@@ -42,6 +46,12 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
   const [listo, setListo] = useState<{ on: Suscribir } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [planoActivo, setPlanoActivo] = useState(plano);
+  const [mostrarCatalogos, setMostrarCatalogos] = useState(false);
+  // Catálogos registrados por las capas; se ocultan o muestran sin remontar ni volver a consultar.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const catalogos = useRef(new Set<any>());
+  const mostrarRef = useRef(mostrarCatalogos);
+  mostrarRef.current = mostrarCatalogos;
 
   // Las funciones de props pueden cambiar en cada render: se guardan en refs para no remontar capas.
   const onSelectRef = useRef(onSelect);
@@ -100,6 +110,11 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
       epoca,
       on: listo.on,
       onSelect: (r, d) => onSelectRef.current?.(r, d),
+      registrarCatalogo: (cat) => {
+        catalogos.current.add(cat);
+        visibilidad(cat, mostrarRef.current);
+        return () => catalogos.current.delete(cat);
+      },
     };
     const desmontar: (() => void)[] = [];
     for (const capa of CAPAS) {
@@ -121,13 +136,37 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
     };
   }, [listo, ra, dec, lado, epoca]);
 
+  useEffect(() => {
+    for (const cat of catalogos.current) visibilidad(cat, mostrarCatalogos);
+  }, [mostrarCatalogos]);
+
   if (error) {
     return <div className="vacio">No se pudo iniciar el mapa del cielo: {error}</div>;
   }
   return (
     <>
       <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" />
+      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 6 }}>
+        <button
+          type="button"
+          aria-pressed={mostrarCatalogos}
+          onClick={() => setMostrarCatalogos((v) => !v)}
+          title="Gaia DR3 (círculos), CatWISE2020 (triángulos) y SIMBAD (cuadrados)"
+        >
+          {mostrarCatalogos ? "Ocultar catálogos" : "Mostrar catálogos (Gaia, CatWISE, SIMBAD)"}
+        </button>
+      </div>
       <LambdaSlider plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
     </>
   );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function visibilidad(cat: any, mostrar: boolean) {
+  try {
+    if (mostrar) cat.show();
+    else cat.hide();
+  } catch (e) {
+    console.error("[sky] no se pudo cambiar la visibilidad de un catálogo:", e);
+  }
 }

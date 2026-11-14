@@ -223,6 +223,61 @@ Aditivos: nada de lo anterior cambia de forma, así que el mock y el código exi
 - **Precalculado para Vercel:** los 5 campos de prueba se publican como archivos estáticos con exactamente
   estas mismas formas JSON, en `/precalc/<id>/epochs.json`, `/precalc/<id>/frames-b<band>.json` y sus PNG.
 
+### Cambios al contrato — 14-nov-2026, noche (D2: fotogramas y espectro)
+
+Aditivos salvo donde se indica. Implementados en `scaffold/backend/app/frames/` y `app/spectrum/`.
+
+**Nombres de parámetros (decisión, cierra el punto 1 de «Pendiente»):** en toda la API oficial el rango de
+fechas es **`from` / `to`** (ISO 8601 UTC, opcionales). Un fotograma es **una visita** (varias exposiciones
+en pocos días) y **`per_visit`** (1–10) dice cuántas de sus exposiciones se combinan (mediana). El prototipo
+(`prototipos/rango_fechas`) acepta `from`/`to` además de sus `start`/`end`; sus rutas `/api/grid`,
+`/api/frame` y `/api/presets` son del prototipo, **no** del contrato.
+
+**Tamaño del recorte:** `size` ∈ (0,005; 0,5] grados en `/api/frames`; el servidor rechaza más (422) y el
+frontend no debe ofrecerlo. Motivo medido (14-nov, lector por rangos, banda 3): el tiempo por imagen casi
+no cambia (≈1–1,5 s, lo domina la latencia de IRSA), pero los datos crecen con el área: ~29 KB leídos por
+imagen a 0,1°, ~185 KB a 0,25°, ~733 KB a 0,5°, y lo mismo los PNG de la respuesta (59² → 293² píxeles).
+El límite cuida el tamaño de la respuesta y la memoria del navegador, no el tiempo.
+
+**`GET /api/frames` — parámetros adicionales**
+
+| Parámetro | Valores | Por defecto | Para qué |
+|---|---|---|---|
+| `from`, `to` | ISO 8601 | — | Rango de fechas |
+| `per_visit` | 1–10 | `1` | Exposiciones combinadas por visita (mediana) |
+| `mode` | además: `coadd`, `coadd_diff` | `zodi_subtracted` | **Suma por barrido** (abajo) |
+| `max_per_sweep` | 1–200 | `40` | Exposiciones por barrido en `coadd` |
+| `budget_s` | 0–55 | `8` | Presupuesto de tiempo (ADR-001); lo que no alcanza va a `pending` |
+| `epochs` | lista de `epoch_id` | — | Pedir solo esos (para completar `pending`) |
+| `vmin`, `vmax` | número | — | Repetir la escala de la primera respuesta, para que no salte |
+| `fast` | `true`/`false` | `true` | Lector por rangos (rápido, sin FLAGS) o servicio de recortes |
+
+Respuesta, además de lo de arriba: `pending` (lista de `epoch_id` sin terminar), `unit` (`visita` o
+`barrido`), `n_visits` / `n_sweeps`, `elapsed_s` y, por fotograma, `n_stacked` y `method`
+(`rangos`/`recortes`). `png` es un **data URI**. `flagged_fraction` puede ser `null` (el lector por rangos
+no lee FLAGS); cuando no es `null` se calcula con máscara por bits, nunca con `FLAGS != 0` (punto 6).
+
+**Suma por barrido (`mode=coadd`, `mode=coadd_diff`; cierra la mitad del punto 3).** Un barrido es el paso de
+SPHEREx por la zona (vuelve cada ~6 meses; visitas separadas por más de 60 días son otro barrido). Todas
+sus exposiciones (hasta `max_per_sweep`) se reproyectan a la rejilla común norte-arriba (el detector gira
+~180° entre barridos) y se suman con peso **1/VARIANCE** píxel a píxel: Σ(d/σ²)/Σ(1/σ²). `coadd_diff`
+devuelve la resta respecto del primer barrido (con igualación de flujo, como `diff_first`). Medido con
+WISE 0855 en banda 5: 3 barridos de 8, 25 y 15 exposiciones, 20 s la primera vez; en la resta aparece el
+par azul/rojo hacia el oeste que en la resta de exposiciones sueltas se pierde en el ruido.
+
+**`GET /api/spectrum` — implementado**
+
+`ra`, `dec` (grados), `aperture` (radio en ″, 2–60, defecto 12), `from`, `to`, `bands` (lista, defecto
+`1,…,6`), `max_points` (6–600, defecto 120: se reparten en el tiempo dentro de cada banda), `budget_s`,
+`epochs`, y para objetos con movimiento propio `pmra`, `pmdec` (mas/año, pmra con cos δ) y `epoch` (año de
+`ra`/`dec`, defecto 2000): la apertura se centra en la posición propagada a cada fecha.
+
+Un punto por exposición: fotometría de apertura en píxeles nativos del detector, fondo = mediana de un
+anillo (r+2 a r+5 px), error con VARIANCE, λ y ancho en el píxel del objeto (WCS-WAVE), flujo en **mJy**.
+Respuesta: `spectrum: [{wavelength_um, bandwidth_um, flux_mjy, err_mjy, band, t, epoch_id, collection}]`
+ordenado por λ, más `n_points`, `n_candidates`, `pending`, `method`, `caveat` (obligatorio), `warnings`.
+Las exposiciones con saturación o fuera del detector se omiten y se cuentan en `warnings`.
+
 ## 4. URL de la aplicación
 
 El desafío pide explícitamente poder consultar la herramienta por URL. El formato es parte del
@@ -285,9 +340,9 @@ Escrito de antemano para que a las 4 de la mañana nadie lo reabra:
 
 Propuestas que salen de la revisión de documentación ([`REVISION_DOCUMENTACION_2026-11-14.md`](REVISION_DOCUMENTACION_2026-11-14.md)) y de los datos medidos en el EDA. **No cambian el contrato vigente** de arriba: se aplican solo cuando el equipo lo acuerde (README §5, regla 4).
 
-1. **Nombres de los filtros de fecha.** El contrato dice `from` y `to`; el prototipo de la rama `d/prototipo-rango-fechas` usa `start` y `end`. Acordar uno.
+1. ~~**Nombres de los filtros de fecha.**~~ **Resuelto el 14-nov (noche):** `from`/`to` en toda la API oficial; ver «Cambios al contrato — 14-nov-2026, noche».
 2. **Rutas nuevas del prototipo.** `/api/grid` (visitas por banda y columna de fecha), `/api/frame` (un fotograma por visita) y `/api/presets` (los 5 campos con la posición propagada) existen en esa rama y no figuran aquí. `docs/10` ya cita `/api/presets`.
-3. **Pedir λ igualada y suma por barrido.** `/api/frames` no tiene forma de pedir épocas a λ igualada ni la suma de exposiciones por barrido; el EDA concluye que la unidad natural del video es el barrido (3-4 fotogramas) y que hay que igualar λ (`09_EDA_HALLAZGOS.md` §2).
+3. **Pedir λ igualada y suma por barrido.** *Suma por barrido: resuelta el 14-nov (noche), `mode=coadd`/`coadd_diff`. Queda pendiente pedir λ igualada.* `/api/frames` no tiene forma de pedir épocas a λ igualada ni la suma de exposiciones por barrido; el EDA concluye que la unidad natural del video es el barrido (3-4 fotogramas) y que hay que igualar λ (`09_EDA_HALLAZGOS.md` §2).
 4. **Colecciones por defecto.** `collections=spherex_dr1,spherex_qr3` deja casi sin datos a R Dra, que está sobre todo en los `_deep` (1.233 + 733 archivos contra 422 + 126 normales; `09_EDA_HALLAZGOS.md` §1).
 5. **Caché en disco frente a Vercel.** Vercel Functions no tiene disco persistente; si `/api` corre allí, la caché (`data/cache/`) tiene que ser en memoria o almacenamiento externo (ADR-001, actualización 14-nov).
 6. **Máscara de contaminación.** Documentar en el contrato que `flagged_fraction` se calcula con máscara por bits y nunca con `FLAGS != 0`.

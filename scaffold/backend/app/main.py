@@ -92,7 +92,9 @@ def frames(
     size: float = Query(0.1, gt=0.005, le=0.5),
     band: int = Query(4, ge=1, le=6),
     stretch: str = Query("asinh", pattern="^(asinh|linear)$"),
-    mode: str = Query("zodi_subtracted", pattern="^(zodi_subtracted|raw|diff_first|diff_prev)$"),
+    mode: str = Query(
+        "zodi_subtracted", pattern="^(zodi_subtracted|raw|diff_first|diff_prev|coadd|coadd_diff)$"
+    ),
     desde: str | None = Query(None, alias="from"),
     hasta: str | None = Query(None, alias="to"),
     per_visit: int = Query(1, ge=1, le=10),
@@ -101,8 +103,10 @@ def frames(
     vmin: float | None = None,
     vmax: float | None = None,
     fast: bool = True,
+    max_per_sweep: int = Query(40, ge=1, le=200),
 ) -> dict:
-    """Un fotograma por visita, alineado norte-arriba (D2). Respuesta parcial: ver `pending` (docs/03)."""
+    """Un fotograma por visita (o por barrido con mode=coadd/coadd_diff), alineado norte-arriba (D2).
+    Respuesta parcial: ver `pending` (docs/03)."""
     from app.frames.servicio import fotogramas
     from app.irsa.descarga import IrsaNoDisponible
 
@@ -114,7 +118,40 @@ def frames(
             return previa
     try:
         vivo = fotogramas(ra, dec, size, band, mode, stretch, desde, hasta, per_visit, budget_s,
-                          [e for e in epochs.split(",") if e] if epochs else None, vmin, vmax, fast)
+                          [e for e in epochs.split(",") if e] if epochs else None, vmin, vmax, fast,
+                          max_per_sweep)
         return {**vivo, "source": "vivo"}
+    except (cache.FueraDeCache, IrsaNoDisponible) as e:
+        raise HTTPException(status_code=503, detail=f"IRSA no está disponible ahora: {e}") from e
+
+
+@app.get("/api/spectrum")
+def spectrum(
+    ra: float = Query(ge=0, lt=360),
+    dec: float = Query(ge=-90, le=90),
+    aperture: float = Query(12.0, gt=2, le=60, description="Radio de la apertura en segundos de arco"),
+    desde: str | None = Query(None, alias="from"),
+    hasta: str | None = Query(None, alias="to"),
+    bands: str = "1,2,3,4,5,6",
+    max_points: int = Query(120, ge=6, le=600),
+    budget_s: float = Query(8.0, gt=0, le=55),
+    epochs: str | None = None,
+    pmra: float | None = Query(None, description="mas/año, con cos δ; activa la propagación"),
+    pmdec: float | None = Query(None, description="mas/año"),
+    epoch: float = Query(2000.0, description="Año decimal de ra/dec (si se dan pmra/pmdec)"),
+) -> dict:
+    """Espectro de una posición: un punto (λ, flujo) por exposición de nivel 2 (D2). Ver docs/03."""
+    from app.irsa.descarga import IrsaNoDisponible
+    from app.spectrum.servicio import espectro
+
+    try:
+        bandas = sorted({int(b) for b in bands.split(",") if b.strip()})
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail="bands: números del 1 al 6 separados por comas") from e
+    if not bandas or any(b < 1 or b > 6 for b in bandas):
+        raise HTTPException(status_code=422, detail="bands: números del 1 al 6 separados por comas")
+    try:
+        return espectro(ra, dec, aperture, desde, hasta, bandas, max_points, budget_s,
+                        [e for e in epochs.split(",") if e] if epochs else None, pmra, pmdec, epoch)
     except (cache.FueraDeCache, IrsaNoDisponible) as e:
         raise HTTPException(status_code=503, detail=f"IRSA no está disponible ahora: {e}") from e

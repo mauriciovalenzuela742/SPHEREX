@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maqueta · selector de λ en acordeón</title>
+<style>
+:root{--bg:#0f1220;--panel:#171b2e;--fg:#e6e9f5;--muted:#9aa2c2;--line:#2a3150;--accent:#8f9dff;--accentbg:#262d55}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:20px;margin:0 0 4px}
+p{color:var(--muted);margin:0 0 16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+button{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer}
+button.on{border:2px solid var(--accent);background:var(--accentbg);color:var(--accent)}
+.res{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.pill{font-size:12px;padding:4px 10px;border-radius:6px;background:var(--accentbg);color:var(--accent)}
+.nota{font-size:12px;color:var(--muted);margin-top:8px}
+svg{width:100%;height:auto;cursor:crosshair;user-select:none;touch-action:none;background:var(--panel);border-radius:8px}
+</style></head><body><div class="wrap">
+<h1>Selector de longitud de onda en acordeón (maqueta)</h1>
+<p>Maqueta para el visor del cielo, no implementada. λ de cada canal: <code>data_cube_crval3_arr</code> del <code>properties</code> del cubo HiPS de SPHEREx en IRSA (14-nov-2026). Ancho de cada curva: λ/R con R por banda de la literatura, sin verificar. Alturas ilustrativas: falta la curva oficial de área efectiva.</p>
+<div class="top"><div id="bandas" style="display:flex;gap:4px;flex-wrap:wrap"></div><button id="borrar">Limpiar selección</button></div>
+<svg id="g" viewBox="0 0 680 270" role="img"><title>Canales de SPHEREx con la banda elegida expandida</title></svg>
+<div class="res" id="res"></div>
+<p class="nota">Clic en una banda (botón o nombre en el gráfico) para expandirla; otro clic la cierra. Arrastra para elegir un rango o haz clic en un canal. Los canales 3.17 y 4.1 (planos 50 y 51) vienen vacíos en el cubo.</p>
+</div>
+<script>
+const L=[[0.75,0.77,0.79,0.81,0.83,0.85,0.87,0.89,0.91,0.93,0.95,0.98,1.0,1.02,1.05,1.07,1.1],[1.11,1.14,1.17,1.2,1.22,1.25,1.28,1.31,1.35,1.38,1.41,1.45,1.48,1.52,1.55,1.59,1.63],[1.66,1.7,1.74,1.77,1.82,1.86,1.91,1.95,2.0,2.04,2.09,2.14,2.19,2.24,2.29,2.35,2.4],[2.44,2.51,2.58,2.65,2.72,2.79,2.87,2.95,3.03,3.12,3.2,3.29,3.38,3.48,3.57,3.67,3.77],[3.83,3.87,3.9,3.94,3.97,4.0,4.04,4.08,4.11,4.15,4.18,4.22,4.26,4.29,4.33,4.37,4.41],[4.43,4.47,4.5,4.53,4.57,4.6,4.63,4.67,4.7,4.74,4.77,4.81,4.84,4.88,4.92,4.95,4.99]];
+const R=[39,41,41,35,112,128],H=[0.55,0.75,0.85,0.8,0.65,0.6];
+const COL=['#a39cf0','#6aa8ec','#3cc79a','#8cc152','#e0a33a','#ef7b52'];
+const X0=36,X1=672,Y0=215,Y1=30;
+const lo=L.map((c,b)=>b===0?0.73:(L[b-1][16]+c[0])/2),hi=L.map((c,b)=>b===5?5.02:(c[16]+L[b+1][0])/2);
+let w=[1,1,1,1,1,1],abierta=0,sel=null,ini=null,anim=null;
+function sx(l){const tot=w.reduce((a,b)=>a+b,0);let x=X0;for(let b=0;b<6;b++){const s=(X1-X0)*w[b]/tot;if(l<=hi[b]||b===5)return x+s*Math.min(1,Math.max(0,(l-lo[b])/(hi[b]-lo[b])));x+=s}}
+function lx(px){const tot=w.reduce((a,b)=>a+b,0);let x=X0;for(let b=0;b<6;b++){const s=(X1-X0)*w[b]/tot;if(px<=x+s||b===5)return lo[b]+(hi[b]-lo[b])*Math.min(1,Math.max(0,(px-x)/s));x+=s}}
+const sy=v=>Y0-v*(Y0-Y1);const svg=document.getElementById('g'),NS='http://www.w3.org/2000/svg';
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e}
+function abrir(b){abierta=abierta===b?0:b;const wt=[0,1,2,3,4,5].map(i=>abierta?(i===abierta-1?9:0.6):1);if(anim)cancelAnimationFrame(anim);const w0=w.slice(),t0=performance.now();
+const paso=t=>{const k=Math.min(1,(t-t0)/450),e=1-Math.pow(1-k,3);w=w0.map((v,i)=>v+(wt[i]-v)*e);dibujar();if(k<1)anim=requestAnimationFrame(paso)};anim=requestAnimationFrame(paso);botones()}
+function botones(){const d=document.getElementById('bandas');d.innerHTML='';for(let b=1;b<=6;b++){const x=document.createElement('button');x.className=abierta===b?'on':'';x.textContent='D'+b;x.onclick=()=>abrir(b);d.appendChild(x)}}
+function dibujar(){svg.innerHTML='';
+for(let b=0;b<6;b++){const a=sx(lo[b]),z=sx(hi[b]);if(b%2===0)el('rect',{x:a,y:Y1-22,width:z-a,height:Y0-Y1+22,fill:'#1d2238'})}
+if(sel){const a=sx(sel[0]),z=sx(sel[1]);el('rect',{x:a,y:Y1-22,width:Math.max(1.5,z-a),height:Y0-Y1+22,fill:'#262d55'})}
+el('line',{x1:X0,x2:X1,y1:Y0,y2:Y0,stroke:'#3a4268'});
+for(let b=0;b<6;b++){const ex=abierta===b+1,an=sx(hi[b])-sx(lo[b]);
+for(let k=0;k<17;k++){const p=17*b+k,c=L[b][k];if(p===50||p===51){if(ex){const t=el('text',{x:sx(c),y:Y0+16,'text-anchor':'middle','font-size':11,fill:'#5a6286'});t.textContent='vacío'}continue}
+const s=c/R[b]/2.355;let d='';for(let i=0;i<=30;i++){const l=c-3*s+6*s*i/30;d+=(i?'L':'M')+sx(l).toFixed(1)+' '+sy(H[b]*Math.exp(-((l-c)**2)/(2*s*s))).toFixed(1)}
+const on=sel&&c>=sel[0]&&c<=sel[1];el('path',{d,fill:'none',stroke:COL[b],'stroke-width':on?2.2:1,opacity:sel&&!on?0.3:0.9});
+if(ex){const h=el('rect',{x:sx(c)-an/34,y:Y1,width:an/17,height:Y0-Y1,fill:'transparent',style:'cursor:pointer'});h.addEventListener('pointerdown',ev=>{ev.stopPropagation();sel=[c,c];dibujar();resumen()});
+if(k%2===0||an>500){const t=el('text',{x:sx(c),y:Y0+16,'text-anchor':'middle','font-size':11,fill:'#9aa2c2'});t.textContent=(b+1)+'.'+(k+1)}
+if(k%4===0){const t=el('text',{x:sx(c),y:Y0+30,'text-anchor':'middle','font-size':11,fill:'#6b7396'});t.textContent=c.toFixed(2)}}}
+const lb=el('text',{x:(sx(lo[b])+sx(hi[b]))/2,y:Y1-8,'text-anchor':'middle','font-size':12,fill:COL[b],style:'cursor:pointer'});
+lb.textContent=an>90?'D'+(b+1)+' · '+L[b][0].toFixed(2)+'–'+L[b][16].toFixed(2)+' µm':'D'+(b+1);lb.addEventListener('pointerdown',ev=>{ev.stopPropagation();abrir(b+1)});
+if(!abierta){const t=el('text',{x:sx((L[b][0]+L[b][16])/2),y:Y0+16,'text-anchor':'middle','font-size':11,fill:'#9aa2c2'});t.textContent=L[b][8].toFixed(1)+' µm'}}
+const ty=el('text',{x:10,y:120,'font-size':11,fill:'#9aa2c2',transform:'rotate(-90 10 120)','text-anchor':'middle'});ty.textContent='Respuesta (ilustrativa)'}
+function resumen(){const r=document.getElementById('res');r.innerHTML='';if(!sel){r.textContent='Sin selección';return}let n=0;
+for(let b=0;b<6;b++){const ks=[];for(let k=0;k<17;k++){const p=17*b+k;if(p===50||p===51)continue;if(L[b][k]>=sel[0]-1e-9&&L[b][k]<=sel[1]+1e-9)ks.push(k+1)}
+if(ks.length){n+=ks.length;const s=document.createElement('span');s.className='pill';s.textContent='D'+(b+1)+' · '+(ks.length>1?'canales '+(b+1)+'.'+ks[0]+'–'+(b+1)+'.'+ks[ks.length-1]:'canal '+(b+1)+'.'+ks[0]);r.appendChild(s)}}
+const t=document.createElement('span');t.style.cssText='font-size:12px;color:#9aa2c2';t.textContent=sel[0].toFixed(2)+'–'+sel[1].toFixed(2)+' µm · '+n+(n===1?' canal':' canales');r.appendChild(t)}
+function pos(e){const r=svg.getBoundingClientRect();return lx((e.clientX-r.left)/r.width*680)}
+svg.addEventListener('pointerdown',e=>{ini=pos(e);sel=[ini,ini];svg.setPointerCapture(e.pointerId);dibujar();resumen()});
+svg.addEventListener('pointermove',e=>{if(ini===null)return;const p=pos(e);sel=[Math.min(ini,p),Math.max(ini,p)];dibujar();resumen()});
+svg.addEventListener('pointerup',()=>{ini=null});document.getElementById('borrar').onclick=()=>{sel=null;dibujar();resumen()};
+botones();dibujar();resumen();setTimeout(()=>abrir(3),400);
+</script></body></html>

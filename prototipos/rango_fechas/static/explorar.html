@@ -25,14 +25,22 @@
 
   /* ---------- Escena (izquierda) ---------- */
   .escena { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-  .titulo { display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--borde); }
+  .titulo { flex-shrink: 0; display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--borde); }
   .titulo h1 { margin: 0; font: 800 17px var(--display); }
   .titulo span { color: var(--tenue); font-size: 12px; }
-  .marco { flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px; }
+  .marco { flex: 1 1 0; min-height: 0; overflow: hidden; display: grid; place-items: center; padding: 12px; }
   .lienzo { position: relative; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); }
   .lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
-  .ret { position: absolute; left: 50%; top: 50%; width: 12%; aspect-ratio: 1; transform: translate(-50%, -50%);
-         border: 1.5px solid rgba(122,162,255,.8); border-radius: 50%; pointer-events: none; }
+  /* Mira: cuatro trazos con hueco al centro, para no tapar el objeto ni parecer un botón */
+  .ret { position: absolute; left: 50%; top: 50%; width: 16%; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; }
+  .ret i { position: absolute; background: rgba(122,162,255,.9); }
+  .ret i:nth-child(1) { left: 50%; top: 0; width: 2px; height: 30%; margin-left: -1px; }
+  .ret i:nth-child(2) { left: 50%; bottom: 0; width: 2px; height: 30%; margin-left: -1px; }
+  .ret i:nth-child(3) { top: 50%; left: 0; height: 2px; width: 30%; margin-top: -1px; }
+  .ret i:nth-child(4) { top: 50%; right: 0; height: 2px; width: 30%; margin-top: -1px; }
+  .lienzo.suave canvas { image-rendering: auto; }
+  .interruptor { display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 12px; color: var(--fg); cursor: pointer; }
+  .interruptor input { width: auto; }
   .rot { position: absolute; left: 10px; top: 10px; background: rgba(0,0,0,.72); padding: 4px 10px; border-radius: 5px;
          font: 600 14px/1.4 var(--mono); }
   .rot small { display: block; font-weight: 400; color: var(--tenue); font-size: 12px; }
@@ -43,7 +51,7 @@
   .cargando-ov { position: absolute; right: 10px; bottom: 10px; font: 12px var(--mono); color: var(--fg); background: rgba(0,0,0,.65); padding: 3px 8px; border-radius: 4px; }
 
   /* ---------- Línea de tiempo ---------- */
-  .tiempo { border-top: 1px solid var(--borde); padding: 10px 16px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
+  .tiempo { flex-shrink: 0; border-top: 1px solid var(--borde); padding: 10px 16px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
   .tiempo .botones { display: flex; gap: 4px; }
   .pista { position: relative; height: 54px; cursor: ew-resize; touch-action: none; user-select: none; }
   .pista .eje { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--borde); }
@@ -65,6 +73,8 @@
   .fila2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--tenue); }
   input, select, button { font: 13px var(--texto); color: var(--fg); background: var(--bg); border: 1px solid var(--borde); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+  .fila2 input, .barra select { width: 100%; }
+  .barra { overflow-x: hidden; }
   input:focus-visible, select:focus-visible, button:focus-visible, .pista:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
   button { cursor: pointer; background: var(--panel2); }
   button.primario { background: var(--acento); border-color: var(--acento); color: #071027; font-weight: 700; }
@@ -112,7 +122,7 @@
     <div class="marco" id="marco">
       <div class="lienzo" id="lienzo">
         <canvas id="grande" width="59" height="59"></canvas>
-        <div class="ret" id="ret" hidden></div>
+        <div class="ret" id="ret" hidden title="Posición pedida (RA/Dec)"><i></i><i></i><i></i><i></i></div>
         <div class="rot" id="rot" hidden></div>
         <span class="orient">N↑ E←</span>
         <div class="escala" id="escala" hidden><i></i>30″</div>
@@ -162,6 +172,9 @@
         <button type="button" data-modo="color" aria-pressed="false">Color</button>
       </div>
       <div class="leyenda" id="leyenda"></div>
+      <label class="interruptor"><input type="checkbox" id="suave"> Suavizar píxeles</label>
+      <div class="ayuda">La mira marca la posición pedida (RA/Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento
+        está hecho para espectros de todo el cielo, no para detalle fino. El grano es ruido; baja sumando exposiciones por visita.</div>
     </div>
 
     <div class="seccion" id="secInfo" hidden>
@@ -241,6 +254,7 @@ function dibujar(canvas, b, v, m) {
 function ajustarLienzo() {
   const m = $("marco"), s = Math.max(120, Math.min(m.clientWidth, m.clientHeight) - 24);
   $("lienzo").style.width = s + "px"; $("lienzo").style.height = s + "px";
+  const fr = G && F[banda]?.[visita]; if (fr) pintarEscala(fr.meta.n_px);
 }
 new ResizeObserver(ajustarLienzo).observe($("marco"));
 
@@ -309,11 +323,14 @@ function pintarGrande() {
   }
   msg.hidden = true; dibujar($("grande"), banda, visita, modo);
   $("ret").hidden = false; $("escala").hidden = false;
-  $("escala").querySelector("i").style.width = (30 / G.pixel_scale_arcsec / fr.meta.n_px * 100) + "%";
+  pintarEscala(fr.meta.n_px);
   const ref = referencia(banda), dias = ref ? (Date.parse(fr.meta.t) - Date.parse(ref.meta.t)) / 864e5 : 0;
   $("rot").hidden = false;
   $("rot").innerHTML = `B${banda} · ${fr.meta.t.slice(0, 10)}<small>${dias >= 0 ? "+" : ""}${(dias / 365.25).toFixed(2)} años desde t₀ · λ ${fr.meta.wavelength_um ?? "?"} µm</small>`;
   pintarInfo(fr, vis);
+}
+function pintarEscala(n) {   // 30″ = 30 / 6,15 px de SPHEREx, llevados al ancho real de la imagen en pantalla
+  $("escala").querySelector("i").style.width = (30 / G.pixel_scale_arcsec / n * $("lienzo").clientWidth) + "px";
 }
 function pintarInfo(fr, vis) {
   $("secInfo").hidden = false;
@@ -334,7 +351,7 @@ function pintarChipsBanda() {
   $("bandaVisible").querySelectorAll("button").forEach(bt => bt.onclick = () => { const b = +bt.dataset.b; irA(b, visitaMasCercana(b, mjdDe(banda, visita))); });
 }
 const LEY = {
-  imagen: "Brillo con escala común para todas las fechas de la banda. El círculo marca el punto pedido.",
+  imagen: "Brillo con escala común para todas las fechas de la banda. La mira marca el punto pedido.",
   resta: '<b class="r">Rojo</b> = brillo que aparece respecto de t₀ · <b class="a">Azul</b> = brillo que estaba. Un par rojo/azul que se separa al avanzar el tiempo = movimiento.',
   color: 'Primera visita en <b class="r">rojo</b>, la actual en cian. Lo quieto se ve blanco.',
 };
@@ -343,6 +360,7 @@ document.querySelectorAll("[data-modo]").forEach(bt => bt.onclick = () => {
   $("leyenda").innerHTML = LEY[modo]; pintarGrande(); pintarMinis();
 });
 $("leyenda").innerHTML = LEY.imagen;
+$("suave").onchange = () => $("lienzo").classList.toggle("suave", $("suave").checked);
 
 // ---------------- Miniaturas ----------------
 const miniId = (b, v) => `mini-${b}-${v}`;

@@ -1,0 +1,96 @@
+/* Explorador SPHEREx: port del diseño de Bryan (prototipos/rango_fechas/static/explorar.html). */
+.explorador {
+  --b1: #4c6ef5; --b2: #15aabf; --b3: #40c057; --b4: #fab005; --b5: #fd7e14; --b6: #e03131;
+  --rojo: #ff6b6b; --azul: #4dabf7; --aviso: #f2b84b; --exp-acento: #7aa2ff;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
+  display: grid; grid-template-columns: minmax(0, 1fr) 330px; border: 1px solid var(--borde); border-radius: 12px;
+  background: #080b12; overflow: hidden;
+}
+@media (max-width: 960px) { .explorador { grid-template-columns: 1fr; } }
+
+.exp-escena { display: flex; flex-direction: column; min-width: 0; }
+.exp-titulo { display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
+.exp-titulo span { color: var(--suave); font-size: 12px; }
+.exp-lienzo {
+  position: relative; width: min(calc(100% - 24px), 640px); aspect-ratio: 1; margin: 12px auto;
+  background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde);
+}
+.exp-lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; transform-origin: 50% 50%; transition: transform 0.08s ease-out; }
+/* Zoom: amplía hacia la mira (el centro), donde está el objeto pedido */
+.exp-zoom {
+  /* abajo a la derecha (sobre «cargando…»): arriba la tapaba el rótulo de fecha en pantallas angostas */
+  position: absolute; right: 10px; bottom: 36px; z-index: 2; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; background: rgba(0, 0, 0, 0.6); padding: 4px; border-radius: 6px;
+}
+.exp-zoom button { width: 32px; height: 32px; padding: 0; font-size: 1.1rem; line-height: 1; }
+.exp-zoom span { font: 12px var(--mono); color: var(--suave); }
+/* Arrastrar con zoom: mano abierta / cerrada, y sin animación mientras se arrastra (si no, se siente pegajoso) */
+.exp-lienzo.movible { cursor: grab; touch-action: none; }
+.exp-lienzo.arrastrando { cursor: grabbing; }
+.exp-lienzo.arrastrando canvas { transition: none; }
+.exp-lienzo.suave canvas { image-rendering: auto; }
+
+/* Mira: cuatro trazos con hueco al centro, para no tapar el objeto */
+.exp-ret { position: absolute; left: 50%; top: 50%; width: 16%; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; }
+.exp-ret i { position: absolute; background: rgba(122, 162, 255, 0.9); }
+.exp-ret i:nth-child(1) { left: 50%; top: 0; width: 2px; height: 30%; margin-left: -1px; }
+.exp-ret i:nth-child(2) { left: 50%; bottom: 0; width: 2px; height: 30%; margin-left: -1px; }
+.exp-ret i:nth-child(3) { top: 50%; left: 0; height: 2px; width: 30%; margin-top: -1px; }
+.exp-ret i:nth-child(4) { top: 50%; right: 0; height: 2px; width: 30%; margin-top: -1px; }
+
+.exp-rot { position: absolute; left: 10px; top: 10px; background: rgba(0, 0, 0, 0.72); padding: 4px 10px; border-radius: 5px; font: 600 14px/1.4 var(--mono); }
+.exp-rot small { display: block; font-weight: 400; color: var(--suave); font-size: 12px; }
+.exp-orient { position: absolute; right: 10px; top: 10px; font: 12px var(--mono); color: var(--suave); background: rgba(0, 0, 0, 0.6); padding: 3px 7px; border-radius: 4px; }
+.exp-escala { position: absolute; left: 12px; bottom: 12px; width: calc(100% - 24px); font: 12px var(--mono); pointer-events: none; }
+.exp-escala i { display: block; height: 2px; background: var(--texto); margin-bottom: 4px; }
+.exp-mensaje { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; justify-items: center; text-align: center; padding: 32px; color: var(--suave); font-size: 15px; }
+.exp-cargando { position: absolute; right: 10px; bottom: 10px; font: 12px var(--mono); background: rgba(0, 0, 0, 0.65); padding: 3px 8px; border-radius: 4px; }
+
+/* Línea de tiempo proporcional a la fecha */
+.exp-tiempo { border-top: 1px solid var(--borde); padding: 10px 16px 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
+.exp-botones { display: flex; gap: 4px; }
+.exp-pista { position: relative; height: 54px; cursor: ew-resize; touch-action: none; user-select: none; }
+.exp-pista .eje { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--borde); }
+.exp-pista .marca { position: absolute; top: 15px; width: 10px; height: 16px; margin-left: -5px; border-radius: 3px; border: 2px solid var(--c); background: transparent; }
+.exp-pista .marca.lista { background: var(--c); }
+.exp-pista .marca.error { border-color: var(--rojo); background: #3a1a1f; }
+.exp-pista .mes { position: absolute; top: 36px; font: 11px var(--mono); color: var(--suave); transform: translateX(-50%); white-space: nowrap; }
+.exp-pista .puntero { position: absolute; top: 0; bottom: 18px; width: 2px; margin-left: -1px; background: var(--texto); pointer-events: none; transition: left 0.08s; }
+.exp-pista .puntero::before { content: ""; position: absolute; top: -2px; left: -6px; border: 7px solid transparent; border-top-color: var(--texto); }
+.exp-pista .fantasma { position: absolute; top: 4px; bottom: 18px; width: 1px; background: rgba(228, 233, 243, 0.35); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .exp-pista .puntero { transition: none; } }
+
+/* Barra derecha */
+.exp-barra { border-left: 1px solid var(--borde); background: var(--panel); padding: 14px; display: flex; flex-direction: column; gap: 16px; overflow-x: hidden; }
+@media (max-width: 960px) { .exp-barra { border-left: 0; border-top: 1px solid var(--borde); } }
+.exp-seccion { display: flex; flex-direction: column; gap: 8px; }
+.exp-seccion h3 { margin: 0; font: 600 11px var(--mono); letter-spacing: 0.1em; color: var(--suave); text-transform: uppercase; }
+.exp-seccion label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--suave); }
+.exp-seccion input { background: #080b12; color: var(--texto); border: 1px solid var(--borde); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+.exp-fila2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.exp-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.exp-chips button { font: 600 12px var(--mono); padding: 5px 9px; }
+.exp-chips button[aria-pressed="true"] { background: var(--c); border-color: var(--c); color: #fff; }
+.exp-modos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.exp-modos button { padding: 0.4rem 0.3rem; font-size: 0.85rem; }
+.exp-modos button[aria-pressed="true"] { background: var(--texto); color: #080b12; border-color: var(--texto); }
+.exp-leyenda, .exp-ayuda { margin: 0; font-size: 12px; color: var(--suave); }
+.exp-seccion .exp-interruptor { flex-direction: row; align-items: center; gap: 8px; color: var(--texto); cursor: pointer; }
+.exp-info { margin: 0; display: grid; gap: 3px; font-size: 12px; }
+.exp-info-fila { display: grid; grid-template-columns: 7.5rem 1fr; gap: 10px; }
+.exp-info dt { color: var(--suave); }
+.exp-info dd { margin: 0; font-family: var(--mono); overflow-wrap: anywhere; }
+.exp-estado { font-size: 12px; color: var(--suave); }
+.explorador .aviso { color: var(--aviso); font-size: 12px; }
+.exp-barrita { height: 4px; background: var(--borde); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+.exp-barrita i { display: block; height: 100%; background: var(--exp-acento); transition: width 0.2s; }
+
+/* Rejilla bandas × fechas */
+.exp-minis { overflow-x: auto; }
+.exp-minis table { border-collapse: separate; border-spacing: 2px; }
+.exp-minis th { font: 600 10px var(--mono); color: var(--suave); padding: 0 3px; white-space: nowrap; }
+.exp-minis .mini, .exp-minis .vacia { display: block; width: 30px; height: 30px; padding: 0; border-radius: 3px; border: 1.5px solid transparent; overflow: hidden; background: var(--borde); }
+.exp-minis .mini canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.exp-minis .mini.sel { border-color: var(--texto); }
+.exp-minis .vacia { background: repeating-linear-gradient(45deg, var(--panel) 0 4px, #080b12 4px 8px); }
+.explorador kbd { font: 10px var(--mono); border: 1px solid var(--borde); border-radius: 3px; padding: 0 4px; }

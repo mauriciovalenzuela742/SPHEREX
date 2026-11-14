@@ -9,7 +9,9 @@ import { textos } from "../content/textos";
 import type { Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
-import BlinkPanel from "../blink/BlinkPanel";
+import Explorador from "../explorador/Explorador";
+import { useDatosSpherex } from "../explorador/useDatosSpherex";
+import Prisma from "../prisma/Prisma";
 import type { Accion } from "../spherix/motor";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
@@ -25,6 +27,8 @@ function Hueco({ titulo, quien }: { titulo: string; quien: string }) {
 
 export default function Visor({ estado, set, asistido }: Props) {
   const enMision = Boolean(estado.mision);
+  // Un solo origen de datos para el Explorador (tiempo) y el Prisma (colores).
+  const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, !enMision);
   return (
     <section className="visor">
       <div className="barra">
@@ -57,14 +61,6 @@ export default function Visor({ estado, set, asistido }: Props) {
             ))}
           </select>
         </label>
-        <label>
-          Desde
-          <input type="date" disabled title="Pendiente: Vladimir (from/to)" />
-        </label>
-        <label>
-          Hasta
-          <input type="date" disabled title="Pendiente: Vladimir (from/to)" />
-        </label>
       </div>
 
       <div className="objetos" role="group" aria-label="Objetos de prueba">
@@ -88,8 +84,8 @@ export default function Visor({ estado, set, asistido }: Props) {
           </p>
           {!enMision && (
             <>
-            <BlinkPanel ra={estado.ra} dec={estado.dec} size={estado.size} band={estado.band} />
-            <Hueco titulo="Gráfico de bandas (espectro, 0,75–5 µm) + barra UV · V · IR · X" quien="Juan Pablo + Bryan (/api/spectrum)" />
+            <Explorador datos={datos} />
+            <Prisma datos={datos} />
             </>
           )}
         </div>
@@ -107,7 +103,6 @@ export default function Visor({ estado, set, asistido }: Props) {
               <strong>Cómo leer el parpadeo</strong>
               <p>Cada cuadro es una visita de SPHEREx, de la más antigua a la más reciente. En «Resta con la primera», lo que apareció queda de un color y lo que se fue, del otro: una pareja pegada es algo que se movió.</p>
             </div>
-            <Hueco titulo="Contaminación (% …) — por definir" quien="Mauricio + Bryan" />
           </aside>
         )}
       </div>
