@@ -86,8 +86,8 @@ desperdicia una oportunidad.
 ### Datos y recursos usados
 
 Listar con enlace: la página de misión de SPHEREx en IRSA, la release concreta (DR1 / QR3) y las
-colecciones SIA2, los servicios de IRSA usados (cutouts, cubo HiPS, MOST…), Aladin Lite y los HiPS
-del CDS, Gaia DR3, SIMBAD, Astropy. Si se usó algún recurso de la agencia socia (CSA/NEOSSat),
+colecciones SIA2, los servicios de IRSA usados (cutouts, cubo HiPS, MOST…), Aladin Lite 3.8.2, el cubo
+HiPS de SPHEREx DR1 (IRSA), Gaia DR3 (VizieR, espejo de Harvard/CfA), SIMBAD (CDS y espejo de Harvard), Astropy. Si se usó algún recurso de la agencia socia (CSA/NEOSSat),
 nombrarlo: **suma en el criterio *Global Connection***.
 
 ### Atribución obligatoria
