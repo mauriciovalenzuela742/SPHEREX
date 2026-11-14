@@ -42,3 +42,10 @@ desktop.ini
 # Claude Code: la configuración compartida SÍ se versiona,
 # la local de cada persona no.
 .claude/settings.local.json
+
+# Vercel (enlace local del proyecto)
+.vercel
+
+.vercel
+.env*
+*.tsbuildinfo

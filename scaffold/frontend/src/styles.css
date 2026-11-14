@@ -1,0 +1,83 @@
+/* Estilos base. Accesibilidad (pizarra 2): letra simple ≥16px, buen contraste, sin depender de rojo/verde. */
+:root {
+  --fondo: #0b1020;
+  --panel: #141b33;
+  --texto: #eef1f8;
+  --suave: #a9b3cf;
+  --acento: #ffb000; /* ámbar: distinguible para daltónicos */
+  --borde: #2b3557;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--fondo);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); }
+button, input, select { font: inherit; }
+button {
+  background: var(--panel); color: var(--texto); border: 1px solid var(--borde);
+  border-radius: 8px; padding: 0.45rem 0.9rem; cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--acento); }
+button:disabled, input:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primario { background: var(--acento); color: #111; border-color: var(--acento); font-weight: 600; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+a { color: var(--acento); }
+
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+header {
+  display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--borde); position: relative;
+}
+.marca { font-size: 1.3rem; font-weight: 700; border: none; background: none; padding: 0; }
+.etiqueta { color: var(--suave); font-size: 0.85rem; flex: 1; }
+.hamburguesa { font-size: 1.2rem; }
+.menu {
+  position: absolute; right: 1rem; top: 3.2rem; z-index: 10; display: flex; flex-direction: column;
+  gap: 0.4rem; background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem;
+}
+main { flex: 1; padding: 1rem; }
+footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-top: 1px solid var(--borde); }
+
+.landing { max-width: 720px; margin: 2rem auto; }
+.landing h1 { font-size: 2.2rem; margin: 0 0 1rem; }
+.lead { font-size: 1.15rem; color: var(--suave); }
+.ods { list-style: none; padding: 0; display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.ods li { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 0.8rem; }
+.ods-num { display: inline-block; font-weight: 700; color: var(--acento); margin-right: 0.5rem; }
+.acciones { display: flex; gap: 0.8rem; margin: 1.5rem 0; flex-wrap: wrap; }
+.nota { color: var(--suave); }
+
+.barra { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: end; }
+.barra label { display: flex; flex-direction: column; font-size: 0.85rem; color: var(--suave); }
+.barra input, .barra select {
+  background: var(--panel); color: var(--texto); border: 1px solid var(--borde);
+  border-radius: 6px; padding: 0.35rem 0.5rem; min-width: 7rem;
+}
+.objetos { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
+.cuerpo { display: grid; grid-template-columns: 1fr 300px; gap: 1rem; }
+@media (max-width: 860px) { .cuerpo { grid-template-columns: 1fr; } }
+.principal { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+.aladin { width: 100%; height: 460px; border-radius: 8px; overflow: hidden; border: 1px solid var(--borde); }
+.vacio { padding: 2rem; border: 1px dashed var(--borde); border-radius: 8px; color: var(--suave); }
+.reproductor { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.reproductor input[type="range"] { flex: 1; min-width: 120px; }
+.quien { color: var(--suave); font-size: 0.8rem; }
+.tira { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+.lateral { display: flex; flex-direction: column; gap: 0.8rem; }
+.tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 0.8rem; }
+.tarjeta p { margin: 0.4rem 0 0; color: var(--suave); }
+.hueco {
+  border: 1px dashed var(--borde); border-radius: 8px; padding: 0.8rem; min-height: 80px;
+  display: flex; flex-direction: column; gap: 0.3rem; color: var(--suave); font-size: 0.85rem;
+}
+.hueco strong { color: var(--texto); }
+.spherix {
+  position: fixed; right: 1rem; bottom: 3.5rem; width: 280px; background: var(--panel);
+  border: 1px solid var(--borde); border-radius: 12px; padding: 0.8rem; box-shadow: 0 6px 24px #0008;
+}
+.spherix.abierto { border-color: var(--acento); }
+.spherix p { margin: 0.3rem 0 0.5rem; }
+.spherix input { width: 100%; background: var(--fondo); color: var(--texto); border: 1px solid var(--borde); border-radius: 6px; padding: 0.35rem; }
+@media (max-width: 860px) { .spherix { position: static; width: auto; margin-top: 1rem; } }

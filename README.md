@@ -4,6 +4,13 @@
 videíto: la secuencia de imágenes de SPHEREx a lo largo del tiempo, para detectar a ojo lo que se mueve
 o cambia de brillo, y además de qué está hecho (las 102 bandas).**
 
+## 🔭 Visor en vivo: **https://spherex-planet-x-tau.vercel.app**
+
+Ejemplo directo: [Estrella de Barnard en la banda D1](https://spherex-planet-x-tau.vercel.app/?ra=269.4520769586187&dec=4.693364966576667&size=0.1&band=1).
+Hoy es el esqueleto visual de la pizarra: landing, visor con el cielo real de SPHEREx DR1 (cubo de IRSA, por
+banda), controles conectados a la URL y huecos punteados con el nombre de quien los completa.
+Se despliega solo desde `main`; cada PR recibe su propia URL de vista previa.
+
 Este README es **el plan principal del equipo**. El detalle vive en `docs/` (fuente de verdad),
 y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
 
@@ -64,8 +71,11 @@ Caché en disco con **los cinco campos precalentados**; modo degradado offline p
 Stack ([`docs/adr/ADR-001-stack.md`](docs/adr/ADR-001-stack.md)): Python 3.11 + FastAPI + astropy/astroquery/pyvo ·
 React + Vite + TypeScript + Aladin Lite v3.
 
-**Despliegue (decidido 14-nov): el visor va en Vercel.** El frontend se publica en Vercel desde `main`
-(previews automáticos por PR). Para el backend, la recomendación es:
+**Despliegue (decidido 14-nov): el visor va en Vercel.** Proyecto `spherex-planet-x` en el equipo
+eMind de Vercel, conectado a este repositorio. Producción: **https://spherex-planet-x-tau.vercel.app**,
+desde `main`; cada PR recibe una URL de vista previa automática. La configuración está en
+[`vercel.json`](vercel.json) (construye `scaffold/frontend`), y [`.vercelignore`](.vercelignore) deja fuera
+`docs/`, `data/` y todo lo que no es frontend. Para el backend, la recomendación es:
 - **Los 5 campos de prueba precalculados como archivos estáticos** (PNG + JSON con la forma del contrato)
   servidos por el mismo Vercel. Resuelve la «¡Latencia!» de la pizarra y es el modo offline de la demo.
 - **Coordenadas arbitrarias:** FastAPI en Vercel Python Functions si los cutouts caben en el tiempo

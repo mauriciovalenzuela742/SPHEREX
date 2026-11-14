@@ -1,0 +1,15 @@
+# Solo el frontend se sube a Vercel. Nada interno ni pesado.
+docs/
+biblio/
+data/
+.claude/
+.claude-plugin/
+.github/
+scaffold/backend/
+scaffold/frontend/node_modules/
+scaffold/frontend/dist/
+*.fits
+*.fits.gz
+.env
+.env.*
+.vercel/

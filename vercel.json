@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd scaffold/frontend && npm ci",
+  "buildCommand": "cd scaffold/frontend && npm run build",
+  "outputDirectory": "scaffold/frontend/dist",
+  "framework": null
+}
