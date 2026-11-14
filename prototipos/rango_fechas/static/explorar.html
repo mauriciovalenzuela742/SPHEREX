@@ -18,6 +18,7 @@
     --barra: 350px;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }  /* si no, .mensaje { display: grid } le gana a hidden y el aviso queda encima */
   html, body { height: 100%; }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--texto); overflow: hidden; }
   .app { display: grid; grid-template-columns: minmax(0, 1fr) var(--barra); height: 100vh; }
