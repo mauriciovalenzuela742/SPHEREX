@@ -32,8 +32,8 @@ no lo es. El entregable que se juzga es el visor.
    Un MEF de SPHEREx pesa unos 70 MB.
 7. **No publiques nada hacia afuera** —desplegar a un dominio público, subir a redes, enviar
    correos, abrir issues en repositorios ajenos— sin que una persona lo apruebe explícitamente.
-8. **Reglas del evento:** antes del inicio oficial del hackatón no se escribe código que resuelva
-   el desafío. Ver `docs/08_REGLAS_DEL_EVENTO.md`.
+8. **Reglas del evento:** el hackatón empezó el 14-nov-2026 a las 10:00; antes no se escribía código que
+   resuelva el desafío. Ver `docs/08_REGLAS_DEL_EVENTO.md`.
 
 ## 3. Stack decidido
 
@@ -43,9 +43,9 @@ no lo es. El entregable que se juzga es el visor.
 | Acceso a datos | `pyvo` (SIA2) y HTTP directo al servicio de cutouts de IRSA | Es la vía documentada por IRSA |
 | Imagen | `astropy.io.fits`, `astropy.wcs`, `astropy.visualization` | Estándar de la comunidad |
 | Frontend | React + Vite + TypeScript | Rápido de levantar, el equipo lo conoce |
-| Cielo | Aladin Lite v3 (HiPS, CDS) | Resuelve contexto del cielo y overlays sin escribirlos |
+| Cielo | Aladin Lite 3.8.2 (fijada) sobre el cubo HiPS de IRSA; Gaia y SIMBAD con espejos de Harvard | Resuelve contexto del cielo y overlays sin escribirlos |
 | Caché | Disco local (`data/cache/`), opcional Redis | Los cutouts son lentos; sin caché la demo se cae |
-| Despliegue | Frontend estático + backend en contenedor | Ver `docs/03_ARQUITECTURA.md` |
+| Despliegue | Frontend en Vercel (solo Mauricio tiene acceso); backend por decidir (ADR-001) | Ver `docs/03_ARQUITECTURA.md` |
 
 Esta decisión está en `docs/adr/ADR-001-stack.md`. **No la cambies solo.** Si crees que está
 equivocada, escribe un ADR nuevo y plantéalo al equipo.
