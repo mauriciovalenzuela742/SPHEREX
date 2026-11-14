@@ -100,7 +100,12 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
 
 ## V2 · Juan Pablo — visor del cielo
 
-- **El cubo HiPS de IRSA carga en Aladin** y Mauricio ya lo dejó funcionando en `src/sky/AladinView.tsx`
+> **Hecho en el PR #6 (fusionado el 14-nov):** deslizador de λ sobre los 102 planos (sin 50 y 51), marca
+> del objeto y cuadro del recorte propagados a 2026, capa Gaia DR3 propagada (tope de 300 estrellas) y capa
+> SIMBAD con rótulo al pasar y clic que elige posición. **Falta:** gráfico de bandas (con D2), clic →
+> animación recortada, Spherix.
+
+- **El cubo HiPS de IRSA carga en Aladin** y Mauricio ya lo dejó funcionando en `scaffold/frontend/src/sky/AladinView.tsx`
   (Aladin Lite 3.8.2, un plano por banda). Es un mosaico de todas las épocas, a 12,9″/px: contexto y
   102 bandas, no tiempo. El HiPS del CDS (QR2) queda como plan B.
 - Para el **gráfico de bandas** el cubo no sirve (son PNG estirados, sin flujos); el espectro sale de
