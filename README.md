@@ -48,7 +48,7 @@ y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
    agrupar por banda/λ (`WCS-WAVE`) da una secuencia que muestra color, no tiempo.
 3. **Usar DR1 + QR3.** QR2 ya no es buscable por SIA2.
 4. **WISE 0855 no está en Gaia:** su overlay usa CatWISE2020.
-5. **WISE 0855 es caso obligatorio y se ve débil en una exposición suelta.** Se muestra siempre, y se dice con honestidad: su movimiento (~1,3 px en todo el período) se ve con la resta primera − última y, cuando exista, con la suma por barrido (ambos pendientes: overlay CatWISE2020, V2; suma con pesos 1/VARIANCE, D2). eps Ind B es donde el movimiento se ve más claro (`docs/09` §4).
+5. **WISE 0855 es caso obligatorio y se ve débil en una exposición suelta.** Se muestra siempre, y se dice con honestidad: su movimiento (~1,3 px en todo el período) se ve con la resta primera − última y, cuando exista, con la suma por barrido (overlay CatWISE2020 de V2: hecho en la rama `v/v2-catwise`, pendiente de PR; suma con pesos 1/VARIANCE de D2: pendiente). eps Ind B es donde el movimiento se ve más claro (`docs/09` §4).
 
 ---
 
