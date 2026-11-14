@@ -43,7 +43,7 @@ const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 type Props = { datos: DatosSpherex };
 
 export default function Explorador({ datos }: Props) {
-  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual } = datos;
+  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando } = datos;
 
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
@@ -232,9 +232,12 @@ export default function Explorador({ datos }: Props) {
                 : error
                   ? `No se pudo traer esta imagen: ${error}`
                   : `Cargando la imagen del ${visitas[visita]?.start.slice(0, 10) ?? ""}…`}
-              {!grid && /IRSA|HTTP|502|503/.test(mensaje) && (
+              {/* Reintentar cuando puede servir: errores de IRSA, de red o del servidor (mensajes de errores.ts) */}
+              {!grid && /IRSA|HTTP|\(50\d\)|conexión|servidor/.test(mensaje) && (
                 <button onClick={() => setIntento((x) => x + 1)}>Reintentar</button>
               )}
+              {/* Una foto suelta falló (la búsqueda sí funcionó): pedir solo esa */}
+              {grid && error && <button onClick={() => reintentarImagen(banda, visita)}>Reintentar esta imagen</button>}
             </div>
           )}
         </div>
@@ -316,6 +319,12 @@ export default function Explorador({ datos }: Props) {
               {prog.hechos < prog.total ? "Cargando" : "Listo:"} {prog.hechos}/{prog.total} imágenes
               {prog.errores > 0 && <span className="aviso"> · {prog.errores} con error</span>}
               <div className="exp-barrita"><i style={{ width: `${pct}%` }} /></div>
+              {/* Cuando terminó la carga normal y quedaron fotos con error: pedir de nuevo solo esas */}
+              {prog.errores > 0 && prog.hechos >= prog.total && (
+                <button className="exp-reintentar" onClick={reintentarFallidas} disabled={reintentando}>
+                  {reintentando ? "Reintentando…" : `Reintentar las ${prog.errores} con error`}
+                </button>
+              )}
             </div>
           )}
           {(grid?.warnings ?? []).map((w) => <div key={w} className="aviso">{w}</div>)}
