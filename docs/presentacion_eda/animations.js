@@ -233,9 +233,12 @@
   });
 
   // ================================================================ flujo: siete piezas y sus dueños
+  // Reparto del plan del equipo (README §3 y docs/05_PLAN_24H.md).
   const PIEZAS = [
-    ["Buscar", "SIA2 DR1 + QR3", "D1"], ["Elegir épocas", "misma λ", "D1"], ["Recortar", "+ caché", "D2"],
-    ["Filtros", "máscara + alinear", "F · JP"], ["Restas", "y sumas", "F · JP"], ["Imagen", "PNG", "V"], ["Visor", "blink + Aladin", "V"],
+    ["Buscar", "SIA2 DR1 + QR3", ["D1", "Vladimir"]], ["Elegir épocas", "misma λ", ["D2", "Bryan"]],
+    ["Recortar", "+ caché", ["D1", "Vladimir"]], ["Filtros", "máscara + alinear", ["D2", "Bryan"]],
+    ["Restas", "y sumas", ["D2", "Bryan"]], ["Imagen", "PNG", ["D2", "Bryan"]],
+    ["Visor", "blink · cielo", ["V1 Antonia", "V2 Juan Pablo"]],
   ];
   A.flujo = K.scene({
     states: [{ duenos: 0 }, { duenos: 1 }], duration: 900,
@@ -244,17 +247,18 @@
       const g = { duenos: svg("g", {}, s) };
       PIEZAS.forEach(([a, b, d], i) => {
         const x = x0 + i * (w + gap);
-        const fuerte = d.startsWith("F");
-        svg("rect", { x, y, width: w, height: h, rx: 10, style: `fill:#10203a;stroke:${V(fuerte ? "accent" : "accent-2")};stroke-width:${fuerte ? 4 : 2}` }, s);
+        const color = d[0].startsWith("V") ? "accent" : "accent-2";
+        svg("rect", { x, y, width: w, height: h, rx: 10, style: `fill:#10203a;stroke:${V(color)};stroke-width:2` }, s);
         label(s, x + w / 2, y + 62, `${i + 1}. ${a}`, 28, "ink", "middle", 600);
         label(s, x + w / 2, y + 104, b, 22, "ink-soft", "middle");
         if (i < 6) label(s, x + w + gap / 2, y + h / 2 + 10, "→", 30, "ink-soft", "middle");
-        label(g.duenos, x + w / 2, y + h + 56, d, 30, fuerte ? "accent" : "accent-2", "middle", 600);
+        label(g.duenos, x + w / 2, y + h + 50, d[0], 26, color, "middle", 600);
+        label(g.duenos, x + w / 2, y + h + 86, d[1], 26, color, "middle", 600);
       });
       label(s, x0, y - 40, "coordenada  →", 26, "ink-soft");
       label(s, 1920 - x0, y - 40, "→  pantalla", 26, "ink-soft", "end");
-      svg("rect", { x: x0, y: 720, width: 1920 - 2 * x0, height: 64, rx: 10, style: `fill:none;stroke:${V("line")};stroke-width:2` }, g.duenos);
-      label(g.duenos, 960, 762, "C verifica todo el camino  ·  N lo cuenta (README, demo, pitch)", 28, "ink-soft", "middle");
+      svg("rect", { x: x0, y: 740, width: 1920 - 2 * x0, height: 64, rx: 10, style: `fill:none;stroke:${V("line")};stroke-width:2` }, g.duenos);
+      label(g.duenos, 960, 782, "C · Mauricio verifica todo el camino y decide el despliegue  ·  N · Javiera lo cuenta", 28, "ink-soft", "middle");
       return g;
     },
     draw(g, st) { g.duenos.style.opacity = st.duenos; },

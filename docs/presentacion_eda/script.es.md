@@ -114,8 +114,8 @@ message: Las estrellas más rápidas se mueven 1–2 píxeles en un año de SPHE
 @class full
 @anim flujo
 @steps 1
-@source Propuesta en docs/10_REPARTO_DE_TRABAJO.md. Los nombres los pone el equipo.
-> Primero el camino de los datos, de la coordenada a la imagen en pantalla. Después quién toma cada pieza. Ciencia verifica todo el camino y Narrativa lo cuenta.
+@source Reparto del plan del equipo (README §3, docs/05_PLAN_24H.md); tareas del EDA por rol en docs/10_REPARTO_DE_TRABAJO.md.
+> Primero el camino de los datos, de la coordenada a la imagen en pantalla. Después quién toma cada pieza, según el plan que ya acordamos: el EDA le carga más trabajo a D2, que recibe la selección por λ, los filtros y las restas.
 @why El reparto se lee sobre el flujo de datos: cada persona ve dónde encaja su pieza y con quién se conecta.
 
 ## Lo que todavía no sabemos
