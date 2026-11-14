@@ -30,6 +30,8 @@ type EpocaAntigua = {
 // la toma de cada objeto cae en ese rango (Barnard 2000,4; WISE 0855 1999,0).
 // 2MASS color trae parches VERDES de fondo en algunas franjas de barrido (p. ej. cerca de WISE 0855): vienen
 // dentro de las teselas (IRSA y ESA sirven los mismos bytes, Norder8/Npix654477), no de nuestra mezcla de capas.
+// Por eso se usa la banda K sola (2,16 µm, dentro del rango de SPHEREx; mismas fechas). La ESA no sirve 2MASS K:
+// el respaldo sigue siendo el color de la ESA (igual que AllWISE, cuyo respaldo también es color).
 // AllWISE: se rotula «época ~2010». El t_min / t_max de su `properties` (MJD 55378–55414) NO es el periodo
 // de observación de AllWISE, así que no se usa para dar fechas.
 const EPOCAS: EpocaAntigua[] = [
@@ -43,9 +45,9 @@ const EPOCAS: EpocaAntigua[] = [
   {
     id: "2mass",
     boton: "2MASS ~2000",
-    rotulo: "2MASS color J·H·K · 1997–2001",
+    rotulo: "2MASS K · 2,16 µm · 1997–2001",
     atribucion: "2MASS: UMass/IPAC-Caltech (NASA/NSF)",
-    urls: ["https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color", "https://skies.esac.esa.int/2MASSColor"],
+    urls: ["https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/K", "https://skies.esac.esa.int/2MASSColor"],
   },
 ];
 
