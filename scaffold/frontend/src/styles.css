@@ -43,9 +43,6 @@ footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-t
 .landing { max-width: 720px; margin: 2rem auto; }
 .landing h1 { font-size: 2.2rem; margin: 0 0 1rem; }
 .lead { font-size: 1.15rem; color: var(--suave); }
-.ods { list-style: none; padding: 0; display: flex; gap: 0.8rem; flex-wrap: wrap; }
-.ods li { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 0.8rem; }
-.ods-num { display: inline-block; font-weight: 700; color: var(--acento); margin-right: 0.5rem; }
 .acciones { display: flex; gap: 0.8rem; margin: 1.5rem 0; flex-wrap: wrap; }
 .nota { color: var(--suave); }
 

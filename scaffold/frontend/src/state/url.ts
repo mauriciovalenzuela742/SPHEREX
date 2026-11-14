@@ -1,6 +1,7 @@
 /**
  * Estado del visor ↔ URL (?ra=&dec=&size=&band=&mision=). Dueña: Antonia (V1).
  * `mision` = paso del Modo Misión (intro | 1..5 | fin): cada nivel es un enlace compartible.
+ * `tutorial` = el recorrido guiado por Spherix está abierto (?tutorial=1): se puede compartir y repetir.
  * Contrato de la URL: docs/03_ARQUITECTURA.md §4. Pendiente: target, fps, stretch, mode.
  */
 import { useCallback, useState } from "react";
@@ -13,6 +14,7 @@ export type Estado = {
   band: string;
   vista: "landing" | "visor";
   mision?: string;
+  tutorial?: boolean;
 };
 
 // Por defecto, Epsilon Indi B en su posición de hoy: el movimiento que el EDA midió con datos reales.
@@ -30,8 +32,9 @@ function leer(): Estado {
     dec: num("dec", DEFECTO.dec),
     size: num("size", DEFECTO.size),
     band: q.get("band") ?? DEFECTO.band,
-    vista: q.has("ra") || q.has("mision") || q.get("vista") === "visor" ? "visor" : "landing",
+    vista: q.has("ra") || q.has("mision") || q.has("tutorial") || q.get("vista") === "visor" ? "visor" : "landing",
     mision: q.get("mision") ?? undefined,
+    tutorial: q.get("tutorial") === "1" || undefined,
   };
 }
 
@@ -47,6 +50,7 @@ export function useEstadoUrl() {
         q.set("size", String(nuevo.size));
         q.set("band", nuevo.band);
         if (nuevo.mision) q.set("mision", nuevo.mision);
+        if (nuevo.tutorial) q.set("tutorial", "1");
       }
       const qs = q.toString();
       window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);

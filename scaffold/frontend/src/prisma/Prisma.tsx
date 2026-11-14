@@ -27,12 +27,12 @@ export default function Prisma({ datos }: { datos: DatosSpherex }) {
         <p className="prisma-vacio">{prisma.ojo.sinDatos}</p>
       ) : (
         <div className="prisma-cuerpo">
-          <div className="prisma-col">
+          <div className="prisma-col" data-tour="prisma-ojo">
             <h3>{prisma.ojo.titulo}</h3>
             <p className="prisma-texto">{prisma.ojo.texto}</p>
             <OjoInfrarrojo datos={datos} />
           </div>
-          <div className="prisma-col prisma-ancha">
+          <div className="prisma-col prisma-ancha" data-tour="prisma-huella">
             <h3>{prisma.huella.titulo}</h3>
             <p className="prisma-texto">{prisma.huella.texto}</p>
             <HuellaEspectral puntos={puntos} sel={{ banda, visita }} onPunto={irA} />

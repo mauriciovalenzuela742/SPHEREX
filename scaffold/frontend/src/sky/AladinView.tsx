@@ -148,11 +148,15 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
   }
   return (
     <>
-      <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" />
+      {/* data-tour: anclas del tutorial de Spherix (src/tutorial); no cambian el comportamiento. */}
+      <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" data-tour="mapa" />
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 6, marginTop: 6 }}>
-        <ControlEpocas aladin={listo ? aladin.current : null} />
+        <div data-tour="epocas">
+          <ControlEpocas aladin={listo ? aladin.current : null} />
+        </div>
         <button
           type="button"
+          data-tour="catalogos"
           aria-pressed={mostrarCatalogos}
           onClick={() => setMostrarCatalogos((v) => !v)}
           title="Gaia DR3 (círculos), CatWISE2020 (triángulos) y SIMBAD (cuadrados)"
@@ -160,7 +164,9 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
           {mostrarCatalogos ? "Ocultar catálogos" : "Mostrar catálogos (Gaia, CatWISE, SIMBAD)"}
         </button>
       </div>
-      <SelectorLambda plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
+      <div data-tour="lambda">
+        <SelectorLambda plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
+      </div>
     </>
   );
 }

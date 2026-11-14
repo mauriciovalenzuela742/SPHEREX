@@ -27,7 +27,7 @@ export const spherix = {
   nombre: "Spherix",
 
   saludoAsistido: [
-    "¡Hola! Soy Spherix 👋 Vivo dentro de las fotos que la misión SPHEREx de la NASA saca de todo el cielo.",
+    "¡Hola! Soy Spherix 👋 Te acompaño en AstroTRACK. Vivo dentro de las fotos que la misión SPHEREx de la NASA saca de todo el cielo.",
     "¿Qué parte del cielo quieres ver hoy? Puedes elegir una de abajo, escribir el nombre de una estrella o unas coordenadas.",
   ],
   saludoChat: ["¿En qué puedo ayudarte hoy? Pregúntame qué estás viendo o pídeme que te lleve a otra parte del cielo."],

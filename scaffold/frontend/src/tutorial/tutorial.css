@@ -1,0 +1,75 @@
+/* Tutorial guiado por Spherix: capa oscura, sección iluminada y burbuja. */
+.tut { position: fixed; inset: 0; z-index: 1000; }
+
+/* Bloquea los clics a la página. Sin sección (bienvenida y cierre) también oscurece. */
+.tut-velo { position: fixed; inset: 0; background: transparent; }
+.tut-velo-oscuro { background: rgba(5, 8, 18, 0.78); }
+
+/* Recuadro de la sección: la sombra gigante oscurece todo lo demás. */
+.tut-foco {
+  position: fixed;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(5, 8, 18, 0.78), 0 0 0 2px var(--acento), 0 0 22px 4px rgba(255, 176, 0, 0.45);
+  pointer-events: none;
+  transition: top 0.35s ease, left 0.35s ease, width 0.35s ease, height 0.35s ease;
+}
+
+.tut-burbuja {
+  position: fixed;
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--panel);
+  color: var(--texto);
+  border: 2px solid var(--acento);
+  border-radius: 14px;
+  padding: 0.9rem 1rem 1rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: top 0.35s ease, left 0.35s ease;
+}
+@media (max-width: 639px) { .tut-burbuja { width: auto; } }
+
+/* Flechita que apunta a la sección. */
+.tut-burbuja::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--panel);
+  border: 2px solid var(--acento);
+  transform: rotate(45deg);
+  display: none;
+}
+.tut-flecha-arriba::before { display: block; top: -9px; left: 28px; border-right: 0; border-bottom: 0; }
+.tut-flecha-abajo::before { display: block; bottom: -9px; left: 28px; border-left: 0; border-top: 0; }
+.tut-flecha-izquierda::before { display: block; left: -9px; top: 28px; border-right: 0; border-top: 0; }
+.tut-flecha-derecha::before { display: block; right: -9px; top: 28px; border-left: 0; border-bottom: 0; }
+@media (max-width: 639px) { .tut-burbuja::before { display: none !important; } }
+
+.tut-cabecera { display: flex; align-items: center; gap: 0.6rem; }
+.tut-cabecera .spherix-cara { width: 44px; height: 44px; flex: none; }
+.tut-cabecera > div { flex: 1; min-width: 0; }
+.tut-progreso { margin: 0; font-size: 0.8rem; color: var(--acento); font-weight: 600; letter-spacing: 0.02em; }
+.tut-cabecera h2 { margin: 0.1rem 0 0; font-size: 1.15rem; line-height: 1.3; }
+.tut-x { align-self: flex-start; padding: 0.1rem 0.55rem; font-size: 1.2rem; line-height: 1; }
+
+.tut-barra { height: 4px; background: var(--borde); border-radius: 2px; overflow: hidden; }
+.tut-barra i { display: block; height: 100%; background: var(--acento); transition: width 0.35s ease; }
+
+.tut-texto { margin: 0; font-size: 1rem; line-height: 1.55; }
+.tut-prueba { margin: 0.5rem 0 0; font-size: 0.88rem; color: var(--suave); }
+.tut-aviso { margin: 0.5rem 0 0; font-size: 0.88rem; color: #f2b84b; }
+
+.tut-acciones { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.tut-espacio { flex: 1; }
+.tut-saltar { background: none; border-color: transparent; color: var(--suave); padding-left: 0; }
+.tut-saltar:hover:not(:disabled) { color: var(--texto); border-color: transparent; }
+.tut-final { display: flex; flex-direction: column; gap: 0.5rem; }
+.tut-final button { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tut-foco, .tut-burbuja, .tut-barra i { transition: none; }
+}
