@@ -167,9 +167,15 @@ El corazón. Devuelve los fotogramas listos para pintar.
       "vmin": -0.8, "vmax": 12.3
     }
   ],
-  "warnings": ["La época 2026W02_1A no trae banda 4 y se omitió."]
+  "warnings": ["La época 2026W02_1A no trae banda 4 y se omitió."],
+  "source": "vivo"
 }
 ```
+
+`source` (`"vivo"` | `"precalculado"`, también en `/api/epochs`): `precalculado` significa que la
+respuesta salió del paquete `data/demo/` de los 5 campos de prueba, sin consultar IRSA. Solo ocurre
+con los parámetros por defecto de la demo (`stretch=asinh`, sin `from`/`to`/`epochs`). `GET /api/demo`
+lista los campos precalculados.
 
 Decisiones del contrato, y por qué:
 
