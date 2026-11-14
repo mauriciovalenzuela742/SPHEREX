@@ -22,6 +22,9 @@ import spherex
 AQUI = Path(__file__).resolve().parent
 CAMPOS = spherex.RAIZ / "data" / "campos_de_prueba.yml"
 
+# Las páginas cambian seguido mientras se desarrolla: que el navegador no use una versión vieja.
+SIN_CACHE = {"Cache-Control": "no-store"}
+
 app = FastAPI(title="Prototipo SPHEREx: rango de fechas + resta", version="0.1.0")
 app.mount("/static", StaticFiles(directory=AQUI / "static"), name="static")
 
@@ -42,12 +45,12 @@ def _validar(ra: float, dec: float, banda: int, inicio: str, fin: str) -> None:
 
 @app.get("/")
 def inicio() -> FileResponse:
-    return FileResponse(AQUI / "static" / "index.html")
+    return FileResponse(AQUI / "static" / "index.html", headers=SIN_CACHE)
 
 
 @app.get("/explorar")
 def explorar() -> FileResponse:
-    return FileResponse(AQUI / "static" / "explorar.html")
+    return FileResponse(AQUI / "static" / "explorar.html", headers=SIN_CACHE)
 
 
 def _bandas(texto: str) -> list[int]:
