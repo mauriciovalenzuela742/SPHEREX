@@ -254,7 +254,7 @@ un error de dieciséis años de movimiento propio.
 siempre: movimiento propio altísimo, uno de los objetos más fríos conocidos fuera del sistema solar y
 muy cercano. Debería lucir en las bandas largas y estar casi ausente en las cortas. Con honestidad: en
 una exposición suelta se ve débil; su movimiento se ve con la resta de la primera y la última imagen y,
-cuando exista, con la suma por barrido. En eps Ind B el movimiento se ve más claro.
+cuando exista, con la suma por barrido (pendiente, de D2) y con el overlay de CatWISE2020 (pendiente, de V2; no está en Gaia). En eps Ind B el movimiento se ve más claro.
 
 **La estrella de Barnard** tiene el mayor movimiento propio conocido de cualquier estrella. Es el
 caso de control: si en Barnard no se ve movimiento, el problema es del visor, no del objeto.
