@@ -11,6 +11,11 @@ import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
 import Explorador from "../explorador/Explorador";
 import type { Accion } from "../spherix/motor";
+import { epocaDeFecha } from "../sky/propagacion";
+
+// Misma fecha que usa posicionActual() para centrar: así la marca del objeto cae en el centro del recorte.
+// TODO: cuando el explorador avise la fecha del fotograma elegido, pasar esa época en vez de la de hoy.
+const EPOCA_HOY = epocaDeFecha(new Date());
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
 
@@ -74,6 +79,9 @@ export default function Visor({ estado, set, asistido }: Props) {
             dec={estado.dec}
             fovDeg={Math.max(estado.size * 4, 0.3)}
             plano={planoDeBanda(estado.band)}
+            size={estado.size}
+            epoca={EPOCA_HOY}
+            onSelect={(ra, dec) => set({ ra: Number(ra.toFixed(6)), dec: Number(dec.toFixed(6)) })}
           />
           <p className="quien">
             Cielo: cubo SPHEREx DR1 de IRSA (mosaico de todas las épocas, sin eje de tiempo). Banda {estado.band === "all" ? "D2" : `D${estado.band}`}, canal central.
