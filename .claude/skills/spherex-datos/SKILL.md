@@ -25,7 +25,7 @@ el brillo salta sin que nada se haya movido.
 
 Por eso, en cualquier código que construya una secuencia temporal:
 
-1. **Agrupa por detector/banda** antes de formar la secuencia.
+1. **Agrupa por detector/banda y elige las épocas a λ igualada** antes de formar la secuencia. Agrupar por banda no basta: dentro de un detector la λ del objeto recorre ~16 anchos de banda; con selección igualada baja de 0,47 a 0,035 µm (`eda/03_recortes_y_figuras.py`, `elegir_lambda_igualada`; `docs/09` §2). Después reproyecta a una grilla común: el detector gira ~180° entre barridos.
 2. **Lee `WCS-WAVE`** y expón la λ de cada fotograma. No es opcional: es el campo que explica lo que
    el usuario está viendo.
 3. **Normaliza cada fotograma** con percentiles robustos sobre el mismo recorte.
@@ -43,7 +43,7 @@ Por eso, en cualquier código que construya una secuencia temporal:
 | 5 | 3,83 – 4,41 µm | 112 |
 | 6 | 4,42 – 5,00 µm | 128 |
 
-Hay **6 MEF por apuntado**, uno por detector. **No todas las observaciones traen las 6**: la calidad
+Un apuntado genera **6 MEF**, uno por detector, pero una posición dada cae en solo 2 de ellos (pares D1+D4, D2+D5 o D3+D6): una consulta por posición devuelve 2 archivos por apuntado (`docs/09` §1). **No todas las observaciones traen las 6**: la calidad
 se evalúa por banda. El código tiene que tolerar bandas ausentes sin fallar.
 
 Para enanas marrones frías y objetos rojos, las bandas largas (4–6) son las interesantes.
@@ -115,7 +115,7 @@ El MEF recortado conserva las mismas extensiones; `IMAGE`, `FLAGS`, `VARIANCE` y
 | HDU | Nombre | Contenido | Trampa |
 |---|---|---|---|
 | 1 | `IMAGE` | Brillo superficial, MJy/sr | **La luz zodiacal NO está restada** |
-| 2 | `FLAGS` | Bits de estado por píxel | Definiciones en la tabla 16 del Explanatory Supplement |
+| 2 | `FLAGS` | Bits de estado por píxel | Los nombres de los bits vienen en el header (`MSKN/MSKM/MSKD`). **Nunca `FLAGS != 0`**: el bit SOURCE marca el 72 % del recorte y no es un error; usar máscara por bits (`BITS_MALOS` en `eda/03_recortes_y_figuras.py`, ~4 %) |
 | 3 | `VARIANCE` | Varianza, (MJy/sr)² | Úsala para la relación señal-ruido |
 | 4 | `ZODI` | Modelo de luz zodiacal, MJy/sr | Réstalo tú: `IMAGE - ZODI` mejora mucho el contraste |
 | 5 | `EPSF` (DR1/QR3) o `PSF` (QR2) | PSF por zona del detector | Cambió entre releases. No asumas la forma |
@@ -227,7 +227,7 @@ Debe aparecer en cualquier material publicado que use datos de SPHEREx:
 
 ## 11. Extras verificados contra la documentación de IRSA/AWS (14-nov-2026)
 
-Añadidos desde la exploración del equipo. Confírmalos en la hora 1 con un archivo real.
+Añadidos desde la exploración del equipo. **Tomados de la documentación de IRSA/AWS: el EDA usó SIA2 y HTTP Range, no TAP ni el espejo S3, así que esos dos no están probados por el equipo todavía.** Pruébalos con un archivo real antes de depender de ellos.
 
 - **Espejo en AWS (lectura masiva, sin cuenta):** `s3://nasa-irsa-spherex/{qr3,dr1}/level2/...`,
   región `us-east-1`, acceso anónimo. Misma estructura de directorios que IRSA. Lectura parcial sin
@@ -263,7 +263,19 @@ Añadidos desde la exploración del equipo. Confírmalos en la hora 1 con un arc
   `HTTPError`, `IncompleteRead` y `RemoteDisconnected` (así lo hace el notebook oficial). Un cutout sin
   solapamiento devuelve **HTTP 500**: trátalo como «sin datos», no como caída.
 - **Las estrellas que se mueven salen como dipolo** (par positivo/negativo) en `diff_first`/`diff_prev`.
-  Es lo esperado y es lo que el usuario debe ver; no es variabilidad.
+  Es lo esperado y es lo que el usuario debe ver; no es variabilidad. **Salvo que el núcleo esté saturado o enmascarado** (OVERFLOW, TRANSIENT, SUR_ERROR): entonces el par aparece aunque el objeto no se mueva (RW Aur «se mueve» 1,4 px sin moverse). Hay que avisar cuando el objeto satura (`docs/09`).
 - **Para restar épocas, primero `reproject.reproject_interp` a una grilla común:** cada época viene
   con otra rotación. Muestra la resta en S/N usando `VARIANCE` para que los residuos de estrellas
   brillantes no parezcan detecciones.
+
+
+---
+
+## 12. Medido en el EDA (14-nov)
+
+Cifras de `docs/09_EDA_HALLAZGOS.md` y `eda/resultados/`, para no volver a medirlas:
+
+- **IRSA no responde con CORS** (ni SIA2 ni los cutouts): todo pasa por el backend. Solo el HiPS de `/data/hips/SPHEREx/` lo tiene.
+- **Cutout de 0,1°:** mediana 7,3 s, p90 10,8 s, máx. 29 s, ~3,9 MB **sea cual sea el tamaño** (la PSF viene entera: uno más chico no es más rápido). 503 transitorios; uno persistió 4 reintentos. Con 4 en paralelo como máximo.
+- **Cabecera barata:** el header de IMAGE se baja con una petición HTTP Range de ~35 KB (~0,1 s efectivo con 6 en paralelo).
+- **Escala de píxel:** 6,15″ (SIA2). Los objetos más rápidos se mueven 1,1-1,8 px en todo el período disponible (1,0-1,4 años).
