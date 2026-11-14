@@ -1,7 +1,7 @@
 # Audio 1 de 2 — SPHEREx: el desafío y los datos
 
 Material de preparación para Juan Pablo, camino al NASA Space Apps Challenge 2026, donde su equipo
-de cuatro personas del laboratorio de astronomía va a tomar el desafío **Planet X and SPHEREx**.
+de seis personas del laboratorio de astronomía va a tomar el desafío **Planet X and SPHEREx**.
 
 Este es el primero de dos audios. Este cubre **qué pide el desafío y con qué datos se trabaja**.
 El segundo cubre la estrategia, el método de trabajo y el pitch.
@@ -209,7 +209,7 @@ atrasa o se cae, esa parte sigue funcionando y hay algo que mostrar.
 Conviene no confundir los dos productos, porque responden a preguntas distintas. **Las imágenes de
 nivel 2 dan el eje del tiempo**: muchas épocas, resolución nativa, y es de donde sale el parpadeo.
 **El cubo de todo el cielo da el eje de la longitud de onda**: 102 canales, resolución gruesa, y es
-de donde sale el espectro y el color. El visor que pide el desafío necesita las dos cosas.
+de donde sale el contexto y las 102 bandas como imagen (PNG sin flujos: el espectro sale de los archivos de nivel 2). El visor que pide el desafío necesita las dos cosas.
 
 ---
 
@@ -305,7 +305,7 @@ Dos: el filtro lineal variable hace que épocas distintas estén en longitudes d
 eso hay que medirlo con datos reales en la primera hora.
 
 Tres: Data Release 1 salió este mes y trae un cubo de todo el cielo en formato HiPS, que Aladin Lite
-puede mostrar sin backend. Ese es el camino rápido y el seguro del proyecto.
+puede mostrar sin backend (el HiPS en PNG de IRSA, que es mosaico sin tiempo y sin flujos). Ese es el camino rápido y el seguro del proyecto.
 
 Cuatro: los recortes del archivo son lo que hace viable todo; hay que cronometrarlos temprano,
 porque si son lentos, el plan cambia.
