@@ -133,5 +133,5 @@ message: Las estrellas más rápidas se mueven 1–2 píxeles en un año de SPHE
 - Datos: IRSA/IPAC, colecciones SIA2 spherex_dr1 y spherex_qr3, consultadas el 14-nov-2026.
 - Movimientos propios: SIMBAD (espejo CfA), en data/campos_de_prueba.yml.
 - Scripts: eda/01_inventario.py a eda/05_centroides.py; figuras: docs/presentacion_eda/figures/make_figures.py.
-- Atribución: This publication makes use of data products from SPHEREx, a joint project of JPL and Caltech, funded by NASA.
+- Atribución: This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.
 @why Dónde vive cada cifra, para volver a calcularla.
