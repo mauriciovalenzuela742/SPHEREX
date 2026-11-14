@@ -141,7 +141,7 @@ Honestidad sobre los límites de esta revisión, hecha el 14-nov-2026:
   y el trabajo de apoyo SOLO.
 - No confirmamos si el **código fuente de WiseView** es público. Sí lo son los paquetes derivados
   (`flipbooks`, `unWISE-verse`). Ver [`repos.md`](repos.md).
-- No pudimos consultar **SIMBAD** desde esta máquina (el servicio del CDS no respondía). Las
-  coordenadas de los campos de prueba están sin verificar: ver
+- El **SIMBAD del CDS** no respondía el 14-nov; las coordenadas de los campos de prueba se verificaron
+  contra el espejo de Harvard (CfA): ver
   [`../data/campos_de_prueba.yml`](../data/campos_de_prueba.yml).
 - Las entradas marcadas 🟡 necesitan que alguien abra la fuente antes de citarlas.
