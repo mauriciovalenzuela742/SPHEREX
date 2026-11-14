@@ -81,3 +81,25 @@ footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-t
 .spherix p { margin: 0.3rem 0 0.5rem; }
 .spherix input { width: 100%; background: var(--fondo); color: var(--texto); border: 1px solid var(--borde); border-radius: 6px; padding: 0.35rem; }
 @media (max-width: 860px) { .spherix { position: static; width: auto; margin-top: 1rem; } }
+
+/* ── Spherix (chat) ───────────────────────────────────────────────────────────────────────────── */
+.spherix { display: flex; flex-direction: column; gap: 0.5rem; max-height: min(70vh, 560px); width: 340px; z-index: 20; }
+.spherix-cabecera { display: flex; align-items: center; gap: 0.5rem; }
+.spherix-cabecera strong { flex: 1; font-size: 1.05rem; }
+.spherix-cara { width: 36px; height: 36px; flex: none; }
+.spherix-cerrar { padding: 0.1rem 0.6rem; font-size: 1.2rem; line-height: 1; }
+.spherix-mensajes { overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem; min-height: 120px; padding-right: 0.2rem; }
+.msg { margin: 0; padding: 0.5rem 0.7rem; border-radius: 10px; max-width: 92%; font-size: 0.95rem; }
+.msg-spherix { background: var(--fondo); border: 1px solid var(--borde); align-self: flex-start; }
+.msg-usuario { background: var(--acento); color: #111; align-self: flex-end; }
+.msg.pensando { color: var(--suave); font-style: italic; }
+.spherix-sugerencias { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.spherix-sugerencias button { font-size: 0.85rem; padding: 0.25rem 0.6rem; border-radius: 999px; }
+.spherix-form { display: flex; gap: 0.4rem; }
+.spherix-form input { flex: 1; min-width: 0; }
+.spherix-burbuja {
+  position: fixed; right: 1rem; bottom: 3.5rem; z-index: 20; display: flex; align-items: center; gap: 0.5rem;
+  border-radius: 999px; padding: 0.35rem 0.9rem 0.35rem 0.35rem; box-shadow: 0 6px 24px #0008;
+}
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 860px) { .spherix { width: auto; max-height: none; } .spherix-burbuja { position: static; margin-top: 1rem; } }

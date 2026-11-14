@@ -2,6 +2,7 @@
  * Textos de la interfaz. Dueña: Javiera (N).
  * Todo lo que el usuario lee sale de aquí, para que se pueda corregir sin tocar componentes.
  * BORRADOR: reemplazar por los textos definitivos.
+ * Los textos de Spherix están en content/spherix.ts.
  */
 export const textos = {
   titulo: "Planet X",
@@ -20,8 +21,6 @@ export const textos = {
   empecemos: "Empecemos",
   empecemosAsistido: "Empecemos con Spherix",
   conceptosBasicos: "Conceptos básicos",
-  spherixSaludo: "¿Qué parte del cielo quieres ver hoy?",
-  spherixChat: "¿En qué puedo ayudarte hoy?",
   atribucion:
     "Este trabajo usa datos de SPHEREx, misión de la NASA, obtenidos del NASA/IPAC Infrared Science Archive (IRSA).",
 };
