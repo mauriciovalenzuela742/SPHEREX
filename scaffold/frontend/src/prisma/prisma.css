@@ -14,7 +14,6 @@
 .prisma-col { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
 .prisma-col h3 { margin: 0; font-size: 1rem; }
 .prisma-texto { margin: 0; font-size: 0.88rem; color: var(--suave); }
-.prisma-sonido { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.6rem; align-items: flex-start; }
 
 .ojo { margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
 .ojo-lienzo { position: relative; width: 100%; aspect-ratio: 1; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); }
