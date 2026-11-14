@@ -34,11 +34,15 @@ function mediana(a: number[]) {
 export default function HuellaEspectral({ puntos, sel, onPunto }: Props) {
   const usables = puntos.filter((p) => p.detectado && p.mJy > 0);
   const limites = puntos.map((p) => (p.detectado ? p.mJy : Math.max(p.mJy, 0) + 3 * p.errMJy)).filter((v) => v > 0);
-  // Forma de las vecinas, escalada para que su mediana coincida con la del objeto.
+  // Forma de las vecinas: UNA mediana por banda (en la λ mediana de la banda), escalada para que su mediana
+  // coincida con la del objeto. Por banda y no por punto, para que un fotograma raro no deforme la línea.
   const conVec = puntos.filter((p) => p.vecinas && p.vecinas > 0);
+  const porBanda = BANDAS.map(([b]) => conVec.filter((p) => p.banda === b))
+    .filter((g) => g.length)
+    .map((g) => ({ l: mediana(g.map((p) => p.lambda)), v: mediana(g.map((p) => p.vecinas!)) }));
   const kVec =
-    usables.length && conVec.length ? mediana(usables.map((p) => p.mJy)) / mediana(conVec.map((p) => p.vecinas!)) : NaN;
-  const vecinas = Number.isFinite(kVec) ? conVec.map((p) => ({ l: p.lambda, v: p.vecinas! * kVec })) : [];
+    usables.length && porBanda.length ? mediana(usables.map((p) => p.mJy)) / mediana(porBanda.map((g) => g.v)) : NaN;
+  const vecinas = Number.isFinite(kVec) ? porBanda.map((g) => ({ l: g.l, v: g.v * kVec })) : [];
 
   const todos = [...limites, ...vecinas.map((v) => v.v)];
   const yLo = todos.length ? Math.log10(Math.min(...todos)) - 0.3 : -1;
