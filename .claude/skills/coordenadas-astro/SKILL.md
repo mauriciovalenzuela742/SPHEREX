@@ -153,10 +153,10 @@ movimientos propios están en [`data/campos_de_prueba.yml`](../../../data/campos
    distingue mayúsculas, devuelve el planeta. Si tu resolución de nombres no distingue
    mayúsculas, apuntas al objeto equivocado.
 
-**Y una expectativa que hay que tener desde el principio:** con una escala de píxel de ~6,2
+**Y una expectativa que hay que tener desde el principio:** con una escala de píxel de 6,15
 arcsec, incluso los objetos más rápidos del cielo se mueven **menos de un píxel entre dos barridos
-consecutivos** de SPHEREx (separados 6 meses). Solo con la base temporal completa de la misión se
-llega a 1-2,5 píxeles. Eso significa usar la mayor base temporal disponible, no épocas
+consecutivos** de SPHEREx (separados 6 meses). Medido en el EDA (`docs/09`), en todo el período
+disponible (1,0-1,4 años) se mueven 1,1-1,8 px. Eso significa usar la mayor base temporal disponible, no épocas
 consecutivas, y le da mucho valor a la resta de imágenes y al zoom.
 
 | Objeto | Qué demuestra |
