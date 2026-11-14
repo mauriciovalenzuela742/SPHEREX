@@ -9,25 +9,16 @@
  * Sigue la posición del visor (A.R./Dec/dimensión): botones de objetos, Spherix y la barra de arriba.
  * Dueña de la integración: Antonia (V1). Lógica de datos y render: Bryan (D2).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { decodificar, dibujar, escalaDe, type Frame, type MetaFrame, type Modo } from "./render";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { dibujar, type Frame, type Modo } from "./render";
+import { clave, type DatosSpherex } from "./useDatosSpherex";
 import "./explorador.css";
 
-const API = "/proto-api";
 const BANDAS_UM: Record<number, [number, number]> = {
   1: [0.75, 1.09], 2: [1.1, 1.62], 3: [1.63, 2.41], 4: [2.42, 3.82], 5: [3.83, 4.41], 6: [4.42, 5.0],
 };
-const PARALELO = 3;
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
-type Visita = { mjd: number; start: string; n: number };
-type Grid = {
-  bands: number[];
-  visits: Record<string, Visita[]>;
-  columns: { date: string; celdas: Record<string, number> }[];
-  pixel_scale_arcsec: number;
-  warnings?: string[];
-};
 
 const LEYENDA: Record<Modo, string> = {
   imagen: "Brillo con escala común para todas las fechas de la banda. La mira marca el punto pedido.",
@@ -35,166 +26,19 @@ const LEYENDA: Record<Modo, string> = {
   color: "Primera visita en rojo, la actual en cian. Lo quieto se ve blanco.",
 };
 
-const clave = (b: number, v: number) => `${b}:${v}`;
-const hoy = () => new Date().toISOString().slice(0, 10);
 const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 
-type Props = { ra: number; dec: number; size: number };
+type Props = { datos: DatosSpherex };
 
-export default function Explorador({ ra, dec, size }: Props) {
-  // ── Qué cargar ──
-  const [desde, setDesde] = useState("2025-04-01");
-  const [hasta, setHasta] = useState(hoy());
-  const [cargar, setCargar] = useState<number[]>([1, 2, 3, 4, 5, 6]);
-  const [porVisita, setPorVisita] = useState(1);
-  const [intento, setIntento] = useState(0);
+export default function Explorador({ datos }: Props) {
+  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual } = datos;
 
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
   const [suave, setSuave] = useState(false);
-  const [banda, setBanda] = useState(0);
-  const [visita, setVisita] = useState(0);
   const [play, setPlay] = useState(false);
 
-  // ── Datos (los fotogramas viven en refs; `version` fuerza el repintado) ──
-  const [grid, setGrid] = useState<Grid | null>(null);
-  const [mensaje, setMensaje] = useState("Elige un objeto o escribe A.R./Dec arriba.");
-  const [version, setVersion] = useState(0);
-  const [prog, setProg] = useState({ hechos: 0, total: 0, errores: 0 });
-  const frames = useRef(new Map<string, Frame>());
-  const escalas = useRef(new Map<number, { vmin: number; vmax: number }>());
-  const errores = useRef(new Map<string, string>());
-  const generacion = useRef(0);
-
-  const filas = useMemo(() => (grid ? grid.bands.filter((b) => grid.visits[b]?.length) : []), [grid]);
-  const visitas: Visita[] = grid && banda ? grid.visits[banda] ?? [] : [];
-  const [tMin, tMax] = useMemo(() => {
-    if (!grid) return [0, 1];
-    const todas = filas.flatMap((b) => grid.visits[b].map((v) => v.mjd));
-    const a = Math.min(...todas);
-    const z = Math.max(...todas);
-    const pad = Math.max(10, (z - a) * 0.03);
-    return [a - pad, z + pad];
-  }, [grid, filas]);
-
-  // ── Búsqueda: rejilla de visitas y luego los fotogramas, de a PARALELO ──
-  useEffect(() => {
-    const gen = ++generacion.current;
-    const ctl = new AbortController();
-    frames.current = new Map();
-    escalas.current = new Map();
-    errores.current = new Map();
-    setGrid(null);
-    setPlay(false);
-    setProg({ hechos: 0, total: 0, errores: 0 });
-    if (!cargar.length) {
-      setMensaje("Elige al menos una banda para cargar.");
-      return;
-    }
-    setMensaje("Consultando en IRSA qué visitas hay…");
-    const bandas = [...cargar].sort().join(",");
-    const base = { ra: String(ra), dec: String(dec), start: desde, end: hasta };
-
-    const t = window.setTimeout(async () => {
-      let g: Grid;
-      try {
-        const r = await fetch(`${API}/grid?${new URLSearchParams({ ...base, bands: bandas })}`, { signal: ctl.signal });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
-        g = j;
-      } catch (e) {
-        if (gen === generacion.current && (e as Error).name !== "AbortError") setMensaje((e as Error).message);
-        return;
-      }
-      if (gen !== generacion.current) return;
-      const fs = g.bands.filter((b) => g.visits[b]?.length);
-      if (!fs.length) {
-        setMensaje("IRSA no devolvió visitas con estos filtros. Prueba otro rango de fechas u otras bandas.");
-        return;
-      }
-      const b0 = fs.includes(5) && porVisita > 1 ? 5 : fs[0];
-      setGrid(g);
-      setBanda(b0);
-      setVisita(0);
-
-      // t₀ y la última de cada banda primero; después el resto.
-      const tareas: [number, number][] = [];
-      const vistas = new Set<string>();
-      const add = (b: number, v: number) => {
-        if (!vistas.has(clave(b, v))) {
-          vistas.add(clave(b, v));
-          tareas.push([b, v]);
-        }
-      };
-      const orden = [b0, ...fs.filter((x) => x !== b0)];
-      for (const b of orden) {
-        add(b, 0);
-        add(b, g.visits[b].length - 1);
-      }
-      for (const b of orden) for (let v = 1; v < g.visits[b].length - 1; v++) add(b, v);
-      let hechos = 0;
-      let nErr = 0;
-      setProg({ hechos, total: tareas.length, errores: 0 });
-
-      let i = 0;
-      const trabajador = async () => {
-        while (i < tareas.length && gen === generacion.current) {
-          const [b, v] = tareas[i++];
-          const q = new URLSearchParams({
-            ...base, band: String(b), visit: String(v), size: String(size), per_visit: String(porVisita),
-          });
-          try {
-            const r = await fetch(`${API}/frame?${q}`, { signal: ctl.signal });
-            const j = await r.json();
-            if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
-            if (gen !== generacion.current) return;
-            frames.current.set(clave(b, v), { meta: j as MetaFrame, arr: decodificar((j as MetaFrame).data) });
-            const deBanda = [...frames.current.entries()].filter(([k]) => k.startsWith(`${b}:`)).map(([, f]) => f);
-            escalas.current.set(b, escalaDe(deBanda));
-          } catch (e) {
-            if (gen !== generacion.current || (e as Error).name === "AbortError") return;
-            nErr++;
-            errores.current.set(clave(b, v), (e as Error).message);
-          }
-          hechos++;
-          setProg({ hechos, total: tareas.length, errores: nErr });
-          setVersion((x) => x + 1);
-        }
-      };
-      await Promise.all(Array.from({ length: PARALELO }, trabajador));
-    }, 400); // espera corta: si el usuario sigue escribiendo coordenadas, no se pide de más
-
-    return () => {
-      window.clearTimeout(t);
-      ctl.abort();
-    };
-  }, [ra, dec, size, desde, hasta, cargar, porVisita, intento]);
-
-  // ── Navegación ──
-  const irA = useCallback(
-    (b: number, v: number) => {
-      if (!grid?.visits[b]) return;
-      setBanda(b);
-      setVisita(Math.max(0, Math.min(grid.visits[b].length - 1, v)));
-    },
-    [grid],
-  );
-  const visitaMasCercana = useCallback(
-    (b: number, mjd: number) => {
-      let mejor = 0;
-      let dmin = Infinity;
-      (grid?.visits[b] ?? []).forEach((v, i) => {
-        const d = Math.abs(v.mjd - mjd);
-        if (d < dmin) {
-          dmin = d;
-          mejor = i;
-        }
-      });
-      return mejor;
-    },
-    [grid],
-  );
-  const mjdActual = visitas[visita]?.mjd ?? 0;
+  useEffect(() => setPlay(false), [grid]);
 
   useEffect(() => {
     if (!play || visitas.length < 2) return;

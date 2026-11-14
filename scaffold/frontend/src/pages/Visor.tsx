@@ -10,6 +10,8 @@ import type { Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
 import Explorador from "../explorador/Explorador";
+import { useDatosSpherex } from "../explorador/useDatosSpherex";
+import Prisma from "../prisma/Prisma";
 import type { Accion } from "../spherix/motor";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
@@ -25,6 +27,8 @@ function Hueco({ titulo, quien }: { titulo: string; quien: string }) {
 
 export default function Visor({ estado, set, asistido }: Props) {
   const enMision = Boolean(estado.mision);
+  // Un solo origen de datos para el Explorador (tiempo) y el Prisma (colores).
+  const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, !enMision);
   return (
     <section className="visor">
       <div className="barra">
@@ -80,8 +84,8 @@ export default function Visor({ estado, set, asistido }: Props) {
           </p>
           {!enMision && (
             <>
-            <Explorador ra={estado.ra} dec={estado.dec} size={estado.size} />
-            <Hueco titulo="Gráfico de bandas (espectro, 0,75–5 µm) + barra UV · V · IR · X" quien="Juan Pablo + Bryan (/api/spectrum)" />
+            <Explorador datos={datos} />
+            <Prisma datos={datos} />
             </>
           )}
         </div>

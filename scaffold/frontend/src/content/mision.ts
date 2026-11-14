@@ -188,5 +188,7 @@ export const glosario: Record<string, { termino: string; definicion: string }> =
   "enana-marron": { termino: "Enana marrón", definicion: "Un objeto más grande que un planeta pero demasiado pequeño para brillar como estrella. Se ve sobre todo en infrarrojo." },
   variable: { termino: "Estrella variable", definicion: "Una estrella cuyo brillo cambia con el tiempo, a veces en días, a veces en meses o años." },
   flags: { termino: "Marcas de calidad", definicion: "Cada foto de SPHEREx indica qué píxeles pueden estar dañados: rayos cósmicos, saturación o reflejos." },
+  espectro: { termino: "Espectro", definicion: "Cuánto brilla algo en cada color de luz. Es como su huella digital: delata de qué está hecho y qué tan caliente está." },
+  sonificacion: { termino: "Sonificación", definicion: "Convertir datos en sonido para «escucharlos». Ayuda a explorar sin mirar y a notar patrones de otra forma." },
   candidato: { termino: "Candidato", definicion: "Algo que parece interesante pero todavía no se confirma. Hay que revisarlo con más fotos y catálogos." },
 };

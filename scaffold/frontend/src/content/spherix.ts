@@ -39,6 +39,10 @@ export const spherix = {
 
   // Respuestas a preguntas frecuentes. Clave = intención que detecta el motor.
   faq: {
+    prisma: [
+      "El Prisma, abajo del explorador, traduce los colores infrarrojos de SPHEREx a colores que sí ves, y arma la «huella de luz» del objeto: cuánto brilla en cada color.",
+      "Esa huella delata de qué está hecho y qué tan caliente es. También puedes escucharla: agudo es luz más azul, grave más roja.",
+    ],
     queEsSpherex: [
       "SPHEREx es un telescopio espacial de la NASA que, desde 2025, fotografía el cielo entero cada seis meses.",
       "Lo especial: lo ve en 102 «colores» de luz infrarroja, que nuestros ojos no captan. Así distingue de qué están hechas las cosas: agua, polvo, gases.",

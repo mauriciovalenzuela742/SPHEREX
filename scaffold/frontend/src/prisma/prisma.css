@@ -1,0 +1,50 @@
+/* Prisma: visualizador multibanda. Comparte los colores de banda --b1..--b6 con el explorador. */
+.prisma {
+  --b1: #4c6ef5; --b2: #15aabf; --b3: #40c057; --b4: #fab005; --b5: #fd7e14; --b6: #e03131;
+  border: 1px solid var(--borde); border-radius: 12px; background: #080b12; padding: 1rem;
+  display: flex; flex-direction: column; gap: 0.8rem;
+}
+.prisma-cabecera h2 { margin: 0 0 0.3rem; font-size: 1.35rem; }
+.prisma-cabecera p { margin: 0; color: var(--suave); max-width: 70ch; }
+.prisma-vacio { color: var(--suave); }
+.prisma-cuerpo { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 1.2rem; }
+@media (max-width: 860px) { .prisma-cuerpo { grid-template-columns: 1fr; } }
+.prisma-col { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+.prisma-col h3 { margin: 0; font-size: 1rem; }
+.prisma-texto { margin: 0; font-size: 0.88rem; color: var(--suave); }
+.prisma-sonido { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.6rem; align-items: flex-start; }
+
+.ojo { margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.ojo-lienzo { position: relative; width: 100%; aspect-ratio: 1; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); }
+.ojo-lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+.ojo-vacio { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); margin: 0; }
+.ojo-apertura { position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #000; pointer-events: none; }
+.ojo-orient { position: absolute; right: 8px; top: 8px; font: 11px ui-monospace, monospace; color: var(--suave); background: rgba(0, 0, 0, 0.6); padding: 2px 6px; border-radius: 4px; }
+.ojo-v { display: none; }
+.ojo figcaption { font-size: 0.8rem; color: var(--suave); display: flex; flex-direction: column; gap: 0.2rem; }
+.ojo-rgb { font-family: ui-monospace, monospace; }
+
+.huella { margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.huella svg { width: 100%; height: auto; display: block; background: #0b1020; border-radius: 8px; box-shadow: 0 0 0 1px var(--borde); }
+.h-eti { fill: var(--suave); font-size: 11px; }
+.h-banda { font: 600 11px ui-monospace, monospace; }
+.h-tick { fill: var(--suave); font-size: 11px; }
+.h-eje { stroke: var(--suave); }
+.h-grilla { stroke: #2b3557; stroke-dasharray: 2 4; }
+.h-mol { fill: #a9b3cf; opacity: 0.07; }
+.h-mol-t { fill: #a9b3cf; font-size: 10px; opacity: 0.8; }
+.h-vecinas { fill: none; stroke: #a9b3cf; stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0.7; }
+.h-punto { cursor: pointer; }
+.h-punto:focus { outline: none; stroke: #fff; stroke-width: 2.5; }
+.h-punto.sel { stroke: #fff; stroke-width: 2.5; }
+.h-leyenda { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.8rem; color: var(--suave); }
+.h-leyenda li { display: flex; align-items: center; gap: 0.35rem; }
+.h-leyenda span { display: inline-block; width: 12px; height: 12px; }
+.h-ley-medida { background: var(--b3); border-radius: 50%; }
+.h-ley-limite { background: var(--b3); opacity: 0.55; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.h-ley-sat { border: 2px solid var(--b3); border-radius: 50%; }
+.h-ley-vec { border-top: 2px dashed #a9b3cf; height: 0 !important; }
+.h-ley-mol { background: #a9b3cf; opacity: 0.25; }
+.h-actual { margin: 0; font: 0.85rem ui-monospace, monospace; }
+.h-aviso { margin: 0; font-size: 0.85rem; color: #f2b84b; }
+.h-caveat { margin: 0; font-size: 0.78rem; color: var(--suave); }
