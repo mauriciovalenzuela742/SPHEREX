@@ -13,7 +13,7 @@ allá con tests.
 
 ```bash
 py -3.11 -m venv .venv
-.venv/Scripts/python -m pip install astropy pyvo matplotlib numpy requests pyyaml
+.venv/Scripts/python -m pip install astropy pyvo matplotlib numpy requests pyyaml reproject
 .venv/Scripts/python eda/01_inventario.py         # ~1 min   SIA2 en los 5 campos
 .venv/Scripts/python eda/02_longitud_de_onda.py   # ~10 min  1 header por archivo (HTTP Range)
 .venv/Scripts/python eda/03_recortes_y_figuras.py # ~3 min   cutouts reales + figuras

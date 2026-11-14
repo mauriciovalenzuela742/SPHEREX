@@ -126,6 +126,8 @@ Para que un agente sin contexto astronómico no escriba cosas absurdas.
 | ¿Qué premia el jurado? | `docs/06_JURADO_Y_PITCH.md` |
 | ¿Qué puede salir mal? | `docs/07_RIESGOS.md` |
 | ¿Qué podemos hacer legalmente y cuándo? | `docs/08_REGLAS_DEL_EVENTO.md` |
+| ¿Qué mostraron los datos reales? | `docs/09_EDA_HALLAZGOS.md` |
+| ¿Quién hace qué después del EDA? | `docs/10_REPARTO_DE_TRABAJO.md` |
 | Papers y repositorios | `biblio/README.md` |
 
 Si un documento contradice a este archivo, **manda el documento** y corrige este.

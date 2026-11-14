@@ -1,0 +1,138 @@
+{
+  "size_deg": 0.1,
+  "hilos": 4,
+  "n": 25,
+  "total_pared_s": 51.8,
+  "mediana_s": 7.3,
+  "p90_s": 10.8,
+  "max_s": 29.0,
+  "kb_mediana": 3903,
+  "fallas_tras_6_reintentos": [],
+  "detalle": [
+    {
+      "archivo": "wise_0855_2025W19_1B_0231_4_D5.fits",
+      "segundos": 17.7,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W45_2A_0292_1_D5.fits",
+      "segundos": 7.3,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W50_2A_0391_1_D5.fits",
+      "segundos": 7.1,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2026W18_2A_0663_1_D5.fits",
+      "segundos": 10.6,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W19_1B_0181_1_D5.fits",
+      "segundos": 3.9,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W45_2A_0164_1_D5.fits",
+      "segundos": 6.8,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W50_2A_0086_1_D5.fits",
+      "segundos": 4.7,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2026W18_2A_0247_1_D5.fits",
+      "segundos": 8.1,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W19_1B_0116_1_D6.fits",
+      "segundos": 6.9,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2025W46_2A_0289_1_D6.fits",
+      "segundos": 29.0,
+      "kb": 3903
+    },
+    {
+      "archivo": "wise_0855_2026W20_1A_0033_1_D6.fits",
+      "segundos": 8.5,
+      "kb": 3903
+    },
+    {
+      "archivo": "barnard_2025W35_1A_0146_1_D2.fits",
+      "segundos": 4.4,
+      "kb": 3906
+    },
+    {
+      "archivo": "barnard_2026W11_2A_0501_3_D2.fits",
+      "segundos": 5.4,
+      "kb": 3906
+    },
+    {
+      "archivo": "barnard_2026W39_1A_0371_1_D2.fits",
+      "segundos": 9.2,
+      "kb": 3906
+    },
+    {
+      "archivo": "eps_ind_b_2025W17_4B_0027_4_D5.fits",
+      "segundos": 6.8,
+      "kb": 3903
+    },
+    {
+      "archivo": "eps_ind_b_2025W23_2B_0241_3_D5.fits",
+      "segundos": 2.6,
+      "kb": 3903
+    },
+    {
+      "archivo": "eps_ind_b_2025W41_2B_0173_2_D5.fits",
+      "segundos": 8.2,
+      "kb": 3903
+    },
+    {
+      "archivo": "eps_ind_b_2026W17_2A_0308_3_D5.fits",
+      "segundos": 10.9,
+      "kb": 3903
+    },
+    {
+      "archivo": "eps_ind_b_2026W40_1A_0031_1_D5.fits",
+      "segundos": 7.7,
+      "kb": 3903
+    },
+    {
+      "archivo": "rw_aur_2025W38_2C_0023_2_D3.fits",
+      "segundos": 4.5,
+      "kb": 3988
+    },
+    {
+      "archivo": "rw_aur_2026W08_2A_0233_1_D3.fits",
+      "segundos": 5.2,
+      "kb": 3988
+    },
+    {
+      "archivo": "rw_aur_2026W38_1A_0359_4_D3.fits",
+      "segundos": 7.9,
+      "kb": 3988
+    },
+    {
+      "archivo": "r_dra_2025W29_1A_0676_4_D4.fits",
+      "segundos": 7.3,
+      "kb": 3903
+    },
+    {
+      "archivo": "r_dra_2025W42_2A_0526_1_D4.fits",
+      "segundos": 7.6,
+      "kb": 3903
+    },
+    {
+      "archivo": "r_dra_2026W28_2A_0376_2_D4.fits",
+      "segundos": 2.7,
+      "kb": 3903
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+# 09 — EDA: lo que dicen los datos reales (14-nov-2026)
+
+Respuestas, con datos de IRSA, al checklist de la hora 1 ([`02_DATOS_SPHEREX.md`](02_DATOS_SPHEREX.md) §9).
+Cada cifra sale de un archivo de [`../eda/resultados/`](../eda/resultados/) o de una figura de
+[`../eda/figuras/`](../eda/figuras/); los scripts que las generan están en [`../eda/`](../eda/README.md)
+y se pueden volver a correr.
+
+---
+
+## Resumen en diez líneas
+
+1. **Datos hay de sobra.** Entre 258 y 2.514 archivos por campo de prueba, 3–4 barridos del cielo,
+   **1,0 a 1,4 años de base temporal**. Hay que consultar **DR1 y QR3**: no se repiten archivos y
+   QR3 trae el barrido más reciente (salvo WISE 0855, que aún no tiene QR3).
+2. **El movimiento es de 1–2 píxeles en todo el período**, no un salto. Escala de píxel 6,15″
+   (confirmada en SIA2), PSF de 7,5–8,7″. Barnard: 1,8 px; WISE 0855: 1,3 px; eps Ind B: 1,1 px.
+3. **La resta se ve; el parpadeo apenas.** En Barnard, la resta última − primera muestra el par
+   rojo/azul hacia el norte, que es la dirección de su movimiento propio. Comprobado a ojo.
+4. **La λ del objeto cambia en todo el ancho del detector entre archivos** (~16 anchos de banda
+   dentro de un mismo detector). Un blink que no la iguale mezcla 16 «colores» distintos.
+5. **Pero igualarla es fácil:** en cada campo y detector hay decenas de pares de épocas con la misma
+   λ (dentro de medio ancho de banda). Con selección «a λ igualada» la dispersión baja de 0,47 µm a
+   0,005–0,04 µm.
+6. **La λ se calcula sin bajar el archivo:** la tabla `WCS-WAVE` es fija por detector y el header
+   de IMAGE se baja con una petición HTTP Range (~35 KB). ~1.900 archivos en ~2,5 minutos.
+7. **La orientación gira ~180° entre barridos.** Hay que **reproyectar a una grilla común** (norte
+   arriba) antes de parpadear o restar. Sin esto, la resta compara trozos de cielo distintos.
+8. **Un cutout tarda 7 s de mediana (p90 11 s, máximo 29 s) y pesa ~3,9 MB sea del tamaño que sea**:
+   casi todo es la extensión de PSF, que viene entera. Hubo errores 503 transitorios. **Sin caché no
+   hay demo.**
+9. **IRSA no responde con CORS**: el navegador no puede pedirle nada directo. **Todo pasa por el
+   backend**, incluido el SIA2.
+10. **El «cubo HiPS» de DR1 no es un HiPS para Aladin**: son FITS de 512×512×102 de ~320 MB por
+    tesela, y el servicio de cutouts los rechaza. La «Vía A» de [`03`](03_ARQUITECTURA.md) se
+    replantea (ver §6).
+
+---
+
+## 1. Inventario por campo
+
+Fuente: `eda/resultados/inventario.json`, búsqueda SIA2 con radio 0,01° en la posición propagada
+a 2025-11 (MJD 61000).
+
+| Campo | DR1 | DR1 deep | QR3 | QR3 deep | Apuntados | Barridos | Primera → última | Base |
+|---|---|---|---|---|---|---|---|---|
+| WISE 0855 | 258 | 0 | 0 | 0 | 129 | 3 | 2025,34 → 2026,37 | 1,02 a |
+| Barnard | 240 | 0 | 124 | 0 | 185 | 3 | 2025,62 → 2026,73 | 1,10 a |
+| eps Ind B | 347 | 0 | 120 | 0 | 245 | 4 | 2025,31 → 2026,75 | 1,44 a |
+| RW Aur | 226 | 0 | 110 | 0 | 168 | 3 | 2025,67 → 2026,71 | 1,04 a |
+| R Dra | 422 | 1.233 | 126 | 733 | 1.273 | continuo | 2025,31 → 2026,74 | 1,42 a |
+
+Lo que hay que saber de esta tabla:
+
+- **Cada apuntado da 2 archivos**, uno de onda corta y uno de onda larga, siempre en pares
+  **D1+D4, D2+D5, D3+D6** (el dicroico divide la luz; el mismo trozo de cielo cae en los dos).
+- **Un barrido no es una época**: dura de 1 a 6 semanas y trae 7–20 visitas y ~50–60 apuntados,
+  cada uno en otra λ. Para el video la unidad natural es el **barrido** (3–4 fotogramas), o la
+  visita si se quiere más fotogramas a costa de mezclar λ.
+- **R Dra está en un campo profundo** (cerca del polo norte de la eclíptica): observación casi
+  continua. Es el campo para probar curvas de luz, no el típico.
+- Todos los archivos consultados tienen `L2DQAFLG = Pass` (control de calidad de nivel 2).
+
+## 2. La longitud de onda (el filtro lineal variable)
+
+Fuentes: `eda/resultados/lambda_resumen.json`, `lambda_por_archivo.csv`, figura `01_lambda_vs_tiempo.png`.
+
+- Dentro de un mismo detector, la λ del objeto recorre **todo** el rango del detector a lo largo de
+  los archivos: ~16 anchos de banda. Ejemplo WISE 0855, D5: de 3,82 a 4,41 µm.
+- En cada barrido SPHEREx vuelve a pasar el objeto por el filtro, así que **cada λ se repite cada
+  ~6 meses**. Pares de épocas separadas más de 0,4 años con la misma λ: entre 18 y 196 por
+  campo y detector.
+- Validación: la interpolación propia de `WCS-WAVE` coincide con la de astropy (`WAVE-TAB`) en los
+  6 detectores hasta el cuarto decimal.
+
+Comparación directa en WISE 0855, D5 (figuras `02_wise_0855_*.png`):
+
+| Selección | λ de los 4 fotogramas (µm) | Dispersión |
+|---|---|---|
+| Ingenua (primer archivo de cada barrido) | 4,295 · 3,821 · 4,047 · 3,835 | **0,474 µm** |
+| A λ igualada | 4,145 · 4,153 · 4,153 · 4,180 | **0,035 µm** |
+
+## 3. Geometría: orientación y alineación
+
+Medido en los 25 recortes de `size=0.1` (59×59 px):
+
+- Ángulo de posición del detector: alterna entre ~−160° y ~+19° (WISE 0855), ~−179° y ~+1°
+  (Barnard), ~−28° y ~+154° (eps Ind B). Cerca del polo (R Dra), ángulos arbitrarios.
+- El tamaño del recorte varía en ±1 px entre archivos (58 o 59).
+
+**Consecuencia:** el backend reproyecta cada recorte a una grilla TAN común, norte arriba, a la
+escala nativa (`reproject_interp` de la librería `reproject`). Implementado en
+`eda/03_recortes_y_figuras.py` (`grilla_comun`, `panel`).
+
+## 4. Qué se ve en cada campo
+
+Figuras `eda/figuras/02_*.png`. Recortes de 0,1°, `IMAGE − ZODI`, reproyectados, estiramiento asinh.
+El círculo naranjo es la posición propagada con el movimiento propio de SIMBAD a la fecha de cada archivo.
+
+| Campo | Banda | ¿Se ve el objeto? | ¿Se ve el cambio? |
+|---|---|---|---|
+| Barnard | D2 (1,5 µm) | Sí, saturado | **Sí, en la resta**: par rojo arriba / azul abajo, hacia el norte, como su movimiento propio |
+| eps Ind B | D5 (3,86 µm) | Sí, pero **la máscara se come el centro del objeto** en algunas épocas | Hay un par rojo/azul en el objeto; dirección sin verificar |
+| RW Aur | D3 (1,94 µm) | Sí | La resta queda plana en el objeto: no se mueve, como se esperaba |
+| R Dra | D4 | Sí | Pendiente medir brillo |
+| WISE 0855 | D5 y D6 | **Apenas** en exposiciones sueltas | No en una sola exposición |
+
+**WISE 0855 no sirve como demo principal con exposiciones sueltas**: es demasiado débil por
+exposición. Para verla habría que sumar las exposiciones de cada barrido (la viñeta del desafío
+«add together all the data taken by each of the six detector arrays»). **Barnard es hoy la mejor
+demo de movimiento**; RW Aur, el control de «no se mueve».
+
+Ojo: en RW Aur y en Barnard aparecen pares rojo/azul pequeños en **estrellas de campo** que no se
+mueven. Pueden ser residuos de la reproyección, diferencias de PSF entre épocas o λ algo distinta.
+**No está resuelto**; es lo primero que hay que entender en el frente de diferencias
+([`10_REPARTO_DE_TRABAJO.md`](10_REPARTO_DE_TRABAJO.md)).
+
+## 5. Máscara de calidad (`FLAGS`)
+
+Los nombres de los bits **vienen en el propio header** de `FLAGS` (tarjetas `MSKNnnnn` nombre,
+`MSKMnnnn` máscara, `MSKDnnnn` descripción): no hace falta buscar la tabla 16 del suplemento.
+
+Frecuencia en los 25 recortes:
+
+| Bit | Nombre | % de píxeles | ¿Invalida el píxel? |
+|---|---|---|---|
+| 21 | SOURCE | **72,4 %** | **No**: marca que hay una fuente conocida. Es lo que queremos ver |
+| 28 | HALO | 2,1 % | Discutible: halo transitorio alrededor de fuentes brillantes |
+| 0 | TRANSIENT | 1,6 % | Sí |
+| 2 | SUR_ERROR | 1,3 % | Sí |
+| 26 | BLOOM | 0,8 % | Discutible |
+| 19 | OUTLIER | 0,7 % | Sí |
+| 6 | NONFUNC | 0,4 % | Sí |
+| 17 | PERSIST | 0,3 % | Sí |
+| 1 | OVERFLOW | 0,2 % | Sí |
+| 11 | COLD | 0,1 % | Sí |
+
+**Trampa:** `FLAGS != 0` marca el 72 % del recorte por culpa de SOURCE. Hay que usar una máscara
+por bits. La que usa el EDA (`BITS_MALOS` en `eda/03_recortes_y_figuras.py`) enmascara ~4 % de los
+píxeles, pero al reproyectar con interpolación bilineal los NaN se agrandan y en pantalla se ven
+como bloques blancos (~15 %). Para el visor conviene **reproyectar la máscara por vecino más
+cercano y rellenar** los píxeles malos, y mostrar la máscara como capa opcional.
+
+## 6. Infraestructura
+
+Fuente: `eda/resultados/infraestructura.json`, `latencia_cutouts.json`.
+
+| Pregunta | Respuesta | Consecuencia |
+|---|---|---|
+| ¿IRSA responde con CORS? | **No** (SIA2 ni archivos) | Todo pasa por nuestro backend |
+| Consulta SIA2 | 1–3,5 s por colección | Se puede hacer en vivo, 4 colecciones en paralelo |
+| Header por HTTP Range | ~2 s, 35 KB; ~0,1 s efectivo con 6 en paralelo | Metadatos y λ de cientos de archivos en segundos |
+| Cutout `size=0.1` | Mediana 7,3 s, p90 10,8 s, máx. 29 s; ~3,9 MB; 25 en 52 s con 4 hilos | Caché en disco obligatoria; precalentar los campos de la demo |
+| ¿Cutout más chico es más rápido? | No: 0,02° pesa lo mismo (la PSF viene entera) | Pedir 0,1° siempre; más no cuesta |
+| Errores | 503 transitorios; uno persistió 4 reintentos | Reintentos con espera y estado de error en la UI |
+| Cubo DR1 (`spherex_dr1_cube`) | FITS 512×512×102, ~320 MB por tesela, píxel 12,9″; el cutout responde 422 «lacks WCS» | No sirve para Aladin ni para espectros al vuelo por cutout |
+| HiPS de SPHEREx en el CDS | El MocServer lista `CDS/P/SPHEREx/QR2/D1`…`D6` (QR2, PNG+FITS, orden 7) | Es la vía para mostrar SPHEREx en Aladin |
+| ¿Carga ese HiPS? | **No verificado**: `alasky` devolvió 404 hoy incluso para DSS (control) | Probarlo en el navegador con Aladin Lite por ID |
+
+## 7. Qué no se comprobó
+
+- El brillo: no se midió fotometría en ningún campo (variabilidad de RW Aur y R Dra sin medir).
+- Si el HiPS del CDS carga en Aladin Lite (servidor caído al momento de la prueba).
+- Las colecciones `_deep` no se usaron en el análisis de λ (solo DR1 y QR3).
+- La causa de los residuos en las estrellas de campo en la resta (§4).
+- Sumar exposiciones de un barrido para ver WISE 0855.
+- Los recortes de eps Ind B y R Dra se generaron pero no se revisó su resta con detalle.
