@@ -6,6 +6,7 @@ import re
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import demo
 from app.irsa import cache
 from app.irsa.config import COLECCIONES
 from app.irsa.sia2 import buscar_epocas, filtrar_fechas
@@ -60,8 +61,11 @@ def epochs(
 ) -> dict:
     """Qué observaciones existen para esa posición. No baja imágenes (docs/03)."""
     cols = tuple(c for c in collections.split(",") if c)
+    # Los 5 campos de la demo salen del paquete precalculado (sin tocar IRSA).
+    base = demo.epocas(ra, dec, size) if cols == COLECCIONES else None
     try:
-        lista = filtrar_fechas(buscar_epocas(ra, dec, size, cols), desde, hasta)
+        lista = filtrar_fechas(base if base is not None else buscar_epocas(ra, dec, size, cols),
+                               desde, hasta)
     except cache.FueraDeCache as e:
         raise HTTPException(status_code=503, detail=str(e)) from e
     salida = [{"id": e["id"], "t": e["t"], "band": _banda(e["detector"]), "detector": e["detector"],
@@ -71,7 +75,14 @@ def epochs(
         "time_range": [salida[0]["t"], salida[-1]["t"]] if salida else None,
         "bands_available": sorted({e["band"] for e in salida if e["band"]}),
         "epochs": salida,
+        "source": "precalculado" if base is not None else "vivo",
     }
+
+
+@app.get("/api/demo")
+def api_demo() -> dict:
+    """Los campos precalculados (los 5 de la demo) y sus parámetros; vacío si no hay paquete."""
+    return {"campos": demo.manifiesto()}
 
 
 @app.get("/api/frames")
@@ -99,10 +110,17 @@ def frames(
     from app.frames.servicio import fotogramas
     from app.irsa.descarga import IrsaNoDisponible
 
+    # Parámetros por defecto de la demo sobre uno de los 5 campos: respuesta precalculada.
+    if (stretch == "asinh" and desde is None and hasta is None and per_visit == 1
+            and not epochs and vmin is None and vmax is None):
+        previa = demo.fotogramas(ra, dec, size, band, mode)
+        if previa is not None:
+            return previa
     try:
-        return fotogramas(ra, dec, size, band, mode, stretch, desde, hasta, per_visit, budget_s,
+        vivo = fotogramas(ra, dec, size, band, mode, stretch, desde, hasta, per_visit, budget_s,
                           [e for e in epochs.split(",") if e] if epochs else None, vmin, vmax, fast,
                           max_per_sweep)
+        return {**vivo, "source": "vivo"}
     except (cache.FueraDeCache, IrsaNoDisponible) as e:
         raise HTTPException(status_code=503, detail=f"IRSA no está disponible ahora: {e}") from e
 

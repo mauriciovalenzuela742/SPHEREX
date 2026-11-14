@@ -32,6 +32,7 @@ type Columna = (typeof COLUMNAS)[number];
 const MAX_ESTRELLAS = 300;
 const RADIO_MIN_GRADOS = 0.1;
 const TIMEOUT_MS = 15000;
+const INTENTOS_POR_ESPEJO = 2;
 
 type EstrellaGaia = {
   source: string;
@@ -62,11 +63,39 @@ function num(s: string | undefined): number | null {
   return Number.isFinite(v) ? v : null;
 }
 
-/** TSV de VizieR: comentarios «#», cabecera, unidades, guiones y luego filas. */
+/** La respuesta llegó pero no trae datos de Gaia: vale la pena reintentar el mismo espejo una vez. */
+class RespuestaSinDatos extends Error {}
+
+/**
+ * Explica por qué una respuesta no es una tabla: el error que VizieR declara en `#INFO Error=` o `#***`,
+ * el título de una página HTML, o el comienzo del texto.
+ */
+function causaSinTabla(texto: string): string {
+  const errVizier = texto
+    .split("\n")
+    .filter((l) => /^#INFO\s+Error=|^#\*\*\*|^#\+\+\+\+/.test(l))
+    .map((l) => l.replace(/^#(INFO\s+)?/, "").trim());
+  if (errVizier.length) return `VizieR informó: ${errVizier.join(" / ").slice(0, 300)}`;
+  const titulo = /<title[^>]*>([^<]*)<\/title>/i.exec(texto);
+  if (titulo) return `el espejo devolvió una página HTML («${titulo[1].trim().slice(0, 120)}»)`;
+  const inicio = texto.replace(/\s+/g, " ").trim().slice(0, 160);
+  return inicio ? `respuesta sin tabla reconocible: «${inicio}…»` : "respuesta vacía";
+}
+
+/**
+ * TSV de VizieR: comentarios «#», cabecera, unidades, guiones y luego filas. Ojo: cuando el cono no tiene
+ * filas, VizieR NO manda la línea de cabecera, solo los «#Column» (comprobado el 14-nov-2026 en CfA con
+ * radio 0,0001° en WISE 0855). Eso es un resultado válido de cero estrellas, no un error.
+ */
 function parsearTsv(texto: string): EstrellaGaia[] {
   const lineas = texto.split("\n").filter((l) => l.trim() !== "" && !l.startsWith("#"));
   const iCab = lineas.findIndex((l) => l.split("\t").map((c) => c.trim()).includes("RA_ICRS"));
-  if (iCab < 0) throw new Error("respuesta de VizieR sin cabecera reconocible");
+  if (iCab < 0) {
+    const ceroFilas =
+      lineas.length === 0 && /^#Column\tRA_ICRS\t/m.test(texto) && !/^#INFO\s+Error=/m.test(texto);
+    if (ceroFilas) return [];
+    throw new RespuestaSinDatos(causaSinTabla(texto));
+  }
   const cab = lineas[iCab].split("\t").map((c) => c.trim());
   const idx = Object.fromEntries(COLUMNAS.map((c) => [c, cab.indexOf(c)])) as Record<Columna, number>;
   const filas: EstrellaGaia[] = [];
@@ -95,7 +124,10 @@ async function pedir(url: string, senal: AbortSignal): Promise<string> {
   const t = setTimeout(abortar, TIMEOUT_MS);
   try {
     const r = await fetch(url, { signal: local.signal });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    if (!r.ok) {
+      const cuerpo = await r.text().catch(() => "");
+      throw new RespuestaSinDatos(`HTTP ${r.status} ${r.statusText}: ${causaSinTabla(cuerpo)}`);
+    }
     return await r.text();
   } catch (e) {
     if (local.signal.aborted && !senal.aborted) throw new Error(`sin respuesta en ${TIMEOUT_MS / 1000} s`);
@@ -109,12 +141,19 @@ async function pedir(url: string, senal: AbortSignal): Promise<string> {
 async function consultar(ra: number, dec: number, radio: number, senal: AbortSignal): Promise<EstrellaGaia[]> {
   const errores: string[] = [];
   for (const base of ESPEJOS) {
-    if (senal.aborted) break;
-    try {
-      return parsearTsv(await pedir(urlCono(base, ra, dec, radio), senal));
-    } catch (e) {
+    // Segundo intento en el mismo espejo solo si respondió algo que no era una tabla (fallo pasajero del
+    // servidor). Si no respondió (red, CORS, tiempo agotado), se pasa directo al siguiente espejo.
+    for (let intento = 1; intento <= INTENTOS_POR_ESPEJO; intento++) {
       if (senal.aborted) break;
-      errores.push(`${base}: ${e instanceof Error ? e.message : String(e)}`);
+      try {
+        return parsearTsv(await pedir(urlCono(base, ra, dec, radio), senal));
+      } catch (e) {
+        if (senal.aborted) break;
+        const msg = e instanceof Error ? e.message : String(e);
+        errores.push(`${base} (intento ${intento}): ${msg}`);
+        console.warn(`[gaia] ${base}, intento ${intento}: ${msg}`);
+        if (!(e instanceof RespuestaSinDatos)) break;
+      }
     }
   }
   if (senal.aborted) return [];
@@ -128,6 +167,7 @@ export const capaGaia: Capa = {
     const radio = Math.max(ctx.size, RADIO_MIN_GRADOS);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let catalogo: any = null;
+    let bajaCatalogo: (() => void) | null = null;
 
     consultar(ctx.ra, ctx.dec, radio, control.signal)
       .then((estrellas) => {
@@ -154,6 +194,7 @@ export const capaGaia: Capa = {
           });
         });
         aladin.addCatalog(catalogo);
+        bajaCatalogo = ctx.registrarCatalogo(catalogo);
         catalogo.addSources(fuentes);
         console.info(`[gaia] ${fuentes.length} estrellas de Gaia DR3 (radio ${radio}°)`);
       })
@@ -164,6 +205,7 @@ export const capaGaia: Capa = {
 
     return () => {
       control.abort();
+      bajaCatalogo?.();
       if (catalogo) {
         try {
           aladin.removeLayer(catalogo);

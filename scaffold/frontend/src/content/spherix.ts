@@ -41,7 +41,7 @@ export const spherix = {
   faq: {
     prisma: [
       "El Prisma, abajo del explorador, traduce los colores infrarrojos de SPHEREx a colores que sí ves, y arma la «huella de luz» del objeto: cuánto brilla en cada color.",
-      "Esa huella delata de qué está hecho y qué tan caliente es. También puedes escucharla: agudo es luz más azul, grave más roja.",
+      "Esa huella delata de qué está hecho y qué tan caliente es.",
     ],
     queEsSpherex: [
       "SPHEREx es un telescopio espacial de la NASA que, desde 2025, fotografía el cielo entero cada seis meses.",
@@ -68,10 +68,10 @@ export const spherix = {
       "Así se descubrió Plutón, comparando dos fotos. Aquí lo hacemos con datos de SPHEREx.",
     ],
     capas: [
-      "Los puntos sobre la imagen son estrellas de Gaia (otro telescopio) puestas donde están en la fecha de la foto. Si pasas el mouse por un objeto, te digo cómo se llama según SIMBAD.",
+      "Los puntos sobre la imagen son estrellas de Gaia (otro telescopio), corridas a donde estaban durante las fotos de SPHEREx (2025–2026). Si pasas el mouse por un objeto, te digo cómo se llama según SIMBAD.",
     ],
     contaminacion: [
-      "Algunas zonas de cada foto vienen marcadas: rayos cósmicos, píxeles saturados o reflejos. Te voy a mostrar qué parte de la imagen viene marcada, para que no confundas un defecto con un hallazgo.",
+      "Algunas zonas de cada foto vienen dañadas: rayos cósmicos, píxeles saturados o reflejos. Por eso un puntito suelto que aparece en una sola foto casi siempre es un defecto, no un hallazgo: lo que se mueve de verdad deja una pareja rojo-azul en la resta.",
     ],
     quienesSomos: [
       "Somos un equipo de seis personas en el NASA Space Apps Challenge 2026 de Santiago. Queremos que cualquiera pueda mirar cómo cambia el cielo, sin ser astrónomo.",
@@ -102,11 +102,11 @@ export const spherix = {
 
   // Qué mirar en cada objeto de prueba (id de content/campos.ts).
   queVer: {
-    barnard: "La Estrella de Barnard es la que más rápido se mueve en nuestro cielo. Compara la primera fecha con la última: se corre hacia arriba (norte) un par de píxeles.",
-    eps_ind_b: "Epsilon Indi B son dos enanas marrones, objetos más grandes que un planeta pero sin brillo propio de estrella. Se notan mejor en las bandas largas (D5 y D6), donde emiten más.",
-    wise_0855: "WISE 0855 es una de las enanas marrones más frías que se conocen: casi invisible en luz normal, pero asoma en el infrarrojo largo (D5, D6). Es muy débil, así que hay que mirar con paciencia.",
-    rw_aur: "RW Aurigae es una estrella joven cuyo brillo cambia de forma irregular. Aquí no buscamos movimiento: compara su brillo entre fechas.",
-    r_dra: "R Draconis es una estrella variable: su brillo sube y baja en un ciclo de varios meses. Compara cuánto brilla en cada fecha.",
+    barnard: "La Estrella de Barnard es la que más rápido se mueve en nuestro cielo. Compara la primera fecha con la última: se corre hacia arriba (norte) casi 2 píxeles en un año. Es tan brillante que se ve como un anillo con el centro vacío.",
+    eps_ind_b: "Epsilon Indi B son dos enanas marrones, objetos más grandes que un planeta pero sin brillo propio de estrella. Se ven mejor en la banda D5 sumando varias fotos por visita: así se nota que se corren hacia el sureste.",
+    wise_0855: "WISE 0855 es una de las enanas marrones más frías que se conocen: casi invisible en luz normal, pero asoma en el infrarrojo largo (D5, D6). En una sola foto se pierde en el ruido: sube «Exp. por visita» a 10 en el explorador y se verá correrse ~1 píxel en un año.",
+    rw_aur: "RW Aurigae es una estrella joven cuyo brillo cambia de forma irregular. Casi no se mueve: si ves una mancha en la resta, es cambio de brillo (o de color del filtro), no movimiento.",
+    r_dra: "R Draconis es una estrella variable: su brillo sube y baja en un ciclo de varios meses. Ojo: es tan brillante que satura la cámara, y cada foto es en un color algo distinto.",
     general: "Aquí no hay un objeto de prueba al centro. Pasa el mouse por los puntos para ver sus nombres, o pídeme que te lleve a uno conocido.",
   } as Record<string, string>,
 };

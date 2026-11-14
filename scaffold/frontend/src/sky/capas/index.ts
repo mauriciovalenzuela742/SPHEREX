@@ -29,6 +29,13 @@ export type ContextoCapa = {
   on: Suscribir;
   /** Avisar que el usuario eligió una posición del cielo (clic). */
   onSelect: (ra: number, dec: number) => void;
+  /**
+   * Registrar un catálogo de referencia (Gaia, CatWISE, SIMBAD) para que obedezca el botón «Mostrar catálogos».
+   * Parten ocultos: AladinView los oculta o muestra sin volver a consultarlos. Devuelve la función que lo
+   * da de baja (llamarla al desmontar). La marca del objetivo y el cuadro del recorte no se registran.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  registrarCatalogo: (catalogo: any) => () => void;
 };
 
 export type Capa = {

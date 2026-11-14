@@ -365,7 +365,6 @@ export default function Explorador({ datos }: Props) {
                     ["Fecha (UTC)", actual.meta.t.replace("T", " ").replace("Z", "")],
                     ["Longitud de onda", `${actual.meta.wavelength_um ?? "?"} µm`],
                     ["Exposiciones", actual.meta.n_stacked > 1 ? `mediana de ${actual.meta.n_stacked}` : "1"],
-                    ["Contaminación", actual.meta.flagged_fraction == null ? "— (lector rápido no la lee)" : `${(actual.meta.flagged_fraction * 100).toFixed(1)} %`],
                     ["Observación", actual.meta.epoch_id],
                     ["Colección", actual.meta.collection],
                     ["Método", actual.meta.method === "rangos" ? "rápido (solo píxeles)" : "recorte de IRSA"],
