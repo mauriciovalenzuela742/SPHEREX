@@ -8,6 +8,7 @@ y abrir http://localhost:8010
 from __future__ import annotations
 
 import math
+from urllib.parse import parse_qsl, urlencode
 from datetime import date
 from pathlib import Path
 
@@ -26,6 +27,19 @@ CAMPOS = spherex.RAIZ / "data" / "campos_de_prueba.yml"
 SIN_CACHE = {"Cache-Control": "no-store"}
 
 app = FastAPI(title="Prototipo SPHEREx: rango de fechas + resta", version="0.1.0")
+@app.middleware("http")
+async def alias_from_to(request, call_next):
+    """El contrato oficial (docs/03) usa `from`/`to`; el prototipo nació con `start`/`end`.
+    Se aceptan los dos: si llega `from`/`to` y no `start`/`end`, se traducen."""
+    q = parse_qsl(request.scope.get("query_string", b"").decode(), keep_blank_values=True)
+    claves = {k for k, _ in q}
+    traduccion = {"from": "start", "to": "end"}
+    if any(k in claves and traduccion[k] not in claves for k in traduccion):
+        q = [(traduccion.get(k, k) if traduccion.get(k) not in claves else k, v) for k, v in q]
+        request.scope["query_string"] = urlencode(q).encode()
+    return await call_next(request)
+
+
 app.mount("/static", StaticFiles(directory=AQUI / "static"), name="static")
 
 

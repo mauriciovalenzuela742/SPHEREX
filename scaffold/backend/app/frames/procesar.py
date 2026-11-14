@@ -20,6 +20,8 @@ warnings.simplefilter("ignore", FITSFixedWarning)
 
 ESCALA_ARCSEC = 6.15
 HUECO_VISITA_DIAS = 5.0
+# SPHEREx vuelve a cada zona cada ~6 meses: visitas separadas por más de esto son otro barrido.
+HUECO_BARRIDO_DIAS = 60.0
 
 # FLAGS: las definiciones vienen en la cabecera (MSKNnnnn). SOURCE marca píxeles cerca de una fuente
 # conocida y en un campo poblado sale en ~100 %: no es contaminación.
@@ -42,6 +44,9 @@ class Fotograma:
     method: str  # "rangos" | "recortes"
     n_stacked: int = 1
     avisos: list[str] = field(default_factory=list)
+    varianza: np.ndarray | None = (
+        None  # (MJy/sr)² reproyectada; solo si se pidió (suma por barrido)
+    )
 
 
 def n_pixeles(size_deg: float) -> int:
@@ -120,6 +125,7 @@ def desde_cutout(ruta: Path, epoca: dict, banda: int, ra: float, dec: float, n: 
         vals = np.asarray(t["VALUES"][0], float)
         flags = h["FLAGS"].data.astype(np.int64)
         defs = definiciones_flags(h["FLAGS"].header)
+        var = h["VARIANCE"].data.astype(float) if "VARIANCE" in h else None
     contaminado = np.zeros(flags.shape, bool)
     enmascarar = np.zeros(flags.shape, bool)
     for bit, nombre in defs.items():
@@ -133,6 +139,9 @@ def desde_cutout(ruta: Path, epoca: dict, banda: int, ra: float, dec: float, n: 
     rep, cob = reproyectar(img, xi, yi)
     rep -= np.nanmedian(rep)
     rep = np.where(np.isnan(rep) & cob, 0.0, rep)  # enmascarado dentro del detector -> fondo
+    var_rep = None
+    if var is not None:  # los píxeles enmascarados quedan sin peso (varianza infinita)
+        var_rep = reproyectar(np.where(enmascarar, np.nan, var), xi, yi)[0]
     xt, yt = w_in.all_world2pix([[ra, dec]], 0)[0]
     lam, ancho = lambda_en(cab, xs, ys, vals, xt, yt)
     return Fotograma(
@@ -146,6 +155,7 @@ def desde_cutout(ruta: Path, epoca: dict, banda: int, ra: float, dec: float, n: 
         ancho,
         float(contaminado.mean()),
         "recortes",
+        varianza=var_rep,
     )
 
 
@@ -192,3 +202,62 @@ def apilar(fs: list[Fotograma]) -> Fotograma:
         n_stacked=len(fs),
         avisos=sum((f.avisos for f in fs), []),
     )
+
+
+def agrupar_barridos(epocas: list[dict], hueco: float = HUECO_BARRIDO_DIAS) -> list[list[dict]]:
+    """Un barrido = el paso de SPHEREx por la zona (~6 meses entre uno y otro); junta sus visitas."""
+    return agrupar_visitas(epocas, hueco)
+
+
+def ruido_robusto(d: np.ndarray) -> float:
+    """σ estimado con la mediana de las desviaciones absolutas (respaldo si no hay VARIANCE)."""
+    v = d[np.isfinite(d)]
+    if v.size < 10:
+        return float("nan")
+    return float(1.4826 * np.median(np.abs(v - np.median(v))))
+
+
+def sumar_ponderado(fs: list[Fotograma]) -> tuple[Fotograma, np.ndarray]:
+    """Suma pesada por 1/σ² píxel a píxel: Σ(d/σ²) / Σ(1/σ²). Devuelve el fotograma y su varianza
+    (1/Σ(1/σ²)). Sin VARIANCE para alguna exposición, se usa σ² uniforme estimado con la MAD."""
+    num = np.zeros_like(fs[0].datos)
+    den = np.zeros_like(fs[0].datos)
+    sin_varianza = 0
+    for f in fs:
+        if f.varianza is not None:
+            var = f.varianza
+        else:
+            sin_varianza += 1
+            var = np.full_like(f.datos, ruido_robusto(f.datos) ** 2)
+        ok = np.isfinite(f.datos) & np.isfinite(var) & (var > 0)
+        w = np.where(ok, 1.0 / np.where(ok, var, 1.0), 0.0)
+        num += np.where(ok, f.datos, 0.0) * w
+        den += w
+    with np.errstate(invalid="ignore", divide="ignore"):
+        datos = np.where(den > 0, num / den, np.nan)
+        var_total = np.where(den > 0, 1.0 / den, np.nan)
+    datos -= np.nanmedian(datos)
+    centro = fs[len(fs) // 2]
+    lams = [f.wavelength_um for f in fs if f.wavelength_um is not None]
+    anchos = [f.bandwidth_um for f in fs if f.bandwidth_um is not None]
+    avisos = sum((f.avisos for f in fs), [])
+    if sin_varianza:
+        avisos.append(
+            f"{centro.epoch_id}: {sin_varianza} exposiciones sin VARIANCE; peso por ruido estimado."
+        )
+    suma = Fotograma(
+        centro.epoch_id,
+        centro.t,
+        centro.t_mjd,
+        centro.collection,
+        datos,
+        np.logical_or.reduce([f.cobertura for f in fs]),
+        float(np.mean(lams)) if lams else None,
+        float(np.mean(anchos)) if anchos else None,
+        None,
+        "rangos" if all(f.method == "rangos" for f in fs) else "recortes",
+        n_stacked=len(fs),
+        avisos=avisos,
+        varianza=var_total,
+    )
+    return suma, var_total
