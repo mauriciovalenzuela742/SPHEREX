@@ -203,7 +203,9 @@ def bajar_recorte(o: Observacion, ra: float, dec: float, size: float) -> Path:
     for intento in range(REINTENTOS):
         with _semaforo:
             r = _cliente.get(o.access_url, params={"center": f"{ra},{dec}", "size": f"{size}"})
-        if r.status_code in (429, 500, 502, 503, 504) and intento < REINTENTOS - 1:
+        # IRSA a veces responde 200 con el texto "Server busy, retry later." en vez del FITS (visto 14-nov-2026).
+        ocupado = r.status_code == 200 and not r.content.startswith(b"SIMPLE") and b"busy" in r.content[:200].lower()
+        if (ocupado or r.status_code in (429, 500, 502, 503, 504)) and intento < REINTENTOS - 1:
             time.sleep(2 * 2**intento)  # 2, 4, 8 s (fuera del semáforo: deja pasar a otros)
             continue
         r.raise_for_status()
