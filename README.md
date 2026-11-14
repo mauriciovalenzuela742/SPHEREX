@@ -62,7 +62,66 @@ con `wavelength_um` y `flagged_fraction` por fotograma) · `/api/spectrum?ra=&de
 Caché en disco con **los cinco campos precalentados**; modo degradado offline para la demo.
 
 Stack ([`docs/adr/ADR-001-stack.md`](docs/adr/ADR-001-stack.md)): Python 3.11 + FastAPI + astropy/astroquery/pyvo ·
-React + Vite + TypeScript + Aladin Lite v3 · Docker · frontend estático en CDN, backend en contenedor.
+React + Vite + TypeScript + Aladin Lite v3.
+
+**Despliegue (decidido 14-nov): el visor va en Vercel.** El frontend se publica en Vercel desde `main`
+(previews automáticos por PR). Para el backend, la recomendación es:
+- **Los 5 campos de prueba precalculados como archivos estáticos** (PNG + JSON con la forma del contrato)
+  servidos por el mismo Vercel. Resuelve la «¡Latencia!» de la pizarra y es el modo offline de la demo.
+- **Coordenadas arbitrarias:** FastAPI en Vercel Python Functions si los cutouts caben en el tiempo
+  límite de la función; si no, el mismo FastAPI en un contenedor (Render/Fly) detrás de `/api`.
+  Se decide en el Bloque 1 con el tiempo medido de un cutout.
+
+---
+
+## 2b. Diseño de la interfaz (pizarra del 14-nov)
+
+| Pantalla principal (visor) | Landing y modo asistido |
+|---|---|
+| ![Pizarra 1: visor](docs/diseno/pizarra-1-visor.jpeg) | ![Pizarra 2: landing](docs/diseno/pizarra-2-landing.jpeg) |
+
+**Flujo:** Landing → (*Empecemos* directo **o** *Empecemos asistido* con Spherix) → Visor.
+Desde la landing, un enlace a *Conceptos básicos*. Menú hamburguesa en todas las pantallas.
+
+### Pantalla 1 · Landing «Bienvenido a SPHEREx»
+- «¿Qué somos?»: dos o tres líneas sobre el proyecto y la misión.
+- **ODS**: tarjetas con los Objetivos de Desarrollo Sostenible a los que aporta.
+- Botones **Empecemos** (va directo al visor) y **Empecemos asistido** (abre Spherix).
+- Enlace a **Conceptos básicos**: qué es RA/Dec, una banda, el infrarrojo, por qué se mueven las estrellas.
+
+### Pantalla 2 · Modo asistido con **Spherix** (mascota)
+- Spherix pregunta «¿Qué parte del cielo quieres ver hoy?» con campos de entrada y sugerencias
+  (los 5 objetos de prueba como botones). Lleva al visor con la URL ya armada (`?target=…`).
+- En el visor, Spherix queda como **chat flotante** abajo a la derecha: «¿En qué puedo ayudarte hoy?».
+- **Mínimo:** flujo guiado con respuestas escritas por Javiera, sin LLM.
+  **Extra:** chat con Claude a través de una función de Vercel; la clave de API va solo en las
+  variables de entorno de Vercel, nunca en el frontend. Si se hace, se declara en la entrega.
+
+### Pantalla 3 · Visor «Planet X»
+| Elemento de la pizarra | Qué hace | Dato / endpoint |
+|---|---|---|
+| Campos **Dec** y **A.R.** | Coordenada del centro (también acepta nombre) | `/api/resolve` |
+| **Bandas** (desplegable) | Elige detector D1–D6 o todas | `band` |
+| **Desde – hasta** | Rango de fechas de las épocas | `from`, `to` (nuevo, ver `docs/03`) |
+| **Dimensión ??** | Campo de visión del recorte | `size` |
+| Tarjeta **¿Qué es SPHEREx?** | Explicación corta, con enlace a Conceptos básicos | estático |
+| Imagen central con **?**, **+ / −** y minimapa | El fotograma actual con zoom; ayuda contextual | `/api/frames` + Aladin |
+| **Burbuja al pasar sobre una estrella** («ANTARES, XV-644, coord…») | Nombre, identificador de catálogo y coordenadas | SIMBAD / Gaia (overlay) |
+| **Clic en una estrella → ▶** | Animación recortada y centrada en esa estrella | `/api/frames` con `size` chico centrado en ella |
+| **Gamma** | Control de estiramiento/gamma de la imagen | `stretch` + gamma en cliente |
+| **◁ ▷**, **▶**, línea de tiempo y **1x** | Fotograma anterior/siguiente, play, posición y velocidad | `fps` |
+| **Tira de fotogramas** | Miniaturas de cada época; clic para saltar | `frames[]` |
+| **Panel lateral** | Lista de épocas con fecha, λ y `flagged_fraction` (metadatos) | `/api/epochs` |
+| Recuadro **«Contaminación: % agua, % nube, % polvo»** | **Por confirmar en el standup:** o porcentaje de píxeles con flags de contaminación por tipo, o indicadores de composición desde el espectro (hielo de agua, polvo). Si es composición, solo cualitativo y con `caveat` | `flagged_fraction` / `/api/spectrum` |
+| **Gráfico de bandas** abajo (flujo *f* vs banda, curvas por banda) | El espectro del objeto en las 102 bandas | `/api/spectrum` |
+| **Ayuda visual UV · V · IR · X** sobre el gráfico | Barra del espectro electromagnético que muestra dónde cae SPHEREx (0,75–5 µm, infrarrojo cercano) | estático |
+| **Spherix** (chat flotante) | Ayuda contextual | ver Pantalla 2 |
+| **«¡Latencia!»** | La demo no puede esperar a IRSA | 5 campos precalculados + estados de carga |
+
+### Accesibilidad (pizarra 2) — requisito, no extra
+- **Colores aptos para daltónicos:** mapas `viridis`/`cividis` por defecto; nunca rojo/verde solos para distinguir.
+- **Letras simples y fáciles de leer:** tipografía sans-serif, buen contraste, tamaño base ≥ 16 px.
+- **Integración de modos de uso:** modo asistido (Spherix, explicaciones) y modo directo (todos los controles).
 
 ---
 
@@ -70,15 +129,20 @@ React + Vite + TypeScript + Aladin Lite v3 · Docker · frontend estático en CD
 
 | # | Frente · prefijo de rama | Responsable | Carpeta que es suya | Entregables, en orden de prioridad |
 |---|---|---|---|---|
-| 1 | **D1 Datos-acceso** · `d/…` (`d/sia2-epochs`, `d/cache`) | Vladimir (programador) | `scaffold/backend/app/irsa/`, `app/cache/`; rutas `resolve`, `epochs`, `health` | Checklist de la hora 1 ([`docs/02`](docs/02_DATOS_SPHEREX.md) §9) con C; SIA2 sobre `spherex_dr1`+`spherex_qr3`; cutouts en paralelo con reintento; caché; **precalentar los 5 campos**; resolución de nombres (SIMBAD); re-consulta de nuevos releases |
-| 2 | **D2 Datos-fotogramas** · `d/…` (`d/frames-banda`, `d/diff`, `d/spectrum`) | Bryan | `scaffold/backend/app/frames/`, `app/spectrum/`; rutas `frames`, `spectrum` | Agrupar por banda y λ (`WCS-WAVE`); restar ZODI; reproyectar a grilla común; estiramiento → PNG; `wavelength_um` + `flagged_fraction`; `diff_first`/`diff_prev`; co-add por detector; `/api/spectrum` al final |
-| 3 | **V1 Visor-blink** · `v/…` (`v/panel-blink`, `v/url`) | Antonia | `scaffold/frontend/src/blink/`, `src/controls/`, `src/state/` | Mock del contrato desde la hora 1; coordenada → canvas → play/pausa; controles (stretch, cmap, fps, **campo de visión**, banda, modo); URL ↔ estado; estados vacío/error; móvil; pie con atribución; extra: modo «¿cambió?» de votación humana |
-| 4 | **V2 Visor-cielo** · `v/…` (`v/aladin-hips`, `v/overlay-gaia`) | Juan Pablo | `scaffold/frontend/src/sky/` | **Vía A**: Aladin Lite + cubo HiPS DR1 con deslizador de λ (CORS en la hora 1); overlay Gaia DR3 **propagado a la época del fotograma**; overlay WISE/CatWISE; marcadores de flags |
-| 5 | **C Ciencia, verificación y despliegue** · `c/…` | Mauricio | `data/campos_de_prueba.yml`, `docs/02`, `docs/07`, `scaffold/docker-compose.yml`, config de despliegue | Checklist de la hora 1 con D1; verificar cada función en los 5 campos + controles (`campo_vacio`, `plano_galactico`); `revisor-cientifico` antes de cada merge que se ve en la demo; **despliegue** (sin que el contenedor se duerma) y **modo degradado offline**; revisar PRs |
-| 6 | **N Narrativa y entrega** · `n/…` | Javiera (divulgadora) | `README.md`, `docs/06`, video de demo, formulario de entrega | Frase de una línea; README + atribución SPHEREx; video de demo (`demo-y-pitch`); entrega + **declaración de uso de IA** (`entrega-nasa`); ensayar el pitch 3 veces con las preguntas incómodas |
+| 1 | **D1 Datos-acceso** · `d/…` (`d/sia2-epochs`, `d/cache`, `d/precalculo`) | Vladimir (programador) | `scaffold/backend/app/irsa/`, `app/cache/`, `scripts/precalcular/`; rutas `resolve`, `epochs`, `health` | Checklist de la hora 1 ([`docs/02`](docs/02_DATOS_SPHEREX.md) §9) con C, **midiendo el tiempo de un cutout** (decide Vercel Functions vs contenedor); SIA2 sobre `spherex_dr1`+`spherex_qr3`; filtro **`from`/`to`** (rango de fechas de la pizarra); cutouts en paralelo con reintento; caché; **script que precalcula los 5 campos a JSON+PNG estáticos para Vercel** («¡Latencia!»); `/api/resolve` también para la **burbuja de nombre al pasar sobre una estrella**; re-consulta de nuevos releases |
+| 2 | **D2 Datos-fotogramas** · `d/…` (`d/frames-banda`, `d/diff`, `d/spectrum`) | Bryan | `scaffold/backend/app/frames/`, `app/spectrum/`; rutas `frames`, `spectrum` | Agrupar por banda y λ (`WCS-WAVE`); restar ZODI; reproyectar a grilla común; estiramiento → PNG; `wavelength_um` + `flagged_fraction` (alimenta el **panel lateral** y el recuadro **«Contaminación»**); `diff_first`/`diff_prev`; co-add por detector; **recorte chico centrado en la estrella clicada** (mismo `/api/frames` con `size` pequeño); `/api/spectrum` para el **gráfico de bandas** |
+| 3 | **V1 Visor-blink** · `v/…` (`v/panel-blink`, `v/controles`, `v/url`, `v/landing`) | Antonia | `scaffold/frontend/src/blink/`, `src/controls/`, `src/state/`, `src/pages/` | Mock del contrato desde la hora 1; **pantalla Visor** de la pizarra: campos Dec/A.R., desplegable de bandas, **desde–hasta**, **dimensión**, imagen central con **?**, **◁ ▷ / ▶ / línea de tiempo / 1x**, **tira de fotogramas**, **gamma**; **landing** y navegación con **menú hamburguesa**; URL ↔ estado; estados vacío/error/carga; móvil; **accesibilidad** (paleta para daltónicos, tipografía legible); pie con atribución |
+| 4 | **V2 Visor-cielo** · `v/…` (`v/aladin-hips`, `v/overlay-gaia`, `v/espectro`, `v/spherix`) | Juan Pablo | `scaffold/frontend/src/sky/`, `src/spectrum/`, `src/spherix/` | **Vía A**: Aladin Lite + cubo HiPS DR1 (CORS en la hora 1) con **zoom + / − y minimapa**; overlay Gaia DR3 **propagado a la época**; overlay WISE/CatWISE; **burbuja al pasar sobre una estrella** (nombre, ID, coordenadas) y **clic → animación recortada**; **gráfico de bandas** (flujo vs λ) con la **barra UV · V · IR · X**; componente **Spherix** (chat flotante + flujo asistido) con los textos de Javiera |
+| 5 | **C Ciencia, verificación y despliegue** · `c/…` | Mauricio | `data/campos_de_prueba.yml`, `docs/02`, `docs/07`, `vercel.json`, config de despliegue | **Proyecto en Vercel** conectado al repo (producción desde `main`, preview por PR); decidir dónde corre `/api` con el tiempo medido por D1; checklist de la hora 1; verificar cada función en los 5 campos + controles (`campo_vacio`, `plano_galactico`); **aclarar qué significa «Contaminación: % agua, % nube, % polvo»** y que lo que se muestre sea correcto; `revisor-cientifico` antes de cada merge visible; modo offline; revisar PRs |
+| 6 | **N Narrativa, contenido y entrega** · `n/…` | Javiera (divulgadora) | `README.md`, `docs/06`, `src/content/` (textos), video de demo, formulario | **Textos de la interfaz**: «¿Qué somos?», tarjetas **ODS** (elegir cuáles y por qué), página **Conceptos básicos**, tarjeta **¿Qué es SPHEREx?**, ayudas **?**; **personalidad y guion de Spherix** (preguntas, sugerencias, respuestas del modo asistido); revisar que todo se entienda sin saber astronomía; frase de una línea; video de demo; entrega + **declaración de uso de IA**; ensayar el pitch 3 veces |
 
-> Vladimir (programador) toma D1; Javiera (divulgadora) toma N: el pitch, el guion de la demo y que la
-> herramienta se entienda sin saber astronomía. Equipo completo: 6 personas, el máximo del evento.
+> Vladimir (programador) toma D1; Javiera (divulgadora) toma N: el pitch, el guion de la demo, los textos
+> y Spherix, para que la herramienta se entienda sin saber astronomía. Equipo completo: 6 personas.
+>
+> **Orden de prioridad del diseño** (si falta tiempo, se corta desde abajo): 1) visor con blink, Dec/A.R.,
+> bandas, dimensión, play y tira de fotogramas · 2) landing con *Empecemos* · 3) overlay y burbuja al pasar
+> sobre una estrella · 4) gráfico de bandas · 5) Spherix asistido (guion fijo) · 6) clic → animación
+> recortada · 7) recuadro «Contaminación» · 8) chat de Spherix con LLM.
 >
 > Los roles no son jaulas: desde la hora 12, D1/D2/V1/V2 se reparten las viñetas extra. **C y N no se disuelven.**
 > La detección automática (clasificador de recortes estilo ALeRCE, idea de Bryan) queda como «con 6 horas más».
@@ -97,10 +161,10 @@ Todo vive en `.claude/` y se carga solo al abrir Claude Code en la raíz del rep
 |---|---|---|---|
 | D1 acceso | `spherex-datos`, `coordenadas-astro`, agente **`explorador-datos`** | `astropy`, `ecc:python-patterns`, `ecc:python-testing`, `ecc:fastapi-patterns`, `ecc:api-connector-builder`, `ecc:content-hash-cache-pattern`, `ecc:error-handling` | `ecc:python-reviewer`, `ecc:silent-failure-hunter`, `ecc:fastapi-reviewer` |
 | D2 fotogramas | `spherex-datos`, `visor-sky-blink`, agente `explorador-datos` | `astropy`, `matplotlib`, `ecc:python-patterns`, `ecc:python-testing`, `ecc:data-throughput-accelerator`, `dataviz` | `ecc:python-reviewer`, `ecc:performance-optimizer`, **`revisor-cientifico`** |
-| V1 blink | `visor-sky-blink`, `coordenadas-astro`, agente **`revisor-interfaz`**, `/chequeo-demo` | `ecc:react-patterns`, `ecc:vite-patterns`, `ecc:typescript-patterns`, `ecc:frontend-patterns`, `ecc:frontend-design-direction`, `ecc:accessibility`, `ecc:e2e-testing`, `ecc:browser-qa` | `ecc:react-reviewer`, `ecc:typescript-reviewer`, `ecc:e2e-runner` |
-| V2 cielo | `visor-sky-blink`, `coordenadas-astro`, agente `revisor-interfaz` | `astropy`, `ecc:react-patterns`, `ecc:typescript-patterns`, `dataviz` | `ecc:react-reviewer`, **`revisor-cientifico`** |
-| C ciencia + despliegue | `coordenadas-astro`, `spherex-datos`, agentes **`revisor-cientifico`**, `explorador-datos`; `/verifica-cifra`, `/riesgo`, `/chequeo-demo` | `astropy`, `ecc:docker-patterns`, `ecc:deployment-patterns`, `ecc:verification-loop`, `ecc:code-review` | `ecc:security-reviewer`, `ecc:code-reviewer` |
-| N entrega | **`demo-y-pitch`**, **`entrega-nasa`**, `/chequeo-demo` | `ecc:frontend-slides` o `anthropic-skills:pptx`, `ecc:video-editing`, `ecc:ui-demo`, `ecc:article-writing`, `dataviz` | `ecc:agent-evaluator`, `revisor-interfaz` |
+| V1 blink + landing | `visor-sky-blink`, `coordenadas-astro`, agente **`revisor-interfaz`**, `/chequeo-demo` | `ecc:react-patterns`, `ecc:vite-patterns`, `ecc:typescript-patterns`, `ecc:frontend-patterns`, `ecc:frontend-design-direction`, **`ecc:accessibility`**, `ecc:motion-foundations`, `ecc:e2e-testing`, `ecc:browser-qa` | `ecc:react-reviewer`, `ecc:typescript-reviewer`, `ecc:e2e-runner`, **`ecc:a11y-architect`** |
+| V2 cielo + espectro + Spherix | `visor-sky-blink`, `coordenadas-astro`, agente `revisor-interfaz` | `astropy`, `ecc:react-patterns`, `ecc:typescript-patterns`, `dataviz`, **`claude-api`** (solo si Spherix usa LLM) | `ecc:react-reviewer`, **`revisor-cientifico`**, `ecc:security-reviewer` (clave del LLM) |
+| C ciencia + Vercel | `coordenadas-astro`, `spherex-datos`, agentes **`revisor-cientifico`**, `explorador-datos`; `/verifica-cifra`, `/riesgo`, `/chequeo-demo` | `astropy`, **`ecc:deployment-patterns`** (Vercel), `ecc:verification-loop`, `ecc:code-review` | `ecc:security-reviewer`, `ecc:code-reviewer` |
+| N contenido + entrega | **`demo-y-pitch`**, **`entrega-nasa`**, `/chequeo-demo` | **`ecc:brand-voice`** (voz de Spherix), `ecc:article-writing`, `ecc:frontend-slides` o `anthropic-skills:pptx`, `ecc:video-editing`, `ecc:ui-demo`, `dataviz` | `ecc:agent-evaluator`, `revisor-interfaz` |
 
 **Origen de las skills:**
 - `spherex-datos`, `coordenadas-astro`, `visor-sky-blink`, `demo-y-pitch`, `entrega-nasa` y los 3 agentes: kit de Juan Pablo.
@@ -170,7 +234,10 @@ claude            # comprobación: /standup debe existir
 ## 9. Pendientes del Bloque 0
 
 - [ ] Javiera y Vladimir: leer este README, [`docs/00_DESAFIO.md`](docs/00_DESAFIO.md) y [`docs/briefings/`](docs/briefings/) (20 min).
-- [ ] Decidir dónde corre el backend (Vercel para el frontend) y actualizar el ADR-001.
+- [ ] Mauricio: crear el proyecto en Vercel conectado al repo (raíz `scaffold/frontend`) y compartir la URL.
+- [ ] En el standup: aclarar el recuadro «Contaminación: % agua, % nube, % polvo» (¿flags o composición?).
+- [ ] Javiera: elegir las ODS y escribir el guion de Spherix (bienvenida, «¿Qué parte del cielo quieres ver hoy?», 5 sugerencias).
+- [ ] Bloque 1: con el tiempo medido de un cutout, decidir si `/api` corre en Vercel Functions o en un contenedor (ADR-001).
 - [ ] Juan Pablo: confirmar con la organización comida y si se puede quedar de noche.
 - [ ] Todos: clonar el repo, abrir `claude` en la raíz y comprobar `/standup`.
 - [ ] Todos: Python 3.11, Node 20, Docker instalados.

@@ -203,6 +203,20 @@ calibrada ante un jurado con astrónomos es la forma más rápida de perder cred
 
 ---
 
+### Cambios al contrato — 14-nov-2026 (pizarra del visor)
+
+Aditivos: nada de lo anterior cambia de forma, así que el mock y el código existentes siguen valiendo.
+
+- **`from` y `to`** (ISO 8601 UTC, opcionales) en `/api/epochs` y `/api/frames`: el control «desde – hasta»
+  de la pizarra. Sin ellos, todas las épocas.
+- **Animación centrada en una estrella** (clic en la imagen): no hay endpoint nuevo. El frontend llama a
+  `/api/frames` con `ra`/`dec` de la estrella y un `size` chico (p. ej. `0.02`).
+- **Burbuja con el nombre al pasar sobre una estrella:** `/api/resolve` acepta también `ra`/`dec`
+  (búsqueda por cono en SIMBAD, radio 10″) y devuelve el objeto más cercano con la misma forma de respuesta.
+- **Gamma:** se aplica en el cliente sobre el PNG; no viaja al servidor.
+- **Precalculado para Vercel:** los 5 campos de prueba se publican como archivos estáticos con exactamente
+  estas mismas formas JSON, en `/precalc/<id>/epochs.json`, `/precalc/<id>/frames-b<band>.json` y sus PNG.
+
 ## 4. URL de la aplicación
 
 El desafío pide explícitamente poder consultar la herramienta por URL. El formato es parte del
