@@ -5,8 +5,8 @@ se pasa de su tiempo, se aplica el corte y se sigue: en un hackatón el enemigo 
 ideas, es la falta de disciplina para abandonar una.
 
 Horarios de referencia del evento local de Santiago (inicio de trabajo sábado 10:00, **cierre de
-entregas domingo 11:00**, comunicado en vivo por la organización el 14-nov; ver
-[`08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md)). Pitch: 2 minutos + 2 preguntas; la hora no está
+entregas domingo 11:00**, confirmado por JP el 14-nov y comunicado en vivo por la organización; ver
+[`08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md)). Pitch: 2 minutos + 2 preguntas; su hora no está
 confirmada. Si algo cambia, se recalculan los bloques, no el orden.
 
 | Rol | Quién |
