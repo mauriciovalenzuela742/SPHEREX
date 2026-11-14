@@ -2,7 +2,12 @@
 
 Dos resúmenes narrativos del proyecto, pensados para leerse (o escucharse) de corrido.
 Son el camino rápido para que alguien del equipo llegue con contexto sin tener que leer
-los nueve documentos de `docs/`.
+los once documentos numerados de `docs/`.
+
+> **Ojo:** los briefings se escribieron antes del EDA del 14-nov. Donde difieran de
+> [`09_EDA_HALLAZGOS.md`](../09_EDA_HALLAZGOS.md) o [`10_REPARTO_DE_TRABAJO.md`](../10_REPARTO_DE_TRABAJO.md),
+> mandan esos dos (p. ej.: el cubo no da el espectro; WISE 0855 apenas se ve en una exposición suelta;
+> el equipo es de seis; el backend está por decidir).
 
 | Briefing | Qué cubre | Para quién |
 |---|---|---|
