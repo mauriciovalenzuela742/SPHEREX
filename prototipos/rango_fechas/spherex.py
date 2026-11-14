@@ -17,6 +17,7 @@ import hashlib
 import io
 import math
 import os
+import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -35,7 +36,7 @@ import warnings
 
 warnings.simplefilter("ignore", FITSFixedWarning)
 
-SIA_URL = "https://irsa.ipac.caltech.edu/SIA"
+SIA_URL = os.getenv("SPHEREX_SIA_URL", "https://irsa.ipac.caltech.edu/SIA")  # variable solo para pruebas
 COLECCIONES = ("spherex_dr1", "spherex_qr3")
 
 # Rango de cada detector en micras (skill spherex-datos, tabla de bandas).
@@ -62,7 +63,8 @@ BITS_ENMASCARAR = {"TRANSIENT", "SUR_ERROR", "NONFUNC", "MISSING_DATA", "HOT", "
 
 RAIZ = Path(__file__).resolve().parents[2]
 CACHE = Path(os.getenv("SPHEREX_CACHE", RAIZ / "data" / "cache" / "prototipo"))
-(CACHE / "cutouts").mkdir(parents=True, exist_ok=True)
+for _sub in ("cutouts", "sia", "rapido"):
+    (CACHE / _sub).mkdir(parents=True, exist_ok=True)
 
 _cliente = httpx.Client(timeout=httpx.Timeout(180.0, connect=20.0), follow_redirects=True)
 
@@ -77,6 +79,10 @@ _CACHE_TTL_S = 600
 # --------------------------------------------------------------------------------------
 # 1. Búsqueda
 # --------------------------------------------------------------------------------------
+
+class IrsaNoResponde(RuntimeError):
+    """IRSA falló tras los reintentos y no hay respaldo guardado."""
+
 
 @dataclass
 class Observacion:
@@ -104,7 +110,8 @@ def buscar(ra: float, dec: float, banda: int, inicio: str, fin: str) -> tuple[li
     if hit and time.time() - hit[0] < _CACHE_TTL_S:
         return list(hit[1]), list(hit[2])
     obs, avisos = _buscar_sin_cache(ra, dec, banda, inicio, fin)
-    _cache_busquedas[clave] = (time.time(), obs, avisos)
+    if not any("IRSA no respondió" in a for a in avisos):  # lo de respaldo no se fija en memoria
+        _cache_busquedas[clave] = (time.time(), obs, avisos)
     return list(obs), list(avisos)
 
 
@@ -122,18 +129,34 @@ def _buscar_sin_cache(ra: float, dec: float, banda: int, inicio: str, fin: str) 
             "BAND": f"{(lo + 0.01) * 1e-6} {(hi - 0.01) * 1e-6}",
             "TIME": f"{t0} {t1}",
         }
-        for intento in range(REINTENTOS):
-            r = _cliente.get(SIA_URL, params=params)
-            if r.status_code in (429, 500, 502, 503, 504) and intento < REINTENTOS - 1:
-                time.sleep(2 * 2**intento)  # IRSA dio 502 "Proxy Error" en SIA2 el 14-nov-2026
-                continue
-            r.raise_for_status()
-            return col, r.content
+        # Cada respuesta buena se guarda en disco: si IRSA cae (pasó el 14-nov-2026, 502 en SIA2),
+        # se usa la última guardada y se avisa, en vez de romper la página.
+        guardada = CACHE / "sia" / (hashlib.sha1(repr(sorted(params.items())).encode()).hexdigest() + ".xml")
+        error = None
+        for intento in range(3):  # menos que en las descargas: si hay respaldo, mejor mostrarlo pronto
+            try:
+                r = _cliente.get(SIA_URL, params=params)
+            except httpx.TransportError as e:  # p. ej. SSL cortado
+                error = f"{type(e).__name__}"
+                r = None
+            if r is not None and r.status_code == 200 and b"VOTABLE" in r.content[:2000]:
+                guardada.write_bytes(r.content)
+                return col, r.content, None
+            if r is not None:
+                error = f"HTTP {r.status_code}"
+            if intento < 2:
+                time.sleep(1 + intento)  # 1 s, 2 s
+        if guardada.exists():
+            cuando = time.strftime("%Y-%m-%d %H:%M", time.localtime(guardada.stat().st_mtime))
+            return col, guardada.read_bytes(), f"IRSA no respondió ({error}); se muestran las visitas guardadas el {cuando}."
+        raise IrsaNoResponde(f"IRSA no está respondiendo ahora ({error}) y no hay una búsqueda guardada para este punto. Reintenta en un minuto.")
 
     with ThreadPoolExecutor(len(COLECCIONES)) as ex:
         respuestas = list(ex.map(una, COLECCIONES))
 
-    for col, contenido in respuestas:
+    for col, contenido, aviso in respuestas:
+        if aviso:
+            avisos.append(aviso)
         vot = votable.parse(io.BytesIO(contenido))
         # La respuesta trae un RESOURCE 'meta' (autodescripción) y uno 'results' (los datos).
         tablas = [t for r in vot.resources if r.type == "results" for t in r.tables]
@@ -352,7 +375,7 @@ def apilar(fs: list[Fotograma]) -> Fotograma:
         cobertura=np.logical_or.reduce([f.cobertura for f in fs]),
         lambda_um=float(np.mean(lams)) if lams else None,
         ancho_um=float(np.mean(anchos)) if anchos else None,
-        fraccion_flags=float(np.mean([f.fraccion_flags for f in fs])),
+        fraccion_flags=float(np.nanmean([f.fraccion_flags for f in fs])) if any(np.isfinite(f.fraccion_flags) for f in fs) else float("nan"),
         detalle_flags=detalle,
         avisos=sum((f.avisos for f in fs), []),
         n_apiladas=len(fs),
@@ -553,7 +576,10 @@ def rejilla(ra: float, dec: float, bandas: list[int], inicio: str, fin: str) -> 
     por_banda, inicios, avisos = {}, [], []
     for b in bandas:
         obs, av = res[b]
-        avisos += [f"Banda {b}: {a}" for a in av]
+        for a in av:  # el aviso de respaldo es igual para todas las bandas: una sola vez
+            texto = a if "IRSA no respondió" in a else f"Banda {b}: {a}"
+            if texto not in avisos:
+                avisos.append(texto)
         vis = agrupar_visitas(obs)
         por_banda[b] = [
             {"i": i, "start": v[0].iso, "end": v[-1].iso, "mjd": v[len(v) // 2].mjd, "n": len(v)}
@@ -585,7 +611,8 @@ def rejilla(ra: float, dec: float, bandas: list[int], inicio: str, fin: str) -> 
 
 
 def fotograma_visita(
-    ra: float, dec: float, banda: int, inicio: str, fin: str, i_visita: int, size: float = 0.1, por_visita: int = 1
+    ra: float, dec: float, banda: int, inicio: str, fin: str, i_visita: int, size: float = 0.1, por_visita: int = 1,
+    rapido: bool = True,
 ) -> dict:
     """Un fotograma (mediana de hasta `por_visita` exposiciones) de la visita `i_visita`, como floats crudos."""
     obs, _ = buscar(ra, dec, banda, inicio, fin)
@@ -596,6 +623,11 @@ def fotograma_visita(
     n = max(8, int(math.ceil(size * 3600 / ESCALA_ARCSEC)))
 
     def una(o: Observacion):
+        if rapido:
+            try:
+                return procesar_rapido(o, ra, dec, n)
+            except Exception:
+                pass  # respaldo: servicio de recortes (más lento, pero también trae FLAGS)
         try:
             return procesar(bajar_recorte(o, ra, dec, size), o, ra, dec, n)
         except Exception as e:
@@ -620,9 +652,129 @@ def fotograma_visita(
         "collection": f.obs.coleccion,
         "wavelength_um": None if f.lambda_um is None else round(f.lambda_um, 4),
         "n_stacked": f.n_apiladas,
-        "flagged_fraction": round(f.fraccion_flags, 4),
+        "flagged_fraction": None if math.isnan(f.fraccion_flags) else round(f.fraccion_flags, 4),
         "flags_detail": f.detalle_flags,
+        "method": "rangos" if math.isnan(f.fraccion_flags) else "recortes",
         "n_px": n,
         "data": base64.b64encode(plano.tobytes()).decode(),  # float32 little-endian, fila 0 = sur
         "warnings": errores + f.avisos,
     }
+
+
+# --------------------------------------------------------------------------------------
+# 7. Lector rápido: solo los píxeles de IMAGE, por rangos HTTP (sin PSF, sin ZODI, sin FLAGS)
+# --------------------------------------------------------------------------------------
+# Medido el 14-nov-2026 con Barnard (6 bandas, 28 imágenes, sin caché): 11,1 s y 2,1 MB, frente a 97,7 s y
+# 112 MB del servicio de recortes, con la misma imagen (correlación >= 0,9996). ZODI se sustituye por la
+# mediana del recorte (diferencia medida: 0,07 veces el ruido). FLAGS no se lee: la contaminación queda en null.
+
+_BLOQUE = 2880
+
+
+def _get_rango(url: str, rango: str) -> httpx.Response:
+    error = None
+    for intento in range(REINTENTOS):
+        try:
+            with _semaforo:
+                r = _cliente.get(url, headers={"Range": rango})
+        except httpx.TransportError as e:
+            error, r = e, None
+        if r is not None and r.status_code == 206:
+            return r
+        if r is not None and r.status_code not in (200, 429, 500, 502, 503, 504):
+            r.raise_for_status()
+        if intento < REINTENTOS - 1:
+            time.sleep(2 * 2**intento)
+    raise RuntimeError(f"rango no servido ({error or (r.status_code if r is not None else '?')})")
+
+
+def _cabecera_image(url: str) -> tuple[fits.Header, int]:
+    """Cabecera de IMAGE (la 2.ª del archivo) y el byte donde empiezan sus datos."""
+    b = _get_rango(url, "bytes=0-28799").content
+    off, cab = 0, None
+    for _ in range(2):  # PRIMARY (sin datos) y luego IMAGE
+        fin = next((k + _BLOQUE for k in range(off, len(b), _BLOQUE)
+                    if any(b[k + c:k + c + 8] == b"END     " for c in range(0, _BLOQUE, 80))), None)
+        if fin is None:
+            raise RuntimeError("cabecera más larga de lo esperado")
+        cab, off = fits.Header.fromstring(b[off:fin].decode("ascii")), fin
+    if cab.get("EXTNAME", "").strip() != "IMAGE":
+        raise RuntimeError("la 2.ª extensión no es IMAGE")
+    return cab, off
+
+
+def _tabla_wcs_wave(url: str):
+    cola = _get_rango(url, "bytes=-23040").content
+    i = cola.rfind(b"XTENSION= 'BINTABLE'")
+    prim = fits.PrimaryHDU().header.tostring().encode()
+    with fits.open(io.BytesIO(prim + cola[i:])) as h:
+        if h[1].name != "WCS-WAVE":
+            raise RuntimeError("la última extensión no es WCS-WAVE")
+        t = h[1].data
+        return np.asarray(t["X"][0], float), np.asarray(t["Y"][0], float), np.asarray(t["VALUES"][0], float)
+
+
+def _multirango(url: str, rangos: list[tuple[int, int]]) -> list[bytes]:
+    r = _get_rango(url, "bytes=" + ",".join(f"{a}-{b}" for a, b in rangos))
+    ct = r.headers.get("content-type", "")
+    if len(rangos) == 1 and "multipart" not in ct:
+        return [r.content]
+    m = re.search(r"boundary=(\S+)", ct)
+    if not m:
+        raise RuntimeError(f"respuesta sin multipart ({ct})")
+    partes = {}
+    for parte in r.content.split(b"--" + m.group(1).encode()):
+        cab, _, cuerpo = parte.partition(b"\r\n\r\n")
+        cr = re.search(rb"Content-Range: bytes (\d+)-(\d+)/", cab, re.I)
+        if cr:
+            a, z = int(cr.group(1)), int(cr.group(2))
+            partes[a] = cuerpo[: z - a + 1]
+    return [partes[a] for a, _ in rangos]
+
+
+def procesar_rapido(o: Observacion, ra: float, dec: float, n: int) -> Fotograma:
+    clave = hashlib.sha1(f"{o.access_url}|{ra:.6f}|{dec:.6f}|{n}".encode()).hexdigest()
+    guardado = CACHE / "rapido" / f"{clave}.npz"
+    if guardado.exists():
+        z = np.load(guardado)
+        lam = float(z["lam"]) if np.isfinite(z["lam"]) else None
+        ancho = float(z["ancho"]) if np.isfinite(z["ancho"]) else None
+        return Fotograma(o, z["datos"], z["cob"], lam, ancho, float("nan"), {})
+
+    with ThreadPoolExecutor(2) as ex:
+        f_cab, f_tab = ex.submit(_cabecera_image, o.access_url), ex.submit(_tabla_wcs_wave, o.access_url)
+        h, off = f_cab.result()
+        xs, ys, vals = f_tab.result()
+    nx, ny, bpp = h["NAXIS1"], h["NAXIS2"], abs(h["BITPIX"]) // 8
+    w_in = WCS(h)
+    w_out = wcs_destino(ra, dec, n)
+    yy, xx = np.mgrid[0:n, 0:n]
+    xi, yi = w_in.all_world2pix(*w_out.wcs_pix2world(xx, yy, 0), 0)
+    x0, x1 = max(0, int(np.floor(np.nanmin(xi))) - 1), min(nx - 1, int(np.ceil(np.nanmax(xi))) + 1)
+    y0, y1 = max(0, int(np.floor(np.nanmin(yi))) - 1), min(ny - 1, int(np.ceil(np.nanmax(yi))) + 1)
+    if x0 > x1 or y0 > y1:
+        raise ValueError("el punto cae fuera del detector")
+    rangos = [(off + (y * nx + x0) * bpp, off + (y * nx + x1 + 1) * bpp - 1) for y in range(y0, y1 + 1)]
+    filas = _multirango(o.access_url, rangos)
+    dt = {-32: ">f4", -64: ">f8"}[h["BITPIX"]]
+    sub = np.stack([np.frombuffer(f, dtype=dt) for f in filas]).astype(float)
+    sub = sub * h.get("BSCALE", 1.0) + h.get("BZERO", 0.0)
+
+    valido = np.isfinite(sub)
+    coords = [yi.ravel() - y0, xi.ravel() - x0]
+    rep = map_coordinates(np.where(valido, sub, 0.0), coords, order=1, cval=np.nan).reshape(n, n)
+    peso = map_coordinates(valido.astype(float), coords, order=1, cval=0.0).reshape(n, n)
+    rep[peso < 0.99] = np.nan
+    rep -= np.nanmedian(rep)  # en lugar de ZODI
+    cob = ((xi >= 0) & (xi <= nx - 1) & (yi >= 0) & (yi <= ny - 1)).reshape(n, n)
+
+    # λ en el píxel del objeto (la tabla usa píxeles 1-based).
+    xt, yt = w_in.all_world2pix([[ra, dec]], 0)[0]
+    cx = (xt + 1 - h["CRPIX1W"]) * h.get("CDELT1W", 1) + h.get("CRVAL1W", 1)
+    cy = (yt + 1 - h["CRPIX2W"]) * h.get("CDELT2W", 1) + h.get("CRVAL2W", 1)
+    fx, fy = np.interp(cx, xs, np.arange(len(xs))), np.interp(cy, ys, np.arange(len(ys)))
+    lam = float(map_coordinates(vals[..., 0], [[fy], [fx]], order=1)[0])
+    ancho = float(map_coordinates(vals[..., 1], [[fy], [fx]], order=1)[0])
+
+    np.savez_compressed(guardado, datos=rep, cob=cob, lam=lam, ancho=ancho)
+    return Fotograma(o, rep, cob, lam, ancho, float("nan"), {})

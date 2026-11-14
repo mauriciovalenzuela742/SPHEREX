@@ -69,8 +69,10 @@ def api_grid(
     _validar(ra, dec, bandas[0], start, end)
     try:
         return spherex.rejilla(ra, dec, bandas, start, end)
+    except spherex.IrsaNoResponde as e:
+        raise HTTPException(503, str(e))
     except Exception as e:
-        raise HTTPException(502, f"Fallo al consultar IRSA: {e}")
+        raise HTTPException(502, f"No se pudo consultar IRSA ({type(e).__name__}). Reintenta en un minuto.")
 
 
 @app.get("/api/frame")
@@ -83,13 +85,16 @@ def api_frame(
     end: str = date.today().isoformat(),
     size: float = Query(0.1, gt=0.005, le=0.5),
     per_visit: int = Query(1, ge=1, le=10),
+    fast: bool = Query(True, description="Lector por rangos (rápido, sin FLAGS). false = servicio de recortes"),
 ) -> dict:
-    """Un fotograma (floats en base64) de una visita de una banda. Lo lento: pide recortes a IRSA."""
+    """Un fotograma (floats en base64) de una visita de una banda."""
     _validar(ra, dec, band, start, end)
     try:
-        return spherex.fotograma_visita(ra, dec, band, start, end, visit, size, per_visit)
+        return spherex.fotograma_visita(ra, dec, band, start, end, visit, size, per_visit, rapido=fast)
     except IndexError as e:
         raise HTTPException(404, str(e))
+    except spherex.IrsaNoResponde as e:
+        raise HTTPException(503, str(e))
     except Exception as e:
         raise HTTPException(502, f"Fallo al preparar el fotograma: {e}")
 

@@ -26,21 +26,25 @@ Notebook: abrir `prototipos/rango_fechas/eda_spherex.ipynb` con el kernel del `.
 
 Los recortes quedan en `data/cache/prototipo/` (ignorado por git). Nada se descarga entero.
 
-## Explorador bandas × fechas (`/explorar`)
+## Explorador (`/explorar`)
 
-Abrir http://localhost:8010/explorar. Se filtra por RA/Dec, rango de fechas y bandas (casillas 1–6).
+Abrir http://localhost:8010/explorar.
 
-1. **Rápido (~2–5 s):** `/api/grid` dice qué visitas hay en cada banda y arma una rejilla con una fila por banda y
-   una columna por fecha. Las celdas aparecen como "Cargando…".
-2. **Progresivo:** las imágenes se piden de a una (`/api/frame`), 3 a la vez, empezando por la primera y la última
-   visita de cada banda (así la resta está disponible pronto). Una barra muestra "Cargando 7/24".
-3. **Con el mouse:** pasar por la rejilla muestra esa celda en grande; sobre la vista grande, mover a izquierda o
-   derecha recorre fechas y arriba o abajo recorre bandas. Flechas del teclado y botón reproducir hacen lo mismo.
-4. **Modos:** imagen · resta respecto de la primera visita · color (primera en rojo, actual en cian). El brillo se
-   dibuja en el navegador con una escala común por banda, que se recalcula al llegar cada imagen.
+- **Imagen grande** a la izquierda (cuadrada, lo más grande que quepa) y **barra a la derecha** con los filtros
+  (objeto, RA/Dec, desde–hasta, bandas, campo, exposiciones por visita), la banda visible, el modo
+  (imagen · resta vs t₀ · color), los datos de la imagen y miniaturas de todas las bandas y fechas.
+- **Puntero de tiempo** bajo la imagen: las visitas están en su fecha real. Con solo pasar el mouse (o arrastrar)
+  cambia la fecha; ←/→ visitas, ↑/↓ bandas, espacio reproduce. Junto a la fecha se ve Δt desde t₀ y la λ.
+- **Carga progresiva:** primero las visitas (`/api/grid`), luego las imágenes de a una, t₀ y t_último primero.
+- **Lector rápido por rangos HTTP** (por defecto): pide al archivo original solo las filas de IMAGE del recorte y
+  la tabla WCS-WAVE de la cola; sin PSF. Barnard, 6 bandas, 28 imágenes: **8,7 s** (t₀ y t_último de las 6 bandas
+  a los 3,7 s), frente a ~98 s con el servicio de recortes. No lee FLAGS (la contaminación sale "—") y resta la
+  mediana en vez de ZODI (diferencia medida: 0,07 veces el ruido). Si falla, usa el servicio de recortes.
+- **Si IRSA no responde**, se usan las búsquedas guardadas en `data/cache/prototipo/sia/` con un aviso; si el
+  punto nunca se consultó, un mensaje claro (HTTP 503).
 
-Los detectores van en pares que miran la misma zona (1+4, 2+5, 3+6), y cada par pasa por un punto en días
-distintos; por eso hay columnas donde solo dos bandas tienen imagen.
+Los detectores van en pares que miran la misma zona (1+4, 2+5, 3+6) y cada par pasa por un punto en días
+distintos: por eso en las miniaturas hay columnas donde solo dos bandas tienen imagen.
 
 ## API
 
@@ -50,7 +54,7 @@ distintos; por eso hay columnas donde solo dos bandas tienen imagen.
 | `GET /api/epochs?ra&dec&band&start&end` | Visitas disponibles (SIA2, sin imágenes) | ~2 s, ~0,2 MB |
 | `GET /api/frames?ra&dec&band&start&end&size&max_visits&per_visit` | Fotogramas PNG + resta + color | ~4 MB y ~5–12 s por recorte la 1.ª vez; caché después |
 | `GET /api/grid?ra&dec&bands=1,2,5&start&end` | Visitas por banda y columnas de fecha (sin imágenes) | ~2–5 s |
-| `GET /api/frame?ra&dec&band&visit&start&end&size&per_visit` | Un fotograma como float32 en base64 (~19 KB) | lo que tarde su recorte |
+| `GET /api/frame?ra&dec&band&visit&start&end&size&per_visit&fast` | Un fotograma como float32 en base64 (~19 KB) | ~0,6–1 s con `fast=true` (defecto); ~11 s con `fast=false` |
 
 La URL de la página refleja la consulta (`?ra=…&dec=…&band=…`), así que se puede compartir.
 
