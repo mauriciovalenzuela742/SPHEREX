@@ -37,15 +37,56 @@ Lo que resuelve gratis y que no hay que escribir:
 - `getEmbedCode()` devuelve el HTML del campo actual — regalo para la viñeta de embeber.
 - `getViewDataURL()` exporta la vista a PNG/JPEG — útil para compartir y para la demo.
 
-Para el cubo de 102 canales: Aladin sabe recorrer la tercera dimensión de un cubo HiPS plano a plano
-o como animación. **Esto hay que comprobarlo con el cubo real de SPHEREx en la hora 1**, no darlo
-por hecho.
-
 Documentación: <https://aladin.cds.unistra.fr/AladinLite/doc/API>
 
-**Plan B si el HiPS de IRSA no carga** (CORS, formato, orden): existe un HiPS de SPHEREx servido por
-el CDS en `alasky.cds.unistra.fr`. Puede ser de una versión anterior de los datos, pero sirve para
-el contexto visual.
+### El cubo HiPS de SPHEREx que funciona (comprobado el 14-nov-2026)
+
+- **URL:** `https://irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube` (IRSA, DR1).
+  CORS abierto. Carga en Aladin Lite 3.8.2 (fijada en `package.json`) y está en producción.
+- **Formato:** teselas **PNG**, orden 5, píxel 12,9″, **102 planos** (uno por canal).
+- **Regla de planos:** `plano = 17·(banda − 1) + (canal − 1)`, con banda 1–6 y canal 1–17. El canal
+  central de cada banda es `17·(b−1) + 8`. La λ exacta de cada plano está en `properties`, clave
+  `data_cube_crval3_arr` (0,753–4,988 µm).
+- **Planos vacíos:** el **50 y el 51** (corte del dicroico entre D3 y D4). Al agregarse la capa,
+  Aladin la deja en el plano 50: hay que ponerle el plano después de que la capa esté lista.
+- **Sufijo de las teselas = plano:** con la banda 4 el navegador pide `Norder5/.../Npix11391_59.png`.
+  Sirve para comprobar en `performance.getEntriesByType('resource')` qué plano se está mostrando.
+- **Cómo poner un plano:** `ponerPlano` (en `planos.ts`) calcula la frecuencia del centro del plano y
+  llama `setFrequency`; comprobado en las 6 bandas (sufijos `_8 _25 _42 _59 _76 _93`).
+  **No uses `setSliceNumber`:** en 3.8.2 pedir el 59 trae el 9. Por lo mismo, el control de cubos del
+  menú de capas de Aladin (que usa `setSliceNumber`) probablemente muestra un plano equivocado (no
+  comprobado). `capa.getFrequency()` tampoco da la λ real: la λ sale de `properties` (`leerPlanos`).
+- **Aladin solo pide teselas si la pestaña está visible.** Con el panel del navegador oculto no se ve
+  ninguna tesela nueva: no es un fallo.
+- **Qué NO es:** un mosaico de **todas las épocas** (no tiene eje de tiempo: no sirve para mostrar
+  movimiento) y PNG ya estirados (no tienen flujos: no sirve para el espectro). El tiempo y el espectro
+  salen de los archivos de nivel 2 por el backend.
+- **La versión FITS** del mismo cubo que entrega SIA2 (`spherex_dr1_cube`) no sirve para Aladin ni
+  para recortes (~320 MB por tesela).
+- **Plan B:** `CDS/P/SPHEREx/QR2/D1`…`D6` en el CDS (versión anterior). No comprobado: alasky estaba
+  caído el 14-nov.
+
+### Cómo está armado en el código (`scaffold/frontend/src/sky/`)
+
+- `AladinView.tsx` crea Aladin y **no conoce el detalle de las capas**: monta las de `capas/index.ts`
+  (contrato `montar(aladin, ctx) → desmontar`; `ctx` trae ra, dec, size, epoca, on, onSelect) y las
+  remonta cuando cambian posición, recorte o época. Props opcionales: `size`, `epoca` (año juliano,
+  por defecto 2026,0), `onReady`, `onSelect`.
+- **Aladin guarda UN solo oyente por evento**: `aladin.on(e, fn)` reemplaza al anterior
+  (`callbacksByEventName[g]=Q` en `dist/aladin.js`). Por eso las capas se suscriben con `ctx.on`
+  (`eventos.ts`), que registra un despachador por evento. Nunca llames `aladin.on` desde una capa.
+- `planos.ts` (plano ↔ banda ↔ λ, `ponerPlano`), `LambdaSlider.tsx` (deslizador de λ),
+  `propagacion.ts` (movimiento propio, lineal, sin paralaje, en años julianos: J2000 = 2000,0,
+  Gaia DR3 = 2016,0).
+- Para que una capa se pueda apagar, dale un nombre: aparece en el control de capas de Aladin.
+- **CDS caído el 14-nov-2026:** `simbad.cds.unistra.fr` y `vizier.cds.unistra.fr` devolvían 404 sin
+  CORS (por eso `A.catalogFromSimbad`, que llama a `simbad.cds.unistra.fr/cone`, no sirve ese día). Los
+  espejos de Harvard sí responden con CORS: `vizier.cfa.harvard.edu/viz-bin/asu-tsv` (Gaia) y
+  `simbad.cfa.harvard.edu/simbad/sim-tap/sync` (SIMBAD, lento: 2–18 s). Las capas prueban los dos.
+- Gaia en campos densos: con tope de 2000 estrellas el mapa de Barnard quedaba tapado; se usan las 300
+  más brillantes.
+- El error de consola `ERR_BLOCKED_BY_CLIENT` / «Failed to fetch» desde `tg.log` es el registro de uso
+  de Aladin: inofensivo.
 
 ---
 
@@ -147,6 +188,11 @@ Sirve para dos cosas:
 
 En Aladin Lite se hace con una capa de catálogo. Para el panel de parpadeo hay que proyectar las
 coordenadas a píxeles con el WCS del recorte.
+
+**Época de referencia:** Gaia DR3 da posiciones en **2016,0**, no en J2000; SIMBAD da J2000. Propagar
+desde la época que corresponde a cada catálogo. Con movimientos propios de varios ″/año, un error de
+época mueve la marca decenas de segundos de arco: a 2026, WISE 0855 está a 212″ y Barnard a 270″ de
+su posición J2000.
 
 ---
 
