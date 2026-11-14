@@ -1,11 +1,19 @@
 /**
- * Estado del visor ↔ URL (?ra=&dec=&size=&band=). Dueña: Antonia (V1).
+ * Estado del visor ↔ URL (?ra=&dec=&size=&band=&mision=). Dueña: Antonia (V1).
+ * `mision` = paso del Modo Misión (intro | 1..5 | fin): cada nivel es un enlace compartible.
  * Contrato de la URL: docs/03_ARQUITECTURA.md §4. Pendiente: target, fps, stretch, mode.
  */
 import { useCallback, useState } from "react";
 import { CAMPOS, posicionActual } from "../content/campos";
 
-export type Estado = { ra: number; dec: number; size: number; band: string; vista: "landing" | "visor" };
+export type Estado = {
+  ra: number;
+  dec: number;
+  size: number;
+  band: string;
+  vista: "landing" | "visor";
+  mision?: string;
+};
 
 // Por defecto, Epsilon Indi B en su posición de hoy: el movimiento que el EDA midió con datos reales.
 const EPS_IND_B = posicionActual(CAMPOS.find((c) => c.id === "eps_ind_b")!);
@@ -22,7 +30,8 @@ function leer(): Estado {
     dec: num("dec", DEFECTO.dec),
     size: num("size", DEFECTO.size),
     band: q.get("band") ?? DEFECTO.band,
-    vista: q.has("ra") || q.get("vista") === "visor" ? "visor" : "landing",
+    vista: q.has("ra") || q.has("mision") || q.get("vista") === "visor" ? "visor" : "landing",
+    mision: q.get("mision") ?? undefined,
   };
 }
 
@@ -37,6 +46,7 @@ export function useEstadoUrl() {
         q.set("dec", String(nuevo.dec));
         q.set("size", String(nuevo.size));
         q.set("band", nuevo.band);
+        if (nuevo.mision) q.set("mision", nuevo.mision);
       }
       const qs = q.toString();
       window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);

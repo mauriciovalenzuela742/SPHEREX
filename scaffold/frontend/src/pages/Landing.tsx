@@ -1,9 +1,10 @@
 /** Pantalla 1 de la pizarra. Dueña del layout: Antonia (V1); textos: Javiera (N). */
 import { textos } from "../content/textos";
+import { mision } from "../content/mision";
 
-type Props = { onEmpezar: (asistido: boolean) => void };
+type Props = { onEmpezar: (asistido: boolean) => void; onMision: () => void };
 
-export default function Landing({ onEmpezar }: Props) {
+export default function Landing({ onEmpezar, onMision }: Props) {
   return (
     <section className="landing">
       <h1>{textos.bienvenida}</h1>
@@ -18,8 +19,15 @@ export default function Landing({ onEmpezar }: Props) {
           </li>
         ))}
       </ul>
+      <div className="mision-invitacion">
+        <p className="mision-etiqueta">{mision.nombre}</p>
+        <p>{mision.subtitulo}</p>
+        <button className="primario" onClick={onMision}>
+          {mision.botonLanding}
+        </button>
+      </div>
       <div className="acciones">
-        <button className="primario" onClick={() => onEmpezar(false)}>
+        <button onClick={() => onEmpezar(false)}>
           {textos.empecemos}
         </button>
         <button onClick={() => onEmpezar(true)}>{textos.empecemosAsistido}</button>

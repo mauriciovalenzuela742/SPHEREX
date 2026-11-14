@@ -10,6 +10,12 @@ export default defineConfig({
     proxy: {
       "/api": { target: "http://localhost:8000", changeOrigin: true },
       "/health": { target: "http://localhost:8000", changeOrigin: true },
+      // Modo Misión: fotos reales vía el prototipo D2 desplegado (igual que el rewrite de vercel.json).
+      "/proto-api": {
+        target: "https://spherex-prototipo-d2.vercel.app",
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/proto-api/, "/api"),
+      },
     },
   },
 });
