@@ -27,7 +27,9 @@ const ESPEJOS = [
 ];
 const COLUMNAS = ["Source", "RA_ICRS", "DE_ICRS", "pmRA", "pmDE", "Gmag"] as const;
 type Columna = (typeof COLUMNAS)[number];
-const MAX_ESTRELLAS = 2000;
+// 2000 tapaba el mapa entero en campos densos (Barnard llegó al tope) y escondía los objetos de SIMBAD
+// bajo el cursor. Con 300 las más brillantes, la vista sigue legible.
+const MAX_ESTRELLAS = 300;
 const RADIO_MIN_GRADOS = 0.1;
 const TIMEOUT_MS = 15000;
 
