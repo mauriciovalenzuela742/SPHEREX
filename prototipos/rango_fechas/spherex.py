@@ -17,6 +17,7 @@ import hashlib
 import io
 import math
 import os
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -65,6 +66,13 @@ CACHE = Path(os.getenv("SPHEREX_CACHE", RAIZ / "data" / "cache" / "prototipo"))
 
 _cliente = httpx.Client(timeout=httpx.Timeout(180.0, connect=20.0), follow_redirects=True)
 
+# A IRSA nunca le llegan más de PARALELO descargas a la vez, aunque el navegador pida más.
+_semaforo = threading.Semaphore(PARALELO)
+
+# Caché de búsquedas SIA2: el explorador pide fotograma por fotograma y no debe repetir la consulta.
+_cache_busquedas: dict[tuple, tuple[float, list, list]] = {}
+_CACHE_TTL_S = 600
+
 
 # --------------------------------------------------------------------------------------
 # 1. Búsqueda
@@ -91,6 +99,16 @@ def fecha_a_mjd(fecha_iso: str) -> float:
 
 def buscar(ra: float, dec: float, banda: int, inicio: str, fin: str) -> tuple[list[Observacion], list[str]]:
     """Consulta SIA2 en las dos colecciones vigentes. Devuelve observaciones y avisos."""
+    clave = (round(ra, 5), round(dec, 5), banda, inicio, fin)
+    hit = _cache_busquedas.get(clave)
+    if hit and time.time() - hit[0] < _CACHE_TTL_S:
+        return list(hit[1]), list(hit[2])
+    obs, avisos = _buscar_sin_cache(ra, dec, banda, inicio, fin)
+    _cache_busquedas[clave] = (time.time(), obs, avisos)
+    return list(obs), list(avisos)
+
+
+def _buscar_sin_cache(ra: float, dec: float, banda: int, inicio: str, fin: str) -> tuple[list[Observacion], list[str]]:
     lo, hi = BANDAS_UM[banda]
     t0, t1 = fecha_a_mjd(inicio), fecha_a_mjd(fin)
     avisos: list[str] = []
@@ -183,9 +201,10 @@ def bajar_recorte(o: Observacion, ra: float, dec: float, size: float) -> Path:
     if destino.exists() and destino.stat().st_size > 0:
         return destino
     for intento in range(REINTENTOS):
-        r = _cliente.get(o.access_url, params={"center": f"{ra},{dec}", "size": f"{size}"})
+        with _semaforo:
+            r = _cliente.get(o.access_url, params={"center": f"{ra},{dec}", "size": f"{size}"})
         if r.status_code in (429, 500, 502, 503, 504) and intento < REINTENTOS - 1:
-            time.sleep(2 * 2**intento)  # 2, 4, 8 s
+            time.sleep(2 * 2**intento)  # 2, 4, 8 s (fuera del semáforo: deja pasar a otros)
             continue
         r.raise_for_status()
         break
@@ -514,3 +533,90 @@ def fotogramas(
     }
     salida.update(render(ok) if ok else {"frames": []})
     return salida
+
+
+# --------------------------------------------------------------------------------------
+# 6. Explorador: rejilla bandas × fechas, un fotograma por petición
+# --------------------------------------------------------------------------------------
+
+def rejilla(ra: float, dec: float, bandas: list[int], inicio: str, fin: str) -> dict:
+    """Visitas por banda y columnas globales (fechas de todas las bandas agrupadas). No baja imágenes."""
+    with ThreadPoolExecutor(min(6, len(bandas))) as ex:
+        res = dict(zip(bandas, ex.map(lambda b: buscar(ra, dec, b, inicio, fin), bandas)))
+
+    por_banda, inicios, avisos = {}, [], []
+    for b in bandas:
+        obs, av = res[b]
+        avisos += [f"Banda {b}: {a}" for a in av]
+        vis = agrupar_visitas(obs)
+        por_banda[b] = [
+            {"i": i, "start": v[0].iso, "end": v[-1].iso, "mjd": v[len(v) // 2].mjd, "n": len(v)}
+            for i, v in enumerate(vis)
+        ]
+        inicios += [(v[len(v) // 2].mjd, b, i) for i, v in enumerate(vis)]
+
+    # Columnas: agrupar las visitas de todas las bandas con el mismo hueco que las visitas.
+    columnas: list[dict] = []
+    for mjd, b, i in sorted(inicios):
+        if columnas and mjd - columnas[-1]["_ultimo"] <= HUECO_VISITA_DIAS:
+            col = columnas[-1]
+        else:
+            col = {"mjd": mjd, "_ultimo": mjd, "celdas": {}}
+            columnas.append(col)
+        col["_ultimo"] = mjd
+        col["celdas"].setdefault(str(b), i)  # si una banda cae dos veces en la misma columna, la primera
+    for c in columnas:
+        c.pop("_ultimo")
+        c["date"] = Time(c["mjd"], format="mjd").isot[:10]
+
+    return {
+        "ra": ra, "dec": dec, "bands": bandas, "range": [inicio, fin],
+        "visits": {str(b): v for b, v in por_banda.items()},
+        "columns": columnas,
+        "pixel_scale_arcsec": ESCALA_ARCSEC,
+        "warnings": avisos,
+    }
+
+
+def fotograma_visita(
+    ra: float, dec: float, banda: int, inicio: str, fin: str, i_visita: int, size: float = 0.1, por_visita: int = 1
+) -> dict:
+    """Un fotograma (mediana de hasta `por_visita` exposiciones) de la visita `i_visita`, como floats crudos."""
+    obs, _ = buscar(ra, dec, banda, inicio, fin)
+    visitas = agrupar_visitas(obs)
+    if not (0 <= i_visita < len(visitas)):
+        raise IndexError(f"La banda {banda} tiene {len(visitas)} visitas en ese rango; no existe la {i_visita}.")
+    grupo = elegir_fotogramas([visitas[i_visita]], max_visitas=1, por_visita=por_visita)[0]
+    n = max(8, int(math.ceil(size * 3600 / ESCALA_ARCSEC)))
+
+    def una(o: Observacion):
+        try:
+            return procesar(bajar_recorte(o, ra, dec, size), o, ra, dec, n)
+        except Exception as e:
+            return f"{o.obs_id}: {type(e).__name__}: {e}"
+
+    with ThreadPoolExecutor(min(PARALELO, len(grupo))) as ex:
+        res = list(ex.map(una, grupo))
+    fs = [r for r in res if isinstance(r, Fotograma)]
+    errores = [r for r in res if isinstance(r, str)]
+    if not fs:
+        raise RuntimeError("; ".join(errores) or "sin fotogramas")
+    f = apilar(fs)
+
+    datos = f.datos - np.nanmedian(f.datos)          # fondo a 0
+    datos = np.where(np.isnan(datos) & f.cobertura, 0.0, datos)  # enmascarado dentro del detector -> fondo
+    plano = np.ascontiguousarray(datos.astype("<f4"))  # NaN = fuera del detector
+    return {
+        "band": banda,
+        "visit": i_visita,
+        "t": f.obs.iso,
+        "epoch_id": f.obs.obs_id,
+        "collection": f.obs.coleccion,
+        "wavelength_um": None if f.lambda_um is None else round(f.lambda_um, 4),
+        "n_stacked": f.n_apiladas,
+        "flagged_fraction": round(f.fraccion_flags, 4),
+        "flags_detail": f.detalle_flags,
+        "n_px": n,
+        "data": base64.b64encode(plano.tobytes()).decode(),  # float32 little-endian, fila 0 = sur
+        "warnings": errores + f.avisos,
+    }

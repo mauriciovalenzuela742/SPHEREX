@@ -45,6 +45,55 @@ def inicio() -> FileResponse:
     return FileResponse(AQUI / "static" / "index.html")
 
 
+@app.get("/explorar")
+def explorar() -> FileResponse:
+    return FileResponse(AQUI / "static" / "explorar.html")
+
+
+def _bandas(texto: str) -> list[int]:
+    try:
+        bandas = sorted({int(x) for x in texto.split(",") if x.strip()})
+    except ValueError:
+        raise HTTPException(422, "Bandas separadas por comas, p. ej. 1,2,5.")
+    if not bandas or any(b not in spherex.BANDAS_UM for b in bandas):
+        raise HTTPException(422, "Las bandas deben estar entre 1 y 6.")
+    return bandas
+
+
+@app.get("/api/grid")
+def api_grid(
+    ra: float, dec: float, bands: str = "1,2,3,4,5,6", start: str = "2025-04-01", end: str = date.today().isoformat()
+) -> dict:
+    """Rejilla bandas × fechas: qué visitas hay. Rápido (solo SIA2, sin imágenes)."""
+    bandas = _bandas(bands)
+    _validar(ra, dec, bandas[0], start, end)
+    try:
+        return spherex.rejilla(ra, dec, bandas, start, end)
+    except Exception as e:
+        raise HTTPException(502, f"Fallo al consultar IRSA: {e}")
+
+
+@app.get("/api/frame")
+def api_frame(
+    ra: float,
+    dec: float,
+    band: int,
+    visit: int,
+    start: str = "2025-04-01",
+    end: str = date.today().isoformat(),
+    size: float = Query(0.1, gt=0.005, le=0.5),
+    per_visit: int = Query(1, ge=1, le=10),
+) -> dict:
+    """Un fotograma (floats en base64) de una visita de una banda. Lo lento: pide recortes a IRSA."""
+    _validar(ra, dec, band, start, end)
+    try:
+        return spherex.fotograma_visita(ra, dec, band, start, end, visit, size, per_visit)
+    except IndexError as e:
+        raise HTTPException(404, str(e))
+    except Exception as e:
+        raise HTTPException(502, f"Fallo al preparar el fotograma: {e}")
+
+
 @app.get("/api/presets")
 def presets(epoca: float | None = Query(None, description="Año decimal al que propagar")) -> dict:
     """Los cinco campos de prueba, con la posición propagada por movimiento propio.

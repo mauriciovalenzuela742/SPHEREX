@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador SPHEREx</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Página oscura a propósito (se mira cielo): rejilla bandas × fechas a la izquierda, vista grande fija a la derecha. */
+  :root {
+    color-scheme: dark;
+    --bg: #0a0e16; --panel: #121826; --panel2: #18202f; --borde: #273247; --fg: #e4e9f3; --tenue: #8d99ad;
+    --acento: #7aa2ff; --rojo: #ff6b6b; --azul: #4dabf7; --aviso: #f2b84b;
+    --b1: #4c6ef5; --b2: #15aabf; --b3: #40c057; --b4: #fab005; --b5: #fd7e14; --b6: #e03131;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --texto: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 var(--texto); }
+  header { padding: 14px max(16px, env(safe-area-inset-left)) 10px; border-bottom: 1px solid var(--borde); }
+  header h1 { margin: 0; font: 800 20px var(--display); letter-spacing: -.01em; }
+  header p { margin: 2px 0 0; color: var(--tenue); font-size: 13px; }
+  form { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; padding: 12px max(16px, env(safe-area-inset-left));
+         background: var(--panel); border-bottom: 1px solid var(--borde); }
+  label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--tenue); letter-spacing: .04em; }
+  input, select, button { font: 14px var(--texto); color: var(--fg); background: var(--bg); border: 1px solid var(--borde);
+         border-radius: 6px; padding: 6px 8px; }
+  input[type=number] { width: 120px; } input[type=date] { width: 150px; }
+  input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
+  .bandas { display: flex; gap: 4px; }
+  .bandas label { flex-direction: row; align-items: center; gap: 0; cursor: pointer; }
+  .bandas input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .bandas span { font: 600 13px var(--mono); padding: 6px 9px; border-radius: 6px; border: 1px solid var(--borde); color: var(--tenue); }
+  .bandas input:checked + span { background: var(--c); border-color: var(--c); color: #fff; }
+  .bandas input:focus-visible + span { outline: 2px solid var(--acento); }
+  button { cursor: pointer; background: var(--panel2); }
+  button.primario { background: var(--acento); border-color: var(--acento); color: #071027; font-weight: 700; }
+  .estado { display: flex; gap: 12px; align-items: center; padding: 10px max(16px, env(safe-area-inset-left)); min-height: 44px;
+            font-size: 13px; color: var(--tenue); flex-wrap: wrap; }
+  .barra { width: 180px; height: 6px; background: var(--panel2); border-radius: 3px; overflow: hidden; }
+  .barra i { display: block; height: 100%; width: 0; background: var(--acento); transition: width .2s; }
+  .aviso { color: var(--aviso); }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 16px; align-items: start;
+         padding: 0 max(16px, env(safe-area-inset-right)) 32px max(16px, env(safe-area-inset-left)); }
+  @media (max-width: 960px) { main { grid-template-columns: 1fr; } .vista { position: static !important; } }
+  .rejilla-caja { overflow-x: auto; background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 10px; min-width: 0; }
+  table.rejilla { border-collapse: separate; border-spacing: 4px; }
+  .rejilla th { font: 600 11px var(--mono); color: var(--tenue); text-align: center; white-space: nowrap; padding: 2px; }
+  .rejilla th.fila { text-align: left; padding-right: 6px; }
+  .rejilla th.fila b { display: inline-block; color: #fff; background: var(--c); border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+  .rejilla th.fila small { display: block; color: var(--tenue); font-weight: 400; }
+  .rejilla th.activa { color: var(--fg); }
+  .rejilla th.fila.activa b { box-shadow: 0 0 0 2px var(--fg); }
+  .celda { width: 68px; height: 68px; border-radius: 6px; background: var(--panel2); position: relative; cursor: crosshair;
+           border: 2px solid transparent; overflow: hidden; }
+  .celda canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+  .celda.vacia { background: repeating-linear-gradient(45deg, var(--panel2) 0 6px, var(--panel) 6px 12px); cursor: default; }
+  .celda.cargando::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(122,162,255,.18), transparent);
+           animation: barrido 1.2s infinite; }
+  .celda.error { background: #3a1a1f; }
+  .celda .tx { position: absolute; inset: 0; display: grid; place-items: center; font: 10px var(--mono); color: var(--tenue); text-align: center; padding: 2px; }
+  .celda.sel { border-color: var(--fg); }
+  @keyframes barrido { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) { .celda.cargando::after { animation: none; } }
+  .vista { position: sticky; top: 12px; background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 12px; }
+  .lienzo { position: relative; aspect-ratio: 1; width: 100%; background: #000; border-radius: 6px; overflow: hidden; cursor: crosshair; touch-action: none; }
+  .lienzo canvas { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+  .lienzo .ret { position: absolute; left: 50%; top: 50%; width: 16%; aspect-ratio: 1; transform: translate(-50%, -50%);
+           border: 1px solid rgba(122,162,255,.75); border-radius: 50%; pointer-events: none; }
+  .rot { position: absolute; left: 8px; top: 8px; background: rgba(0,0,0,.7); padding: 3px 8px; border-radius: 4px; font: 12px/1.4 var(--mono); }
+  .orient { position: absolute; right: 8px; top: 8px; font: 11px var(--mono); color: var(--tenue); background: rgba(0,0,0,.6); padding: 2px 6px; border-radius: 4px; }
+  .escala { position: absolute; left: 8px; bottom: 8px; font: 11px var(--mono); color: var(--fg); }
+  .escala i { display: block; height: 2px; background: var(--fg); margin-bottom: 3px; }
+  .vacio-grande { position: absolute; inset: 0; display: grid; place-items: center; color: var(--tenue); text-align: center; padding: 24px; font-size: 14px; }
+  .modos { display: flex; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
+  .modos button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .info { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin-top: 10px; font-size: 13px; }
+  .info dt { color: var(--tenue); } .info dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .leyenda { font-size: 12px; color: var(--tenue); margin-top: 8px; }
+  .leyenda b.r { color: var(--rojo); } .leyenda b.a { color: var(--azul); }
+  .ayuda { font-size: 12px; color: var(--tenue); margin-top: 8px; }
+  kbd { font: 11px var(--mono); border: 1px solid var(--borde); border-radius: 3px; padding: 0 4px; }
+  footer { color: var(--tenue); font-size: 11px; padding: 0 max(16px, env(safe-area-inset-left)) 24px; max-width: 100ch; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Explorador SPHEREx · bandas × fechas</h1>
+  <p>Elige un punto del cielo, un rango de fechas y las bandas. Primero aparece qué visitas hay; las imágenes llegan de a una.
+     Pasa el mouse por la rejilla o por la vista grande: horizontal recorre fechas, vertical recorre bandas.</p>
+</header>
+
+<form id="f">
+  <label>Objeto de prueba<select id="preset"><option value="">— elegir —</option></select></label>
+  <label>RA (grados)<input id="ra" type="number" step="any" required></label>
+  <label>Dec (grados)<input id="dec" type="number" step="any" required></label>
+  <label>Desde<input id="start" type="date" value="2025-04-01"></label>
+  <label>Hasta<input id="end" type="date"></label>
+  <label>Bandas<div class="bandas" id="bandas"></div></label>
+  <label>Campo (°)<input id="size" type="number" step="0.01" min="0.02" max="0.5" value="0.1" style="width:80px"></label>
+  <label title="Mediana de varias exposiciones de la visita: objetos débiles se ven mejor, pero tarda más">Exp. por visita<input id="perv" type="number" min="1" max="10" value="1" style="width:70px"></label>
+  <button type="submit" class="primario">Buscar</button>
+</form>
+
+<div class="estado" id="estado"><span>Elige un objeto de prueba o escribe RA/Dec en grados.</span></div>
+
+<main>
+  <div class="rejilla-caja" id="rejillaCaja"><table class="rejilla" id="rejilla"></table></div>
+  <aside class="vista">
+    <div class="lienzo" id="lienzo">
+      <canvas id="grande" width="59" height="59"></canvas>
+      <div class="ret"></div>
+      <span class="rot" id="rot" hidden></span><span class="orient">N↑ E←</span>
+      <div class="escala" id="escala" hidden><i></i>30″</div>
+      <div class="vacio-grande" id="vacioGrande">Aquí se verá en grande la celda bajo el cursor.</div>
+    </div>
+    <div class="modos" role="group" aria-label="Modo de la vista">
+      <button type="button" data-modo="imagen" aria-pressed="true">Imagen</button>
+      <button type="button" data-modo="resta" aria-pressed="false">Resta vs. primera</button>
+      <button type="button" data-modo="color" aria-pressed="false">Color 1.ª/actual</button>
+      <button type="button" id="play" aria-pressed="false">▶ Reproducir fechas</button>
+    </div>
+    <div class="leyenda" id="leyenda"></div>
+    <dl class="info" id="info"></dl>
+    <div class="ayuda">Teclado: <kbd>←</kbd><kbd>→</kbd> fechas · <kbd>↑</kbd><kbd>↓</kbd> bandas · <kbd>espacio</kbd> reproducir.
+      La escala de brillo es común a todas las fechas de una banda.</div>
+  </aside>
+</main>
+
+<footer>
+  This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of
+  Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California
+  Institute of Technology, and is funded by the National Aeronautics and Space Administration. Datos vía NASA/IPAC IRSA.
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const BANDAS_UM = {1: [0.75, 1.09], 2: [1.10, 1.62], 3: [1.63, 2.41], 4: [2.42, 3.82], 5: [3.83, 4.41], 6: [4.42, 5.00]};
+const PARALELO = 3;
+$("end").value = new Date().toISOString().slice(0, 10);
+$("bandas").innerHTML = Object.keys(BANDAS_UM).map(b =>
+  `<label title="${BANDAS_UM[b][0]}–${BANDAS_UM[b][1]} µm"><input type="checkbox" value="${b}" id="b${b}" checked><span style="--c:var(--b${b})">${b}</span></label>`).join("");
+
+// ---------------- Estado ----------------
+let G = null;              // respuesta de /api/grid
+let filas = [];            // bandas en orden
+let F = {};                // F[banda][visita] = {meta, arr}
+let escala = {};           // escala[banda] = {vmin, vmax}
+let sel = {r: 0, c: 0};
+let modo = "imagen";
+let generacion = 0, controlador = null;
+let total = 0, hechos = 0, errores = 0;
+let timerPlay = null;
+
+// ---------------- Utilidades numéricas ----------------
+function decodificar(b64) {
+  const bin = atob(b64), buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return new Float32Array(buf.buffer);
+}
+function percentil(valores, p) {
+  if (!valores.length) return 0;
+  const s = Float32Array.from(valores).sort();
+  return s[Math.min(s.length - 1, Math.max(0, Math.floor(p / 100 * (s.length - 1))))];
+}
+function recalcularEscala(b) {
+  const vals = [];
+  for (const v in F[b] || {}) for (const x of F[b][v].arr) if (Number.isFinite(x)) vals.push(x);
+  let vmin = percentil(vals, 1), vmax = percentil(vals, 99.7);
+  if (!(vmax > vmin)) vmax = vmin + 1;
+  escala[b] = {vmin, vmax};
+}
+const asinh01 = (x, vmin, vmax) => { const t = Math.min(1, Math.max(0, (x - vmin) / (vmax - vmin))); return Math.asinh(t / 0.1) / Math.asinh(10); };
+
+function referencia(b) {           // primera visita cargada de la banda
+  const vs = Object.keys(F[b] || {}).map(Number).sort((a, c) => a - c);
+  return vs.length ? F[b][vs[0]] : null;
+}
+function factorFlujo(ref, cur) {   // como _resta_y_color del backend
+  const amb = [];
+  for (let i = 0; i < ref.length; i++) if (Number.isFinite(ref[i]) && Number.isFinite(cur[i])) amb.push(ref[i]);
+  if (amb.length < 20) return 1;
+  const umbral = percentil(amb, 95), ratios = [];
+  for (let i = 0; i < ref.length; i++)
+    if (Number.isFinite(ref[i]) && Number.isFinite(cur[i]) && ref[i] > umbral && cur[i] > 0) ratios.push(ref[i] / cur[i]);
+  if (ratios.length < 5) return 1;
+  const k = percentil(ratios, 50);
+  return k > 0.2 && k < 5 ? k : 1;
+}
+
+// Dibuja un fotograma en un canvas según el modo. Los datos vienen con la fila 0 al sur: se voltea.
+function dibujar(canvas, b, v, modoLocal) {
+  const fr = F[b]?.[v]; if (!fr) return;
+  const n = fr.meta.n_px, ctx = canvas.getContext("2d");
+  if (canvas.width !== n) { canvas.width = n; canvas.height = n; }
+  const img = ctx.createImageData(n, n), d = img.data, {vmin, vmax} = escala[b];
+  const ref = referencia(b), cur = fr.arr;
+  let k = 1, lim = 1;
+  if (modoLocal !== "imagen" && ref) {
+    k = factorFlujo(ref.arr, cur);
+    if (modoLocal === "resta") {
+      const ds = [];
+      for (let i = 0; i < cur.length; i++) { const x = cur[i] * k - ref.arr[i]; if (Number.isFinite(x)) ds.push(Math.abs(x)); }
+      lim = percentil(ds, 99.5) || 1;
+    }
+  }
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const i = y * n + x, o = ((n - 1 - y) * n + x) * 4, c = cur[i];
+    let r, g, bl;
+    if (!Number.isFinite(c)) { r = g = bl = 34; }
+    else if (modoLocal === "imagen" || !ref) { r = g = bl = 255 * asinh01(c, vmin, vmax); }
+    else if (modoLocal === "resta") {
+      const rf = ref.arr[i];
+      if (!Number.isFinite(rf)) { r = g = bl = 34; }
+      else { const t = Math.max(-1, Math.min(1, (c * k - rf) / lim));
+        r = t > 0 ? 128 + 127 * t : 128 * (1 + t); g = 128 * (1 - Math.abs(t)); bl = t < 0 ? 128 - 127 * t : 128 * (1 - t); }
+    } else {
+      const rf = ref.arr[i];
+      if (!Number.isFinite(rf)) { r = g = bl = 34; }
+      else { r = 255 * asinh01(rf, vmin, vmax); g = bl = 255 * asinh01(c * k, vmin, vmax); }
+    }
+    d[o] = r; d[o + 1] = g; d[o + 2] = bl; d[o + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// ---------------- Rejilla ----------------
+const celdaId = (r, c) => `cel-${r}-${c}`;
+function visitaDe(r, c) { const v = G.columns[c].celdas[String(filas[r])]; return v === undefined ? null : v; }
+
+function construirRejilla() {
+  const t = $("rejilla");
+  const cab = `<tr><th></th>${G.columns.map((c, j) => `<th id="col-${j}">${c.date.slice(2, 7).replace("-", "/")}<br>${c.date.slice(8)}</th>`).join("")}</tr>`;
+  const cuerpo = filas.map((b, r) => `<tr><th class="fila" id="fila-${r}" style="--c:var(--b${b})"><b>B${b}</b>
+      <small>${BANDAS_UM[b][0]}–${BANDAS_UM[b][1]} µm</small><small>${G.visits[b].length} visitas</small></th>${
+    G.columns.map((c, j) => { const v = visitaDe(r, j);
+      return v === null ? `<td><div class="celda vacia" title="Sin visita de la banda ${b} en esta fecha"></div></td>`
+                        : `<td><div class="celda cargando" id="${celdaId(r, j)}" data-r="${r}" data-c="${j}"><canvas></canvas><span class="tx">…</span></div></td>`;
+    }).join("")}</tr>`).join("");
+  t.innerHTML = cab + cuerpo;
+  t.querySelectorAll(".celda:not(.vacia)").forEach(el => {
+    el.addEventListener("mouseenter", () => seleccionar(+el.dataset.r, +el.dataset.c));
+    el.addEventListener("click", () => seleccionar(+el.dataset.r, +el.dataset.c));
+  });
+}
+
+function pintarCelda(r, c) {
+  const el = $(celdaId(r, c)); if (!el) return;
+  const b = filas[r], v = visitaDe(r, c);
+  if (F[b]?.[v]) { el.classList.remove("cargando"); el.querySelector(".tx").textContent = ""; dibujar(el.querySelector("canvas"), b, v, modo); }
+}
+function repintarFila(r) { for (let c = 0; c < G.columns.length; c++) if (visitaDe(r, c) !== null) pintarCelda(r, c); }
+function repintarTodo() { filas.forEach((_, r) => repintarFila(r)); pintarGrande(); }
+
+// ---------------- Vista grande ----------------
+function seleccionar(r, c) {
+  if (!G) return;
+  r = Math.max(0, Math.min(filas.length - 1, r)); c = Math.max(0, Math.min(G.columns.length - 1, c));
+  document.querySelectorAll(".celda.sel, th.activa").forEach(e => e.classList.remove("sel", "activa"));
+  sel = {r, c};
+  $(celdaId(r, c))?.classList.add("sel");
+  $("fila-" + r)?.classList.add("activa"); $("col-" + c)?.classList.add("activa");
+  pintarGrande();
+}
+
+function pintarGrande() {
+  if (!G) return;
+  const b = filas[sel.r], v = visitaDe(sel.r, sel.c), fr = v === null ? null : F[b]?.[v];
+  const vac = $("vacioGrande");
+  if (!fr) {
+    vac.hidden = false; $("rot").hidden = true; $("escala").hidden = true;
+    vac.textContent = v === null ? `La banda ${b} no tiene visita el ${G.columns[sel.c].date}.` : "Cargando esta imagen…";
+    $("grande").getContext("2d").clearRect(0, 0, 999, 999);
+    $("info").innerHTML = ""; return;
+  }
+  vac.hidden = true;
+  dibujar($("grande"), b, v, modo);
+  const m = fr.meta, ref = referencia(b);
+  $("rot").hidden = false;
+  $("rot").textContent = `B${b} · ${m.t.slice(0, 10)} · λ ${m.wavelength_um ?? "?"} µm`;
+  $("escala").hidden = false;
+  $("escala").querySelector("i").style.width = (30 / G.pixel_scale_arcsec / m.n_px * 100) + "%";
+  const dias = ref ? Math.round((Date.parse(m.t) - Date.parse(ref.meta.t)) / 864e5) : 0;
+  $("info").innerHTML = [
+    ["Fecha (UTC)", m.t.replace("T", " ").replace("Z", "")],
+    ["Desde la 1.ª visita", ref ? `${dias} días (${(dias / 365.25).toFixed(2)} años)` : "—"],
+    ["Longitud de onda", `${m.wavelength_um ?? "?"} µm` + (ref && ref !== fr ? ` (1.ª: ${ref.meta.wavelength_um} µm)` : "")],
+    ["Exposiciones", m.n_stacked > 1 ? `mediana de ${m.n_stacked}` : "1"],
+    ["Contaminación", `${(m.flagged_fraction * 100).toFixed(1)} % de píxeles`],
+    ["Observación", `${m.epoch_id} · ${m.collection}`],
+  ].map(([k, x]) => `<dt>${k}</dt><dd>${x}</dd>`).join("");
+}
+
+const LEYENDAS = {
+  imagen: "Brillo con escala común por banda. El objeto pedido está en la retícula.",
+  resta: '<b class="r">Rojo</b> = brillo que aparece respecto de la primera visita · <b class="a">Azul</b> = brillo que estaba. Un par rojo/azul junto = movimiento.',
+  color: 'Primera visita en <b class="r">rojo</b>, la seleccionada en cian. Lo quieto se ve blanco.',
+};
+document.querySelectorAll("[data-modo]").forEach(bt => bt.onclick = () => {
+  modo = bt.dataset.modo;
+  document.querySelectorAll("[data-modo]").forEach(x => x.setAttribute("aria-pressed", x === bt));
+  $("leyenda").innerHTML = LEYENDAS[modo]; repintarTodo();
+});
+$("leyenda").innerHTML = LEYENDAS.imagen;
+
+// Mouse sobre la vista grande: horizontal = fechas, vertical = bandas.
+$("lienzo").addEventListener("pointermove", ev => {
+  if (!G) return;
+  const r = ev.currentTarget.getBoundingClientRect();
+  const c = Math.floor((ev.clientX - r.left) / r.width * G.columns.length);
+  const f = Math.floor((ev.clientY - r.top) / r.height * filas.length);
+  if (c !== sel.c || f !== sel.r) seleccionar(f, c);
+});
+
+function reproducir(si) {
+  clearInterval(timerPlay); $("play").setAttribute("aria-pressed", si); $("play").textContent = si ? "⏸ Pausar" : "▶ Reproducir fechas";
+  if (si && G) timerPlay = setInterval(() => seleccionar(sel.r, (sel.c + 1) % G.columns.length), 700);
+}
+$("play").onclick = () => reproducir($("play").getAttribute("aria-pressed") !== "true");
+document.addEventListener("keydown", ev => {
+  if (!G || ["INPUT", "SELECT"].includes(document.activeElement?.tagName)) return;
+  const mov = {ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0]}[ev.key];
+  if (mov) { ev.preventDefault(); seleccionar(sel.r + mov[0], sel.c + mov[1]); }
+  if (ev.key === " ") { ev.preventDefault(); $("play").click(); }
+});
+
+// ---------------- Carga ----------------
+function estado(html) { $("estado").innerHTML = html; }
+function progreso() {
+  const pct = total ? Math.round(hechos / total * 100) : 0;
+  estado(`<div class="barra"><i style="width:${pct}%"></i></div>
+    <span>${hechos < total ? "Cargando" : "Listo"} ${hechos}/${total} imágenes${errores ? ` · <span class="aviso">${errores} con error</span>` : ""}</span>
+    <span>${G.columns.length} fechas × ${filas.length} bandas</span>`);
+}
+
+function parametros() {
+  const bandas = [...document.querySelectorAll("#bandas input:checked")].map(i => i.value).join(",");
+  return {ra: $("ra").value, dec: $("dec").value, start: $("start").value, end: $("end").value, bands: bandas,
+          size: $("size").value, per_visit: $("perv").value};
+}
+
+async function buscarTodo() {
+  const p = parametros();
+  if (!p.bands) { estado('<span class="aviso">Elige al menos una banda.</span>'); return; }
+  history.replaceState(null, "", "?" + new URLSearchParams(p));
+  const gen = ++generacion; controlador?.abort(); controlador = new AbortController(); reproducir(false);
+  F = {}; escala = {}; G = null; $("rejilla").innerHTML = ""; pintarGrande();
+  estado("Consultando qué visitas hay en IRSA…");
+  const t0 = performance.now();
+  let g;
+  try {
+    const r = await fetch("/api/grid?" + new URLSearchParams({ra: p.ra, dec: p.dec, bands: p.bands, start: p.start, end: p.end}), {signal: controlador.signal});
+    g = await r.json(); if (!r.ok) throw new Error(g.detail || r.status);
+  } catch (e) { if (gen === generacion) estado(`<span class="aviso">No se pudo consultar IRSA: ${e.message}</span>`); return; }
+  if (gen !== generacion) return;
+  G = g; filas = g.bands.filter(b => g.visits[b].length);
+  if (!filas.length || !g.columns.length) { estado('<span class="aviso">IRSA no devolvió visitas con estos filtros. Prueba otro rango de fechas u otras bandas.</span>'); return; }
+  construirRejilla();
+  sel = {r: 0, c: 0}; seleccionar(0, 0);
+
+  // Orden: primera y última visita de cada banda (para la resta), luego el resto por fecha.
+  const tareas = [], vistas = new Set();
+  const add = (b, v) => { const k = b + ":" + v; if (!vistas.has(k)) { vistas.add(k); tareas.push([b, v]); } };
+  for (const b of filas) { const n = g.visits[b].length; add(b, 0); add(b, n - 1); }
+  const maxV = Math.max(...filas.map(b => g.visits[b].length));
+  for (let v = 1; v < maxV; v++) for (const b of filas) if (v < g.visits[b].length) add(b, v);
+  total = tareas.length; hechos = 0; errores = 0; progreso();
+  estado($("estado").innerHTML + ` <span>(visitas en ${((performance.now() - t0) / 1000).toFixed(1)} s)</span>`);
+
+  let i = 0;
+  async function trabajador() {
+    while (i < tareas.length && gen === generacion) {
+      const [b, v] = tareas[i++];
+      const q = new URLSearchParams({ra: p.ra, dec: p.dec, band: b, visit: v, start: p.start, end: p.end, size: p.size, per_visit: p.per_visit});
+      const r0 = filas.indexOf(b);
+      try {
+        const r = await fetch("/api/frame?" + q, {signal: controlador.signal});
+        const j = await r.json(); if (!r.ok) throw new Error(j.detail || r.status);
+        if (gen !== generacion) return;
+        (F[b] ||= {})[v] = {meta: j, arr: decodificar(j.data)};
+        recalcularEscala(b); repintarFila(r0);
+        if (filas[sel.r] === b) pintarGrande();
+      } catch (e) {
+        if (gen !== generacion || e.name === "AbortError") return;
+        errores++;
+        for (let c = 0; c < G.columns.length; c++) if (visitaDe(r0, c) === v) {
+          const el = $(celdaId(r0, c)); if (el) { el.classList.remove("cargando"); el.classList.add("error");
+            el.querySelector(".tx").textContent = "error"; el.title = e.message; }
+        }
+      }
+      hechos++; progreso();
+    }
+  }
+  await Promise.all(Array.from({length: PARALELO}, trabajador));
+}
+
+$("f").onsubmit = ev => { ev.preventDefault(); if ($("f").reportValidity()) buscarTodo(); };
+
+// ---------------- Presets y URL ----------------
+let presets = [];
+fetch("/api/presets").then(r => r.json()).then(j => {
+  presets = j.campos;
+  for (const c of presets) { const o = document.createElement("option"); o.value = c.id; o.textContent = c.nombre; $("preset").append(o); }
+});
+$("preset").onchange = () => {
+  const c = presets.find(p => p.id === $("preset").value); if (!c) return;
+  $("ra").value = c.ra; $("dec").value = c.dec; $("size").value = c.size;
+  $("perv").value = c.id === "wise_0855" ? 4 : 1;
+  estado(`${c.nombre}: ${c.que_demuestra} Posición propagada por movimiento propio a ${c.epoca}. Pulsa Buscar.`);
+};
+(() => {
+  const q = new URLSearchParams(location.search);
+  if (!q.has("ra")) return;
+  for (const k of ["ra", "dec", "start", "end", "size"]) if (q.has(k)) $(k).value = q.get(k);
+  if (q.has("per_visit")) $("perv").value = q.get("per_visit");
+  if (q.has("bands")) { const s = new Set(q.get("bands").split(",")); document.querySelectorAll("#bandas input").forEach(i => i.checked = s.has(i.value)); }
+  buscarTodo();
+})();
+</script>
+</body>
+</html>
