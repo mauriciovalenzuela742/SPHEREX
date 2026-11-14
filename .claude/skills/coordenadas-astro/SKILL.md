@@ -161,7 +161,7 @@ consecutivas, y le da mucho valor a la resta de imágenes y al zoom.
 
 | Objeto | Qué demuestra |
 |---|---|
-| **WISE 0855** | Movimiento propio muy alto. **Caso obligatorio: se muestra siempre.** En una exposición suelta se ve débil; su movimiento (~1,3 px) se ve con la resta y con la suma por barrido. Coordenadas del enunciado: de época 2010, usar la propagada |
+| **WISE 0855** | Movimiento propio muy alto. **Caso obligatorio: se muestra siempre.** En una exposición suelta se ve débil; su movimiento (~1,3 px) se ve con la resta y con la suma por barrido (pendiente, D2; el overlay de CatWISE2020, pendiente, V2). Coordenadas del enunciado: de época 2010, usar la propagada |
 | **Barnard's Star** | El mayor movimiento propio conocido. Se ve, pero satura: el movimiento es cualitativo |
 | **Epsilon Indi B** | Par de enanas marrones. **Es donde el movimiento se ve más claro** (medido −0,85/−0,71 px; coincide con SIMBAD) |
 | **RW Aurigae** | Variable: cambia de brillo. Satura y la resta deja un par rojo/azul aunque no se mueva: no es prueba de variabilidad |
