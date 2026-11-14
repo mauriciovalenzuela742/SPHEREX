@@ -25,6 +25,10 @@ Tienes permiso explícito para decir «esto está mal» sin tener que proponer e
 - **La más importante.** Por el filtro lineal variable de SPHEREx, distintas épocas de la misma
   posición suelen estar en longitudes de onda distintas. ¿Se agrupó por banda antes de armar la
   secuencia? ¿Se muestra la λ de cada fotograma? Ver `.claude/skills/spherex-datos/SKILL.md` §1.
+- Agrupar por banda no basta: ¿se eligieron épocas a **λ igualada**? ¿Se **reproyectó** a una grilla común (el detector gira ~180° entre barridos)?
+- ¿Las posiciones de los objetos son las **propagadas** a la época, no las J2000 (`campos.ts`)?
+- ¿El objeto está **saturado**? Si el núcleo está enmascarado, la resta deja un par rojo/azul sin movimiento.
+- ¿La contaminación usa **máscara por bits** y no `FLAGS != 0` (72 % contra ~4 %)?
 
 **Escala y normalización**
 - ¿Todos los fotogramas de una secuencia usan los mismos límites? Si cada uno se estira por su
