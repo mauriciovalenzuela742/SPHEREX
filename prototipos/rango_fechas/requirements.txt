@@ -1,0 +1,13 @@
+# Prototipo rango de fechas + resta. Probado con Python 3.12 el 14-nov-2026.
+fastapi
+uvicorn[standard]
+httpx
+numpy
+scipy
+astropy
+pillow
+pyyaml
+# Solo para el notebook EDA
+matplotlib
+pandas
+ipykernel

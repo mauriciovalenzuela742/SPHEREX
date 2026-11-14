@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPHEREx · rango de fechas</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --borde: #30363d; --texto: #e6edf3; --tenue: #8b949e;
+    --acento: #58a6ff; --rojo: #ff6b6b; --azul: #4dabf7; --aviso: #d29922;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--texto); font: 15px/1.45 system-ui, sans-serif; }
+  header { padding: 16px 20px; border-bottom: 1px solid var(--borde); }
+  header h1 { margin: 0; font-size: 18px; }
+  header p { margin: 4px 0 0; color: var(--tenue); font-size: 13px; }
+  main { padding: 16px 20px; max-width: 1200px; margin: 0 auto; }
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;
+         background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 14px; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--tenue); }
+  input, select, button { font: inherit; color: var(--texto); background: var(--bg);
+         border: 1px solid var(--borde); border-radius: 6px; padding: 6px 8px; }
+  button { cursor: pointer; background: #21262d; }
+  button.primario { background: var(--acento); color: #04111f; border-color: var(--acento); font-weight: 600; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .acciones { display: flex; gap: 8px; align-items: end; grid-column: 1 / -1; flex-wrap: wrap; }
+  .estado { color: var(--tenue); font-size: 13px; margin: 12px 0; min-height: 20px; }
+  .visitas { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 0; }
+  .visitas span { background: var(--panel); border: 1px solid var(--borde); border-radius: 12px;
+         padding: 2px 10px; font-size: 12px; }
+  .paneles { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+  .panel { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 12px; }
+  .panel h2 { margin: 0 0 8px; font-size: 14px; }
+  .lienzo { position: relative; width: 100%; aspect-ratio: 1; background: #000; border-radius: 4px; overflow: hidden; }
+  .lienzo img { width: 100%; height: 100%; image-rendering: pixelated; display: block; }
+  .reticula::before, .reticula::after { content: ""; position: absolute; background: rgba(88,166,255,.55); pointer-events: none; }
+  .reticula::before { left: 50%; top: 38%; width: 1px; height: 24%; }
+  .reticula::after { top: 50%; left: 38%; height: 1px; width: 24%; }
+  .rotulo { position: absolute; left: 6px; top: 6px; background: rgba(0,0,0,.65); padding: 2px 6px;
+         border-radius: 4px; font: 12px/1.3 ui-monospace, monospace; }
+  .orient { position: absolute; right: 6px; bottom: 6px; font: 11px ui-monospace, monospace; color: var(--tenue);
+         background: rgba(0,0,0,.6); padding: 2px 5px; border-radius: 4px; }
+  .controles { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .controles input[type=range] { flex: 1; min-width: 120px; }
+  .leyenda { font-size: 12px; color: var(--tenue); margin-top: 6px; }
+  .leyenda b.r { color: var(--rojo); } .leyenda b.a { color: var(--azul); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 14px; }
+  th, td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--borde); }
+  th { color: var(--tenue); font-weight: 500; }
+  tr.activa td { background: rgba(88,166,255,.12); }
+  .avisos { margin-top: 12px; }
+  .avisos div { border-left: 3px solid var(--aviso); background: rgba(210,153,34,.08); padding: 6px 10px; margin: 4px 0; font-size: 13px; }
+  footer { color: var(--tenue); font-size: 11px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SPHEREx · ¿qué se movió entre dos fechas?</h1>
+  <p>Prototipo. Elige un punto del cielo, una banda y un rango de fechas: se piden a IRSA solo los recortes necesarios (una imagen por visita).</p>
+</header>
+<main>
+  <form id="f">
+    <label>Objeto de prueba
+      <select id="preset"><option value="">— elegir —</option></select>
+    </label>
+    <label>RA (grados)<input id="ra" type="number" step="any" required></label>
+    <label>Dec (grados)<input id="dec" type="number" step="any" required></label>
+    <label>Banda
+      <select id="band">
+        <option value="1">1 · 0,75–1,09 µm</option><option value="2">2 · 1,10–1,62 µm</option>
+        <option value="3" selected>3 · 1,63–2,41 µm</option><option value="4">4 · 2,42–3,82 µm</option>
+        <option value="5">5 · 3,83–4,41 µm</option><option value="6">6 · 4,42–5,00 µm</option>
+      </select>
+    </label>
+    <label>Desde<input id="start" type="date" value="2025-04-01"></label>
+    <label>Hasta<input id="end" type="date"></label>
+    <label>Campo (grados)<input id="size" type="number" step="0.01" min="0.02" max="0.5" value="0.1"></label>
+    <label>Máx. visitas<input id="maxv" type="number" min="2" max="20" value="8"></label>
+    <label title="Suma (mediana) de varias exposiciones de la misma visita: objetos débiles se ven mejor, pero baja más datos">Fotos sumadas por visita<input id="perv" type="number" min="1" max="10" value="1"></label>
+    <div class="acciones">
+      <button type="button" id="btnEpocas">1 · Ver visitas disponibles</button>
+      <button type="submit" class="primario" id="btnCargar">2 · Cargar imágenes</button>
+      <span id="queDemuestra" class="leyenda"></span>
+    </div>
+  </form>
+
+  <div class="estado" id="estado"></div>
+  <div class="visitas" id="visitas"></div>
+
+  <div class="paneles" id="paneles" hidden>
+    <section class="panel">
+      <h2>Parpadeo por visita</h2>
+      <div class="lienzo reticula"><img id="blink" alt="fotograma"><span class="rotulo" id="rotulo"></span><span class="orient">N↑ E←</span></div>
+      <div class="controles">
+        <button type="button" id="play">⏸</button>
+        <input type="range" id="slider" min="0" value="0">
+        <label style="flex-direction:row;align-items:center">ms <input id="vel" type="number" value="600" min="100" step="100" style="width:70px"></label>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Resta: última − primera</h2>
+      <div class="lienzo reticula"><img id="diff" alt="resta"><span class="orient">N↑ E←</span></div>
+      <div class="leyenda"><b class="r">Rojo</b> = brillo que aparece en la última fecha · <b class="a">Azul</b> = brillo que estaba en la primera · Gris = sin cambio.
+        Un par rojo/azul juntos indica <b>movimiento</b>. <span id="escala"></span></div>
+    </section>
+    <section class="panel">
+      <h2>Color: primera (rojo) + última (cian)</h2>
+      <div class="lienzo reticula"><img id="color" alt="composición en color"><span class="orient">N↑ E←</span></div>
+      <div class="leyenda">Lo que no cambió se ve blanco. Un borde rojo de un lado y cian del otro es un objeto que se desplazó.</div>
+    </section>
+  </div>
+
+  <table id="tabla" hidden>
+    <thead><tr><th>#</th><th>Fecha (UTC)</th><th>Observación</th><th>Colección</th><th>λ centro</th><th>Píxeles con contaminación</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="avisos" id="avisos"></div>
+</main>
+<footer>
+  This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of
+  Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California
+  Institute of Technology, and is funded by the National Aeronautics and Space Administration. Datos vía NASA/IPAC IRSA.
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+$("end").value = new Date().toISOString().slice(0, 10);
+let presets = [], frames = [], idx = 0, timer = null, playing = true;
+
+function params() {
+  return new URLSearchParams({
+    ra: $("ra").value, dec: $("dec").value, band: $("band").value,
+    start: $("start").value, end: $("end").value, size: $("size").value, max_visits: $("maxv").value, per_visit: $("perv").value,
+  });
+}
+
+// La URL refleja la consulta: se puede compartir o embeber.
+function leerURL() {
+  const q = new URLSearchParams(location.search);
+  for (const [k, id] of [["ra","ra"],["dec","dec"],["band","band"],["start","start"],["end","end"],["size","size"],["max_visits","maxv"],["per_visit","perv"]])
+    if (q.has(k)) $(id).value = q.get(k);
+  return q.has("ra") && q.has("dec");
+}
+
+async function pedir(ruta) {
+  const r = await fetch(ruta);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
+  return j;
+}
+
+async function cargarPresets() {
+  const j = await pedir("/api/presets");
+  presets = j.campos;
+  for (const c of presets) {
+    const o = document.createElement("option");
+    o.value = c.id; o.textContent = c.nombre; $("preset").appendChild(o);
+  }
+}
+
+$("preset").onchange = () => {
+  const c = presets.find(p => p.id === $("preset").value);
+  if (!c) return;
+  $("ra").value = c.ra; $("dec").value = c.dec; $("band").value = c.banda; $("size").value = c.size;
+  $("queDemuestra").textContent = `${c.que_demuestra} (posición propagada a ${c.epoca})`;
+};
+
+function estado(t) { $("estado").textContent = t; }
+function mostrarAvisos(lista) {
+  $("avisos").innerHTML = "";
+  for (const a of lista || []) { const d = document.createElement("div"); d.textContent = a; $("avisos").appendChild(d); }
+}
+
+$("btnEpocas").onclick = async () => {
+  if (!$("f").reportValidity()) return;
+  estado("Consultando IRSA…"); $("btnEpocas").disabled = true;
+  try {
+    const j = await pedir("/api/epochs?" + params());
+    estado(`${j.n_observations} observaciones en ${j.n_visits} visitas para la banda ${j.band}.`);
+    $("visitas").innerHTML = j.visits.map(v => `<span>${v.start.slice(0,10)} · ${v.n} obs</span>`).join("");
+    mostrarAvisos(j.warnings);
+  } catch (e) { estado("Error: " + e.message); }
+  $("btnEpocas").disabled = false;
+};
+
+$("f").onsubmit = async ev => {
+  ev.preventDefault();
+  history.replaceState(null, "", "?" + params());
+  estado("Pidiendo recortes a IRSA (puede tardar 10–60 s la primera vez; luego queda en caché)…");
+  $("btnCargar").disabled = true;
+  const t0 = performance.now();
+  try {
+    const j = await pedir("/api/frames?" + params());
+    frames = j.frames;
+    mostrarAvisos(j.warnings);
+    if (!frames.length) { estado("No se obtuvieron imágenes."); $("paneles").hidden = true; return; }
+    estado(`${j.n_frames} fotogramas (de ${j.n_visits_available} visitas en el rango, ${j.n_cutouts} recortes) · ${j.n_pixels}×${j.n_pixels} px de ${j.pixel_scale_arcsec}″ · ${((performance.now()-t0)/1000).toFixed(1)} s`);
+    $("paneles").hidden = false;
+    $("diff").src = j.diff_png || ""; $("color").src = j.color_png || "";
+    $("escala").textContent = j.diff_scale_factor ? `(última escalada ×${j.diff_scale_factor} para igualar el flujo)` : "";
+    $("slider").max = frames.length - 1;
+    llenarTabla();
+    idx = 0; pintar(); reproducir(true);
+  } catch (e) { estado("Error: " + e.message); }
+  $("btnCargar").disabled = false;
+};
+
+function llenarTabla() {
+  const tb = $("tabla").querySelector("tbody");
+  tb.innerHTML = frames.map((f, i) => `<tr data-i="${i}"><td>${i+1}</td><td>${f.t.replace("T"," ").slice(0,16)}</td>
+    <td>${f.epoch_id}</td><td>${f.collection}</td><td>${f.wavelength_um ?? "?"} µm${f.n_stacked > 1 ? ` (media de ${f.n_stacked})` : ""}</td>
+    <td title="${Object.entries(f.flags_detail).map(([k,v]) => `${k}: ${(v*100).toFixed(1)}%`).join("\n")}">${(f.flagged_fraction*100).toFixed(1)} %</td></tr>`).join("");
+  tb.querySelectorAll("tr").forEach(tr => tr.onclick = () => { idx = +tr.dataset.i; reproducir(false); pintar(); });
+  $("tabla").hidden = false;
+}
+
+function pintar() {
+  const f = frames[idx];
+  $("blink").src = f.png;
+  $("rotulo").textContent = `${idx+1}/${frames.length} · ${f.t.slice(0,10)} · λ ${f.wavelength_um ?? "?"} µm`;
+  $("slider").value = idx;
+  document.querySelectorAll("#tabla tr").forEach(tr => tr.classList.toggle("activa", +tr.dataset.i === idx));
+}
+
+function reproducir(si) {
+  playing = si; clearInterval(timer); $("play").textContent = si ? "⏸" : "▶";
+  if (si) timer = setInterval(() => { idx = (idx + 1) % frames.length; pintar(); }, +$("vel").value || 600);
+}
+$("play").onclick = () => reproducir(!playing);
+$("vel").onchange = () => playing && reproducir(true);
+$("slider").oninput = () => { idx = +$("slider").value; reproducir(false); pintar(); };
+
+cargarPresets().then(() => { if (leerURL()) $("f").requestSubmit(); });
+</script>
+</body>
+</html>
