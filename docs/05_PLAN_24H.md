@@ -5,8 +5,9 @@ se pasa de su tiempo, se aplica el corte y se sigue: en un hackatón el enemigo 
 ideas, es la falta de disciplina para abandonar una.
 
 Horarios de referencia del evento local de Santiago (inicio de trabajo sábado 10:00, **cierre de
-entregas domingo 13:00**, pitches 14:00, 2 minutos + 2 preguntas). **Confirma estas horas el primer
-día**; si cambian, se recalculan los bloques, no el orden.
+entregas domingo 11:00**, comunicado en vivo por la organización el 14-nov; ver
+[`08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md)). Pitch: 2 minutos + 2 preguntas; la hora no está
+confirmada. Si algo cambia, se recalculan los bloques, no el orden.
 
 | Rol | Quién |
 |---|---|
@@ -27,16 +28,19 @@ Lo más rentable del día entero y lo que más equipos se saltan.
   *Potential Considerations*: son la rúbrica.
 - Repartir roles y escribirlos arriba en este archivo.
 - **Confirmar la hora exacta del cierre de entregas.** De ahí salen T−6, T−4 y T−2.
-- Crear el repositorio en GitHub, subir el kit, dar acceso a los cuatro.
+- Crear el repositorio en GitHub, subir el kit, dar acceso a los seis.
 - Levantar `scaffold/`: backend y frontend arrancan y se ven. No hace nada; levanta.
 - Abrir [`adr/ADR-001-stack.md`](adr/ADR-001-stack.md) y firmar la decisión de stack (o cambiarla).
 
 **Corte:** si a la hora 1 el esqueleto no levanta, es un problema de entorno y se ataca con todos.
-Nadie avanza hasta que los cuatro puedan correr el proyecto.
+Nadie avanza hasta que los seis puedan correr el proyecto.
 
 ---
 
-## Bloque 1 · Hora 1 – 3 · D + C · **La hora de la verdad con los datos**
+## Bloque 1 · Hora 1 – 3 · D1 + D2 + C · **La hora de la verdad con los datos**
+
+> **Respondido el 14-nov:** ver [`09_EDA_HALLAZGOS.md`](09_EDA_HALLAZGOS.md) y
+> [`10_REPARTO_DE_TRABAJO.md`](10_REPARTO_DE_TRABAJO.md). Lo que sigue queda como referencia del plan.
 
 El bloque que decide el proyecto. Es el checklist del final de
 [`02_DATOS_SPHEREX.md`](02_DATOS_SPHEREX.md), punto por punto.
@@ -79,7 +83,7 @@ y es lo que el jurado recuerda.
 
 **Corte — hito de la hora 8:** *una coordenada escrita a mano produce un videíto en pantalla.*
 Feo, lento, una sola banda, da igual. **Si a la hora 8 no hay videíto, todo lo demás se suspende**
-y los cuatro se ponen en eso.
+y los seis se ponen en eso.
 
 ---
 
@@ -130,7 +134,7 @@ termina o se saca. Una funcionalidad a medias resta: el jurado hace clic justo a
 
 - N ensaya el pitch **en voz alta, cronometrado**, tres veces. En Santiago son 2 minutos + 2 preguntas:
   2 minutos es mucho menos de lo que parece.
-- Los otros tres hacen de jurado y preguntan lo incómodo:
+- Los otros cinco hacen de jurado y preguntan lo incómodo:
   - «¿Esto no lo hace ya el Data Explorer de IRSA?»
   - «¿Cómo sabes que la imagen es de esa coordenada?»
   - «¿Qué pasa si pongo una coordenada sin datos?»
