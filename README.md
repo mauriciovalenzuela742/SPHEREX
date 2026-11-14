@@ -14,8 +14,8 @@ banda), controles conectados a la URL y huecos punteados con el nombre de quien 
 Este README es **el plan principal del equipo**. El detalle vive en `docs/` (fuente de verdad),
 y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
 
-> Antes del inicio oficial no hay aquí código que resuelva el desafío: solo documentación, convenciones
-> y andamiaje genérico. Ver [`docs/08_REGLAS_DEL_EVENTO.md`](docs/08_REGLAS_DEL_EVENTO.md).
+> Hasta el 13-nov no había aquí código que resuelva el desafío; desde el inicio oficial (14-nov) sí
+> (`eda/` y el visor en `scaffold/frontend/`). Ver [`docs/08_REGLAS_DEL_EVENTO.md`](docs/08_REGLAS_DEL_EVENTO.md).
 
 ---
 
@@ -254,7 +254,7 @@ claude            # comprobación: /standup debe existir
 ## 9. Pendientes del Bloque 0
 
 - [ ] Javiera y Vladimir: leer este README, [`docs/00_DESAFIO.md`](docs/00_DESAFIO.md) y [`docs/briefings/`](docs/briefings/) (20 min).
-- [ ] Mauricio: crear el proyecto en Vercel conectado al repo (raíz `scaffold/frontend`) y compartir la URL.
+- [x] Mauricio: crear el proyecto en Vercel conectado al repo (raíz `scaffold/frontend`) y compartir la URL (hecho el 14-nov: https://spherex-planet-x-tau.vercel.app).
 - [ ] En el standup: aclarar el recuadro «Contaminación: % agua, % nube, % polvo» (¿flags o composición?).
 - [ ] Javiera: elegir las ODS y escribir el guion de Spherix (bienvenida, «¿Qué parte del cielo quieres ver hoy?», 5 sugerencias).
 - [ ] Bloque 1: con el tiempo medido de un cutout, decidir si `/api` corre en Vercel Functions o en un contenedor (ADR-001).
