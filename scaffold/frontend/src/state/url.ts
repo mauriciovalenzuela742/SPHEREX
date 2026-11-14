@@ -3,10 +3,13 @@
  * Contrato de la URL: docs/03_ARQUITECTURA.md §4. Pendiente: target, fps, stretch, mode.
  */
 import { useCallback, useState } from "react";
+import { CAMPOS, posicionActual } from "../content/campos";
 
 export type Estado = { ra: number; dec: number; size: number; band: string; vista: "landing" | "visor" };
 
-const DEFECTO: Estado = { ra: 133.81890825, dec: -7.247048, size: 0.1, band: "4", vista: "landing" };
+// Por defecto, Epsilon Indi B en su posición de hoy: el movimiento que el EDA midió con datos reales.
+const EPS_IND_B = posicionActual(CAMPOS.find((c) => c.id === "eps_ind_b")!);
+const DEFECTO: Estado = { ...EPS_IND_B, size: 0.1, band: "4", vista: "landing" };
 
 function leer(): Estado {
   const q = new URLSearchParams(window.location.search);
