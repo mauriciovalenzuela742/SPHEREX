@@ -11,7 +11,7 @@ con datos reales, con tareas concretas y cómo comprobarlas.
 
 | El plan asumía | El EDA mostró | A quién afecta |
 |---|---|---|
-| Vía A: Aladin carga el cubo HiPS de DR1 de IRSA | El cubo de IRSA son FITS de 512×512×102 (~320 MB por tesela), no un HiPS para Aladin, y el servicio de recortes los rechaza. Hay un **HiPS de SPHEREx en el CDS** (QR2, uno por detector), aún sin verificar | **V2**, C |
+| Vía A: Aladin carga el cubo HiPS de DR1 de IRSA | **Sí carga** (`/data/hips/SPHEREx/spherex_allsky_cube`, CORS abierto; ya está en el visor desplegado). Pero es un mosaico de todas las épocas en PNG, a 12,9″/px: sirve de contexto y para las 102 bandas, no para el tiempo ni para medir flujos. La versión FITS que entrega SIA2 no sirve para recortes | **V2** |
 | Verificar CORS en la hora 1 | **IRSA no responde con CORS** (SIA2 ni archivos): todo pasa por el backend. El CDS sí | D1, V2 |
 | Medir un cutout decide Vercel Functions o contenedor | **7,3 s de mediana, 10,8 s p90, 29 s máximo**, ~3,9 MB, errores 503 a ratos | **C** (decide), D1 |
 | Agrupar por banda | Además hay que **igualar la λ** entre épocas: dentro de un detector varía ~16 anchos de banda | D1, **D2** |
@@ -100,12 +100,11 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
 
 ## V2 · Juan Pablo — visor del cielo
 
-- **El cubo de IRSA no sirve para Aladin** (ver tabla de arriba). Probar primero el HiPS del CDS por
-  ID: `CDS/P/SPHEREx/QR2/D1` … `D6` (listados en el MocServer; el 14-nov `alasky` devolvía 404 incluso
-  para DSS, así que no se pudo cargar). El CDS sí responde con CORS.
-- Es QR2 (versión anterior), uno por detector: sirve para contexto, no para las 102 bandas.
-- Para el **gráfico de bandas** no hay atajo en el cubo; el espectro sale de los archivos de nivel 2
-  (la λ de cada uno ya se calcula en D2) o del Spectrophotometry Tool de IRSA.
+- **El cubo HiPS de IRSA carga en Aladin** y Mauricio ya lo dejó funcionando en `src/sky/AladinView.tsx`
+  (Aladin Lite 3.8.2, un plano por banda). Es un mosaico de todas las épocas, a 12,9″/px: contexto y
+  102 bandas, no tiempo. El HiPS del CDS (QR2) queda como plan B.
+- Para el **gráfico de bandas** el cubo no sirve (son PNG estirados, sin flujos); el espectro sale de
+  los archivos de nivel 2 (la λ de cada uno ya se calcula en D2) o del Spectrophotometry Tool de IRSA.
 - Overlay de Gaia propagado a la época: el EDA ya propaga con movimiento propio (`eda/comun.py`,
   `posicion_en`), y coincide con lo medido en eps Ind B.
 
@@ -113,6 +112,10 @@ Revisión de la maqueta contra los datos, punto por punto: [`diseno/REVISION_MAQ
 
 - **Dato para decidir dónde corre `/api`:** cutouts de 7,3 s de mediana y 29 s de máximo, 503 a ratos.
 - Corregir en `data/campos_de_prueba.yml` la escala de píxel: **6,15″** (de SIA2), estaba 6,2 derivada.
+- **`scaffold/frontend/src/content/campos.ts` tiene coordenadas J2000**, aunque su comentario dice
+  «propagada». A 2026, WISE 0855 está a 212″ y Barnard a 270″ de esas coordenadas: con recortes de 0,1°
+  (medio lado 180″) quedan **fuera del recorte**. Usar posiciones propagadas (el `/api/presets` de la
+  rama de Bryan ya las entrega).
 - Demo: eps Ind B (movimiento medido) y Barnard (visible); WISE 0855 cuando exista la suma por barrido.
 - Las pruebas de D2 de arriba son las de aceptación.
 

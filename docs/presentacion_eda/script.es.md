@@ -120,7 +120,7 @@ message: Las estrellas más rápidas se mueven 1–2 píxeles en un año de SPHE
 
 ## Lo que todavía no sabemos
 @kicker Para discutir
-- **¿Carga el HiPS de SPHEREx del CDS en Aladin?** Hoy el servidor respondía error.
+- **¿Cómo se ve en el cubo un objeto que se mueve?** El cubo HiPS que carga Aladin mezcla todas las épocas.
 - **¿Cuánto mejora WISE 0855 al sumar** las fotos de un barrido?
 - **¿Qué hace el visor con las estrellas saturadas?** Avisar, mostrar la máscara o cambiar de detector.
 - **El brillo:** todavía no medimos la variabilidad de RW Aur ni de R Dra.
