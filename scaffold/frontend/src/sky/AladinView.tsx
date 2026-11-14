@@ -2,7 +2,7 @@
  * Vía A: cielo de SPHEREx con Aladin Lite v3, sin backend. Dueño: Juan Pablo (V2).
  *
  * Punto de extensión: este componente no conoce el detalle de las capas. Monta las de `capas/index.ts`
- * (objetivo, Gaia, CatWISE, SIMBAD), el deslizador de λ (`LambdaSlider`) y reparte los eventos de Aladin
+ * (objetivo, Gaia, CatWISE, SIMBAD), el selector de λ en acordeón (`SelectorLambda`; `LambdaSlider` queda de respaldo) y reparte los eventos de Aladin
  * (`eventos.ts`). Las piezas se trabajan en sus propios archivos, sin tocar este.
  *
  * Los catálogos de referencia (Gaia, CatWISE, SIMBAD) parten ocultos para que el cielo no se vea cargado al
@@ -16,7 +16,7 @@ import A from "aladin-lite"; // v3.8.2, fijada en package.json
 import { CAPAS, type ContextoCapa } from "./capas";
 import { crearRepartidor, type Suscribir } from "./eventos";
 import ControlEpocas from "./Epocas";
-import LambdaSlider from "./LambdaSlider";
+import SelectorLambda from "./SelectorLambda";
 import { ponerPlano, SURVEY_SPHEREX } from "./planos";
 
 // Visor.tsx importa planoDeBanda desde aquí: se mantiene la exportación.
@@ -160,7 +160,7 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
           {mostrarCatalogos ? "Ocultar catálogos" : "Mostrar catálogos (Gaia, CatWISE, SIMBAD)"}
         </button>
       </div>
-      <LambdaSlider plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
+      <SelectorLambda plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
     </>
   );
 }
