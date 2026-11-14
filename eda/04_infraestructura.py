@@ -2,7 +2,7 @@
 
 1. ¿IRSA responde con CORS? (si no, el navegador no puede pedirle nada directo: todo va por backend)
 2. ¿Qué es en realidad el "cubo de todo el cielo" de DR1 y se puede recortar?
-3. ¿Hay HiPS de SPHEREx que Aladin Lite pueda cargar? (CDS)
+3. ¿Hay HiPS de SPHEREx que Aladin Lite pueda cargar? (IRSA y CDS)
 
 Uso:  .venv/Scripts/python eda/04_infraestructura.py
 Salida: eda/resultados/infraestructura.json
@@ -43,6 +43,8 @@ def main() -> None:
                "&POS=circle+133.76+-7.24+0.01&RESPONSEFORMAT=CSV"),
         probar("Cutout del cubo DR1", "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/"
                "hips_20261026/Norder5/Dir10000/Npix10226_cube.fits?center=133.7578,-7.2420&size=0.05"),
+        probar("HiPS cubo DR1 IRSA properties", "https://irsa.ipac.caltech.edu/data/hips/SPHEREx/"
+               "spherex_allsky_cube/properties"),
         probar("MocServer CDS: HiPS SPHEREx", "https://alasky.cds.unistra.fr/MocServer/query?"
                "expr=ID%3D*SPHEREx*&get=id&fmt=ascii"),
         probar("HiPS CDS SPHEREx D5 properties", "https://alasky.cds.unistra.fr/SPHEREx/D5/properties"),

@@ -32,9 +32,12 @@ y se pueden volver a correr.
    hay demo.**
 9. **IRSA no responde con CORS**: el navegador no puede pedirle nada directo. **Todo pasa por el
    backend**, incluido el SIA2.
-10. **El «cubo HiPS» de DR1 no es un HiPS para Aladin**: son FITS de 512×512×102 de ~320 MB por
-    tesela, y el servicio de cutouts los rechaza. La «Vía A» de [`03`](03_ARQUITECTURA.md) se
-    replantea (ver §6).
+10. **El cubo de DR1 tiene dos versiones.** La que entrega SIA2 (`spherex_dr1_cube`) son FITS de
+    ~320 MB por tesela que el servicio de recortes rechaza. **La versión HiPS sí carga en Aladin**
+    (`irsa.ipac.caltech.edu/data/hips/SPHEREx/spherex_allsky_cube`: teselas PNG, 102 planos, CORS
+    abierto), y ya está en el visor desplegado. Son PNG para visualizar: no dan flujos para un espectro.
+    *Corrección del 14-nov por la tarde: la primera versión de este documento decía que el cubo no
+    servía para Aladin, porque solo se había probado la versión de SIA2.*
 
 ---
 
@@ -170,14 +173,14 @@ Fuente: `eda/resultados/infraestructura.json`, `latencia_cutouts.json`.
 | Cutout `size=0.1` | Mediana 7,3 s, p90 10,8 s, máx. 29 s; ~3,9 MB; 25 en 52 s con 4 hilos | Caché en disco obligatoria; precalentar los campos de la demo |
 | ¿Cutout más chico es más rápido? | No: 0,02° pesa lo mismo (la PSF viene entera) | Pedir 0,1° siempre; más no cuesta |
 | Errores | 503 transitorios; uno persistió 4 reintentos | Reintentos con espera y estado de error en la UI |
-| Cubo DR1 (`spherex_dr1_cube`) | FITS 512×512×102, ~320 MB por tesela, píxel 12,9″; el cutout responde 422 «lacks WCS» | No sirve para Aladin ni para espectros al vuelo por cutout |
-| HiPS de SPHEREx en el CDS | El MocServer lista `CDS/P/SPHEREx/QR2/D1`…`D6` (QR2, PNG+FITS, orden 7) | Es la vía para mostrar SPHEREx en Aladin |
-| ¿Carga ese HiPS? | **No verificado**: `alasky` devolvió 404 hoy incluso para DSS (control) | Probarlo en el navegador con Aladin Lite por ID |
+| Cubo DR1 por SIA2 (`spherex_dr1_cube`) | FITS 512×512×102, ~320 MB por tesela, píxel 12,9″; el cutout respondió 422 «lacks WCS» (y 503 en una segunda prueba) | No sirve para recortes ni para espectros al vuelo |
+| **Cubo DR1 en HiPS** (`/data/hips/SPHEREx/spherex_allsky_cube`) | `properties` responde 200 con `Access-Control-Allow-Origin: *`; PNG, orden 5, 102 planos (los 50 y 51 vacíos), píxel 12,9″, publicado el 1-nov-2026 | **Carga en Aladin** (el visor desplegado lo usa). Es un mosaico de todas las épocas: sin eje de tiempo, y en PNG, sin flujos |
+| HiPS de SPHEREx en el CDS | El MocServer lista `CDS/P/SPHEREx/QR2/D1`…`D6` (QR2, orden 7); `alasky` devolvió 404 el 14-nov incluso para DSS | Plan B si falla el de IRSA; no verificado |
 
 ## 7. Qué no se comprobó
 
 - El brillo: no se midió fotometría en ningún campo (variabilidad de RW Aur y R Dra sin medir).
-- Si el HiPS del CDS carga en Aladin Lite (servidor caído al momento de la prueba).
+- Si el HiPS del CDS carga en Aladin Lite (servidor caído al momento de la prueba). Ya no es necesario: el de IRSA carga.
 - Las colecciones `_deep` no se usaron en el análisis de λ (solo DR1 y QR3).
 - Cómo medir la posición de una estrella saturada (ajuste de PSF a las alas, o usar un detector donde no sature).
 - Sumar exposiciones de un barrido para ver WISE 0855.

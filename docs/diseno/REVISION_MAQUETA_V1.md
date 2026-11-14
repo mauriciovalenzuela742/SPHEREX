@@ -24,7 +24,7 @@ reales no van a mostrar así.
 | 5 | **La tira tiene 3–5 fotos, no decenas.** Una barra continua sugiere un video largo: mejor pasos discretos, uno por barrido | Por zona hay 3 o 4 barridos del cielo en 1–1,4 años | V1 Antonia |
 | 6 | **Estado de carga progresivo:** miniaturas vacías que se completan a medida que llega cada foto | Un recorte tarda 7,3 s de mediana y hasta 29 s; hubo errores 503 | V1 Antonia · D1 Vladimir (caché y precálculo) |
 | 7 | **Avisos de calidad:** el recuadro «Contaminación» del plan y un aviso «objeto saturado: la resta puede engañar» | Los píxeles realmente malos son ~4 %; ojo: el bit SOURCE marca el 72 % y no es un error | D2 Bryan (`flagged_fraction`, saturación) · V1 Antonia · C Mauricio (qué se muestra) |
-| 8 | **Panel lateral, «Espectro»:** se puede, pero no sale del cubo de IRSA | El cubo de DR1 son FITS de ~320 MB por tesela y el servicio de recortes los rechaza. El espectro sale de las fotos de nivel 2, que ya tienen su λ calculada | V2 Juan Pablo · D2 Bryan |
+| 8 | **Panel lateral, «Espectro»:** se puede, pero no sale del cubo de IRSA | El cubo HiPS que carga Aladin son PNG para visualizar, sin flujos; la versión FITS no admite recortes. El espectro sale de las fotos de nivel 2, que ya tienen su λ calculada | V2 Juan Pablo · D2 Bryan |
 | 9 | **Panel lateral, «Objetos detectados» → «Objetos conocidos»** (SIMBAD y Gaia sobre la imagen) | La detección automática quedó para «con 6 horas más» en el plan; el overlay de catálogos sí está | V2 Juan Pablo |
 
 ## Detalles rápidos
