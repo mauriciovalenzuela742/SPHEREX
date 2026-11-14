@@ -174,6 +174,7 @@ export default function Explorador({ datos }: Props) {
         </div>
         <div
           ref={caja}
+          data-tour="explorador-imagen"
           className={`exp-lienzo ${suave ? "suave" : ""} ${zoom > 1 ? "movible" : ""} ${arrastre.current ? "arrastrando" : ""}`}
           onPointerDown={(ev) => {
             if (zoom <= 1 || (ev.target as HTMLElement).closest("button")) return;
@@ -206,7 +207,7 @@ export default function Explorador({ datos }: Props) {
             </>
           )}
           {grid && (
-            <div className="exp-zoom" role="group" aria-label="Zoom">
+            <div className="exp-zoom" role="group" aria-label="Zoom" data-tour="explorador-zoom">
               <button aria-label="Acercar" title="Acercar (tecla +)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, +1))} disabled={zoom >= ZOOM_MAX}>+</button>
               <span aria-live="polite">{textoZoom(zoom)}</span>
               <button aria-label="Alejar" title="Alejar (tecla −)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, -1))} disabled={zoom <= ZOOM_MIN}>−</button>
@@ -242,7 +243,7 @@ export default function Explorador({ datos }: Props) {
           )}
         </div>
 
-        <div className="exp-tiempo">
+        <div className="exp-tiempo" data-tour="explorador-tiempo">
           <div className="exp-botones">
             <button aria-label="Visita anterior" onClick={() => irA(banda, visita - 1)} disabled={!grid}>◀</button>
             <button aria-label={play ? "Pausa" : "Reproducir"} aria-pressed={play} onClick={() => setPlay(!play)} disabled={!grid}>{play ? "⏸" : "▶"}</button>
@@ -331,7 +332,7 @@ export default function Explorador({ datos }: Props) {
         </div>
 
         {grid && (
-          <div className="exp-seccion">
+          <div className="exp-seccion" data-tour="explorador-modos">
             <h3>Banda visible</h3>
             <div className="exp-chips" role="group" aria-label="Banda visible">
               {filas.map((b) => (
@@ -378,7 +379,7 @@ export default function Explorador({ datos }: Props) {
         )}
 
         {grid && (
-          <div className="exp-seccion">
+          <div className="exp-seccion" data-tour="explorador-rejilla">
             <h3>Todas las bandas y fechas</h3>
             <div className="exp-minis">
               <table>

@@ -18,7 +18,7 @@ type Props = {
   onAccion: (a: Accion) => void;
 };
 
-function Cara() {
+export function Cara() {
   // La carita de la pizarra: un círculo con ojos y sonrisa. Decorativa.
   return (
     <svg className="spherix-cara" viewBox="0 0 40 40" aria-hidden="true">
@@ -86,7 +86,7 @@ export default function Spherix({ asistido, contexto, onAccion }: Props) {
 
   if (!abierto) {
     return (
-      <button className="spherix-burbuja" onClick={() => setAbierto(true)} aria-label="Abrir el chat con Spherix">
+      <button className="spherix-burbuja" onClick={() => setAbierto(true)} aria-label="Abrir el chat con Spherix" data-tour="spherix">
         <Cara />
         <span>{spherix.nombre}</span>
       </button>
@@ -94,7 +94,7 @@ export default function Spherix({ asistido, contexto, onAccion }: Props) {
   }
 
   return (
-    <section className={`spherix ${asistido ? "abierto" : ""}`} aria-label="Chat con Spherix">
+    <section className={`spherix ${asistido ? "abierto" : ""}`} aria-label="Chat con Spherix" data-tour="spherix">
       <header className="spherix-cabecera">
         <Cara />
         <strong>{spherix.nombre}</strong>

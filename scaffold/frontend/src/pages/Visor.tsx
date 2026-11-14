@@ -41,7 +41,7 @@ export default function Visor({ estado, set, asistido }: Props) {
   };
   return (
     <section className="visor">
-      <div className="barra">
+      <div className="barra" data-tour="busqueda">
         <label>
           A.R. (°)
           <input type="number" step="0.0001" value={estado.ra} onChange={(e) => set({ ra: Number(e.target.value) })} />
@@ -73,7 +73,7 @@ export default function Visor({ estado, set, asistido }: Props) {
         </label>
       </div>
 
-      <div className="objetos" role="group" aria-label="Objetos de prueba">
+      <div className="objetos" role="group" aria-label="Objetos de prueba" data-tour="objetos">
         {CAMPOS.map((c) => (
           <button key={c.id} onClick={() => set(posicionActual(c))} title={`${c.tipo} · centrado en su posición de hoy`}>
             {c.nombre}
