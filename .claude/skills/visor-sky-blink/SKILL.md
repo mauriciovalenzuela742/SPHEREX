@@ -51,6 +51,13 @@ Documentación: <https://aladin.cds.unistra.fr/AladinLite/doc/API>
   Aladin la deja en el plano 50: hay que ponerle el plano después de que la capa esté lista.
 - **Sufijo de las teselas = plano:** con la banda 4 el navegador pide `Norder5/.../Npix11391_59.png`.
   Sirve para comprobar en `performance.getEntriesByType('resource')` qué plano se está mostrando.
+- **Cómo poner un plano:** `ponerPlano` (en `planos.ts`) calcula la frecuencia del centro del plano y
+  llama `setFrequency`; comprobado en las 6 bandas (sufijos `_8 _25 _42 _59 _76 _93`).
+  **No uses `setSliceNumber`:** en 3.8.2 pedir el 59 trae el 9. Por lo mismo, el control de cubos del
+  menú de capas de Aladin (que usa `setSliceNumber`) probablemente muestra un plano equivocado (no
+  comprobado). `capa.getFrequency()` tampoco da la λ real: la λ sale de `properties` (`leerPlanos`).
+- **Aladin solo pide teselas si la pestaña está visible.** Con el panel del navegador oculto no se ve
+  ninguna tesela nueva: no es un fallo.
 - **Qué NO es:** un mosaico de **todas las épocas** (no tiene eje de tiempo: no sirve para mostrar
   movimiento) y PNG ya estirados (no tienen flujos: no sirve para el espectro). El tiempo y el espectro
   salen de los archivos de nivel 2 por el backend.
@@ -72,6 +79,12 @@ Documentación: <https://aladin.cds.unistra.fr/AladinLite/doc/API>
   `propagacion.ts` (movimiento propio, lineal, sin paralaje, en años julianos: J2000 = 2000,0,
   Gaia DR3 = 2016,0).
 - Para que una capa se pueda apagar, dale un nombre: aparece en el control de capas de Aladin.
+- **CDS caído el 14-nov-2026:** `simbad.cds.unistra.fr` y `vizier.cds.unistra.fr` devolvían 404 sin
+  CORS (por eso `A.catalogFromSimbad`, que llama a `simbad.cds.unistra.fr/cone`, no sirve ese día). Los
+  espejos de Harvard sí responden con CORS: `vizier.cfa.harvard.edu/viz-bin/asu-tsv` (Gaia) y
+  `simbad.cfa.harvard.edu/simbad/sim-tap/sync` (SIMBAD, lento: 2–18 s). Las capas prueban los dos.
+- Gaia en campos densos: con tope de 2000 estrellas el mapa de Barnard quedaba tapado; se usan las 300
+  más brillantes.
 - El error de consola `ERR_BLOCKED_BY_CLIENT` / «Failed to fetch» desde `tg.log` es el registro de uso
   de Aladin: inofensivo.
 
