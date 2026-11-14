@@ -65,6 +65,8 @@
   .fila2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--tenue); }
   input, select, button { font: 13px var(--texto); color: var(--fg); background: var(--bg); border: 1px solid var(--borde); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+  .fila2 input, .barra select { width: 100%; }
+  .barra { overflow-x: hidden; }
   input:focus-visible, select:focus-visible, button:focus-visible, .pista:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px; }
   button { cursor: pointer; background: var(--panel2); }
   button.primario { background: var(--acento); border-color: var(--acento); color: #071027; font-weight: 700; }
