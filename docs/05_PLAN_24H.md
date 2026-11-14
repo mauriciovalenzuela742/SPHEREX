@@ -10,10 +10,10 @@ día**; si cambian, se recalculan los bloques, no el orden.
 
 | Rol | Quién |
 |---|---|
-| D — Datos | |
-| V — Visor | |
-| C — Ciencia y verificación | |
-| N — Narrativa y entrega | |
+| D — Datos | Javiera (D1 acceso) · Bryan (D2 fotogramas) |
+| V — Visor | Antonia (V1 blink) · Juan Pablo (V2 cielo) |
+| C — Ciencia y verificación | Mauricio (+ despliegue) |
+| N — Narrativa y entrega | Vladimir |
 
 *(Rellenar en la hora 0. Que cada quien sepa qué es suyo evita la mitad de los roces.)*
 

@@ -224,3 +224,48 @@ Debe aparecer en cualquier material publicado que use datos de SPHEREx:
 8. **Presentar fotometría de apertura como calidad científica.** Siempre con su advertencia.
 9. **Pedir cutouts sobre la URL de AWS.** El servicio solo opera sobre los archivos de IPAC.
 10. **Concluir «no hay datos» tras una consulta vacía.** Prueba otra colección, otro radio, otra banda.
+
+---
+
+## 11. Extras verificados contra la documentación de IRSA/AWS (14-nov-2026)
+
+Añadidos desde la exploración del equipo. Confírmalos en la hora 1 con un archivo real.
+
+- **Espejo en AWS (lectura masiva, sin cuenta):** `s3://nasa-irsa-spherex/{qr3,dr1}/level2/...`,
+  región `us-east-1`, acceso anónimo. Misma estructura de directorios que IRSA. Lectura parcial sin
+  bajar los 70 MB:
+  ```python
+  from astropy.io import fits
+  with fits.open(s3_url, use_fsspec=True, fsspec_kwargs={"anon": True}) as h:
+      sub = h["IMAGE"].section[y0:y1, x0:x1]
+  ```
+  Útil solo si el backend corre en `us-east-1`. Para un objeto, el cutout de IRSA es más simple (error 9).
+- **Consulta TAP rápida, ordenada por tiempo y con la URL del cutout ya armada** (camino rápido del
+  tutorial `spherex-cutouts`: join espacial indexado sobre `spherex.plane.poly`):
+  ```python
+  from astroquery.ipac.irsa import Irsa
+  from astropy.utils.data import conf; conf.remote_timeout = 120
+  q = f"""SELECT 'https://irsa.ipac.caltech.edu/' || a.uri ||
+    '?center={ra},{dec}d&size=0.1' AS uri, p.time_bounds_lower, p.energy_bandpassname
+  FROM spherex.artifact a JOIN spherex.plane p ON a.planeid = p.planeid
+  WHERE 1=CONTAINS(POINT('ICRS',{ra},{dec}), p.poly)
+  ORDER BY p.time_bounds_lower"""
+  tab = Irsa.query_tap(q).to_table()
+  ```
+  Añade `AND p.energy_bandpassname='SPHEREx-D4'` para una sola banda.
+- **λ en el píxel de la fuente con astropy** (WCS alternativo `W` de la extensión `WCS-WAVE`):
+  ```python
+  from astropy.wcs import WCS
+  x, y = WCS(h["IMAGE"].header).world_to_pixel(coord)
+  wcs_w = WCS(h["IMAGE"].header, fobj=h, key="W"); wcs_w.sip = None
+  lam, dlam = wcs_w.pixel_to_world(x, y)   # λ central y ancho de banda
+  ```
+  Si falla, interpolación bilineal entre los 4 puntos de control más cercanos de la tabla (~1 nm).
+- **Descarga robusta:** `ThreadPoolExecutor(max_workers=10)` con reintento ante `TimeoutError`,
+  `HTTPError`, `IncompleteRead` y `RemoteDisconnected` (así lo hace el notebook oficial). Un cutout sin
+  solapamiento devuelve **HTTP 500**: trátalo como «sin datos», no como caída.
+- **Las estrellas que se mueven salen como dipolo** (par positivo/negativo) en `diff_first`/`diff_prev`.
+  Es lo esperado y es lo que el usuario debe ver; no es variabilidad.
+- **Para restar épocas, primero `reproject.reproject_interp` a una grilla común:** cada época viene
+  con otra rotación. Muestra la resta en S/N usando `VARIANCE` para que los residuos de estrellas
+  brillantes no parezcan detecciones.
