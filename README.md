@@ -30,7 +30,7 @@ y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
   mostrar las 102 bandas (co-add por detector; **extra kudos: espectro al vuelo**) · sumar/restar épocas ·
   campo de visión elegible · overlays de Gaia/WISE · coordenadas en la URL · flags de contaminación ·
   usar Astropy y Aladin. Modelo de inspiración: [WiseView](http://byw.tools/wiseview).
-- **Evento (Santiago):** trabajo sáb 14 10:00 → **cierre de entregas dom 15 11:00** (comunicado en vivo
+- **Evento (Santiago):** trabajo sáb 14 10:00 → **cierre de entregas dom 15 11:00** (confirmado por JP el 14-nov; comunicado en vivo
   por la organización; ver [`docs/08`](docs/08_REGLAS_DEL_EVENTO.md#reglas-comunicadas-en-el-evento-14-nov-2026)),
   pitch de **2 min + 2 preguntas**. Uso de IA permitido **y su declaración es obligatoria** en la entrega.
 - **Se sube:** nombre y resumen, enlace a la demo final, datos de la NASA y otras fuentes, y cómo se usó IA.
@@ -48,6 +48,7 @@ y la guía de uso del kit de trabajo está en [`docs/KIT.md`](docs/KIT.md).
    agrupar por banda/λ (`WCS-WAVE`) da una secuencia que muestra color, no tiempo.
 3. **Usar DR1 + QR3.** QR2 ya no es buscable por SIA2.
 4. **WISE 0855 no está en Gaia:** su overlay usa CatWISE2020.
+5. **WISE 0855 es caso obligatorio y se ve débil en una exposición suelta.** Se muestra siempre, y se dice con honestidad: su movimiento (~1,3 px en todo el período) se ve con la resta primera − última y, cuando exista, con la suma por barrido. eps Ind B es donde el movimiento se ve más claro (`docs/09` §4).
 
 ---
 
