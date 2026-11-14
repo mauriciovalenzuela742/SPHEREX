@@ -4,7 +4,7 @@
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
 import AladinView, { planoDeBanda } from "../sky/AladinView";
-import { CAMPOS } from "../content/campos";
+import { CAMPOS, posicionActual } from "../content/campos";
 import { textos } from "../content/textos";
 import type { Estado } from "../state/url";
 
@@ -64,7 +64,7 @@ export default function Visor({ estado, set, asistido }: Props) {
 
       <div className="objetos" role="group" aria-label="Objetos de prueba">
         {CAMPOS.map((c) => (
-          <button key={c.id} onClick={() => set({ ra: c.ra, dec: c.dec })} title={c.tipo}>
+          <button key={c.id} onClick={() => set(posicionActual(c))} title={`${c.tipo} · centrado en su posición de hoy`}>
             {c.nombre}
           </button>
         ))}
