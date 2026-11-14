@@ -1,0 +1,479 @@
+{
+  "consultado_el": "2026-11-14 11:08",
+  "radio_deg": 0.01,
+  "mjd_referencia_posicion": 61000.0,
+  "campos": {
+    "wise_0855": {
+      "ra_busqueda": 133.76002,
+      "dec_busqueda": -7.242207,
+      "filas": {
+        "spherex_dr1": 258,
+        "spherex_dr1_deep": 0,
+        "spherex_qr3": 0,
+        "spherex_qr3_deep": 0
+      },
+      "segundos_consulta": {
+        "spherex_dr1": 2.31,
+        "spherex_dr1_deep": 1.22,
+        "spherex_qr3": 1.08,
+        "spherex_qr3_deep": 0.86
+      },
+      "archivos_repetidos_dr1_y_qr3": 0,
+      "archivos_total": 258,
+      "apuntados_distintos": 129,
+      "por_detector": {
+        "SPHEREx-D1": 36,
+        "SPHEREx-D2": 48,
+        "SPHEREx-D3": 45,
+        "SPHEREx-D4": 36,
+        "SPHEREx-D5": 48,
+        "SPHEREx-D6": 45
+      },
+      "primera_fecha": 2025.342,
+      "ultima_fecha": 2026.365,
+      "base_temporal_anios": 1.02,
+      "pasadas": [
+        {
+          "desde": 2025.342,
+          "hasta": 2025.344,
+          "duracion_dias": 0.8,
+          "archivos": 30,
+          "apuntados": 15,
+          "visitas": 1,
+          "por_detector": {
+            "SPHEREx-D1": 4,
+            "SPHEREx-D2": 8,
+            "SPHEREx-D3": 3,
+            "SPHEREx-D4": 4,
+            "SPHEREx-D5": 8,
+            "SPHEREx-D6": 3
+          },
+          "colecciones": {
+            "spherex_dr1": 30
+          }
+        },
+        {
+          "desde": 2025.832,
+          "hasta": 2025.949,
+          "duracion_dias": 42.6,
+          "archivos": 128,
+          "apuntados": 64,
+          "visitas": 7,
+          "por_detector": {
+            "SPHEREx-D1": 18,
+            "SPHEREx-D2": 25,
+            "SPHEREx-D3": 21,
+            "SPHEREx-D4": 18,
+            "SPHEREx-D5": 25,
+            "SPHEREx-D6": 21
+          },
+          "colecciones": {
+            "spherex_dr1": 128
+          }
+        },
+        {
+          "desde": 2026.302,
+          "hasta": 2026.365,
+          "duracion_dias": 23.1,
+          "archivos": 100,
+          "apuntados": 50,
+          "visitas": 16,
+          "por_detector": {
+            "SPHEREx-D1": 14,
+            "SPHEREx-D2": 15,
+            "SPHEREx-D3": 21,
+            "SPHEREx-D4": 14,
+            "SPHEREx-D5": 15,
+            "SPHEREx-D6": 21
+          },
+          "colecciones": {
+            "spherex_dr1": 100
+          }
+        }
+      ],
+      "tamano_mef_mb_mediana": 64.2,
+      "escala_pixel_arcsec": [
+        6.15
+      ],
+      "exposicion_s_mediana": 113.6
+    },
+    "barnard": {
+      "ra_busqueda": 269.446294,
+      "dec_busqueda": 4.767881,
+      "filas": {
+        "spherex_dr1": 240,
+        "spherex_dr1_deep": 0,
+        "spherex_qr3": 124,
+        "spherex_qr3_deep": 0
+      },
+      "segundos_consulta": {
+        "spherex_dr1": 2.46,
+        "spherex_dr1_deep": 0.61,
+        "spherex_qr3": 1.3,
+        "spherex_qr3_deep": 0.64
+      },
+      "archivos_repetidos_dr1_y_qr3": 0,
+      "archivos_total": 364,
+      "apuntados_distintos": 185,
+      "por_detector": {
+        "SPHEREx-D1": 60,
+        "SPHEREx-D2": 62,
+        "SPHEREx-D3": 61,
+        "SPHEREx-D4": 59,
+        "SPHEREx-D5": 62,
+        "SPHEREx-D6": 60
+      },
+      "primera_fecha": 2025.622,
+      "ultima_fecha": 2026.725,
+      "base_temporal_anios": 1.1,
+      "pasadas": [
+        {
+          "desde": 2025.622,
+          "hasta": 2025.749,
+          "duracion_dias": 46.4,
+          "archivos": 118,
+          "apuntados": 60,
+          "visitas": 13,
+          "por_detector": {
+            "SPHEREx-D1": 24,
+            "SPHEREx-D2": 18,
+            "SPHEREx-D3": 18,
+            "SPHEREx-D4": 23,
+            "SPHEREx-D5": 18,
+            "SPHEREx-D6": 17
+          },
+          "colecciones": {
+            "spherex_dr1": 118
+          }
+        },
+        {
+          "desde": 2026.189,
+          "hasta": 2026.34,
+          "duracion_dias": 55.0,
+          "archivos": 122,
+          "apuntados": 61,
+          "visitas": 10,
+          "por_detector": {
+            "SPHEREx-D1": 18,
+            "SPHEREx-D2": 19,
+            "SPHEREx-D3": 24,
+            "SPHEREx-D4": 18,
+            "SPHEREx-D5": 19,
+            "SPHEREx-D6": 24
+          },
+          "colecciones": {
+            "spherex_dr1": 122
+          }
+        },
+        {
+          "desde": 2026.623,
+          "hasta": 2026.725,
+          "duracion_dias": 37.0,
+          "archivos": 124,
+          "apuntados": 64,
+          "visitas": 11,
+          "por_detector": {
+            "SPHEREx-D1": 18,
+            "SPHEREx-D2": 25,
+            "SPHEREx-D3": 19,
+            "SPHEREx-D4": 18,
+            "SPHEREx-D5": 25,
+            "SPHEREx-D6": 19
+          },
+          "colecciones": {
+            "spherex_qr3": 124
+          }
+        }
+      ],
+      "tamano_mef_mb_mediana": 61.3,
+      "escala_pixel_arcsec": [
+        6.15
+      ],
+      "exposicion_s_mediana": 113.6
+    },
+    "eps_ind_b": {
+      "ra_busqueda": 331.096417,
+      "dec_busqueda": -56.800583,
+      "filas": {
+        "spherex_dr1": 347,
+        "spherex_dr1_deep": 0,
+        "spherex_qr3": 120,
+        "spherex_qr3_deep": 0
+      },
+      "segundos_consulta": {
+        "spherex_dr1": 2.5,
+        "spherex_dr1_deep": 0.7,
+        "spherex_qr3": 1.31,
+        "spherex_qr3_deep": 0.67
+      },
+      "archivos_repetidos_dr1_y_qr3": 0,
+      "archivos_total": 467,
+      "apuntados_distintos": 245,
+      "por_detector": {
+        "SPHEREx-D1": 48,
+        "SPHEREx-D2": 93,
+        "SPHEREx-D3": 99,
+        "SPHEREx-D4": 46,
+        "SPHEREx-D5": 86,
+        "SPHEREx-D6": 95
+      },
+      "primera_fecha": 2025.312,
+      "ultima_fecha": 2026.751,
+      "base_temporal_anios": 1.44,
+      "pasadas": [
+        {
+          "desde": 2025.312,
+          "hasta": 2025.439,
+          "duracion_dias": 46.3,
+          "archivos": 125,
+          "apuntados": 67,
+          "visitas": 14,
+          "por_detector": {
+            "SPHEREx-D1": 4,
+            "SPHEREx-D2": 32,
+            "SPHEREx-D3": 28,
+            "SPHEREx-D4": 4,
+            "SPHEREx-D5": 31,
+            "SPHEREx-D6": 26
+          },
+          "colecciones": {
+            "spherex_dr1": 125
+          }
+        },
+        {
+          "desde": 2025.743,
+          "hasta": 2025.865,
+          "duracion_dias": 44.9,
+          "archivos": 146,
+          "apuntados": 78,
+          "visitas": 20,
+          "por_detector": {
+            "SPHEREx-D1": 24,
+            "SPHEREx-D2": 30,
+            "SPHEREx-D3": 23,
+            "SPHEREx-D4": 23,
+            "SPHEREx-D5": 24,
+            "SPHEREx-D6": 22
+          },
+          "colecciones": {
+            "spherex_dr1": 146
+          }
+        },
+        {
+          "desde": 2026.295,
+          "hasta": 2026.337,
+          "duracion_dias": 15.3,
+          "archivos": 76,
+          "apuntados": 40,
+          "visitas": 9,
+          "por_detector": {
+            "SPHEREx-D1": 20,
+            "SPHEREx-D2": 7,
+            "SPHEREx-D3": 12,
+            "SPHEREx-D4": 19,
+            "SPHEREx-D5": 7,
+            "SPHEREx-D6": 11
+          },
+          "colecciones": {
+            "spherex_dr1": 76
+          }
+        },
+        {
+          "desde": 2026.723,
+          "hasta": 2026.751,
+          "duracion_dias": 10.3,
+          "archivos": 120,
+          "apuntados": 60,
+          "visitas": 8,
+          "por_detector": {
+            "SPHEREx-D2": 24,
+            "SPHEREx-D3": 36,
+            "SPHEREx-D5": 24,
+            "SPHEREx-D6": 36
+          },
+          "colecciones": {
+            "spherex_qr3": 120
+          }
+        }
+      ],
+      "tamano_mef_mb_mediana": 64.5,
+      "escala_pixel_arcsec": [
+        6.15
+      ],
+      "exposicion_s_mediana": 113.6
+    },
+    "rw_aur": {
+      "ra_busqueda": 76.956586,
+      "dec_busqueda": 30.401292,
+      "filas": {
+        "spherex_dr1": 226,
+        "spherex_dr1_deep": 0,
+        "spherex_qr3": 110,
+        "spherex_qr3_deep": 0
+      },
+      "segundos_consulta": {
+        "spherex_dr1": 1.96,
+        "spherex_dr1_deep": 0.85,
+        "spherex_qr3": 1.44,
+        "spherex_qr3_deep": 2.06
+      },
+      "archivos_repetidos_dr1_y_qr3": 0,
+      "archivos_total": 336,
+      "apuntados_distintos": 168,
+      "por_detector": {
+        "SPHEREx-D1": 56,
+        "SPHEREx-D2": 56,
+        "SPHEREx-D3": 56,
+        "SPHEREx-D4": 56,
+        "SPHEREx-D5": 56,
+        "SPHEREx-D6": 56
+      },
+      "primera_fecha": 2025.667,
+      "ultima_fecha": 2026.709,
+      "base_temporal_anios": 1.04,
+      "pasadas": [
+        {
+          "desde": 2025.667,
+          "hasta": 2025.719,
+          "duracion_dias": 18.8,
+          "archivos": 112,
+          "apuntados": 56,
+          "visitas": 11,
+          "por_detector": {
+            "SPHEREx-D1": 19,
+            "SPHEREx-D2": 18,
+            "SPHEREx-D3": 19,
+            "SPHEREx-D4": 19,
+            "SPHEREx-D5": 18,
+            "SPHEREx-D6": 19
+          },
+          "colecciones": {
+            "spherex_dr1": 112
+          }
+        },
+        {
+          "desde": 2026.139,
+          "hasta": 2026.192,
+          "duracion_dias": 19.3,
+          "archivos": 114,
+          "apuntados": 57,
+          "visitas": 12,
+          "por_detector": {
+            "SPHEREx-D1": 19,
+            "SPHEREx-D2": 19,
+            "SPHEREx-D3": 19,
+            "SPHEREx-D4": 19,
+            "SPHEREx-D5": 19,
+            "SPHEREx-D6": 19
+          },
+          "colecciones": {
+            "spherex_dr1": 114
+          }
+        },
+        {
+          "desde": 2026.668,
+          "hasta": 2026.709,
+          "duracion_dias": 14.8,
+          "archivos": 110,
+          "apuntados": 55,
+          "visitas": 10,
+          "por_detector": {
+            "SPHEREx-D1": 18,
+            "SPHEREx-D2": 19,
+            "SPHEREx-D3": 18,
+            "SPHEREx-D4": 18,
+            "SPHEREx-D5": 19,
+            "SPHEREx-D6": 18
+          },
+          "colecciones": {
+            "spherex_qr3": 110
+          }
+        }
+      ],
+      "tamano_mef_mb_mediana": 63.1,
+      "escala_pixel_arcsec": [
+        6.15
+      ],
+      "exposicion_s_mediana": 113.6
+    },
+    "r_dra": {
+      "ra_busqueda": 248.167235,
+      "dec_busqueda": 66.755024,
+      "filas": {
+        "spherex_dr1": 422,
+        "spherex_dr1_deep": 1233,
+        "spherex_qr3": 126,
+        "spherex_qr3_deep": 733
+      },
+      "segundos_consulta": {
+        "spherex_dr1": 2.52,
+        "spherex_dr1_deep": 3.44,
+        "spherex_qr3": 0.94,
+        "spherex_qr3_deep": 1.12
+      },
+      "archivos_repetidos_dr1_y_qr3": 0,
+      "archivos_total": 2514,
+      "apuntados_distintos": 1273,
+      "por_detector": {
+        "SPHEREx-D1": 586,
+        "SPHEREx-D2": 92,
+        "SPHEREx-D3": 576,
+        "SPHEREx-D4": 588,
+        "SPHEREx-D5": 93,
+        "SPHEREx-D6": 579
+      },
+      "primera_fecha": 2025.312,
+      "ultima_fecha": 2026.737,
+      "base_temporal_anios": 1.42,
+      "pasadas": [
+        {
+          "desde": 2025.312,
+          "hasta": 2025.555,
+          "duracion_dias": 88.7,
+          "archivos": 248,
+          "apuntados": 127,
+          "visitas": 35,
+          "por_detector": {
+            "SPHEREx-D1": 23,
+            "SPHEREx-D2": 36,
+            "SPHEREx-D3": 67,
+            "SPHEREx-D4": 21,
+            "SPHEREx-D5": 36,
+            "SPHEREx-D6": 65
+          },
+          "colecciones": {
+            "spherex_dr1": 161,
+            "spherex_dr1_deep": 87
+          }
+        },
+        {
+          "desde": 2025.659,
+          "hasta": 2026.737,
+          "duracion_dias": 393.9,
+          "archivos": 2266,
+          "apuntados": 1146,
+          "visitas": 167,
+          "por_detector": {
+            "SPHEREx-D1": 563,
+            "SPHEREx-D2": 56,
+            "SPHEREx-D3": 509,
+            "SPHEREx-D4": 567,
+            "SPHEREx-D5": 57,
+            "SPHEREx-D6": 514
+          },
+          "colecciones": {
+            "spherex_dr1": 261,
+            "spherex_dr1_deep": 1146,
+            "spherex_qr3": 126,
+            "spherex_qr3_deep": 733
+          }
+        }
+      ],
+      "tamano_mef_mb_mediana": 64.3,
+      "escala_pixel_arcsec": [
+        6.15
+      ],
+      "exposicion_s_mediana": 113.6
+    }
+  }
+}

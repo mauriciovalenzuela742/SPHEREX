@@ -1,0 +1,61 @@
+{
+  "probado_el": "2026-11-14 11:14",
+  "pruebas": [
+    {
+      "prueba": "SIA2 IRSA",
+      "url": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1&POS=circle+133.76+-7.24+0.001&MAXREC=1&RESPONSEFORMAT=CSV",
+      "http": 200,
+      "cors": null,
+      "segundos": 1.3,
+      "inicio_respuesta": "s_ra,s_dec,facility_name,instrument_name,dataproduct_subtype,calib_level,dataproduct_type,energy_bandpassname,energy_emband,obs_id,s_resolution,em_min,em_max,em"
+    },
+    {
+      "prueba": "MEF IRSA (Range)",
+      "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W19_1B/l2b-v27-2026-197/3/level2_2025W19_1B_0116_1D3_spx_l2b-v27-2026-197.fits",
+      "http": 206,
+      "cors": null,
+      "segundos": 3.9,
+      "inicio_respuesta": "application/fits"
+    },
+    {
+      "prueba": "Cubo DR1 por SIA2",
+      "url": "https://irsa.ipac.caltech.edu/SIA?COLLECTION=spherex_dr1_cube&POS=circle+133.76+-7.24+0.01&RESPONSEFORMAT=CSV",
+      "http": 200,
+      "cors": null,
+      "segundos": 1.4,
+      "inicio_respuesta": "s_ra,s_dec,facility_name,instrument_name,dataproduct_subtype,calib_level,dataproduct_type,energy_bandpassname,energy_emband,obs_id,s_resolution,em_min,em_max,em"
+    },
+    {
+      "prueba": "Cutout del cubo DR1",
+      "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/hips5_cube/hips_20261026/Norder5/Dir10000/Npix10226_cube.fits?center=133.7578,-7.2420&size=0.05",
+      "http": 422,
+      "cors": null,
+      "segundos": 1.0,
+      "inicio_respuesta": "Unable to process the FITS file as it lacks WCS data."
+    },
+    {
+      "prueba": "MocServer CDS: HiPS SPHEREx",
+      "url": "https://alasky.cds.unistra.fr/MocServer/query?expr=ID%3D*SPHEREx*&get=id&fmt=ascii",
+      "http": 200,
+      "cors": "*",
+      "segundos": 1.4,
+      "inicio_respuesta": "CDS/P/SPHEREx/QR2/D1\nCDS/P/SPHEREx/QR2/D2\nCDS/P/SPHEREx/QR2/D3\nCDS/P/SPHEREx/QR2/D4\nCDS/P/SPHEREx/QR2/D5\nCDS/P/SPHEREx/QR2/D6\nCDS/P/SPHEREx/QR2/color"
+    },
+    {
+      "prueba": "HiPS CDS SPHEREx D5 properties",
+      "url": "https://alasky.cds.unistra.fr/SPHEREx/D5/properties",
+      "http": 404,
+      "cors": "*",
+      "segundos": 1.0,
+      "inicio_respuesta": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <meta name=\"robots\" co"
+    },
+    {
+      "prueba": "HiPS CDS DSS (control)",
+      "url": "https://alasky.cds.unistra.fr/DSS/DSSColor/properties",
+      "http": 404,
+      "cors": "*",
+      "segundos": 1.1,
+      "inicio_respuesta": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <meta name=\"robots\" co"
+    }
+  ]
+}
