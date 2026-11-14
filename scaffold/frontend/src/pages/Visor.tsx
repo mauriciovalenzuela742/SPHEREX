@@ -103,7 +103,6 @@ export default function Visor({ estado, set, asistido }: Props) {
               <strong>Cómo leer el parpadeo</strong>
               <p>Cada cuadro es una visita de SPHEREx, de la más antigua a la más reciente. En «Resta con la primera», lo que apareció queda de un color y lo que se fue, del otro: una pareja pegada es algo que se movió.</p>
             </div>
-            <Hueco titulo="Contaminación (% …) — por definir" quien="Mauricio + Bryan" />
           </aside>
         )}
       </div>

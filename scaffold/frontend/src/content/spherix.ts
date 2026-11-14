@@ -71,7 +71,7 @@ export const spherix = {
       "Los puntos sobre la imagen son estrellas de Gaia (otro telescopio) puestas donde están en la fecha de la foto. Si pasas el mouse por un objeto, te digo cómo se llama según SIMBAD.",
     ],
     contaminacion: [
-      "Algunas zonas de cada foto vienen marcadas: rayos cósmicos, píxeles saturados o reflejos. Te voy a mostrar qué parte de la imagen viene marcada, para que no confundas un defecto con un hallazgo.",
+      "Algunas zonas de cada foto vienen dañadas: rayos cósmicos, píxeles saturados o reflejos. Por eso un puntito suelto que aparece en una sola foto casi siempre es un defecto, no un hallazgo: lo que se mueve de verdad deja una pareja rojo-azul en la resta.",
     ],
     quienesSomos: [
       "Somos un equipo de seis personas en el NASA Space Apps Challenge 2026 de Santiago. Queremos que cualquiera pueda mirar cómo cambia el cielo, sin ser astrónomo.",
