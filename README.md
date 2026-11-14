@@ -276,3 +276,7 @@ Material de la reunión de preparación (13-nov): [`docs/reuniones/`](docs/reuni
 
 Código bajo licencia MIT ([`LICENSE`](LICENSE)). Los datos de SPHEREx son públicos y requieren la nota de
 agradecimiento de [`docs/02_DATOS_SPHEREX.md`](docs/02_DATOS_SPHEREX.md) §8 en el README final y en el pie de la herramienta.
+
+> This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet Propulsion Laboratory and the California Institute of Technology, and is funded by the National Aeronautics and Space Administration.
+>
+> *(Pendiente en el código: el pie del visor, `scaffold/frontend/src/content/textos.ts`, todavía trae una paráfrasis en español en vez de este texto.)*
