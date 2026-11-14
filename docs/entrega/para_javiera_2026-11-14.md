@@ -117,17 +117,61 @@ la NASA puede quitar el premio. Copia esta lista en el formulario.
    Universe, Epoch of Reionization and Ices Explorer (SPHEREx), which is a joint project of the Jet
    Propulsion Laboratory and the California Institute of Technology, and is funded by the National
    Aeronautics and Space Administration.*
-2. **Gaia DR3 (ESA)**, consultado por VizieR (CDS) — https://archive.stsci.edu/missions-and-data/gaia
-   **(revisar texto oficial)**
-3. **CatWISE2020** (catálogo derivado de WISE/NEOWISE, NASA), consultado por VizieR (CDS)
-   **(revisar texto oficial y enlace)**
-4. **SIMBAD (CDS, Estrasburgo)** — https://simbad.cds.unistra.fr **(revisar texto oficial)**
-5. **2MASS** — UMass/IPAC-Caltech, financiado por NASA/NSF. Imágenes servidas por IRSA.
-   **(revisar texto oficial)**
-6. **AllWISE** — NASA/JPL-Caltech/IPAC. Imágenes servidas por IRSA. **(revisar texto oficial)**
+2. **Gaia DR3 (ESA)**, consultado por VizieR (CDS) — https://www.cosmos.esa.int/web/gaia-users/credits.
+   Texto para copiar (va en inglés):
+   "This work has made use of data from the European Space Agency (ESA) mission Gaia
+   (https://www.cosmos.esa.int/gaia), processed by the Gaia Data Processing and Analysis Consortium (DPAC,
+   https://www.cosmos.esa.int/web/gaia/dpac/consortium). Funding for the DPAC has been provided by national
+   institutions, in particular the institutions participating in the Gaia Multilateral Agreement."
+   Citar también: Gaia Collaboration, Prusti et al. 2016, A&A 595, A1, y Gaia Collaboration, Vallenari et
+   al. 2023, A&A 674, A1.
+3. **CatWISE2020** (catálogo hecho con datos de WISE y NEOWISE, NASA), consultado por VizieR (CDS) —
+   https://irsa.ipac.caltech.edu/data/WISE/CatWISE/overview.html. Esta página no trae un texto de
+   agradecimiento: pide citar Marocco et al. 2021, ApJS 253, 8 (y Eisenhardt et al. 2020, ApJS 247, 69).
+   Como el catálogo sale de WISE y NEOWISE, se agregan estos dos textos para copiar:
+   "This publication makes use of data products from the Wide-field Infrared Survey Explorer, which is a
+   joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California
+   Institute of Technology, funded by the National Aeronautics and Space Administration."
+   "This publication also makes use of data products from NEOWISE, which is a project of the Jet Propulsion
+   Laboratory/California Institute of Technology, funded by the Planetary Science Division of the National
+   Aeronautics and Space Administration."
+4. **SIMBAD (CDS, Estrasburgo)** — https://simbad.cds.unistra.fr (esa semana estaba caído; el texto se leyó
+   en su copia oficial de Harvard, https://simbad.cfa.harvard.edu/simbad/). Texto para copiar:
+   "This research has made use of the SIMBAD database, operated at CDS, Strasbourg, France"
+   Citar también: Wenger et al. 2000, A&AS 143, 9.
+5. **2MASS** — UMass/IPAC-Caltech, financiado por NASA/NSF. Imágenes servidas por IRSA —
+   https://irsa.ipac.caltech.edu/Missions/2mass.html. Texto para copiar:
+   "This publication makes use of data products from the Two Micron All Sky Survey, which is a joint
+   project of the University of Massachusetts and the Infrared Processing and Analysis Center/California
+   Institute of Technology, funded by the National Aeronautics and Space Administration and the National
+   Science Foundation."
+   Citar también: Skrutskie et al. 2006, AJ 131, 1163.
+6. **AllWISE** — NASA/JPL-Caltech/IPAC. Imágenes servidas por IRSA —
+   https://irsa.ipac.caltech.edu/data/WISE/docs/release/AllWISE/expsup/sec1_6b.html. Texto para copiar:
+   "This publication makes use of data products from the Wide-field Infrared Survey Explorer, which is a
+   joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California
+   Institute of Technology, and NEOWISE, which is a project of the Jet Propulsion Laboratory/California
+   Institute of Technology. WISE and NEOWISE are funded by the National Aeronautics and Space
+   Administration."
+   Citar también: Wright et al. 2010, AJ 140, 1868, y Mainzer et al. 2011, ApJ 731, 53.
 7. **Aladin Lite (CDS)**, el visor del cielo — https://aladin.cds.unistra.fr/AladinLite/
-   **(revisar texto oficial)**
-8. **Astropy**, herramientas de astronomía en Python — https://docs.astropy.org **(revisar texto oficial)**
+   **(revisar texto oficial: https://aladin.cds.unistra.fr/AladinLite/doc/ ; el 14-nov no abría porque los
+   servidores del CDS estaban con problemas)**
+8. **Astropy**, herramientas de astronomía en Python — https://www.astropy.org/acknowledging.html.
+   Texto para copiar (el de la página, sin el formato LaTeX):
+   "This work made use of Astropy (https://www.astropy.org), a community-developed core Python package and
+   an ecosystem of tools and resources for astronomy (Astropy Collaboration 2013, 2018, 2022)."
+9. **IRSA**, el archivo de la NASA que sirve SPHEREx, 2MASS y AllWISE — https://irsa.ipac.caltech.edu/ack.html.
+   IRSA pide este texto además del de cada misión:
+   "This research has made use of the NASA/IPAC Infrared Science Archive, which is funded by the National
+   Aeronautics and Space Administration and operated by the California Institute of Technology."
+10. **VizieR (CDS)**, por donde consultamos Gaia, CatWISE y AllWISE — texto leído en su copia oficial de
+    Harvard, https://vizier.cfa.harvard.edu/viz-bin/VizieR. Texto para copiar:
+    "This research has made use of the VizieR catalogue access tool, CDS, Strasbourg, France
+    (DOI: 10.26093/cds/vizier). The original description of the VizieR service was published in A&AS 143, 23"
+
+La lista completa, con autores, revistas y enlaces DOI comprobados (y otras bibliotecas como NumPy y
+SciPy), está en `docs/entrega/fuentes_y_citas.md`.
 
 > [!NOTE]
 > Los puntos 5 y 6 solo van si el parpadeo «hace 25 años» llega a la versión final.
