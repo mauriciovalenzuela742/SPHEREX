@@ -9,7 +9,7 @@ import { textos } from "../content/textos";
 import type { Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
-import BlinkPanel from "../blink/BlinkPanel";
+import Explorador from "../explorador/Explorador";
 import type { Accion } from "../spherix/motor";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
@@ -57,14 +57,6 @@ export default function Visor({ estado, set, asistido }: Props) {
             ))}
           </select>
         </label>
-        <label>
-          Desde
-          <input type="date" disabled title="Pendiente: Vladimir (from/to)" />
-        </label>
-        <label>
-          Hasta
-          <input type="date" disabled title="Pendiente: Vladimir (from/to)" />
-        </label>
       </div>
 
       <div className="objetos" role="group" aria-label="Objetos de prueba">
@@ -88,7 +80,7 @@ export default function Visor({ estado, set, asistido }: Props) {
           </p>
           {!enMision && (
             <>
-            <BlinkPanel ra={estado.ra} dec={estado.dec} size={estado.size} band={estado.band} />
+            <Explorador ra={estado.ra} dec={estado.dec} size={estado.size} />
             <Hueco titulo="Gráfico de bandas (espectro, 0,75–5 µm) + barra UV · V · IR · X" quien="Juan Pablo + Bryan (/api/spectrum)" />
             </>
           )}
