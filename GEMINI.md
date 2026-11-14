@@ -7,7 +7,7 @@ Antigravity / Gemini.
 ## Lo específico
 
 - Este repositorio también lo trabajan agentes de Claude Code. **Trabaja siempre en tu propia rama**
-  (`git switch -c <tu-nombre>/<tema>`) y no toques archivos fuera de tu frente sin avisar.
+  (`git switch -c <inicial-del-rol>/<tema-corto>`, p. ej. `v/panel-blink`; ver `CONTRIBUTING.md`) y no toques archivos fuera de tu frente sin avisar.
 - `.claude/` es configuración de la otra herramienta. **No la edites**, pero sí puedes leerla:
   `.claude/skills/spherex-datos/SKILL.md` es la mejor referencia corta de cómo se piden los datos
   de IRSA, y vale igual para ti.
