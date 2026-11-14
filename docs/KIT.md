@@ -2,9 +2,11 @@
 
 Kit de trabajo del equipo para el desafío **Planet X and SPHEREx** (dificultad: Advanced).
 Es una caja de herramientas: documentación, bibliografía, convenciones y andamiaje genérico
-para que cuatro personas y sus agentes de IA trabajen en paralelo sin pisarse durante el evento.
+para que seis personas y sus agentes de IA trabajen en paralelo sin pisarse durante el evento.
 
-> **Qué NO hay aquí:** ni una línea de código que resuelva el desafío. Las reglas del evento
+> **Estado al 14-nov (evento en curso):** desde el 14-nov ya hay EDA (`eda/`) y un visor en
+> `scaffold/frontend/` (ver [`09_EDA_HALLAZGOS.md`](09_EDA_HALLAZGOS.md)). Antes del evento no había
+> ni una línea de código que resolviera el desafío, porque las reglas del evento
 > prohíben trabajar en los challenges antes del hackatón. Lo que hay es material de referencia
 > (público, de la NASA y de la literatura) y andamiaje web genérico —un "hola mundo" de FastAPI
 > y uno de Vite/React— equivalente a tener el editor configurado. Ver [`docs/08_REGLAS_DEL_EVENTO.md`](08_REGLAS_DEL_EVENTO.md).
@@ -49,7 +51,7 @@ en lugar del visor. Esto está argumentado en [`docs/01_ESTADO_DEL_ARTE.md`](01_
 | `docs/adr/` | Decisiones de arquitectura, una por archivo | Cuando el equipo decide algo que cuesta revertir |
 | `biblio/` | Bibliografía comentada, fichas de papers, repos de GitHub relevantes | Cuando necesitas respaldo o una idea probada |
 | `data/` | Campos de prueba con coordenadas, catálogos de referencia. **Sin FITS versionados** | Al probar el visor |
-| `.claude/skills/` | Cinco skills: datos SPHEREx, visor, coordenadas, demo/pitch, entrega | Las carga Claude solo |
+| `.claude/skills/` | Ocho skills: cinco propias (datos SPHEREx, visor, coordenadas, demo/pitch, entrega) y tres genéricas (astropy, matplotlib, scikit-learn) | Las carga Claude solo |
 | `.claude/agents/` | Subagentes especializados (explorador de datos, revisor científico, revisor de UI) | Cuando delegas una parte acotada |
 | `.claude/commands/` | `/standup`, `/traspaso`, `/chequeo-demo`, `/verifica-cifra`, `/riesgo` | Durante el evento, a mano |
 | `scaffold/` | Esqueleto genérico backend + frontend, Docker, CI | Hora 0 del evento |
@@ -73,11 +75,11 @@ en lugar del visor. Esto está argumentado en [`docs/01_ESTADO_DEL_ARTE.md`](01_
 
 ## Estado
 
-- **Hoy (pre-evento):** solo documentación, bibliografía y andamiaje genérico. Local, sin publicar.
-- **Al empezar el evento:** se sube a GitHub, se corre `scaffold/`, se abre el ADR-001 con la decisión de stack.
+- **Hoy (14-nov, evento en curso):** publicado en GitHub (`mauriciovalenzuela742/SPHEREX`), con los PR #1 a #6 fusionados y el visor desplegado en Vercel (https://spherex-planet-x-tau.vercel.app).
+- **Antes del evento (hasta el 13-nov):** solo documentación, bibliografía y andamiaje genérico, local.
 
 Licencia prevista: MIT (ver [`LICENSE`](../LICENSE)). Los datos de SPHEREx son públicos y requieren
-la nota de agradecimiento que está en [`docs/02_DATOS_SPHEREX.md`](02_DATOS_SPHEREX.md#atribución-obligatoria).
+la nota de agradecimiento que está en [`docs/02_DATOS_SPHEREX.md`](02_DATOS_SPHEREX.md#8-atribución-obligatoria).
 
 ---
 
@@ -114,11 +116,11 @@ Escrito el **14 de noviembre de 2026**. Qué está comprobado y qué no:
 | Texto del desafío y lista de *Resources* | ✅ Leídos de la página oficial ese día |
 | Endpoints de IRSA, colecciones SIA2, estructura del MEF, bandas, cubo HiPS | ✅ Contra la documentación oficial de IRSA |
 | Esqueleto del backend | ✅ Corre: `/health` responde `200 {"ok": true}` |
-| Esqueleto del frontend | ⚠️ No ejecutado (sin `npm install` aquí) |
+| Esqueleto del frontend | ✅ Se construye en CI y corre en producción (Vercel) |
 | Bibliografía | 🟡 Parcial. Cada entrada lleva su estado en [`biblio/README.md`](../biblio/README.md) |
 | Coordenadas de los campos de prueba | ✅ Las cinco verificadas en SIMBAD (espejo CfA) el 14-nov. Aparecieron dos trampas: la coordenada del enunciado para WISE 0855 es de época 2010, y `eps Ind b` ≠ `eps Ind B` |
-| Escala de píxel de SPHEREx (~6,2"/px) | ⚠️ Derivada, no citada. Confirmar en el Explanatory Supplement. De ella depende el cálculo de movimiento sub-píxel (riesgo R10) |
-| Que Aladin Lite cargue el cubo HiPS de DR1 | ❌ Sin comprobar. Es el primer experimento del evento |
+| Escala de píxel de SPHEREx (6,15"/px) | ✅ Confirmada en SIA2 el 14-nov (`s_pixel_scale`, `docs/09`). De ella depende el movimiento sub-píxel (riesgo R10) |
+| Que Aladin Lite cargue el cubo HiPS de DR1 | ✅ Sí carga (Aladin Lite 3.8.2, HiPS PNG de `/data/hips/SPHEREx/spherex_allsky_cube`, 14-nov; `docs/09`) |
 
 Lo que no está verificado está marcado así en cada documento. **No lo des por cierto porque esté
 escrito aquí.**
