@@ -74,10 +74,11 @@ explicación**, porque si te cortan, al menos vieron la herramienta.
    período): un par rojo/azul. Se dice con honestidad que en una exposición suelta se ve débil y que
    la suma por barrido lo mejorará. Después, **eps Ind B**, donde el movimiento se ve más claro
    (−0,85/−0,71 px medido contra −0,92/−0,57 predicho).
-   Para WISE 0855 el plan tiene dos complementos, **ambos pendientes**: el overlay de CatWISE2020 (no está
-   en Gaia y CatWISE trae su movimiento propio; dueño V2 Juan Pablo; README §3, skill `coordenadas-astro`)
-   y la suma por barrido con pesos 1/VARIANCE (dueño D2 Bryan; `docs/10` y `docs/09`). La guía del desafío
-   valora superponer Gaia y WISE. Hasta que existan, no se presentan como hechos.
+   Para WISE 0855 el plan tiene dos complementos: el overlay de CatWISE2020 (no está
+   en Gaia y CatWISE trae su movimiento propio; dueño V2 Juan Pablo; **hecho en la rama `v/v2-catwise`,
+   pendiente de PR**: marca WISE 0855 a 2,6″ de la posición propagada desde SIMBAD) y la suma por barrido
+   con pesos 1/VARIANCE (dueño D2 Bryan; `docs/10` y `docs/09`; **pendiente**). La guía del desafío valora
+   superponer Gaia y WISE. Hasta que entren a `main`, no se presentan como parte del visor desplegado.
 3. Mover el selector de banda. La misma zona del cielo en otra longitud de onda.
 4. Encender el overlay de Gaia sobre Barnard o eps Ind B (WISE 0855 no está en Gaia: su overlay es
    CatWISE2020). Los puntos caen donde deben. *«Así sabemos que es correcto.»*
