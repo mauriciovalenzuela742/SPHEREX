@@ -16,6 +16,7 @@ import { capaCatwise } from "./catwise";
 import { capaGaia } from "./gaia";
 import { capaObjetivo } from "./objetivo";
 import { capaSimbad } from "./simbad";
+import { capaTrayectoria } from "./trayectoria";
 
 export type ContextoCapa = {
   /** Centro de la vista (grados, ICRS), tal como llega del estado de la URL. */
@@ -45,4 +46,4 @@ export type Capa = {
 };
 
 /** Orden de montaje: lo de abajo se dibuja encima. */
-export const CAPAS: Capa[] = [capaGaia, capaCatwise, capaSimbad, capaObjetivo];
+export const CAPAS: Capa[] = [capaGaia, capaCatwise, capaSimbad, capaObjetivo, capaTrayectoria];
