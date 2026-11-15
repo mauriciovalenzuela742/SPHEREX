@@ -35,13 +35,17 @@
 /* Barra de filtros: «Explorar una zona al azar» y «¿Encontraste algo?» a la derecha, en el espacio libre. */
 .barra-azar { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; max-width: 560px; }
 .barra-pista { margin: 0; font-size: 0.8rem; color: var(--suave); text-align: right; }
+/* Detección de SIMBAD del último punto elegido, sobre el botón al azar. */
+.deteccion { margin: 0; font-size: 0.85rem; color: var(--texto); text-align: right; }
+.deteccion-pista { color: var(--suave); font-size: 0.8rem; }
+.deteccion-reintentar { font-size: 0.8rem; padding: 0.1rem 0.5rem; }
 /* La ayuda de coordenadas («= 22h 04m…», ancho 100 %) va al final: A.R., Dec, dimensión, bandas y el botón al azar
    quedan en una sola fila. */
 .barra-azar { order: 1; }
 .barra .coord-ayuda { order: 2; }
 @media (max-width: 860px) {
   .barra-azar { margin-left: 0; align-items: flex-start; max-width: none; }
-  .barra-pista { text-align: left; }
+  .barra-pista, .deteccion { text-align: left; }
 }
 
 /* Tarjetas a todo el ancho: introducción (arriba de los filtros) y ayuda del parpadeo (bajo los filtros). */
