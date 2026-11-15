@@ -72,6 +72,14 @@ footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-t
 .lateral { display: flex; flex-direction: column; gap: 0.8rem; }
 .tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 0.8rem; }
 .tarjeta p { margin: 0.4rem 0 0; color: var(--suave); }
+.intro-spherex { margin-bottom: 1rem; }
+.cuerpo-solo { grid-template-columns: 1fr; }
+/* «Más información» plegable dentro de una tarjeta */
+.mas-info { margin-top: 0.6rem; border-top: 1px solid var(--borde); padding-top: 0.5rem; }
+.mas-info summary { cursor: pointer; color: var(--texto); font-size: 0.9rem; }
+.mas-info h4 { margin: 0.7rem 0 0; font-size: 0.9rem; color: var(--texto); }
+.mas-info ul { margin: 0.3rem 0 0; padding-left: 1.2rem; color: var(--suave); }
+.mas-info li { margin: 0.15rem 0; }
 .hueco {
   border: 1px dashed var(--borde); border-radius: 8px; padding: 0.8rem; min-height: 80px;
   display: flex; flex-direction: column; gap: 0.3rem; color: var(--suave); font-size: 0.85rem;
