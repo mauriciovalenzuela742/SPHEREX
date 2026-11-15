@@ -1,13 +1,19 @@
-# Release: al empujar una etiqueta vX.Y.Z se construye la app web instalable (PWA)
-# y se adjunta como .zip al release de GitHub.
+# Release: al empujar una etiqueta vX.Y.Z se construyen y adjuntan a un release de GitHub
+#   - la PWA (zip estático),
+#   - los instaladores de escritorio (Windows .exe/.msi, macOS .dmg, Linux .AppImage/.deb) con Tauri,
+#   - el APK de Android con Capacitor.
 #
-# Plataformas: la PWA se instala en iPhone (Safari), Android (Chrome), Windows y macOS
-# (Chrome/Edge/Safari). No hay binarios nativos ni firmas de tiendas.
+# Los envoltorios nativos abren el sitio publicado (mismo origen que la web, así que los
+# rewrites de /api y /proto-api siguen valiendo y no hay CORS). Ninguno está firmado:
+# ver native/README.md. iPhone y iPad: solo PWA (un .ipa exige cuenta Apple Developer).
+#
+# `workflow_dispatch` construye todo y deja los archivos como artefactos del run, sin crear release.
 name: Release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,12 +33,108 @@ jobs:
           npm run build
       - name: Empaquetar
         run: |
+          V="${GITHUB_REF_NAME//\//-}"
           cd scaffold/frontend/dist
-          zip -r "$GITHUB_WORKSPACE/spherex-pwa-${GITHUB_REF_NAME}.zip" .
+          zip -r "$GITHUB_WORKSPACE/spherex-pwa-${V}.zip" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pwa
+          path: spherex-pwa-*.zip
       - name: Publicar release
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" "spherex-pwa-${GITHUB_REF_NAME}.zip" \
             --title "SPHEREX ${GITHUB_REF_NAME}" \
-            --generate-notes             --notes "App web instalable (PWA). La publicación principal es la de Vercel; este .zip es el build estático para servirlo desde la raíz de un dominio con los rewrites de /api y /proto-api de vercel.json."
+            --generate-notes \
+            --notes "App web instalable (PWA), instaladores de escritorio y APK de Android. Los instaladores no están firmados (ver native/README.md). iPhone: instalar la PWA desde Safari. El .zip de la PWA es el build estático para servirlo desde la raíz de un dominio con los rewrites de /api y /proto-api de vercel.json."
+
+  escritorio:
+    needs: pwa
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, etiqueta: windows, args: "" }
+          - { os: macos-latest, etiqueta: macos, args: "--target universal-apple-darwin" }
+          - { os: ubuntu-22.04, etiqueta: linux, args: "" }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.etiqueta == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: Dependencias de Linux
+        if: matrix.etiqueta == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev libssl-dev
+      - name: Íconos a partir de native/app-icon.png
+        working-directory: native/tauri/src-tauri
+        run: npx --yes @tauri-apps/cli@2 icon ../../app-icon.png
+      - name: Construir instaladores
+        working-directory: native/tauri/src-tauri
+        run: npx --yes @tauri-apps/cli@2 build ${{ matrix.args }}
+      - name: Reunir archivos
+        run: |
+          mkdir salida
+          find native/tauri/src-tauri/target -path '*/release/bundle/*' -type f \
+            \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' \) \
+            -print0 | while IFS= read -r -d '' f; do
+              cp "$f" "salida/AstroTRACK-${{ matrix.etiqueta }}-$(basename "$f")"
+            done
+          ls -la salida
+          test -n "$(ls -A salida)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: escritorio-${{ matrix.etiqueta }}
+          path: salida/*
+      - name: Adjuntar al release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" salida/* --clobber
+
+  android:
+    needs: pwa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Proyecto Android (Capacitor)
+        working-directory: native/android
+        run: |
+          npm install
+          npx cap add android
+          npx cap sync android
+      - name: Construir APK
+        working-directory: native/android/android
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Reunir archivo
+        run: |
+          V="${GITHUB_REF_NAME//\//-}"
+          mkdir salida
+          cp native/android/android/app/build/outputs/apk/debug/app-debug.apk "salida/AstroTRACK-android-${V}.apk"
+          ls -la salida
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: salida/*
+      - name: Adjuntar al release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" salida/* --clobber

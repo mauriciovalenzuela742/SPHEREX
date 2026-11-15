@@ -1,0 +1,9 @@
+{
+  "appId": "app.astrotrack.spherex",
+  "appName": "AstroTRACK",
+  "webDir": "www",
+  "server": {
+    "url": "https://spherex-planet-x-tau.vercel.app",
+    "cleartext": false
+  }
+}

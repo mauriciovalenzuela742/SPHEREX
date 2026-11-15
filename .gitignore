@@ -49,3 +49,11 @@ desktop.ini
 .vercel
 .env*
 *.tsbuildinfo
+
+# Apps nativas
+native/**/node_modules/
+native/tauri/src-tauri/target/
+native/tauri/src-tauri/gen/
+native/tauri/src-tauri/icons/
+native/tauri/src-tauri/Cargo.lock
+native/android/android/
