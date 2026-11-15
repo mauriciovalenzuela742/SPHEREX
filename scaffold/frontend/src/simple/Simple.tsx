@@ -2,12 +2,13 @@
  * Vista simple (sin «Modo ciencia»): una imagen grande de SPHEREx con el objeto marcado, las fechas
  * (una por pasada de ~6 meses) y la barra «Luz» (normal / cercana / media / lejana). Para el público general.
  * Usa las mismas fotos reales que el Explorador (useDatosSpherex), con las 6 bandas.
- * «Normal»: la imagen sin filtro, toda la luz junta (promedio de las 6 bandas) en blanco y negro.
+ * «Normal»: el promedio por píxel de las 6 bandas, cada una ajustada a su propio brillo, en blanco y negro (no es la luz sumada).
  * Cercana / media / lejana: solo esas bandas, teñidas de su color.
  */
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { CAMPOS, nombreDe, posicionActual } from "../content/campos";
 import { leerPar } from "../apuntar/coordenadas";
+import { EntradaCoordenadas } from "../apuntar/Apuntar";
 import { asinh01, type Frame } from "../explorador/render";
 import { clave, useDatosSpherex } from "../explorador/useDatosSpherex";
 import type { Estado } from "../state/url";
@@ -15,11 +16,13 @@ import { useIdioma } from "../state/idioma";
 import InterruptorCiencia from "./InterruptorCiencia";
 import "./simple.css";
 
-type Props = { estado: Estado; set: (p: Partial<Estado>) => void; onCiencia: () => void };
+type Props = { estado: Estado; set: (p: Partial<Estado>) => void; onCiencia: () => void; onTutorial?: () => void };
 type Luz = "normal" | "cercana" | "media" | "lejana";
 type Pasada = { desde: number; hasta: number; medio: number };
 
 const TODAS = [1, 2, 3, 4, 5, 6];
+/** Primera fecha con datos de SPHEREx que pide el explorador (DESDE en useDatosSpherex). Límite del calendario. */
+const PRIMERA_FECHA = "2025-04-01";
 const HUECO_DIAS = 60;
 const CORTO: Record<string, string> = { barnard: "Barnard", eps_ind_b: "ε Indi B", wise_0855: "WISE 0855", rw_aur: "RW Aurigae", r_dra: "R Draconis" };
 /** Bandas y color de cada luz filtrada («normal» usa las 6 sin color). */
@@ -52,9 +55,12 @@ function rotuloPasada(p: Pasada, idioma: "es" | "en") {
   return `${m[ma]} ${ya}–${m[mz]} ${yz}`;
 }
 
-export default function Simple({ estado, set, onCiencia }: Props) {
+export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
   const { tr, idioma, cambiar } = useIdioma();
   const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, true);
+  // Rango de fechas que se pide a SPHEREx: el mismo «Desde / Hasta» del Explorador, con calendario.
+  const { desde, setDesde, hasta, setHasta } = datos;
+  const hoyIso = new Date().toISOString().slice(0, 10);
   const { grid, frames, escalas, version, prog, mensaje, cargar, setCargar, visitaMasCercana, setIntento, reintentarFallidas, reintentando, errores } = datos;
   // La vista simple siempre muestra las 6 bandas (los presets del Explorador cargan solo una).
   useEffect(() => {
@@ -98,32 +104,74 @@ export default function Simple({ estado, set, onCiencia }: Props) {
   }, [grid]);
   const iPasada = pasadaSel !== null && pasadaSel < pasadas.length ? pasadaSel : pasadas.length - 1;
   const pasada = pasadas[iPasada];
-  // Otro objeto: vuelve a la última fecha.
+  // «Compara dos fechas»: A y B son índices de pasada; con las dos elegidas, «Ver A − B» muestra la resta.
+  const [ab, setAb] = useState<{ a: number | null; b: number | null }>({ a: null, b: null });
+  const [verResta, setVerResta] = useState(false);
+  // Otro objeto u otras fechas: vuelve a la última fecha y se borran A y B.
   useEffect(() => {
     setPasadaSel(null);
     setPlay(false);
+    setAb({ a: null, b: null });
+    setVerResta(false);
   }, [estado.ra, estado.dec]);
+  useEffect(() => {
+    setAb({ a: null, b: null });
+    setVerResta(false);
+  }, [grid]);
   // ▶: recorre las fechas en bucle.
   useEffect(() => {
     if (!play || pasadas.length < 2) return;
     const id = window.setInterval(() => setPasadaSel((i) => ((i ?? pasadas.length - 1) + 1) % pasadas.length), 1100);
     return () => window.clearInterval(id);
   }, [play, pasadas.length]);
+  // Teclado: espacio pausa o sigue; ← → pasan de fecha (y pausan). No actúa mientras se escribe en un campo.
+  useEffect(() => {
+    const tecla = (ev: KeyboardEvent) => {
+      const tag = (document.activeElement?.tagName ?? "").toUpperCase();
+      if (["INPUT", "SELECT", "TEXTAREA"].includes(tag) || pasadas.length < 2) return;
+      if (document.querySelector(".tut")) return; // con el tutorial abierto, las flechas son suyas
+      if (ev.key === " " && tag !== "BUTTON") {
+        ev.preventDefault();
+        setPlay((v) => !v);
+      } else if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") {
+        ev.preventDefault();
+        const d = ev.key === "ArrowRight" ? 1 : -1;
+        setPlay(false);
+        setPasadaSel((i) => ((i ?? pasadas.length - 1) + d + pasadas.length) % pasadas.length);
+      }
+    };
+    window.addEventListener("keydown", tecla);
+    return () => window.removeEventListener("keydown", tecla);
+  }, [pasadas.length]);
 
-  // ── Fotograma de cada banda en la pasada elegida ──
-  const porBanda = new Map<number, Frame>();
-  if (grid && pasada)
-    for (const b of TODAS) {
-      const vs = grid.visits[b];
-      if (!vs?.length) continue;
-      const i = visitaMasCercana(b, pasada.medio);
-      if (vs[i].mjd < pasada.desde - 1 || vs[i].mjd > pasada.hasta + 1) continue; // esa banda no tiene foto en esta pasada
-      const fr = frames.current.get(clave(b, i));
-      if (fr) porBanda.set(b, fr);
-    }
-  const n = [...porBanda.values()][0]?.meta.n_px ?? 0;
+  // ── Fotograma de cada banda en una pasada ──
+  const fotosDe = (p: Pasada | undefined) => {
+    const m = new Map<number, Frame>();
+    if (grid && p)
+      for (const b of TODAS) {
+        const vs = grid.visits[b];
+        if (!vs?.length) continue;
+        const i = visitaMasCercana(b, p.medio);
+        if (vs[i].mjd < p.desde - 1 || vs[i].mjd > p.hasta + 1) continue; // esa banda no tiene foto en esta pasada
+        const fr = frames.current.get(clave(b, i));
+        if (fr) m.set(b, fr);
+      }
+    return m;
+  };
+  const porBanda = fotosDe(pasada);
   const bandasLuz = luz === "normal" ? TODAS : LUCES[luz].bandas;
-  const hayLuz = bandasLuz.some((b) => porBanda.has(b));
+  const pasadaA = ab.a !== null ? pasadas[ab.a] : undefined;
+  const pasadaB = ab.b !== null ? pasadas[ab.b] : undefined;
+  const porA = fotosDe(pasadaA);
+  const porB = fotosDe(pasadaB);
+  // La resta se ve con A y B elegidas, distintas, y con fotos de esta luz en las dos.
+  const restaActiva =
+    verResta && !!pasadaA && !!pasadaB && ab.a !== ab.b && bandasLuz.some((b) => porA.has(b)) && bandasLuz.some((b) => porB.has(b));
+  const n = (restaActiva ? [...porA.values()][0] : [...porBanda.values()][0])?.meta.n_px ?? 0;
+  const hayLuz = restaActiva || bandasLuz.some((b) => porBanda.has(b));
+  useEffect(() => {
+    if (verResta) setPlay(false);
+  }, [verResta]);
 
   const lienzo = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -134,11 +182,11 @@ export default function Simple({ estado, set, onCiencia }: Props) {
     c.width = n;
     c.height = n;
     const img = ctx.createImageData(n, n);
-    const valor = (grupo: number[], i: number) => {
+    const valor = (grupo: number[], i: number, fotos: Map<number, Frame> = porBanda) => {
       let s = 0;
       let k = 0;
       for (const b of grupo) {
-        const fr = porBanda.get(b);
+        const fr = fotos.get(b);
         const esc = escalas.current.get(b);
         if (!fr || !esc || fr.meta.n_px !== n) continue;
         const v = fr.arr[i];
@@ -149,6 +197,30 @@ export default function Simple({ estado, set, onCiencia }: Props) {
       }
       return k ? s / k : 0;
     };
+    if (restaActiva) {
+      // A − B con el brillo ya normalizado de cada banda: rojo = más brillante en A, azul = más brillante en B,
+      // gris = igual. La escala de color es el percentil 99,5 de |A − B| (como la resta del Explorador).
+      const d = new Float32Array(n * n);
+      for (let i = 0; i < n * n; i++) d[i] = valor(bandasLuz, i, porA) - valor(bandasLuz, i, porB);
+      // Las dos fechas tienen un brillo de fondo algo distinto: se resta la mediana para que el fondo quede gris
+      // y solo se coloree lo que cambió de verdad.
+      const ord = Float32Array.from(d).sort();
+      const mediana = ord[Math.floor(ord.length / 2)] || 0;
+      for (let i = 0; i < d.length; i++) d[i] -= mediana;
+      const abs = Float32Array.from(d, Math.abs).sort();
+      const lim = abs[Math.floor(0.995 * (abs.length - 1))] || 1;
+      for (let y = 0; y < n; y++)
+        for (let x = 0; x < n; x++) {
+          const o = ((n - 1 - y) * n + x) * 4; // fila 0 = sur
+          const t = Math.max(-1, Math.min(1, d[y * n + x] / lim));
+          img.data[o] = t > 0 ? 128 + 127 * t : 128 * (1 + t);
+          img.data[o + 1] = 128 * (1 - Math.abs(t));
+          img.data[o + 2] = t < 0 ? 128 - 127 * t : 128 * (1 - t);
+          img.data[o + 3] = 255;
+        }
+      ctx.putImageData(img, 0, 0);
+      return;
+    }
     for (let y = 0; y < n; y++)
       for (let x = 0; x < n; x++) {
         const i = y * n + x;
@@ -219,18 +291,40 @@ export default function Simple({ estado, set, onCiencia }: Props) {
     else setIntento((x) => x + 1);
   };
   const escala30 = grid && n ? (30 / grid.pixel_scale_arcsec / n) * 100 : 0;
+  // Cada luz: qué se ve mejor en ella (el color de un objeto depende de su temperatura: cuanto más frío, más
+  // larga la longitud de onda en que más brilla). Bandas: LUCES arriba.
   const textoLuz: Record<Luz, string> = {
-    normal: tr("normal, sin filtro: toda la luz infrarroja junta", "normal, no filter: all the infrared light together"),
-    cercana: tr("cercana (0,75–1,6 µm): la que más se parece a la que ven tus ojos", "near (0.75–1.6 µm): the closest to what your eyes see"),
-    media: tr("media (1,6–3,8 µm)", "middle (1.6–3.8 µm)"),
-    lejana: tr("lejana (3,8–5 µm): el calor de los objetos fríos, como las enanas marrones", "far (3.8–5 µm): the heat of cold objects such as brown dwarfs"),
+    // Es un promedio por píxel de las 6 bandas, cada una estirada a su propio rango (asinh01): no es la luz sumada.
+    normal: tr(
+      "normal: el promedio de las 6 bandas (D1–D6, 0,75–5 µm), cada una ajustada a su propio brillo",
+      "normal: the average of the 6 bands (D1–D6, 0.75–5 µm), each scaled to its own brightness",
+    ),
+    cercana: tr(
+      "cercana (D1–D2, 0,75–1,6 µm): donde más brillan las estrellas como el Sol; la que más se parece a la que ven tus ojos",
+      "near (D1–D2, 0.75–1.6 µm): where Sun-like stars shine brightest; the closest to what your eyes see",
+    ),
+    media: tr(
+      "media (D3–D4, 1,6–3,8 µm): resaltan las estrellas frías y las enanas marrones tibias; cerca de 3 µm absorben los hielos",
+      "middle (D3–D4, 1.6–3.8 µm): cool stars and warm brown dwarfs stand out; near 3 µm, ices absorb light",
+    ),
+    lejana: tr(
+      "lejana (D5–D6, 3,8–5 µm): el brillo propio de los objetos fríos, como las enanas marrones más frías",
+      "far (D5–D6, 3.8–5 µm): the glow of cold objects themselves, such as the coldest brown dwarfs",
+    ),
   };
+  const nombreLuz: Record<Luz, string> = {
+    normal: tr("Normal (promedio)", "Normal (average)"),
+    cercana: tr("Cercana (estrellas)", "Near (stars)"),
+    media: tr("Media (estrellas frías)", "Middle (cool stars)"),
+    lejana: tr("Lejana (objetos fríos)", "Far (cold objects)"),
+  };
+  const bandasDeLuz: Record<Luz, string> = { normal: "D1–D6", cercana: "D1–D2", media: "D3–D4", lejana: "D5–D6" };
 
   return (
     <div className="simple">
       <header className="simple-barra">
         <button className="simple-marca" onClick={() => set({ vista: "landing" })}>AstroTRACK</button>
-        <form className="simple-busca" onSubmit={buscar} role="search">
+        <form className="simple-busca" onSubmit={buscar} role="search" data-tour="simple-busca">
           <span aria-hidden="true">⌕</span>
           <input
             value={busqueda}
@@ -243,7 +337,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           />
           {errorBusqueda && <span className="simple-busca-error" role="alert">{errorBusqueda}</span>}
         </form>
-        <nav className="simple-chips" aria-label={tr("Objetos", "Objects")}>
+        <nav className="simple-chips" aria-label={tr("Objetos", "Objects")} data-tour="simple-objetos">
           {CAMPOS.map((c) => (
             <button key={c.id} className={campo?.id === c.id ? "activo" : ""} onClick={() => set(posicionActual(c))} title={nombreDe(c, idioma)}>
               {CORTO[c.id] ?? nombreDe(c, idioma)}
@@ -251,7 +345,9 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           ))}
         </nav>
         <div className="simple-derecha">
-          <InterruptorCiencia activo={false} onCambiar={onCiencia} />
+          <span data-tour="simple-ciencia">
+            <InterruptorCiencia activo={false} onCambiar={onCiencia} />
+          </span>
           <button className="simple-ayuda-btn" aria-expanded={ayuda} onClick={() => setAyuda((v) => !v)} aria-label={tr("Ayuda", "Help")}>?</button>
           <span className="simple-idioma">
             <button className={idioma === "es" ? "activo" : ""} onClick={() => cambiar("es")}>ES</button>|
@@ -265,8 +361,56 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           <p>{tr("Estas son fotos reales del telescopio SPHEREx de la NASA, tomadas cada ~6 meses. Elige un objeto arriba, pasa las fechas y mira qué cambia.", "These are real photos from NASA's SPHEREx telescope, taken every ~6 months. Pick an object above, step through the dates and see what changes.")}</p>
           <p>{tr("La barra «Luz» elige qué tipo de luz infrarroja ves: cada objeto brilla distinto según la luz.", "The “Light” bar picks which kind of infrared light you see: each object shines differently in each light.")}</p>
           <p>{tr("¿Quieres todas las herramientas (resta de fotos, espectro, catálogos)? Activa «Modo ciencia».", "Want every tool (photo subtraction, spectrum, catalogs)? Turn on “Science mode”.")}</p>
+          {onTutorial && (
+            <button className="primario" onClick={onTutorial}>
+              {tr("Ver el tutorial de Spherix", "Watch Spherix's tutorial")}
+            </button>
+          )}
         </div>
       )}
+
+      <div className="simple-cuerpo">
+      {/* A la izquierda de la imagen: coordenadas (como en Modo ciencia) y rango de fechas con calendario. */}
+      <aside className="simple-lado" aria-label={tr("Dónde y cuándo", "Where and when")} data-tour="simple-lado">
+        <h3>{tr("¿Dónde?", "Where?")}</h3>
+        <div className="simple-coords">
+          <EntradaCoordenadas ra={estado.ra} dec={estado.dec} onIr={set} />
+        </div>
+        <h3>{tr("¿Cuándo?", "When?")}</h3>
+        <label>
+          {tr("Desde", "From")}
+          <input
+            type="date"
+            value={desde}
+            min={PRIMERA_FECHA}
+            max={hasta}
+            onChange={(e) => e.target.value && e.target.value <= hasta && setDesde(e.target.value)}
+          />
+        </label>
+        <label>
+          {tr("Hasta", "To")}
+          <input
+            type="date"
+            value={hasta}
+            min={desde}
+            max={hoyIso}
+            onChange={(e) => e.target.value && e.target.value >= desde && setHasta(e.target.value)}
+          />
+        </label>
+        <p className="simple-lado-nota">
+          {tr("Solo se traen las fotos de ese rango. SPHEREx empezó en 2025 y pasa por cada punto cada ~6 meses.", "Only photos in that range are loaded. SPHEREx started in 2025 and passes over each spot every ~6 months.")}
+        </p>
+        {(desde !== PRIMERA_FECHA || hasta !== hoyIso) && (
+          <button
+            onClick={() => {
+              setDesde(PRIMERA_FECHA);
+              setHasta(hoyIso);
+            }}
+          >
+            ↺ {tr("Todas las fechas", "All dates")}
+          </button>
+        )}
+      </aside>
 
       <main className="simple-centro">
         {aviso && (
@@ -277,7 +421,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
             <button onClick={cerrarAviso}>{tr("Entendido", "Got it")}</button>
           </div>
         )}
-        <div className="simple-imagen">
+        <div className="simple-imagen" data-tour="simple-imagen">
           {n > 0 && <canvas ref={lienzo} aria-label={tr("Foto de SPHEREx", "SPHEREx photo")} />}
           {n > 0 && !hayLuz && <p className="simple-mensaje">{tr("No hay fotos con esta luz en esta fecha.", "No photos in this light on this date.")}</p>}
           {!n && (
@@ -309,7 +453,13 @@ export default function Simple({ estado, set, onCiencia }: Props) {
               <span className="smo-nombre">{campo ? nombreDe(campo, idioma) : tr("Tu punto", "Your spot")}</span>
             </button>
           )}
-          {pasada && n > 0 && <span className="simple-fecha">{rotuloPasada(pasada, idioma === "en" ? "en" : "es")}</span>}
+          {pasada && n > 0 && (
+            <span className="simple-fecha">
+              {restaActiva && pasadaA && pasadaB
+                ? `A ${rotuloPasada(pasadaA, idioma === "en" ? "en" : "es")} − B ${rotuloPasada(pasadaB, idioma === "en" ? "en" : "es")}`
+                : rotuloPasada(pasada, idioma === "en" ? "en" : "es")}
+            </span>
+          )}
           {escala30 > 0 && (
             // La raya mide 30″ en la imagen: su ancho es un % del cuadro; el rótulo va al lado, fuera de ese ancho.
             <span className="simple-escala" style={{ width: `${escala30}%` }}>
@@ -321,28 +471,104 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           <span hidden data-version={version} />
         </div>
         {pasadas.length > 0 && (
-          <div className="simple-fechas" role="group" aria-label={tr("Fechas", "Dates")}>
-            <button onClick={() => setPlay((v) => !v)} aria-label={play ? tr("Pausa", "Pause") : tr("Reproducir", "Play")} disabled={pasadas.length < 2}>
-              {play ? "❚❚" : "▶"}
+          <div className="simple-fechas" role="group" aria-label={tr("Fechas", "Dates")} data-tour="simple-fechas">
+            <button
+              className="simple-play"
+              onClick={() => {
+                setVerResta(false); // reproducir vuelve a las fotos
+                setPlay((v) => !v);
+              }}
+              aria-pressed={play}
+              disabled={pasadas.length < 2}
+              title={tr("Pausa o sigue cuando quieras (también con la barra espaciadora; ← → pasan de fecha)", "Pause or continue whenever you want (also with the space bar; ← → step through dates)")}
+            >
+              {play ? `❚❚ ${tr("Pausa", "Pause")}` : `▶ ${tr("Reproducir", "Play")}`}
             </button>
             {pasadas.map((p, i) => (
-              <button key={p.desde} className={i === iPasada ? "activo" : ""} onClick={() => { setPlay(false); setPasadaSel(i); }}>
+              <button
+                key={p.desde}
+                className={i === iPasada && !restaActiva ? "activo" : ""}
+                onClick={() => {
+                  setPlay(false);
+                  setVerResta(false);
+                  setPasadaSel(i);
+                }}
+              >
                 {rotuloPasada(p, idioma === "en" ? "en" : "es")}
+                {ab.a === i && <sup className="simple-ab-letra"> A</sup>}
+                {ab.b === i && <sup className="simple-ab-letra"> B</sup>}
               </button>
             ))}
           </div>
         )}
+        {/* Compara dos fechas: la que se ve pasa a ser A o B; con las dos, «Ver A − B» muestra la resta. */}
+        {pasadas.length > 1 && (
+          <div className="simple-ab" role="group" aria-label={tr("Compara dos fechas", "Compare two dates")} data-tour="simple-ab">
+            <span className="simple-ab-titulo">{tr("Compara dos fechas:", "Compare two dates:")}</span>
+            {(["a", "b"] as const).map((k) => {
+              const p = k === "a" ? pasadaA : pasadaB;
+              return (
+                <button
+                  key={k}
+                  onClick={() => {
+                    setPlay(false);
+                    setAb((x) => ({ ...x, [k]: iPasada }));
+                  }}
+                  title={tr(`Usa la fecha que estás viendo como ${k.toUpperCase()}`, `Use the date you are looking at as ${k.toUpperCase()}`)}
+                >
+                  <b>{k.toUpperCase()}</b>: {p ? rotuloPasada(p, idioma === "en" ? "en" : "es") : tr("esta fecha", "this date")}
+                </button>
+              );
+            })}
+            <button
+              className="simple-ab-ver"
+              aria-pressed={restaActiva}
+              disabled={ab.a === null || ab.b === null || ab.a === ab.b}
+              onClick={() => setVerResta((v) => !v)}
+              title={ab.a !== null && ab.a === ab.b ? tr("A y B son la misma fecha: elige otra", "A and B are the same date: pick another") : undefined}
+            >
+              {restaActiva ? tr("Ver la foto", "Show the photo") : tr("Ver A − B", "Show A − B")}
+            </button>
+            {(ab.a !== null || ab.b !== null) && (
+              <button
+                onClick={() => {
+                  setAb({ a: null, b: null });
+                  setVerResta(false);
+                }}
+              >
+                {tr("Borrar", "Clear")}
+              </button>
+            )}
+            {restaActiva && (
+              <p className="simple-ab-leyenda">
+                {tr(
+                  "Rojo: brillo que está en A y no en B · Azul: en B y no en A · Gris: no cambió. Una pareja roja y azul es algo que se movió.",
+                  "Red: brightness in A but not in B · Blue: in B but not in A · Gray: no change. A red and blue pair is something that moved.",
+                )}
+              </p>
+            )}
+            {verResta && !restaActiva && ab.a !== ab.b && (
+              <p className="simple-ab-leyenda">{tr("No hay fotos con esta luz en A o en B.", "No photos in this light for A or B.")}</p>
+            )}
+          </div>
+        )}
       </main>
+      </div>
 
-      <footer className="simple-luz">
-        <p>
-          <b>{tr("Luz:", "Light:")}</b> {textoLuz[luz]}
-        </p>
+      <footer className="simple-luz" data-tour="simple-luz">
         <div className="simple-luz-botones" role="radiogroup" aria-label={tr("Luz", "Light")}>
           {(["normal", "cercana", "media", "lejana"] as Luz[]).map((l) => (
-            <button key={l} role="radio" aria-checked={luz === l} className={`luz-${l}${luz === l ? " activo" : ""}`} onClick={() => setLuz(l)}>
-              {l === "normal" ? tr("Normal", "Normal") : l === "cercana" ? tr("Cercana", "Near") : l === "media" ? tr("Media", "Middle") : tr("Lejana (calor)", "Far (heat)")}
-            </button>
+            <div key={l} className={`luz-celda${luz === l ? " activa" : ""}`}>
+              <button role="radio" aria-checked={luz === l} aria-describedby={`luz-texto-${l}`} className={`luz-${l}${luz === l ? " activo" : ""}`} onClick={() => setLuz(l)}>
+                {nombreLuz[l]}
+                {/* Nota al pie: las bandas de SPHEREx que usa esta luz. */}
+                <small className="luz-bandas">{bandasDeLuz[l]}</small>
+              </button>
+              {/* Debajo de cada botón, qué muestra esa luz (todas a la vista, no solo la elegida). */}
+              <p id={`luz-texto-${l}`} className="luz-texto">
+                <b>{tr("Luz:", "Light:")}</b> {textoLuz[l]}
+              </p>
+            </div>
           ))}
         </div>
         <div className="simple-luz-ejes">

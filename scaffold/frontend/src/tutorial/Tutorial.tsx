@@ -8,18 +8,21 @@
  * sistema pide «reducir movimiento».
  */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { tutorial } from "../content/tutorial";
+import { textosTutorial } from "../content/tutorial";
+import { useIdioma } from "../state/idioma";
 import { Cara } from "../spherix/Spherix";
 import { usarObjetivo, type Rect } from "./usarObjetivo";
 import "./tutorial.css";
 
 type Props = {
+  /** «ciencia» = recorrido del Visor completo; «simple» = el de la vista simple. */
+  variante?: "ciencia" | "simple";
   onCerrar: () => void;
   onBarnard: () => void;
+  /** Botón del medio al final: Modo Misión (ciencia) o abrir el Modo ciencia (simple). */
   onMision: () => void;
 };
 
-const PASOS = tutorial.pasos;
 const SEP = 14; // distancia entre la sección y la burbuja
 const BORDE = 16; // margen mínimo con el borde de la ventana
 
@@ -43,7 +46,14 @@ function ubicar(r: Rect | null, bw: number, bh: number): Lugar {
   return { estilo: { right: BORDE, bottom: BORDE } };
 }
 
-export default function Tutorial({ onCerrar, onBarnard, onMision }: Props) {
+export default function Tutorial({ variante = "ciencia", onCerrar, onBarnard, onMision }: Props) {
+  // Textos en el idioma de la página (ES/EN) y los pasos del recorrido que corresponde.
+  const { idioma } = useIdioma();
+  const tutorial = textosTutorial(idioma);
+  const PASOS = variante === "simple" ? tutorial.pasosSimple : tutorial.pasos;
+  const final = variante === "simple"
+    ? { barnard: tutorial.finalSimple.barnard, medio: tutorial.finalSimple.ciencia, libre: tutorial.finalSimple.libre }
+    : { barnard: tutorial.final.barnard, medio: tutorial.final.mision, libre: tutorial.final.libre };
   const [i, setI] = useState(0);
   const paso = PASOS[i];
   const ultimo = i === PASOS.length - 1;
@@ -61,11 +71,19 @@ export default function Tutorial({ onCerrar, onBarnard, onMision }: Props) {
   }, []);
 
   // Medir la burbuja (su alto cambia con el texto) para ubicarla bien.
+  // Dentro de un mismo paso el tamaño solo crece: si no, con secciones grandes (p. ej. «Longitud de onda», paso 6)
+  // la burbuja alternaba entre dos lugares de distinto tamaño, se volvía a medir en cada uno y React cortaba el bucle
+  // con «Maximum update depth exceeded» (el tutorial desaparecía). Al cambiar de paso se mide de nuevo desde cero.
+  const pasoMedido = useRef(-1);
   useLayoutEffect(() => {
     const b = burbuja.current;
     if (!b) return;
     const r = b.getBoundingClientRect();
-    if (Math.abs(r.width - tam.w) > 2 || Math.abs(r.height - tam.h) > 2) setTam({ w: r.width, h: r.height });
+    const nuevo = pasoMedido.current !== i;
+    const w = nuevo ? r.width : Math.max(r.width, tam.w);
+    const h = nuevo ? r.height : Math.max(r.height, tam.h);
+    pasoMedido.current = i;
+    if (Math.abs(w - tam.w) > 2 || Math.abs(h - tam.h) > 2) setTam({ w, h });
   });
 
   // Al cambiar de paso, el foco va al botón principal.
@@ -101,7 +119,7 @@ export default function Tutorial({ onCerrar, onBarnard, onMision }: Props) {
     };
     window.addEventListener("keydown", tecla, true);
     return () => window.removeEventListener("keydown", tecla, true);
-  }, [ultimo, onCerrar]);
+  }, [ultimo, onCerrar, PASOS.length]);
 
   const lugar = ubicar(rect, tam.w, tam.h);
   const aviso =
@@ -151,9 +169,9 @@ export default function Tutorial({ onCerrar, onBarnard, onMision }: Props) {
 
         {ultimo ? (
           <div className="tut-final">
-            <button className="primario" data-principal onClick={onBarnard}>{tutorial.final.barnard}</button>
-            <button onClick={onMision}>{tutorial.final.mision}</button>
-            <button onClick={onCerrar}>{tutorial.final.libre}</button>
+            <button className="primario" data-principal onClick={onBarnard}>{final.barnard}</button>
+            <button onClick={onMision}>{final.medio}</button>
+            <button onClick={onCerrar}>{final.libre}</button>
           </div>
         ) : (
           <div className="tut-acciones">

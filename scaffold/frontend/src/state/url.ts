@@ -1,7 +1,8 @@
 /**
  * Estado del visor ↔ URL (?ra=&dec=&size=&band=&mision=). Dueña: Antonia (V1).
  * `mision` = paso del Modo Misión (intro | 1..5 | fin): cada nivel es un enlace compartible.
- * `tutorial` = el recorrido guiado por Spherix está abierto (?tutorial=1): se puede compartir y repetir.
+ * `tutorial` = el recorrido guiado por Spherix está abierto: ?tutorial=1 el del Modo ciencia, ?tutorial=simple el de la
+ *   vista simple. Se puede compartir y repetir.
  * `ciencia` = Modo ciencia (?ciencia=1): el Visor completo. Sin él, la vista simple (src/simple).
  * Contrato de la URL: docs/03_ARQUITECTURA.md §4. Pendiente: target, fps, stretch, mode.
  */
@@ -15,7 +16,7 @@ export type Estado = {
   band: string;
   vista: "landing" | "visor";
   mision?: string;
-  tutorial?: boolean;
+  tutorial?: "ciencia" | "simple";
   ciencia?: boolean;
 };
 
@@ -44,7 +45,7 @@ function leer(): Estado {
     band: bandaValida(q.get("band"), DEFECTO.band),
     vista: q.has("ra") || q.has("mision") || q.has("tutorial") || q.get("vista") === "visor" ? "visor" : "landing",
     mision: q.get("mision") ?? undefined,
-    tutorial: q.get("tutorial") === "1" || undefined,
+    tutorial: q.get("tutorial") === "1" ? "ciencia" : q.get("tutorial") === "simple" ? "simple" : undefined,
     ciencia: q.get("ciencia") === "1" || undefined,
   };
 }
@@ -62,7 +63,7 @@ export function useEstadoUrl() {
         q.set("size", String(nuevo.size));
         q.set("band", nuevo.band);
         if (nuevo.mision) q.set("mision", nuevo.mision);
-        if (nuevo.tutorial) q.set("tutorial", "1");
+        if (nuevo.tutorial) q.set("tutorial", nuevo.tutorial === "simple" ? "simple" : "1");
         if (nuevo.ciencia) q.set("ciencia", "1");
       }
       const qs = q.toString();

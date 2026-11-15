@@ -16,8 +16,6 @@ import HuellaEspectral from "./HuellaEspectral";
 import OjoInfrarrojo from "./OjoInfrarrojo";
 import QueCambio from "./QueCambio";
 import FichaAstro from "./FichaAstro";
-import HuellaPasadas from "./HuellaPasadas";
-import FondoCielo from "./FondoCielo";
 import { COLORES_PASADA, desdePrecalc, desdeVivo, esPrecalc, etiquetaPasada, type PrecalcEspectro, type PuntoVista } from "./pasadas";
 import "./prisma.css";
 
@@ -139,9 +137,9 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
           </div>
         </div>
       )}
-      {/* Huella espectral entre pasadas y fondo del cielo (V2, PR #58): datos precalculados, no dependen de la carga */}
-      <HuellaPasadas id={id} />
-      <FondoCielo id={id} />
+      {/* «Seguir un astro por su huella espectral» (HuellaPasadas) y «El fondo del cielo» (FondoCielo), de PR #58,
+          quedan ocultas por decisión de Antonia y Juan Pablo. Los archivos siguen en esta carpeta: para mostrarlas,
+          importarlas de nuevo y poner aquí <HuellaPasadas id={id} /> y <FondoCielo id={id} />. */}
     </section>
   );
 }
