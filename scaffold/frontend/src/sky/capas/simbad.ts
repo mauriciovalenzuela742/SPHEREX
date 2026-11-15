@@ -31,8 +31,9 @@ const RADIO_MIN = 0.1;
  *  entre 2 y 18 s por consulta el 14-nov-2026. */
 const ESPERA_MS = 40000;
 
-/** Servicios TAP de SIMBAD, en orden de preferencia. Los dos responden con CORS abierto. */
-const SERVICIOS_TAP = [
+/** Servicios TAP de SIMBAD, en orden de preferencia. Los dos responden con CORS abierto.
+ *  También los usa ../../apuntar/queHayAqui.ts (consulta de un punto al hacer clic). */
+export const SERVICIOS_TAP = [
   "https://simbad.cds.unistra.fr/simbad/sim-tap/sync",
   "https://simbad.cfa.harvard.edu/simbad/sim-tap/sync",
 ];

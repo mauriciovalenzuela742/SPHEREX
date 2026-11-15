@@ -3,7 +3,7 @@
  * Hoy: controles conectados a la URL + cielo de SPHEREx en Aladin (Vía A).
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import AladinView, { planoDeBanda } from "../sky/AladinView";
 import { CAMPOS, posicionActual } from "../content/campos";
 import { textos } from "../content/textos";
@@ -14,6 +14,12 @@ import Explorador from "../explorador/Explorador";
 import { useDatosSpherex } from "../explorador/useDatosSpherex";
 import Prisma from "../prisma/Prisma";
 import type { Accion } from "../spherix/motor";
+import { epocaDeFecha } from "../sky/propagacion";
+import { EntradaCoordenadas, PanelDescubrir } from "../apuntar/Apuntar";
+
+// Misma fecha que usa posicionActual() para centrar: así la marca del objeto cae en el centro del recorte.
+// TODO: cuando el explorador avise la fecha del fotograma elegido, pasar esa época en vez de la de hoy.
+const EPOCA_HOY = epocaDeFecha(new Date());
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
 
@@ -35,6 +41,12 @@ export default function Visor({ estado, set, asistido }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aladin = useRef<any>(null);
   const fovDeg = Math.max(estado.size * 4, 0.3);
+  // Último punto elegido con un clic o al azar: el panel «¿Qué hay aquí?» lo consulta en SIMBAD.
+  const [punto, setPunto] = useState<{ ra: number; dec: number } | null>(null);
+  const irA = (p: { ra: number; dec: number }) => {
+    set(p);
+    setPunto(p);
+  };
   const encuadrar = () => {
     aladin.current?.gotoRaDec(estado.ra, estado.dec);
     aladin.current?.setFoV(fovDeg);
@@ -42,14 +54,8 @@ export default function Visor({ estado, set, asistido }: Props) {
   return (
     <section className="visor">
       <div className="barra" data-tour="busqueda">
-        <label>
-          A.R. (°)
-          <input type="number" step="0.0001" value={estado.ra} onChange={(e) => set({ ra: Number(e.target.value) })} />
-        </label>
-        <label>
-          Dec (°)
-          <input type="number" step="0.0001" value={estado.dec} onChange={(e) => set({ dec: Number(e.target.value) })} />
-        </label>
+        {/* Grados o sexagesimal («08 55 10.83 -07 14 42.5»): src/apuntar/coordenadas.ts. */}
+        <EntradaCoordenadas ra={estado.ra} dec={estado.dec} onIr={set} />
         <label>
           Dimensión (°)
           <select value={estado.size} onChange={(e) => set({ size: Number(e.target.value) })}>
@@ -97,7 +103,11 @@ export default function Visor({ estado, set, asistido }: Props) {
             fovDeg={fovDeg}
             plano={planoDeBanda(estado.band)}
             onReady={(a) => (aladin.current = a)}
+            size={estado.size}
+            epoca={EPOCA_HOY}
+            onSelect={(ra, dec) => irA({ ra: Number(ra.toFixed(6)), dec: Number(dec.toFixed(6)) })}
           />
+          <PanelDescubrir ra={estado.ra} dec={estado.dec} punto={punto} epoca={EPOCA_HOY} onAzar={(p) => irA({ ra: p.ra, dec: p.dec })} />
           <p className="quien">
             Cielo: cubo SPHEREx DR1 de IRSA (mosaico de todas las épocas, sin eje de tiempo). Banda {estado.band === "all" ? "D2" : `D${estado.band}`}, canal central.
           </p>
