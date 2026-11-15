@@ -14,6 +14,8 @@ const ES = {
   modoMision: "Modo Misión",
   verTutorial: "Ver tutorial",
   repositorio: "Repositorio",
+  descargas: "Descargas",
+  descargarApp: "Descargar la app",
 
   // Landing
   bienvenida: "Bienvenido a AstroTrack",
@@ -107,6 +109,8 @@ const EN: typeof ES = {
   modoMision: "Mission Mode",
   verTutorial: "View tutorial",
   repositorio: "Repository",
+  descargas: "Downloads",
+  descargarApp: "Download the app",
 
   bienvenida: "Welcome to AstroTrack",
   queEsSec: "What are we?",

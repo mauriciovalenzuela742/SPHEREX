@@ -65,23 +65,31 @@
 .portada-respuestas { display: flex; flex-direction: column; align-items: stretch; gap: 0.6rem; max-width: 380px; }
 .portada-respuestas button { text-align: left; padding: 0.7rem 1rem; font-size: 1.05rem; }
 .portada-respuestas button:not(.primario) { background: rgba(20, 27, 51, 0.88); }
+.portada-descargas {
+  align-self: flex-start; background: none; border: none; padding: 0.2rem 0; color: var(--suave);
+  text-decoration: underline; text-underline-offset: 3px; font-size: 0.95rem;
+}
+.portada-descargas:hover:not(:disabled) { color: var(--texto); }
 
 .portada-creditos {
   position: absolute; right: clamp(1rem, 6vw, 6rem); bottom: 0.8rem; margin: 0;
   font-size: 0.75rem; color: var(--suave); opacity: 0.8;
 }
 
-/* ── Móvil: Tierra más chica asomando abajo, sin SPHEREx ni órbita, contenido centrado ── */
-@media (max-width: 700px) {
-  .portada { grid-template-columns: 1fr; padding: 1.5rem 1rem 9rem; align-items: start; }
+/* ── Tablet y móvil (< 1100 px, donde la escena chocaría con el contenido): Tierra más chica asomando abajo,
+   sin SPHEREx ni órbita, contenido centrado ── */
+@media (max-width: 1100px) {
+  /* Abajo queda espacio para lo que asoma de la Tierra (28 % de su diámetro). */
+  .portada { grid-template-columns: 1fr; padding: 1.5rem 1rem calc(min(80vw, 560px) * 0.28 + 1.5rem); align-items: start; }
   .portada-contenido { grid-column: 1; align-items: center; text-align: center; }
   .portada-linea { max-width: none; }
-  .portada-escena { --tierra: 80vw; }
+  .portada-escena { --tierra: min(80vw, 560px); }
   .portada-tierra { left: 50%; transform: translateX(-50%); bottom: calc(var(--tierra) * -0.72); }
   .portada-orbita, .portada-spherex { display: none; }
   .portada-respuestas { width: 100%; }
   .portada-respuestas button { text-align: center; }
-  .portada-creditos { right: 0; left: 0; text-align: center; }
+  .portada-descargas { align-self: center; }
+  .portada-creditos { position: relative; right: auto; bottom: auto; margin-top: 1.5rem; text-align: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

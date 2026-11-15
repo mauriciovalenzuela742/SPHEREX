@@ -1,0 +1,30 @@
+/* Vista «Descargas»: mismas variables y tarjetas que la portada (--panel, --borde, --acento). */
+.descargas { max-width: 720px; margin: 2rem auto; }
+.descargas h1 { font-size: 2.2rem; margin: 0 0 1rem; }
+.dl-version { margin: 0.2rem 0 1.2rem; }
+.dl-lista { display: grid; gap: 1rem; }
+.dl-ficha {
+  background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; padding: 1rem 1.1rem;
+}
+.dl-ficha.mio { border-color: var(--acento); }
+.dl-cab { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.7rem; }
+.dl-cab h2 { margin: 0; font-size: 1.15rem; flex: 1; }
+.dl-icono { color: var(--acento); flex: none; }
+.dl-etiqueta {
+  font-size: 0.75rem; color: var(--acento); border: 1px solid var(--acento); border-radius: 999px; padding: 0.05rem 0.55rem;
+}
+.dl-botones { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.dl-boton {
+  display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0.45rem 0.9rem;
+  background: var(--panel); color: var(--texto); border: 1px solid var(--borde); border-radius: 8px; text-decoration: none;
+}
+.dl-boton:hover { border-color: var(--acento); }
+.dl-boton.primario { background: var(--acento); color: #111; border-color: var(--acento); font-weight: 600; }
+.dl-peso { color: inherit; opacity: 0.7; font-size: 0.8rem; }
+.dl-pasos { margin: 0.8rem 0 0; padding-left: 1.2rem; color: var(--suave); font-size: 0.92rem; }
+.dl-pasos li { margin: 0.2rem 0; }
+.dl-aviso { font-size: 0.88rem; margin-top: 1.4rem; }
+@media (max-width: 600px) {
+  .descargas { margin: 1rem auto; }
+  .descargas h1 { font-size: 1.8rem; }
+}

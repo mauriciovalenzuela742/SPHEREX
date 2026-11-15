@@ -10,9 +10,9 @@ import { Cara } from "../spherix/Spherix";
 import CieloAnimado from "./landing/CieloAnimado";
 import "./landing/landing.css";
 
-type Props = { onEmpezar: () => void; onMision: () => void; onTutorial: () => void };
+type Props = { onEmpezar: () => void; onMision: () => void; onTutorial: () => void; onDescargas: () => void };
 
-export default function Landing({ onEmpezar, onMision, onTutorial }: Props) {
+export default function Landing({ onEmpezar, onMision, onTutorial, onDescargas }: Props) {
   const { t } = useIdioma();
   return (
     <section className="portada">
@@ -40,6 +40,8 @@ export default function Landing({ onEmpezar, onMision, onTutorial }: Props) {
           <button onClick={onEmpezar}>{t.respuestaExplorar}</button>
           <button onClick={onMision}>{t.respuestaMision}</button>
         </div>
+        {/* Descargas (PR #84): un enlace discreto bajo las respuestas, para no competir con ellas. */}
+        <button className="portada-descargas" onClick={onDescargas}>↓ {t.descargarApp}</button>
       </div>
 
       <p className="portada-creditos">{t.creditosPortada}</p>
