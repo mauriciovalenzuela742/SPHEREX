@@ -1,0 +1,1737 @@
+{
+  "datos_dir": "D:\\dev\\informes_v2\\huella_espectral",
+  "verificacion_wcs_sip": {
+    "hecho": true,
+    "diff_px": 0.0
+  },
+  "n_exposiciones_total": 1918,
+  "n_pixeles_fondo_total": 584924,
+  "campos": {
+    "wise_0855": {
+      "meta": {
+        "ra_deg": 133.76008,
+        "dec_deg": -7.24221,
+        "beta_bme_deg": -23.62,
+        "beta_gme_deg": -23.62,
+        "abs_beta_deg": 23.62,
+        "ecl_lon_deg": 138.49,
+        "gal_b_deg": 23.32,
+        "abs_gal_b_deg": 23.32,
+        "gal_l_deg": 234.97
+      },
+      "n_exp": 258,
+      "n_pix_fondo_total": 70890,
+      "frac_pix_enmascarado_y_valido_prom": 0.525,
+      "saturado_halo_psf": false,
+      "nota_campo": "Campo limpio apto para medir luz zodiacal.",
+      "espectro_12_bines": [
+        {
+          "n_pix": 3716,
+          "p25": 0.20402,
+          "mediana": 0.22846,
+          "mad": 0.03911,
+          "bin": 0,
+          "lam_um": 0.8117,
+          "lam_min_um": 0.75,
+          "lam_max_um": 0.8785
+        },
+        {
+          "n_pix": 3884,
+          "p25": 0.22224,
+          "mediana": 0.25162,
+          "mad": 0.04236,
+          "bin": 1,
+          "lam_um": 0.9507,
+          "lam_min_um": 0.8785,
+          "lam_max_um": 1.0289
+        },
+        {
+          "n_pix": 4151,
+          "p25": 0.23374,
+          "mediana": 0.2804,
+          "mad": 0.08458,
+          "bin": 2,
+          "lam_um": 1.1135,
+          "lam_min_um": 1.0289,
+          "lam_max_um": 1.2051
+        },
+        {
+          "n_pix": 5425,
+          "p25": 0.22393,
+          "mediana": 0.24613,
+          "mad": 0.03629,
+          "bin": 3,
+          "lam_um": 1.3043,
+          "lam_min_um": 1.2051,
+          "lam_max_um": 1.4116
+        },
+        {
+          "n_pix": 6209,
+          "p25": 0.22724,
+          "mediana": 0.24794,
+          "mad": 0.03142,
+          "bin": 4,
+          "lam_um": 1.5277,
+          "lam_min_um": 1.4116,
+          "lam_max_um": 1.6533
+        },
+        {
+          "n_pix": 4196,
+          "p25": 0.1746,
+          "mediana": 0.19791,
+          "mad": 0.0369,
+          "bin": 5,
+          "lam_um": 1.7893,
+          "lam_min_um": 1.6533,
+          "lam_max_um": 1.9365
+        },
+        {
+          "n_pix": 5550,
+          "p25": 0.15215,
+          "mediana": 0.16539,
+          "mad": 0.0219,
+          "bin": 6,
+          "lam_um": 2.0958,
+          "lam_min_um": 1.9365,
+          "lam_max_um": 2.2682
+        },
+        {
+          "n_pix": 4435,
+          "p25": 0.13383,
+          "mediana": 0.14989,
+          "mad": 0.02371,
+          "bin": 7,
+          "lam_um": 2.4547,
+          "lam_min_um": 2.2682,
+          "lam_max_um": 2.6566
+        },
+        {
+          "n_pix": 3324,
+          "p25": 0.1152,
+          "mediana": 0.13166,
+          "mad": 0.02396,
+          "bin": 8,
+          "lam_um": 2.8752,
+          "lam_min_um": 2.6566,
+          "lam_max_um": 3.1117
+        },
+        {
+          "n_pix": 3524,
+          "p25": 0.1228,
+          "mediana": 0.13934,
+          "mad": 0.0262,
+          "bin": 9,
+          "lam_um": 3.3676,
+          "lam_min_um": 3.1117,
+          "lam_max_um": 3.6446
+        },
+        {
+          "n_pix": 11191,
+          "p25": 0.17533,
+          "mediana": 0.21242,
+          "mad": 0.05927,
+          "bin": 10,
+          "lam_um": 3.9444,
+          "lam_min_um": 3.6446,
+          "lam_max_um": 4.2689
+        },
+        {
+          "n_pix": 15285,
+          "p25": 0.3574,
+          "mediana": 0.45964,
+          "mad": 0.17459,
+          "bin": 11,
+          "lam_um": 4.62,
+          "lam_min_um": 4.2689,
+          "lam_max_um": 5.0
+        }
+      ],
+      "por_banda": {
+        "D1": {
+          "n_pix": 9539,
+          "p25": 0.21875,
+          "mediana": 0.25187,
+          "mad": 0.05101,
+          "lam_med_um": 0.92
+        },
+        "D2": {
+          "n_pix": 13286,
+          "p25": 0.22531,
+          "mediana": 0.248,
+          "mad": 0.03524,
+          "lam_med_um": 1.377
+        },
+        "D3": {
+          "n_pix": 12516,
+          "p25": 0.15436,
+          "mediana": 0.17192,
+          "mad": 0.03049,
+          "lam_med_um": 2.03
+        },
+        "D4": {
+          "n_pix": 9983,
+          "p25": 0.12236,
+          "mediana": 0.14041,
+          "mad": 0.02788,
+          "lam_med_um": 3.02
+        },
+        "D5": {
+          "n_pix": 13316,
+          "p25": 0.1894,
+          "mediana": 0.23955,
+          "mad": 0.08466,
+          "lam_med_um": 4.148
+        },
+        "D6": {
+          "n_pix": 12250,
+          "p25": 0.39761,
+          "mediana": 0.513,
+          "mad": 0.18065,
+          "lam_med_um": 4.723
+        }
+      },
+      "por_pasada": {
+        "1": {
+          "n_exp": 30,
+          "mjd_min": 60800.7,
+          "mjd_max": 60801.52,
+          "D2": {
+            "n_pix": 2212,
+            "p25": 0.22314,
+            "mediana": 0.23528,
+            "mad": 0.0185
+          },
+          "D5": {
+            "n_pix": 2209,
+            "p25": 0.21124,
+            "mediana": 0.26299,
+            "mad": 0.08125
+          }
+        },
+        "2": {
+          "n_exp": 128,
+          "mjd_min": 60979.72,
+          "mjd_max": 61022.37,
+          "D2": {
+            "n_pix": 6934,
+            "p25": 0.24242,
+            "mediana": 0.26842,
+            "mad": 0.03191
+          },
+          "D5": {
+            "n_pix": 6964,
+            "p25": 0.19369,
+            "mediana": 0.24002,
+            "mad": 0.08105
+          }
+        },
+        "3": {
+          "n_exp": 100,
+          "mjd_min": 61151.2,
+          "mjd_max": 61174.29,
+          "D2": {
+            "n_pix": 4140,
+            "p25": 0.21691,
+            "mediana": 0.23221,
+            "mad": 0.02428
+          },
+          "D5": {
+            "n_pix": 4143,
+            "p25": 0.16694,
+            "mediana": 0.22616,
+            "mad": 0.09167
+          }
+        }
+      }
+    },
+    "eps_ind_b": {
+      "meta": {
+        "ra_deg": 331.09664,
+        "dec_deg": -56.80066,
+        "beta_bme_deg": -41.49,
+        "beta_gme_deg": -41.49,
+        "abs_beta_deg": 41.49,
+        "ecl_lon_deg": 309.78,
+        "gal_b_deg": -48.16,
+        "abs_gal_b_deg": 48.16,
+        "gal_l_deg": 336.08
+      },
+      "n_exp": 454,
+      "n_pix_fondo_total": 140854,
+      "frac_pix_enmascarado_y_valido_prom": 0.59,
+      "saturado_halo_psf": false,
+      "nota_campo": "Campo limpio apto para medir luz zodiacal.",
+      "espectro_12_bines": [
+        {
+          "n_pix": 6999,
+          "p25": 0.27169,
+          "mediana": 0.30925,
+          "mad": 0.06336,
+          "bin": 0,
+          "lam_um": 0.8117,
+          "lam_min_um": 0.75,
+          "lam_max_um": 0.8785
+        },
+        {
+          "n_pix": 4174,
+          "p25": 0.3362,
+          "mediana": 0.37775,
+          "mad": 0.0709,
+          "bin": 1,
+          "lam_um": 0.9507,
+          "lam_min_um": 0.8785,
+          "lam_max_um": 1.0289
+        },
+        {
+          "n_pix": 11634,
+          "p25": 0.25868,
+          "mediana": 0.30893,
+          "mad": 0.09256,
+          "bin": 2,
+          "lam_um": 1.1135,
+          "lam_min_um": 1.0289,
+          "lam_max_um": 1.2051
+        },
+        {
+          "n_pix": 10074,
+          "p25": 0.24099,
+          "mediana": 0.26207,
+          "mad": 0.03482,
+          "bin": 3,
+          "lam_um": 1.3043,
+          "lam_min_um": 1.2051,
+          "lam_max_um": 1.4116
+        },
+        {
+          "n_pix": 11039,
+          "p25": 0.23356,
+          "mediana": 0.2567,
+          "mad": 0.03821,
+          "bin": 4,
+          "lam_um": 1.5277,
+          "lam_min_um": 1.4116,
+          "lam_max_um": 1.6533
+        },
+        {
+          "n_pix": 13016,
+          "p25": 0.18704,
+          "mediana": 0.21147,
+          "mad": 0.04115,
+          "bin": 5,
+          "lam_um": 1.7893,
+          "lam_min_um": 1.6533,
+          "lam_max_um": 1.9365
+        },
+        {
+          "n_pix": 11142,
+          "p25": 0.163,
+          "mediana": 0.18324,
+          "mad": 0.03457,
+          "bin": 6,
+          "lam_um": 2.0958,
+          "lam_min_um": 1.9365,
+          "lam_max_um": 2.2682
+        },
+        {
+          "n_pix": 7960,
+          "p25": 0.1374,
+          "mediana": 0.15392,
+          "mad": 0.02775,
+          "bin": 7,
+          "lam_um": 2.4547,
+          "lam_min_um": 2.2682,
+          "lam_max_um": 2.6566
+        },
+        {
+          "n_pix": 4270,
+          "p25": 0.11355,
+          "mediana": 0.12903,
+          "mad": 0.02666,
+          "bin": 8,
+          "lam_um": 2.8752,
+          "lam_min_um": 2.6566,
+          "lam_max_um": 3.1117
+        },
+        {
+          "n_pix": 4303,
+          "p25": 0.10805,
+          "mediana": 0.11898,
+          "mad": 0.01844,
+          "bin": 9,
+          "lam_um": 3.3676,
+          "lam_min_um": 3.1117,
+          "lam_max_um": 3.6446
+        },
+        {
+          "n_pix": 20554,
+          "p25": 0.13797,
+          "mediana": 0.16734,
+          "mad": 0.04692,
+          "bin": 10,
+          "lam_um": 3.9444,
+          "lam_min_um": 3.6446,
+          "lam_max_um": 4.2689
+        },
+        {
+          "n_pix": 35689,
+          "p25": 0.27915,
+          "mediana": 0.3477,
+          "mad": 0.11836,
+          "bin": 11,
+          "lam_um": 4.62,
+          "lam_min_um": 4.2689,
+          "lam_max_um": 5.0
+        }
+      ],
+      "por_banda": {
+        "D1": {
+          "n_pix": 14146,
+          "p25": 0.29704,
+          "mediana": 0.357,
+          "mad": 0.10687,
+          "lam_med_um": 0.889
+        },
+        "D2": {
+          "n_pix": 28726,
+          "p25": 0.24016,
+          "mediana": 0.26484,
+          "mad": 0.04206,
+          "lam_med_um": 1.309
+        },
+        "D3": {
+          "n_pix": 29639,
+          "p25": 0.16793,
+          "mediana": 0.19418,
+          "mad": 0.04425,
+          "lam_med_um": 1.974
+        },
+        "D4": {
+          "n_pix": 13718,
+          "p25": 0.11608,
+          "mediana": 0.13257,
+          "mad": 0.02741,
+          "lam_med_um": 2.969
+        },
+        "D5": {
+          "n_pix": 26248,
+          "p25": 0.15211,
+          "mediana": 0.18999,
+          "mad": 0.06398,
+          "lam_med_um": 4.1
+        },
+        "D6": {
+          "n_pix": 28377,
+          "p25": 0.30798,
+          "mediana": 0.38144,
+          "mad": 0.11878,
+          "lam_med_um": 4.661
+        }
+      },
+      "por_pasada": {
+        "1": {
+          "n_exp": 117,
+          "mjd_min": 60789.86,
+          "mjd_max": 60836.19,
+          "D2": {
+            "n_pix": 9999,
+            "p25": 0.23538,
+            "mediana": 0.26308,
+            "mad": 0.04678
+          },
+          "D5": {
+            "n_pix": 9365,
+            "p25": 0.15207,
+            "mediana": 0.19639,
+            "mad": 0.07766
+          }
+        },
+        "2": {
+          "n_exp": 146,
+          "mjd_min": 60946.96,
+          "mjd_max": 60991.86,
+          "D2": {
+            "n_pix": 9361,
+            "p25": 0.2513,
+            "mediana": 0.27784,
+            "mad": 0.04692
+          },
+          "D5": {
+            "n_pix": 7492,
+            "p25": 0.15449,
+            "mediana": 0.18975,
+            "mad": 0.06079
+          }
+        },
+        "3": {
+          "n_exp": 73,
+          "mjd_min": 61148.84,
+          "mjd_max": 61164.12,
+          "D2": {
+            "n_pix": 2177,
+            "p25": 0.24206,
+            "mediana": 0.26506,
+            "mad": 0.03723
+          },
+          "D5": {
+            "n_pix": 1887,
+            "p25": 0.17913,
+            "mediana": 0.20912,
+            "mad": 0.0466
+          }
+        },
+        "4": {
+          "n_exp": 118,
+          "mjd_min": 61305.23,
+          "mjd_max": 61315.48,
+          "D2": {
+            "n_pix": 7189,
+            "p25": 0.23434,
+            "mediana": 0.25387,
+            "mad": 0.0317
+          },
+          "D5": {
+            "n_pix": 7504,
+            "p25": 0.14513,
+            "mediana": 0.1779,
+            "mad": 0.05451
+          }
+        }
+      }
+    },
+    "barnard": {
+      "meta": {
+        "ra_deg": 269.44621,
+        "dec_deg": 4.76891,
+        "beta_bme_deg": 28.21,
+        "beta_gme_deg": 28.21,
+        "abs_beta_deg": 28.21,
+        "ecl_lon_deg": 269.37,
+        "gal_b_deg": 14.1,
+        "abs_gal_b_deg": 14.1,
+        "gal_l_deg": 31.08
+      },
+      "n_exp": 356,
+      "n_pix_fondo_total": 115347,
+      "frac_pix_enmascarado_y_valido_prom": 0.62,
+      "saturado_halo_psf": false,
+      "nota_campo": "Baja latitud galactica (|b|=14.1 deg): fondo elevado en bandas cortas por estrellas tenues no resueltas y luz difusa.",
+      "espectro_12_bines": [
+        {
+          "n_pix": 7549,
+          "p25": 0.46271,
+          "mediana": 0.55837,
+          "mad": 0.15854,
+          "bin": 0,
+          "lam_um": 0.8117,
+          "lam_min_um": 0.75,
+          "lam_max_um": 0.8785
+        },
+        {
+          "n_pix": 7210,
+          "p25": 0.6296,
+          "mediana": 0.7781,
+          "mad": 0.25478,
+          "bin": 1,
+          "lam_um": 0.9507,
+          "lam_min_um": 0.8785,
+          "lam_max_um": 1.0289
+        },
+        {
+          "n_pix": 8212,
+          "p25": 0.70276,
+          "mediana": 0.91148,
+          "mad": 0.3563,
+          "bin": 2,
+          "lam_um": 1.1135,
+          "lam_min_um": 1.0289,
+          "lam_max_um": 1.2051
+        },
+        {
+          "n_pix": 6720,
+          "p25": 0.63755,
+          "mediana": 0.77444,
+          "mad": 0.23342,
+          "bin": 3,
+          "lam_um": 1.3043,
+          "lam_min_um": 1.2051,
+          "lam_max_um": 1.4116
+        },
+        {
+          "n_pix": 9191,
+          "p25": 0.69078,
+          "mediana": 0.85911,
+          "mad": 0.28771,
+          "bin": 4,
+          "lam_um": 1.5277,
+          "lam_min_um": 1.4116,
+          "lam_max_um": 1.6533
+        },
+        {
+          "n_pix": 7860,
+          "p25": 0.54631,
+          "mediana": 0.73043,
+          "mad": 0.32067,
+          "bin": 5,
+          "lam_um": 1.7893,
+          "lam_min_um": 1.6533,
+          "lam_max_um": 1.9365
+        },
+        {
+          "n_pix": 8074,
+          "p25": 0.5667,
+          "mediana": 0.72934,
+          "mad": 0.28609,
+          "bin": 6,
+          "lam_um": 2.0958,
+          "lam_min_um": 1.9365,
+          "lam_max_um": 2.2682
+        },
+        {
+          "n_pix": 7876,
+          "p25": 0.41396,
+          "mediana": 0.54618,
+          "mad": 0.22191,
+          "bin": 7,
+          "lam_um": 2.4547,
+          "lam_min_um": 2.2682,
+          "lam_max_um": 2.6566
+        },
+        {
+          "n_pix": 6238,
+          "p25": 0.32601,
+          "mediana": 0.41508,
+          "mad": 0.16027,
+          "bin": 8,
+          "lam_um": 2.8752,
+          "lam_min_um": 2.6566,
+          "lam_max_um": 3.1117
+        },
+        {
+          "n_pix": 6430,
+          "p25": 0.32791,
+          "mediana": 0.41274,
+          "mad": 0.14889,
+          "bin": 9,
+          "lam_um": 3.3676,
+          "lam_min_um": 3.1117,
+          "lam_max_um": 3.6446
+        },
+        {
+          "n_pix": 15195,
+          "p25": 0.30307,
+          "mediana": 0.38452,
+          "mad": 0.13368,
+          "bin": 10,
+          "lam_um": 3.9444,
+          "lam_min_um": 3.6446,
+          "lam_max_um": 4.2689
+        },
+        {
+          "n_pix": 24792,
+          "p25": 0.40634,
+          "mediana": 0.50933,
+          "mad": 0.16677,
+          "bin": 11,
+          "lam_um": 4.62,
+          "lam_min_um": 4.2689,
+          "lam_max_um": 5.0
+        }
+      ],
+      "por_banda": {
+        "D1": {
+          "n_pix": 18702,
+          "p25": 0.55305,
+          "mediana": 0.71902,
+          "mad": 0.29223,
+          "lam_med_um": 0.906
+        },
+        "D2": {
+          "n_pix": 19705,
+          "p25": 0.65707,
+          "mediana": 0.81024,
+          "mad": 0.26305,
+          "lam_med_um": 1.377
+        },
+        "D3": {
+          "n_pix": 19365,
+          "p25": 0.5422,
+          "mediana": 0.71426,
+          "mad": 0.29574,
+          "lam_med_um": 2.007
+        },
+        "D4": {
+          "n_pix": 19348,
+          "p25": 0.33992,
+          "mediana": 0.43833,
+          "mad": 0.16986,
+          "lam_med_um": 3.01
+        },
+        "D5": {
+          "n_pix": 19669,
+          "p25": 0.31125,
+          "mediana": 0.39027,
+          "mad": 0.12999,
+          "lam_med_um": 4.145
+        },
+        "D6": {
+          "n_pix": 18558,
+          "p25": 0.4423,
+          "mediana": 0.54258,
+          "mad": 0.16666,
+          "lam_med_um": 4.714
+        }
+      },
+      "por_pasada": {
+        "1": {
+          "n_exp": 118,
+          "mjd_min": 60902.86,
+          "mjd_max": 60949.27,
+          "D2": {
+            "n_pix": 5916,
+            "p25": 0.60209,
+            "mediana": 0.74688,
+            "mad": 0.25363
+          },
+          "D5": {
+            "n_pix": 5908,
+            "p25": 0.29174,
+            "mediana": 0.3578,
+            "mad": 0.11338
+          }
+        },
+        "2": {
+          "n_exp": 120,
+          "mjd_min": 61110.09,
+          "mjd_max": 61165.08,
+          "D2": {
+            "n_pix": 5912,
+            "p25": 0.6632,
+            "mediana": 0.79589,
+            "mad": 0.22346
+          },
+          "D5": {
+            "n_pix": 5886,
+            "p25": 0.39434,
+            "mediana": 0.4751,
+            "mad": 0.12668
+          }
+        },
+        "3": {
+          "n_exp": 118,
+          "mjd_min": 61268.63,
+          "mjd_max": 61305.63,
+          "D2": {
+            "n_pix": 7877,
+            "p25": 0.70105,
+            "mediana": 0.87063,
+            "mad": 0.29796
+          },
+          "D5": {
+            "n_pix": 7875,
+            "p25": 0.29009,
+            "mediana": 0.35462,
+            "mad": 0.10823
+          }
+        }
+      }
+    },
+    "rw_aur": {
+      "meta": {
+        "ra_deg": 76.95659,
+        "dec_deg": 30.40129,
+        "beta_bme_deg": 7.47,
+        "beta_gme_deg": 7.47,
+        "abs_beta_deg": 7.47,
+        "ecl_lon_deg": 78.68,
+        "gal_b_deg": -6.0,
+        "abs_gal_b_deg": 6.0,
+        "gal_l_deg": 174.2
+      },
+      "n_exp": 331,
+      "n_pix_fondo_total": 88472,
+      "frac_pix_enmascarado_y_valido_prom": 0.51,
+      "saturado_halo_psf": false,
+      "nota_campo": "Plano galactico (|b|=6.0 deg) + baja latitud ecliptica (+7.47 deg): maxima luz zodiacal + alas de RW Aur.",
+      "espectro_12_bines": [
+        {
+          "n_pix": 5625,
+          "p25": 0.39146,
+          "mediana": 0.41382,
+          "mad": 0.03563,
+          "bin": 0,
+          "lam_um": 0.8117,
+          "lam_min_um": 0.75,
+          "lam_max_um": 0.8785
+        },
+        {
+          "n_pix": 5797,
+          "p25": 0.40798,
+          "mediana": 0.43093,
+          "mad": 0.03691,
+          "bin": 1,
+          "lam_um": 0.9507,
+          "lam_min_um": 0.8785,
+          "lam_max_um": 1.0289
+        },
+        {
+          "n_pix": 6267,
+          "p25": 0.41382,
+          "mediana": 0.45914,
+          "mad": 0.07731,
+          "bin": 2,
+          "lam_um": 1.1135,
+          "lam_min_um": 1.0289,
+          "lam_max_um": 1.2051
+        },
+        {
+          "n_pix": 5477,
+          "p25": 0.3963,
+          "mediana": 0.41754,
+          "mad": 0.03536,
+          "bin": 3,
+          "lam_um": 1.3043,
+          "lam_min_um": 1.2051,
+          "lam_max_um": 1.4116
+        },
+        {
+          "n_pix": 6441,
+          "p25": 0.39287,
+          "mediana": 0.41672,
+          "mad": 0.0364,
+          "bin": 4,
+          "lam_um": 1.5277,
+          "lam_min_um": 1.4116,
+          "lam_max_um": 1.6533
+        },
+        {
+          "n_pix": 5820,
+          "p25": 0.31048,
+          "mediana": 0.33443,
+          "mad": 0.03829,
+          "bin": 5,
+          "lam_um": 1.7893,
+          "lam_min_um": 1.6533,
+          "lam_max_um": 1.9365
+        },
+        {
+          "n_pix": 5913,
+          "p25": 0.25144,
+          "mediana": 0.27049,
+          "mad": 0.03059,
+          "bin": 6,
+          "lam_um": 2.0958,
+          "lam_min_um": 1.9365,
+          "lam_max_um": 2.2682
+        },
+        {
+          "n_pix": 5717,
+          "p25": 0.24119,
+          "mediana": 0.26169,
+          "mad": 0.03433,
+          "bin": 7,
+          "lam_um": 2.4547,
+          "lam_min_um": 2.2682,
+          "lam_max_um": 2.6566
+        },
+        {
+          "n_pix": 5010,
+          "p25": 0.21474,
+          "mediana": 0.23368,
+          "mad": 0.03075,
+          "bin": 8,
+          "lam_um": 2.8752,
+          "lam_min_um": 2.6566,
+          "lam_max_um": 3.1117
+        },
+        {
+          "n_pix": 5121,
+          "p25": 0.24279,
+          "mediana": 0.26631,
+          "mad": 0.03586,
+          "bin": 9,
+          "lam_um": 3.3676,
+          "lam_min_um": 3.1117,
+          "lam_max_um": 3.6446
+        },
+        {
+          "n_pix": 12606,
+          "p25": 0.29299,
+          "mediana": 0.33303,
+          "mad": 0.06633,
+          "bin": 10,
+          "lam_um": 3.9444,
+          "lam_min_um": 3.6446,
+          "lam_max_um": 4.2689
+        },
+        {
+          "n_pix": 18678,
+          "p25": 0.52559,
+          "mediana": 0.63149,
+          "mad": 0.17805,
+          "bin": 11,
+          "lam_um": 4.62,
+          "lam_min_um": 4.2689,
+          "lam_max_um": 5.0
+        }
+      ],
+      "por_banda": {
+        "D1": {
+          "n_pix": 14537,
+          "p25": 0.40576,
+          "mediana": 0.43463,
+          "mad": 0.04984,
+          "lam_med_um": 0.921
+        },
+        "D2": {
+          "n_pix": 14528,
+          "p25": 0.39627,
+          "mediana": 0.41783,
+          "mad": 0.0347,
+          "lam_med_um": 1.355
+        },
+        "D3": {
+          "n_pix": 14857,
+          "p25": 0.26008,
+          "mediana": 0.29565,
+          "mad": 0.05904,
+          "lam_med_um": 1.993
+        },
+        "D4": {
+          "n_pix": 14814,
+          "p25": 0.23363,
+          "mediana": 0.2597,
+          "mad": 0.04096,
+          "lam_med_um": 3.034
+        },
+        "D5": {
+          "n_pix": 14835,
+          "p25": 0.31188,
+          "mediana": 0.37195,
+          "mad": 0.1012,
+          "lam_med_um": 4.122
+        },
+        "D6": {
+          "n_pix": 14901,
+          "p25": 0.57593,
+          "mediana": 0.68266,
+          "mad": 0.17561,
+          "lam_med_um": 4.696
+        }
+      },
+      "por_pasada": {
+        "1": {
+          "n_exp": 110,
+          "mjd_min": 60919.42,
+          "mjd_max": 60938.23,
+          "D2": {
+            "n_pix": 4833,
+            "p25": 0.40138,
+            "mediana": 0.42153,
+            "mad": 0.03257
+          },
+          "D5": {
+            "n_pix": 4851,
+            "p25": 0.33728,
+            "mediana": 0.4009,
+            "mad": 0.10325
+          }
+        },
+        "2": {
+          "n_exp": 112,
+          "mjd_min": 61091.72,
+          "mjd_max": 61111.0,
+          "D2": {
+            "n_pix": 4845,
+            "p25": 0.40468,
+            "mediana": 0.42599,
+            "mad": 0.03418
+          },
+          "D5": {
+            "n_pix": 4856,
+            "p25": 0.3169,
+            "mediana": 0.36973,
+            "mad": 0.0901
+          }
+        },
+        "3": {
+          "n_exp": 109,
+          "mjd_min": 61285.1,
+          "mjd_max": 61299.9,
+          "D2": {
+            "n_pix": 4850,
+            "p25": 0.3851,
+            "mediana": 0.4054,
+            "mad": 0.03266
+          },
+          "D5": {
+            "n_pix": 5128,
+            "p25": 0.28765,
+            "mediana": 0.34245,
+            "mad": 0.09805
+          }
+        }
+      }
+    },
+    "r_dra": {
+      "meta": {
+        "ra_deg": 248.16723,
+        "dec_deg": 66.75502,
+        "beta_bme_deg": 81.39,
+        "beta_gme_deg": 81.39,
+        "abs_beta_deg": 81.39,
+        "ecl_lon_deg": 168.69,
+        "gal_b_deg": 38.23,
+        "abs_gal_b_deg": 38.23,
+        "gal_l_deg": 98.53
+      },
+      "n_exp": 519,
+      "n_pix_fondo_total": 169361,
+      "frac_pix_enmascarado_y_valido_prom": 0.62,
+      "saturado_halo_psf": true,
+      "nota_campo": "Halo de PSF saturada de R Dra (~2-3 Jy) llena el recorte completo de 2.4 arcmin; no representa cielo libre.",
+      "espectro_12_bines": [
+        {
+          "n_pix": 10911,
+          "p25": 0.5593,
+          "mediana": 0.81711,
+          "mad": 0.4584,
+          "bin": 0,
+          "lam_um": 0.8117,
+          "lam_min_um": 0.75,
+          "lam_max_um": 0.8785
+        },
+        {
+          "n_pix": 11041,
+          "p25": 1.74665,
+          "mediana": 2.67103,
+          "mad": 1.56255,
+          "bin": 1,
+          "lam_um": 0.9507,
+          "lam_min_um": 0.8785,
+          "lam_max_um": 1.0289
+        },
+        {
+          "n_pix": 12826,
+          "p25": 2.32724,
+          "mediana": 3.56871,
+          "mad": 2.15935,
+          "bin": 2,
+          "lam_um": 1.1135,
+          "lam_min_um": 1.0289,
+          "lam_max_um": 1.2051
+        },
+        {
+          "n_pix": 11708,
+          "p25": 2.27589,
+          "mediana": 3.35651,
+          "mad": 1.86122,
+          "bin": 3,
+          "lam_um": 1.3043,
+          "lam_min_um": 1.2051,
+          "lam_max_um": 1.4116
+        },
+        {
+          "n_pix": 9860,
+          "p25": 2.61383,
+          "mediana": 4.47558,
+          "mad": 3.1527,
+          "bin": 4,
+          "lam_um": 1.5277,
+          "lam_min_um": 1.4116,
+          "lam_max_um": 1.6533
+        },
+        {
+          "n_pix": 14611,
+          "p25": 2.60664,
+          "mediana": 4.55171,
+          "mad": 3.39239,
+          "bin": 5,
+          "lam_um": 1.7893,
+          "lam_min_um": 1.6533,
+          "lam_max_um": 1.9365
+        },
+        {
+          "n_pix": 10039,
+          "p25": 2.89028,
+          "mediana": 4.91918,
+          "mad": 3.52746,
+          "bin": 6,
+          "lam_um": 2.0958,
+          "lam_min_um": 1.9365,
+          "lam_max_um": 2.2682
+        },
+        {
+          "n_pix": 9069,
+          "p25": 2.54446,
+          "mediana": 4.05282,
+          "mad": 2.61227,
+          "bin": 7,
+          "lam_um": 2.4547,
+          "lam_min_um": 2.2682,
+          "lam_max_um": 2.6566
+        },
+        {
+          "n_pix": 9227,
+          "p25": 2.22357,
+          "mediana": 3.36615,
+          "mad": 2.00889,
+          "bin": 8,
+          "lam_um": 2.8752,
+          "lam_min_um": 2.6566,
+          "lam_max_um": 3.1117
+        },
+        {
+          "n_pix": 9557,
+          "p25": 3.00917,
+          "mediana": 4.50557,
+          "mad": 2.66257,
+          "bin": 9,
+          "lam_um": 3.3676,
+          "lam_min_um": 3.1117,
+          "lam_max_um": 3.6446
+        },
+        {
+          "n_pix": 25426,
+          "p25": 3.24224,
+          "mediana": 4.78174,
+          "mad": 2.66499,
+          "bin": 10,
+          "lam_um": 3.9444,
+          "lam_min_um": 3.6446,
+          "lam_max_um": 4.2689
+        },
+        {
+          "n_pix": 35086,
+          "p25": 2.1396,
+          "mediana": 3.10555,
+          "mad": 1.63891,
+          "bin": 11,
+          "lam_um": 4.62,
+          "lam_min_um": 4.2689,
+          "lam_max_um": 5.0
+        }
+      ],
+      "por_banda": {
+        "D1": {
+          "n_pix": 27873,
+          "p25": 0.94645,
+          "mediana": 1.93095,
+          "mad": 1.71218,
+          "lam_med_um": 0.919
+        },
+        "D2": {
+          "n_pix": 27252,
+          "p25": 2.24197,
+          "mediana": 3.47868,
+          "mad": 2.15804,
+          "lam_med_um": 1.309
+        },
+        "D3": {
+          "n_pix": 29476,
+          "p25": 2.88305,
+          "mediana": 4.84853,
+          "mad": 3.45238,
+          "lam_med_um": 1.908
+        },
+        "D4": {
+          "n_pix": 27863,
+          "p25": 2.60093,
+          "mediana": 4.05427,
+          "mad": 2.53264,
+          "lam_med_um": 3.076
+        },
+        "D5": {
+          "n_pix": 27222,
+          "p25": 2.97375,
+          "mediana": 4.37436,
+          "mad": 2.40756,
+          "lam_med_um": 4.08
+        },
+        "D6": {
+          "n_pix": 29675,
+          "p25": 2.09061,
+          "mediana": 3.02085,
+          "mad": 1.5788,
+          "lam_med_um": 4.637
+        }
+      },
+      "por_pasada": {
+        "1": {
+          "n_exp": 141,
+          "mjd_min": 60811.96,
+          "mjd_max": 60878.61,
+          "D2": {
+            "n_pix": 8850,
+            "p25": 3.2287,
+            "mediana": 4.62277,
+            "mad": 2.44999
+          },
+          "D5": {
+            "n_pix": 9186,
+            "p25": 4.09508,
+            "mediana": 5.78628,
+            "mad": 3.03493
+          }
+        },
+        "2": {
+          "n_exp": 205,
+          "mjd_min": 60965.61,
+          "mjd_max": 61053.41,
+          "D2": {
+            "n_pix": 12155,
+            "p25": 2.23627,
+            "mediana": 3.34606,
+            "mad": 1.96107
+          },
+          "D5": {
+            "n_pix": 11807,
+            "p25": 2.84267,
+            "mediana": 3.98956,
+            "mad": 2.01716
+          }
+        },
+        "3": {
+          "n_exp": 173,
+          "mjd_min": 61152.33,
+          "mjd_max": 61237.87,
+          "D2": {
+            "n_pix": 6247,
+            "p25": 1.55673,
+            "mediana": 2.28201,
+            "mad": 1.33212
+          },
+          "D5": {
+            "n_pix": 6229,
+            "p25": 2.33825,
+            "mediana": 3.36925,
+            "mad": 1.80822
+          }
+        }
+      }
+    }
+  },
+  "gradiente_zodiacal": {
+    "campos_ordenados_por_abs_beta": [
+      "rw_aur",
+      "wise_0855",
+      "barnard",
+      "eps_ind_b"
+    ],
+    "abs_beta_deg": [
+      7.47,
+      23.62,
+      28.21,
+      41.49
+    ],
+    "cosecante_abs_beta": [
+      7.692,
+      2.496,
+      2.115,
+      1.509
+    ],
+    "D2_p25_MJy_sr": [
+      0.3963,
+      0.2253,
+      0.6571,
+      0.2402
+    ],
+    "D2_mediana_MJy_sr": [
+      0.4178,
+      0.248,
+      0.8102,
+      0.2648
+    ],
+    "D5_p25_MJy_sr": [
+      0.3119,
+      0.1894,
+      0.3113,
+      0.1521
+    ],
+    "D5_mediana_MJy_sr": [
+      0.372,
+      0.2396,
+      0.3903,
+      0.19
+    ],
+    "razon_rw_aur_sobre_eps_ind_b_D2_p25": 1.65,
+    "razon_rw_aur_sobre_eps_ind_b_D5_p25": 2.05,
+    "corr_pearson_D2_p25_vs_abs_beta": -0.176,
+    "corr_pearson_D5_p25_vs_abs_beta": -0.692,
+    "corr_pearson_D2_p25_vs_csc_beta": 0.069,
+    "corr_pearson_D5_p25_vs_csc_beta": 0.605
+  },
+  "residuos_psf_pilas": {
+    "wise_0855": {
+      "1": {
+        "corto": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.342,
+          "bg_pila_MJy_sr": -0.00301,
+          "dentro_r5": {
+            "n_pix": 77,
+            "std_norm": 1.439,
+            "frac_gt_3sigma": 0.026,
+            "frac_lt_minus3sigma": 0.026,
+            "max_z": 6.11,
+            "min_z": -3.94
+          },
+          "fuera_r5": {
+            "n_pix": 1540,
+            "std_norm": 1.522,
+            "frac_gt_3sigma": 0.0435,
+            "frac_lt_minus3sigma": 0.0084,
+            "max_z": 9.15,
+            "min_z": -5.53
+          }
+        },
+        "medio": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.462,
+          "bg_pila_MJy_sr": -0.0012,
+          "dentro_r5": {
+            "n_pix": 77,
+            "std_norm": 0.831,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 2.03,
+            "min_z": -2.24
+          },
+          "fuera_r5": {
+            "n_pix": 1522,
+            "std_norm": 1.038,
+            "frac_gt_3sigma": 0.0072,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 4.27,
+            "min_z": -2.82
+          }
+        },
+        "largo": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.529,
+          "bg_pila_MJy_sr": -0.00394,
+          "dentro_r5": {
+            "n_pix": 77,
+            "std_norm": 0.614,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 1.55,
+            "min_z": -1.3
+          },
+          "fuera_r5": {
+            "n_pix": 1537,
+            "std_norm": 1.312,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0052,
+            "max_z": 2.44,
+            "min_z": -30.73
+          }
+        }
+      },
+      "2": {
+        "corto": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.274,
+          "bg_pila_MJy_sr": -0.00189,
+          "dentro_r5": {
+            "n_pix": 75,
+            "std_norm": 1.263,
+            "frac_gt_3sigma": 0.0133,
+            "frac_lt_minus3sigma": 0.0133,
+            "max_z": 3.54,
+            "min_z": -3.31
+          },
+          "fuera_r5": {
+            "n_pix": 1565,
+            "std_norm": 2.519,
+            "frac_gt_3sigma": 0.0652,
+            "frac_lt_minus3sigma": 0.0109,
+            "max_z": 26.89,
+            "min_z": -7.84
+          }
+        },
+        "medio": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.436,
+          "bg_pila_MJy_sr": -0.00161,
+          "dentro_r5": {
+            "n_pix": 75,
+            "std_norm": 0.852,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 1.88,
+            "min_z": -2.69
+          },
+          "fuera_r5": {
+            "n_pix": 1564,
+            "std_norm": 1.743,
+            "frac_gt_3sigma": 0.0646,
+            "frac_lt_minus3sigma": 0.0058,
+            "max_z": 11.36,
+            "min_z": -4.37
+          }
+        },
+        "largo": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.541,
+          "bg_pila_MJy_sr": -0.00386,
+          "dentro_r5": {
+            "n_pix": 75,
+            "std_norm": 0.67,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 1.53,
+            "min_z": -1.53
+          },
+          "fuera_r5": {
+            "n_pix": 1545,
+            "std_norm": 1.221,
+            "frac_gt_3sigma": 0.0149,
+            "frac_lt_minus3sigma": 0.0019,
+            "max_z": 4.86,
+            "min_z": -18.48
+          }
+        }
+      },
+      "3": {
+        "corto": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.311,
+          "bg_pila_MJy_sr": -0.0021,
+          "dentro_r5": {
+            "n_pix": 79,
+            "std_norm": 1.333,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0127,
+            "max_z": 2.61,
+            "min_z": -4.98
+          },
+          "fuera_r5": {
+            "n_pix": 1554,
+            "std_norm": 1.847,
+            "frac_gt_3sigma": 0.0618,
+            "frac_lt_minus3sigma": 0.009,
+            "max_z": 15.86,
+            "min_z": -8.97
+          }
+        },
+        "medio": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.4,
+          "bg_pila_MJy_sr": -0.0019,
+          "dentro_r5": {
+            "n_pix": 79,
+            "std_norm": 1.113,
+            "frac_gt_3sigma": 0.0127,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 3.6,
+            "min_z": -2.95
+          },
+          "fuera_r5": {
+            "n_pix": 1538,
+            "std_norm": 1.459,
+            "frac_gt_3sigma": 0.052,
+            "frac_lt_minus3sigma": 0.0026,
+            "max_z": 7.34,
+            "min_z": -3.7
+          }
+        },
+        "largo": {
+          "n_fuentes": 9,
+          "sigma_gauss_px": 1.384,
+          "bg_pila_MJy_sr": -0.0036,
+          "dentro_r5": {
+            "n_pix": 79,
+            "std_norm": 0.592,
+            "frac_gt_3sigma": 0.0,
+            "frac_lt_minus3sigma": 0.0,
+            "max_z": 0.99,
+            "min_z": -1.92
+          },
+          "fuera_r5": {
+            "n_pix": 1553,
+            "std_norm": 1.06,
+            "frac_gt_3sigma": 0.0064,
+            "frac_lt_minus3sigma": 0.0058,
+            "max_z": 4.0,
+            "min_z": -8.95
+          }
+        }
+      }
+    },
+    "rw_aur": {
+      "1": {
+        "corto": {
+          "n_fuentes": 14,
+          "sigma_gauss_px": 1.352,
+          "bg_pila_MJy_sr": -0.00018,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 59.358,
+            "frac_gt_3sigma": 0.6923,
+            "frac_lt_minus3sigma": 0.2949,
+            "max_z": 101.87,
+            "min_z": -213.43
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 12.433,
+            "frac_gt_3sigma": 0.2707,
+            "frac_lt_minus3sigma": 0.5477,
+            "max_z": 64.97,
+            "min_z": -63.12
+          }
+        },
+        "medio": {
+          "n_fuentes": 14,
+          "sigma_gauss_px": 1.834,
+          "bg_pila_MJy_sr": 0.01065,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 74.18,
+            "frac_gt_3sigma": 0.3205,
+            "frac_lt_minus3sigma": 0.6667,
+            "max_z": 230.33,
+            "min_z": -128.35
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 23.597,
+            "frac_gt_3sigma": 0.3113,
+            "frac_lt_minus3sigma": 0.5627,
+            "max_z": 110.41,
+            "min_z": -66.26
+          }
+        },
+        "largo": {
+          "n_fuentes": 14,
+          "sigma_gauss_px": 2.227,
+          "bg_pila_MJy_sr": 0.01451,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 196.839,
+            "frac_gt_3sigma": 0.5256,
+            "frac_lt_minus3sigma": 0.4615,
+            "max_z": 598.71,
+            "min_z": -364.39
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 19.627,
+            "frac_gt_3sigma": 0.3069,
+            "frac_lt_minus3sigma": 0.5483,
+            "max_z": 83.09,
+            "min_z": -106.21
+          }
+        }
+      },
+      "2": {
+        "corto": {
+          "n_fuentes": 11,
+          "sigma_gauss_px": 1.338,
+          "bg_pila_MJy_sr": 0.00434,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 118.887,
+            "frac_gt_3sigma": 0.6538,
+            "frac_lt_minus3sigma": 0.3333,
+            "max_z": 278.89,
+            "min_z": -237.61
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 15.684,
+            "frac_gt_3sigma": 0.2545,
+            "frac_lt_minus3sigma": 0.5739,
+            "max_z": 115.49,
+            "min_z": -91.29
+          }
+        },
+        "medio": {
+          "n_fuentes": 11,
+          "sigma_gauss_px": 1.853,
+          "bg_pila_MJy_sr": 0.01318,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 89.635,
+            "frac_gt_3sigma": 0.2949,
+            "frac_lt_minus3sigma": 0.6923,
+            "max_z": 255.69,
+            "min_z": -159.96
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 27.152,
+            "frac_gt_3sigma": 0.3063,
+            "frac_lt_minus3sigma": 0.5677,
+            "max_z": 134.97,
+            "min_z": -49.17
+          }
+        },
+        "largo": {
+          "n_fuentes": 11,
+          "sigma_gauss_px": 1.696,
+          "bg_pila_MJy_sr": 0.03947,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 58.927,
+            "frac_gt_3sigma": 0.3846,
+            "frac_lt_minus3sigma": 0.6026,
+            "max_z": 139.09,
+            "min_z": -126.56
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 25.485,
+            "frac_gt_3sigma": 0.2926,
+            "frac_lt_minus3sigma": 0.5752,
+            "max_z": 151.89,
+            "min_z": -49.39
+          }
+        }
+      },
+      "3": {
+        "corto": {
+          "n_fuentes": 10,
+          "sigma_gauss_px": 1.322,
+          "bg_pila_MJy_sr": 0.00843,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 88.538,
+            "frac_gt_3sigma": 0.7179,
+            "frac_lt_minus3sigma": 0.2692,
+            "max_z": 180.49,
+            "min_z": -262.76
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 16.937,
+            "frac_gt_3sigma": 0.2508,
+            "frac_lt_minus3sigma": 0.607,
+            "max_z": 106.37,
+            "min_z": -66.05
+          }
+        },
+        "medio": {
+          "n_fuentes": 10,
+          "sigma_gauss_px": 1.863,
+          "bg_pila_MJy_sr": 0.01356,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 87.233,
+            "frac_gt_3sigma": 0.3333,
+            "frac_lt_minus3sigma": 0.641,
+            "max_z": 209.85,
+            "min_z": -162.23
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 24.735,
+            "frac_gt_3sigma": 0.2876,
+            "frac_lt_minus3sigma": 0.5833,
+            "max_z": 158.67,
+            "min_z": -76.85
+          }
+        },
+        "largo": {
+          "n_fuentes": 10,
+          "sigma_gauss_px": 1.696,
+          "bg_pila_MJy_sr": 0.03179,
+          "dentro_r5": {
+            "n_pix": 78,
+            "std_norm": 199.675,
+            "frac_gt_3sigma": 0.5,
+            "frac_lt_minus3sigma": 0.4744,
+            "max_z": 423.22,
+            "min_z": -363.1
+          },
+          "fuera_r5": {
+            "n_pix": 1603,
+            "std_norm": 23.063,
+            "frac_gt_3sigma": 0.2651,
+            "frac_lt_minus3sigma": 0.5995,
+            "max_z": 159.42,
+            "min_z": -61.0
+          }
+        }
+      }
+    }
+  },
+  "firmas_difusas_spherex": [
+    {
+      "firma": "Hielo H2O",
+      "lam_um": 3.05,
+      "banda": "D4",
+      "bin_log": 8,
+      "rango_bin_um": [
+        2.657,
+        3.112
+      ],
+      "nota": "Banda de absorcion en nubes moleculares oscuras y hielos interestelares (objetivo central de SPHEREx Ices)."
+    },
+    {
+      "firma": "Emision PAH",
+      "lam_um": 3.29,
+      "banda": "D4",
+      "bin_log": 9,
+      "rango_bin_um": [
+        3.112,
+        3.645
+      ],
+      "nota": "Hidrocarburos aromaticos policiclicos en regiones de fotodisociacion (PDR) y bordes de nebulosas H II."
+    },
+    {
+      "firma": "H I Brackett alpha (Br_a)",
+      "lam_um": 4.051,
+      "banda": "D5",
+      "bin_log": 10,
+      "rango_bin_um": [
+        3.645,
+        4.269
+      ],
+      "nota": "Gas ionizado en nebulosas difusas y regiones de formacion estelar (resolucion R~41.5 en D5 diluye lineas estrechas salvo regiones brillantes)."
+    },
+    {
+      "firma": "Hielo CO2",
+      "lam_um": 4.26,
+      "banda": "D5/D6",
+      "bin_log": "10/11",
+      "rango_bin_um": [
+        3.645,
+        5.0
+      ],
+      "nota": "Absorcion estrecha en nubes frias y protoestrellas, adyacente a hielo de CO (4.67 um, bin 11)."
+    }
+  ],
+  "taxonomia_eventos": [
+    {
+      "clase": "Estrella de campo estatica",
+      "delta_pos": "< 3 sigma (~0.1-0.4 arcsec)",
+      "D_espectral": "Bajo (~0.1-2.8)",
+      "ejemplo_medido": "Estrellas estaticas en WISE 0855 (0.12 arcsec med, D=0.3-2.2) y eps Ind B (0.36 arcsec, D=0.27)"
+    },
+    {
+      "clase": "Astro cercano en movimiento (Planeta X / enana marron)",
+      "delta_pos": ">= 5 sigma",
+      "D_espectral": "Bajo entre pasadas (< 3); muy alto respecto a estrellas vecinas",
+      "ejemplo_medido": "WISE 0855 (8.67 arcsec, 10.5 sigma, D=0.12-2.17 vs 4.7-257 con estrella), eps Ind B (6.62 arcsec, 13.2 sigma), Barnard (10.26 arcsec)"
+    },
+    {
+      "clase": "Variable espectral o YSO estacionaria",
+      "delta_pos": "< 3 sigma (<= 0.4 arcsec neto)",
+      "D_espectral": "Muy alto (> 5)",
+      "ejemplo_medido": "RW Aur: 0.28 arcsec P1-P3 pero D(2-3)=17.31 (flujo D1-D4 cae ~27 % mientras D5-6 se aplana)"
+    },
+    {
+      "clase": "Fuente muy brillante saturada",
+      "delta_pos": "Nucleo con NaNs",
+      "D_espectral": "No fiable en centro",
+      "ejemplo_medido": "R Dra: 518/519 exposiciones (99.81 %) sin pixels centrales finitos; alas cubren 2.4 arcmin"
+    },
+    {
+      "clase": "Nebulosa / exceso difuso extendido",
+      "delta_pos": "Extendida > 20 arcsec (multi-pixel coherente)",
+      "D_espectral": "Exceso en bines especificos (3.05, 3.29, 4.05, 4.26 um) y residuos > 3 sigma tras restar todas las PSF",
+      "ejemplo_medido": "En campo WISE 0855 fondo limpio tras restar PSF; en RW Aur las alas PSF dominan el residuo central (< 5 px)"
+    }
+  ]
+}
