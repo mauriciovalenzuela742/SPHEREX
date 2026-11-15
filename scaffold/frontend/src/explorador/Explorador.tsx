@@ -276,8 +276,11 @@ export default function Explorador({ datos }: Props) {
               if (!grid) return;
               const mjd = mjdEnPista(ev.clientX);
               setFantasma(xDe(mjd));
+              // Pasar el mouse solo muestra la línea guía; la fecha cambia con clic o arrastrando (botón apretado).
+              // Así, una vez elegida, no se pierde al mover el cursor para ir a otra parte.
+              if ((ev.buttons & 1) === 0) return;
               const v = visitaMasCercana(banda, mjd);
-              if (v !== visita) irA(banda, v); // con solo pasar el mouse cambia la fecha
+              if (v !== visita) irA(banda, v);
             }}
             onPointerLeave={() => setFantasma(null)}
           >
