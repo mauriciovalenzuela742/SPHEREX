@@ -14,7 +14,7 @@ export type Estado = {
   dec: number;
   size: number;
   band: string;
-  vista: "landing" | "visor";
+  vista: "landing" | "visor" | "descargas";
   mision?: string;
   tutorial?: "ciencia" | "simple";
   ciencia?: boolean;
@@ -43,7 +43,9 @@ function leer(): Estado {
     dec: num("dec", DEFECTO.dec),
     size: tamanoValido(num("size", DEFECTO.size)),
     band: bandaValida(q.get("band"), DEFECTO.band),
-    vista: q.has("ra") || q.has("mision") || q.has("tutorial") || q.get("vista") === "visor" ? "visor" : "landing",
+    vista: q.get("vista") === "descargas"
+      ? "descargas"
+      : q.has("ra") || q.has("mision") || q.has("tutorial") || q.get("vista") === "visor" ? "visor" : "landing",
     mision: q.get("mision") ?? undefined,
     tutorial: q.get("tutorial") === "1" ? "ciencia" : q.get("tutorial") === "simple" ? "simple" : undefined,
     ciencia: q.get("ciencia") === "1" || undefined,
@@ -57,6 +59,7 @@ export function useEstadoUrl() {
       const nuevo = { ...prev, ...p };
       nuevo.size = tamanoValido(nuevo.size);
       const q = new URLSearchParams();
+      if (nuevo.vista === "descargas") q.set("vista", "descargas");
       if (nuevo.vista === "visor") {
         q.set("ra", String(nuevo.ra));
         q.set("dec", String(nuevo.dec));

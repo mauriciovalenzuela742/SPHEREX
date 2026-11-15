@@ -2,9 +2,9 @@
 import { useIdioma } from "../state/idioma";
 import { mision } from "../content/mision";
 
-type Props = { onEmpezar: () => void; onMision: () => void; onTutorial: () => void };
+type Props = { onEmpezar: () => void; onMision: () => void; onTutorial: () => void; onDescargas: () => void };
 
-export default function Landing({ onEmpezar, onMision, onTutorial }: Props) {
+export default function Landing({ onEmpezar, onMision, onTutorial, onDescargas }: Props) {
   const { t, idioma } = useIdioma();
   return (
     <section className="landing">
@@ -24,6 +24,12 @@ export default function Landing({ onEmpezar, onMision, onTutorial }: Props) {
         <p className="mision-etiqueta">{mision.nombre}</p>
         <p>{mision.subtitulo}</p>
         <button onClick={onMision}>{mision.botonLanding}</button>
+      </div>
+
+      <div className="mision-invitacion">
+        <p className="mision-etiqueta">{t.descargas.toUpperCase()}</p>
+        <p>{idioma === "es" ? "Instala AstroTrack en tu computador o teléfono." : "Install AstroTrack on your computer or phone."}</p>
+        <button onClick={onDescargas}>{t.descargarApp}</button>
       </div>
     </section>
   );
