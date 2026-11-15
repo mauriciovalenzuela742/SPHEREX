@@ -13,7 +13,9 @@
 }
 
 /* ── Escena: Tierra, órbita y SPHEREx ── */
-.portada-escena { position: absolute; inset: 0; pointer-events: none; --tierra: min(50vw, 780px); }
+/* --tierra = diámetro de la Tierra; todo lo de la escena se mide con él. El tercer límite (ancho libre a la izquierda del
+   contenido de 540 px) evita que SPHEREx, al recorrer la órbita, toque el texto en pantallas de escritorio angostas. */
+.portada-escena { position: absolute; inset: 0; pointer-events: none; --tierra: min(50vw, 780px, (100vw - 540px - 6vw) * 0.9); }
 .portada-tierra {
   position: absolute; width: var(--tierra); height: auto;
   left: calc(var(--tierra) * -0.22); bottom: calc(var(--tierra) * -0.42);
@@ -27,17 +29,38 @@
   width: calc(var(--r) * 2); height: calc(var(--r) * 2);
   left: calc(var(--tierra) * 0.28 - var(--r)); bottom: calc(var(--tierra) * 0.08 - var(--r));
 }
-/* SPHEREx sobre la órbita, a ~50° (arriba y a la derecha de la Tierra). */
-.portada-spherex {
-  position: absolute; width: calc(var(--tierra) * 0.3); height: auto;
-  left: calc(var(--tierra) * (0.28 + 0.82 * 0.64) - var(--tierra) * 0.15);
-  bottom: calc(var(--tierra) * (0.08 + 0.82 * 0.77) - var(--tierra) * 0.125);
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5));
-  animation: portada-flota 7s ease-in-out infinite;
+/* SPHEREx recorre la órbita (V1): el «giro» está en el centro de la Tierra y rota; el «brazo» pone a SPHEREx a un radio
+   de distancia y rota al revés para que no se dé vuelta. Siempre en el mismo sentido (antihorario), una vuelta cada 48 s.
+   Solo se ve entre ~40° y ~140°: aparece desde abajo a la derecha y se va por la izquierda, así nunca pasa por encima del
+   texto ni de los botones. Recorre despacio ese tramo (36 s) y rápido el resto, que queda fuera de la pantalla: así está a
+   la vista casi todo el tiempo. Los dos keyframes usan los mismos tiempos y ángulos (uno con el signo opuesto). */
+.portada-giro {
+  position: absolute; width: 0; height: 0;
+  left: calc(var(--tierra) * 0.28); bottom: calc(var(--tierra) * 0.08);
+  animation: portada-orbita 48s linear infinite; animation-delay: -14s; /* al cargar ya está a la vista */
 }
-@keyframes portada-flota {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
+.portada-brazo {
+  position: absolute; left: calc(var(--tierra) * 0.82); top: 0; width: calc(var(--tierra) * 0.26);
+  animation: portada-derecho 48s linear infinite; animation-delay: -14s;
+  transform: translate(-50%, -50%);
+}
+.portada-spherex { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5)); }
+/* 0° es a la derecha de la Tierra y crece hacia arriba (por eso los grados de «giro» son negativos). */
+@keyframes portada-orbita {
+  0%   { transform: rotate(0deg);    opacity: 0; }
+  4%   { transform: rotate(-38deg);  opacity: 0; }
+  9%   { transform: rotate(-48deg);  opacity: 1; }
+  76%  { transform: rotate(-132deg); opacity: 1; }
+  80%  { transform: rotate(-140deg); opacity: 0; }
+  100% { transform: rotate(-360deg); opacity: 0; }
+}
+@keyframes portada-derecho {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  4%   { transform: translate(-50%, -50%) rotate(38deg); }
+  9%   { transform: translate(-50%, -50%) rotate(48deg); }
+  76%  { transform: translate(-50%, -50%) rotate(132deg); }
+  80%  { transform: translate(-50%, -50%) rotate(140deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* ── Contenido ── */
@@ -86,13 +109,16 @@
   .portada-linea { max-width: none; }
   .portada-escena { --tierra: min(80vw, 560px); }
   .portada-tierra { left: 50%; transform: translateX(-50%); bottom: calc(var(--tierra) * -0.86); }
-  .portada-orbita, .portada-spherex { display: none; }
+  .portada-orbita, .portada-giro { display: none; }
   .portada-respuestas { width: 100%; }
   .portada-respuestas button { text-align: center; }
   .portada-descargas { align-self: center; }
   .portada-creditos { position: relative; right: auto; bottom: auto; margin-top: 0.5rem; text-align: center; }
 }
 
+/* Sin movimiento: SPHEREx quieto arriba a la derecha de la Tierra (a 50° en la órbita). */
 @media (prefers-reduced-motion: reduce) {
-  .portada-spherex, .portada-cara circle { animation: none; }
+  .portada-giro { animation: none; transform: rotate(-50deg); }
+  .portada-brazo { animation: none; transform: translate(-50%, -50%) rotate(50deg); }
+  .portada-cara circle { animation: none; }
 }

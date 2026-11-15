@@ -2,7 +2,8 @@
 .simple { min-height: 100vh; display: flex; flex-direction: column; background: var(--fondo); color: var(--texto); }
 
 .simple-barra { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
-.simple-marca { background: none; border: 0; color: var(--texto); font-weight: 800; font-size: 1.2rem; padding: 0; cursor: pointer; }
+.simple-marca { background: none; border: 0; color: var(--texto); font-weight: 800; font-size: 1.2rem; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; }
+.simple-marca img { height: 1.9rem; width: auto; } /* ícono del logo, como en el header del Modo ciencia */
 .simple-busca { position: relative; display: flex; align-items: center; gap: 0.4rem; flex: 0 1 380px; min-width: 220px; background: var(--panel); border: 1px solid var(--borde); border-radius: 999px; padding: 0.35rem 0.9rem; }
 .simple-busca span { color: var(--suave); }
 .simple-busca input { flex: 1; background: none; border: 0; color: var(--texto); font: inherit; outline: none; min-width: 0; }

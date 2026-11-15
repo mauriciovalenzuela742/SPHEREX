@@ -339,7 +339,10 @@ export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
   return (
     <div className="simple">
       <header className="simple-barra">
-        <button className="simple-marca" onClick={() => set({ vista: "landing" })}>AstroTrack</button>
+        <button className="simple-marca" onClick={() => set({ vista: "landing" })}>
+          <img src="/logo-icono.webp" alt="" width={160} height={133} />
+          AstroTrack
+        </button>
         <form className="simple-busca" onSubmit={buscar} role="search" data-tour="simple-busca">
           <span aria-hidden="true">⌕</span>
           <input
