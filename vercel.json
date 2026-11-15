@@ -9,14 +9,6 @@
       "root": "deploy/prototipo",
       "framework": "fastapi"
     },
-    "rango_fechas": {
-      "root": "prototipos/rango_fechas",
-      "framework": "fastapi"
-    },
-    "backend": {
-      "root": "scaffold/backend",
-      "framework": "fastapi"
-    },
     "frontend": {
       "root": "scaffold/frontend",
       "framework": "vite"
