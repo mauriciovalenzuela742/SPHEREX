@@ -65,6 +65,8 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
   const usaPre = Boolean(pre) && fuente === "pre";
   const pasadas = useMemo(() => (usaPre && pre ? desdePrecalc(pre) : desdeVivo(puntos)), [usaPre, pre, puntos]);
   const [ver, setVer] = useState("todas");
+  // Otro objeto u otra fuente: vuelve a «todas» (los ids de pasada se repiten entre objetos).
+  useEffect(() => setVer("todas"), [id, usaPre]);
   const verValido = ver === "todas" || pasadas.some((p) => p.id === ver) ? ver : "todas";
 
   const onPunto = (p: PuntoVista) => {
