@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AstroTRACK en tres niveles</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: herramienta de pantalla completa. Barra arriba, cielo al centro (protagonista fijo) con su línea de fechas,
+   luz abajo y panel del objeto a la derecha. El panel manda sobre lo que muestra el cielo. */
+:root {
+  color-scheme: dark;
+  --bg: #070b16; --cielo: #03050c; --panel: #111830; --panel2: #0c1226; --borde: #26304f;
+  --texto: #eef1f8; --suave: #a3adca; --cuerpo: #c9d0e4;
+  --acento: #ffb000; --rojo: #ff5a4f; --celeste: #6ecbff;
+  --maqueta: #3a2a5c; --maqueta-fg: #eadcff;
+  --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body: Inter, "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--texto); font: 15px/1.5 var(--body); display: flex; flex-direction: column; min-height: 100%; }
+button { font: 500 14px var(--body); color: var(--texto); background: var(--panel); border: 1px solid var(--borde); border-radius: 9px; min-height: 40px; padding: 0 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+button:hover { border-color: var(--acento); }
+button[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: #111; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.lado { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.franja { background: var(--maqueta); color: var(--maqueta-fg); padding-block: 8px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13px; }
+.franja strong { color: #fff; }
+.franja .grupo { display: inline-flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.franja button { min-height: 34px; background: transparent; border-color: #6b5a92; color: var(--maqueta-fg); font-size: 13px; }
+.franja button[aria-pressed="true"] { background: var(--maqueta-fg); color: #2a1d45; border-color: var(--maqueta-fg); }
+.franja .que { flex: 1 1 320px; min-width: 0; }
+
+.barra { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding-block: 10px; border-bottom: 1px solid var(--borde); }
+.marca { font: 700 19px var(--display); margin-right: 6px; }
+.buscar { flex: 1 1 240px; min-width: 0; max-width: 380px; display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--borde); border-radius: 999px; padding: 0 14px; min-height: 40px; color: var(--suave); }
+.buscar input { flex: 1; min-width: 0; background: transparent; border: 0; color: var(--texto); font: 14px var(--body); }
+.objetos { display: flex; gap: 6px; flex-wrap: wrap; }
+.objetos button { border-radius: 999px; min-height: 36px; font-size: 13px; }
+.derecha { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.interruptor { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--cuerpo); cursor: pointer; padding: 6px 10px; border-radius: 9px; border: 1px solid var(--borde); background: var(--panel); min-height: 40px; }
+.interruptor .pista { width: 38px; height: 22px; border-radius: 999px; background: var(--borde); position: relative; transition: background 0.2s; }
+.interruptor .pista::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--texto); transition: left 0.2s; }
+.interruptor input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.interruptor input:checked + .pista { background: var(--acento); }
+.interruptor input:checked + .pista::after { left: 19px; background: #111; }
+.interruptor input:focus-visible + .pista { outline: 3px solid var(--acento); outline-offset: 2px; }
+.ayuda { width: 40px; padding: 0; justify-content: center; border-radius: 50%; font-weight: 700; }
+.idioma { color: var(--suave); font-size: 13px; }
+
+.coords { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; padding-block: 7px; background: var(--panel2); border-bottom: 1px solid var(--borde); font: 13px var(--mono); color: var(--cuerpo); }
+.coords b { color: var(--texto); font-weight: 500; }
+.coords button { min-height: 30px; font: 12px var(--mono); padding: 0 10px; }
+
+.cuerpo { flex: 1; display: flex; min-height: 0; }
+.escena { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; background: var(--cielo); }
+.cielo { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; min-height: 0; }
+.vista { position: relative; width: min(100%, 520px, calc(100vh - 330px)); min-width: 260px; aspect-ratio: 1; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde); background: #000; }
+.vista img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.vista .antes { clip-path: inset(0 calc(100% - var(--pos, 100%)) 0 0); }
+.vista .linea { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--acento); left: calc(var(--pos, 100%) - 1px); pointer-events: none; }
+.marca-obj { position: absolute; width: 11%; aspect-ratio: 1; transform: translate(-50%, -50%); border: 2px dashed var(--acento); border-radius: 50%; background: transparent; padding: 0; min-height: 0; cursor: pointer; transition: left 0.3s, top 0.3s; }
+.marca-obj:hover { border-style: solid; }
+.marca-obj.estrella { border-color: var(--celeste); border-style: solid; pointer-events: none; }
+.etiqueta-obj { position: absolute; transform: translate(-50%, 0); font: 600 13px var(--body); color: var(--acento); background: rgba(3, 5, 12, 0.75); padding: 3px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; transition: left 0.3s; }
+.tray { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.sobre { position: absolute; font: 13px var(--mono); background: rgba(3, 5, 12, 0.82); padding: 5px 9px; border-radius: 7px; }
+.sobre.izq { left: 10px; bottom: 10px; } .sobre.der { right: 10px; bottom: 10px; color: var(--suave); display: flex; align-items: center; gap: 8px; }
+.sobre.der i { display: inline-block; width: 72px; height: 2px; background: var(--suave); }
+.sobre.arriba { left: 10px; top: 10px; font: 500 13px var(--body); max-width: calc(100% - 20px); }
+.pista-uso { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: min(92%, 540px); background: rgba(17, 24, 48, 0.95); border: 1px solid var(--borde); border-radius: 12px; padding: 10px 12px 10px 16px; display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--cuerpo); z-index: 3; }
+.pista-uso button { min-height: 32px; padding: 0 10px; margin-left: auto; flex-shrink: 0; }
+.fechas { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.fechas button { min-height: 36px; font: 13px var(--mono); }
+.fechas .play { width: 40px; padding: 0; justify-content: center; }
+.cortina-ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; font-size: 13px; color: var(--suave); }
+.cortina-ctl input { width: 220px; accent-color: var(--acento); }
+
+.luz { padding-block: 10px 14px; border-top: 1px solid var(--borde); background: var(--bg); display: flex; flex-direction: column; gap: 8px; }
+.luz .tit { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--suave); }
+.luz .tit b { color: var(--texto); font-weight: 600; }
+.bandas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.bandas button { min-height: 40px; justify-content: center; font-size: 13px; padding: 0 6px; border-color: transparent; color: #0b0f1c; font-weight: 600; }
+.bandas button[aria-pressed="true"] { outline: 3px solid var(--texto); outline-offset: 1px; background: inherit; }
+.extremos { display: flex; justify-content: space-between; font-size: 12px; color: var(--suave); }
+
+.panel { flex: 0 0 440px; max-width: 100%; border-left: 1px solid var(--borde); background: var(--panel2); display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.cab-panel { padding: 14px 18px 12px; display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid var(--borde); }
+.cab-panel .fila { display: flex; align-items: flex-start; gap: 10px; }
+.cab-panel h2 { margin: 0; font: 700 22px var(--display); }
+.cab-panel .tipo { font-size: 14px; color: var(--cuerpo); margin: 0; }
+.cab-panel .cerrar { margin-left: auto; width: 36px; min-height: 36px; padding: 0; justify-content: center; }
+.dato-rapido { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--suave); }
+.dato-rapido b { color: var(--texto); font: 600 16px var(--display); display: block; }
+.pestanas { display: flex; gap: 2px; padding: 0 12px; border-bottom: 1px solid var(--borde); }
+.pestanas button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--suave); min-height: 44px; }
+.pestanas button[aria-selected="true"] { color: var(--texto); border-bottom-color: var(--acento); background: transparent; }
+.contenido { padding: 14px 18px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.contenido p { margin: 0; color: var(--cuerpo); font-size: 14px; }
+.modos { display: flex; flex-wrap: wrap; gap: 6px; }
+.modos button { min-height: 38px; font-size: 13px; }
+.explica { background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; color: var(--cuerpo); }
+.explica b { color: var(--texto); }
+.experto { border: 1px solid var(--borde); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: var(--panel); }
+.experto .eti { font: 600 11px var(--body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--acento); }
+.param { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font: 12px var(--mono); color: var(--cuerpo); }
+.param span:nth-child(even) { color: var(--texto); text-align: right; }
+.que { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid currentColor; font: 600 11px var(--body); cursor: help; margin-left: 2px; opacity: 0.8; }
+.grafico { position: relative; }
+.grafico svg { width: 100%; height: auto; display: block; }
+.tip { position: absolute; pointer-events: none; background: #000d; border: 1px solid var(--borde); border-radius: 6px; padding: 4px 8px; font: 12px var(--mono); white-space: nowrap; transform: translate(-50%, -120%); }
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--suave); }
+.leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+th { color: var(--suave); font-weight: 500; }
+.descargas { display: flex; flex-wrap: wrap; gap: 6px; }
+.descargas button { min-height: 32px; font: 12px var(--mono); }
+.grande { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grande div { background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; }
+.grande b { display: block; font: 700 24px var(--display); color: var(--acento); line-height: 1.15; }
+.grande small { color: var(--suave); font-size: 12px; }
+.url { font: 12px var(--mono); color: var(--suave); word-break: break-all; }
+.aviso { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--acento); border-radius: 10px; padding: 10px 16px; font-size: 14px; z-index: 9; }
+
+@media (max-width: 900px) {
+  .cuerpo { flex-direction: column; }
+  .panel { flex: 1 1 auto; border-left: 0; border-top: 1px solid var(--borde); }
+  .vista { width: min(100%, 520px); }
+}
+@media (prefers-reduced-motion: reduce) { .marca-obj, .etiqueta-obj, .interruptor .pista, .interruptor .pista::after { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="franja lado" id="franja" role="region" aria-label="Controles de la maqueta">
+  <strong>Maqueta para el equipo</strong>
+  <span class="grupo">Saltar a:
+    <button type="button" data-nivel="0" aria-pressed="true">1 · Al entrar</button>
+    <button type="button" data-nivel="1" aria-pressed="false">2 · Curioso</button>
+    <button type="button" data-nivel="2" aria-pressed="false">3 · Experto</button>
+  </span>
+  <span class="que" id="que-nivel"></span>
+</div>
+
+<header class="barra lado">
+  <span class="marca">AstroTRACK</span>
+  <label class="buscar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="7" cy="7" r="5"></circle><path d="M11 11l3.5 3.5"></path></svg><input id="busca" type="text" placeholder="Busca un objeto o unas coordenadas" aria-label="Buscar un objeto o coordenadas"></label>
+  <div class="objetos" aria-label="Objetos de prueba">
+    <button type="button" data-otro>Barnard</button><button type="button" data-otro>ε Indi B</button><button type="button" id="obj-wise" aria-pressed="true">WISE 0855</button><button type="button" data-otro>RW Aurigae</button><button type="button" data-otro>R Draconis</button>
+  </div>
+  <div class="derecha">
+    <label class="interruptor" id="ciencia-lbl" title="Agrega coordenadas exactas, parámetros, resultados y descargas. No cambia ningún resultado."><input id="ciencia" type="checkbox"><span class="pista" aria-hidden="true"></span>Modo ciencia</label>
+    <button type="button" class="ayuda" id="ayuda" aria-label="Ayuda: qué es SPHEREx y cómo usar el visor">?</button>
+    <span class="idioma"><b style="color: var(--acento)">ES</b> | EN</span>
+  </div>
+</header>
+
+<div class="coords lado" id="coords" hidden>
+  <span>A.R. <b id="ra">08h55m02.14s</b></span><span>Dec <b id="dec">−07°14′31.5″</b></span>
+  <button type="button" id="formato">ver en grados</button>
+  <span>J2000 · época 2026,3</span><span>campo 2,1′</span><span>píxel 6,15″</span><span id="coord-luz">luz: todas</span>
+</div>
+
+<div class="cuerpo">
+  <div class="escena">
+    <div class="cielo">
+      <div class="pista-uso" id="pista"><span>El punto naranja se mueve entre fotos: así se buscan planetas y estrellas cercanas. <b style="color: var(--texto)">Tócalo.</b></span><button type="button" id="cerrar-pista">Entendido</button></div>
+      <div class="vista" id="vista">
+        <img id="img" alt="Foto de SPHEREx del campo de WISE 0855">
+        <img id="img-antes" class="antes" alt="" hidden>
+        <span class="linea" id="linea" hidden></span>
+        <svg class="tray" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" id="tray" hidden>
+          <polyline points="47.1,49.9 49.7,50.1 53.3,49.5" fill="none" stroke="#ffb000" stroke-width="0.5" stroke-dasharray="1 1"></polyline>
+          <circle cx="47.1" cy="49.9" r="0.9" fill="#ffb000"></circle><circle cx="49.7" cy="50.1" r="0.9" fill="#ffb000"></circle><circle cx="53.3" cy="49.5" r="0.9" fill="#ffb000"></circle>
+        </svg>
+        <span class="marca-obj estrella" id="estrella" style="left: 55.5%; top: 47.0%" hidden></span>
+        <button type="button" class="marca-obj" id="marca" style="left: 47.1%; top: 49.9%" aria-label="Ver detalles de WISE 0855"></button>
+        <span class="etiqueta-obj" id="etq" style="left: 47.1%; top: 56.5%">WISE 0855</span>
+        <span class="sobre arriba" id="leyenda-vista" hidden></span>
+        <span class="sobre izq" id="fecha">may 2025</span>
+        <span class="sobre der"><i></i>30″</span>
+      </div>
+      <div class="fechas" id="fechas" role="group" aria-label="Fecha de la foto">
+        <button type="button" class="play" id="play" aria-label="Pausar el parpadeo">❚❚</button>
+        <button type="button" id="pasada-1" aria-pressed="true">may 2025</button>
+        <button type="button" id="pasada-2">oct–dic 2025</button>
+        <button type="button" id="pasada-3">abr–may 2026</button>
+      </div>
+      <div class="cortina-ctl" id="cortina-ctl" hidden>
+        <button type="button" id="ver-antes">Antes</button>
+        <label for="cortina">arrastra</label><input id="cortina" type="range" min="0" max="100" value="100">
+        <button type="button" id="ver-despues">Después</button>
+      </div>
+    </div>
+    <div class="luz lado">
+      <div class="tit"><span><b>Luz:</b> <span id="luz-txt">todas, en falso color (azul: cercana · rojo: lejana)</span></span><span id="luz-um" hidden></span></div>
+      <div class="bandas" role="group" aria-label="Elegir la luz">
+        <button type="button" id="luz-todas" aria-pressed="true" style="background: linear-gradient(90deg, #8fb4ff, #7fd6a6, #ff6b5a)">Todas</button>
+        <button type="button" id="luz-cercano" style="background: #8fb4ff">Cercana</button>
+        <button type="button" id="luz-medio" style="background: #7fd6a6">Media</button>
+        <button type="button" id="luz-lejano" style="background: #ff6b5a">Lejana (calor)</button>
+      </div>
+      <div class="extremos"><span>0,75 µm</span><span>5 µm</span></div>
+    </div>
+  </div>
+
+  <aside class="panel" id="panel" hidden aria-label="Detalles del objeto">
+    <div class="cab-panel">
+      <div class="fila">
+        <div>
+          <h2>WISE 0855−0714</h2>
+          <p class="tipo">Enana marrón muy fría, a 7,4 años luz <span class="que" title="Más grande que un planeta, pero no alcanza a ser estrella. Esta es de las más frías que se conocen.">?</span></p>
+        </div>
+        <button type="button" class="cerrar" id="cerrar-panel" aria-label="Cerrar el panel">✕</button>
+      </div>
+      <div class="dato-rapido"><span><b>8,7″</b>se movió en un año</span><span><b>96 %</b>de su luz es calor</span></div>
+    </div>
+    <div class="pestanas" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-tab="fotos" id="tab-fotos">Fotos</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="prisma" id="tab-prisma">Prisma</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="resultados" id="tab-resultados" hidden>Resultados</button>
+    </div>
+
+    <div class="contenido" data-panel="fotos">
+      <p>Elige cómo comparar las fotos de las tres pasadas de SPHEREx.</p>
+      <div class="modos" role="group" aria-label="Cómo comparar">
+        <button type="button" id="modo-parpadeo" aria-pressed="true">Parpadeo</button>
+        <button type="button" id="modo-resta">Resta</button>
+        <button type="button" id="modo-color">Color</button>
+        <button type="button" id="modo-limpiar" hidden>Limpiar estrellas</button>
+      </div>
+      <div class="explica" id="explica"></div>
+      <div class="experto" data-ciencia hidden>
+        <span class="eti">Modo ciencia</span>
+        <div class="param" id="param"></div>
+        <div class="descargas"><button type="button" data-falta>FITS de esta vista</button><button type="button" data-falta>Exposiciones (CSV)</button><button type="button" data-falta>Abrir en IRSA</button></div>
+      </div>
+    </div>
+
+    <div class="contenido" data-panel="prisma" hidden>
+      <p>La luz de WISE 0855 separada en colores, de 0,75 a 5 µm. <b style="color: var(--texto)">Casi toda está en el extremo del calor</b>; la estrella vecina es al revés. Pasa el cursor por los puntos.</p>
+      <div class="grafico" id="grafico"><span class="tip" id="tip" hidden></span></div>
+      <div class="leyenda"><span><i style="background: var(--rojo)"></i>WISE 0855</span><span><i style="background: #fff"></i>estrella vecina</span><span id="ley-err" hidden>barras: error 1σ · rosa: pasada 2</span></div>
+      <div class="experto" data-ciencia hidden>
+        <span class="eti">Modo ciencia</span>
+        <div class="param"><span>Fotometría</span><span>PSF forzada, 12 tramos</span><span>Luz sobre 3,8 µm</span><span>95,7 % (vecina: 4 %)</span><span>D entre pasadas (WISE)</span><span>0,12–2,17</span><span>D vecina → WISE</span><span>177–257</span><span>Flujo a 4,62 µm (P2 / P3)</span><span>0,56 / 0,73 mJy</span></div>
+        <div class="descargas"><button type="button" data-falta>Espectro (CSV)</button><button type="button" data-falta>VOTable</button></div>
+      </div>
+    </div>
+
+    <div class="contenido" data-panel="resultados" hidden>
+      <p>Lo que medimos solo con datos de SPHEREx, sin catálogos externos.</p>
+      <div class="grande">
+        <div><b>8,67″ ± 0,66″</b><small>movimiento en un año (10,5σ); predicho 8,04″</small></div>
+        <div><b>0 → 1</b><small>candidatas en movimiento: solo posición → con huella espectral</small></div>
+      </div>
+      <table>
+        <thead><tr><th>Pasada</th><th>Separación con la vecina</th><th>Predicha</th></tr></thead>
+        <tbody>
+          <tr><td>may 2025</td><td>11,36″</td><td>11,40″</td></tr>
+          <tr><td>oct–dic 2025</td><td>7,75″</td><td>8,07″</td></tr>
+          <tr><td>abr–may 2026</td><td>3,30″ PSF · 4,18″ limpia</td><td>4,27″</td></tr>
+        </tbody>
+      </table>
+      <div class="param"><span>Fuentes por pasada</span><span>9</span><span>Estrellas quietas, repetición</span><span>0,12″ (mediana)</span><span>Atenuación de estrellas</span><span>3,0–4,8× · PSF 5,0–6,0×</span><span>Fondo del cielo, mínimo</span><span>0,115 MJy/sr cerca de 3 µm</span></div>
+      <div class="descargas"><button type="button" data-falta>Fuentes (CSV)</button><button type="button" data-falta>Método y límites</button><button type="button" data-falta>Abrir en SIMBAD</button></div>
+      <p class="url" id="url"></p>
+    </div>
+  </aside>
+</div>
+<div class="aviso" id="aviso" role="status" hidden></div>
+
+<script>
+var IMG = {{IMGS}};
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var video = /video=1/.test(location.search);
+  if (video) $('#franja').hidden = true;
+  var quieto = video || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  var S = { nivel: 0, luz: 'todas', pasada: 0, modo: 'parpadeo', tocando: !quieto, tab: 'fotos', pos: 100, grados: false };
+  var FECHAS = ['may 2025', 'oct–dic 2025', 'abr–may 2026'];
+  var POS = [[47.1, 49.9], [49.7, 50.1], [53.3, 49.5]];
+  var LUZ = {
+    todas: ['todas, en falso color (azul: cercana · rojo: lejana)', 'falso_color', 'B1–B6 · 0,75–5,0 µm · falso color'],
+    cercano: ['cercana: aquí solo brillan las estrellas', 'cercano', 'B1–B3 · 0,75–2,42 µm'],
+    medio: ['media', 'medio', 'B4 · 2,42–3,82 µm'],
+    lejano: ['lejana, el calor: aquí brilla WISE 0855', 'lejano', 'B5–B6 · 3,82–5,0 µm']
+  };
+  var NIVEL = [
+    'Al entrar: el cielo, un buscador y los 5 objetos. La explicación está en «?» y en la pista que se cierra.',
+    'Curioso: al tocar el objeto se abre su panel. Fotos manda sobre lo que muestra el cielo; Prisma muestra su luz.',
+    'Experto: «Modo ciencia» agrega coordenadas, Limpiar estrellas, parámetros, Resultados y descargas. Ningún resultado cambia.'
+  ];
+  var EXPLICA = {
+    parpadeo: '<b>Parpadeo:</b> las fotos de cada fecha, una tras otra. Lo que salta de lugar se movió.',
+    resta: '<b>Resta</b> (luz lejana, abr–may 2026 menos may 2025): <b style="color:#ff6b5a">rojo</b> = dónde está ahora · <b style="color:#5b8cff">azul</b> = dónde estaba. Las estrellas quietas se borran.',
+    color: '<b>Color</b> (luz lejana): may 2025 en <b style="color:#ff6b5a">rojo</b>, abr–may 2026 en <b style="color:#6ecbff">cian</b>. Lo quieto sale blanco; lo que se movió, de dos colores.',
+    limpiar: '<b>Limpiar estrellas</b> (abr–may 2026): a la luz lejana le restamos la luz cercana de las estrellas. Las estrellas desaparecen; WISE 0855, que casi no tiene luz cercana, se queda.'
+  };
+  var PARAM = {
+    parpadeo: [['Pasadas', '3 · 258 exposiciones'], ['Apilado', 'por pasada, subrejilla 3,075″'], ['Estiramiento', 'asinh · corte 99,7 %']],
+    resta: [['Operación', 'B5–6(P3) − B5–6(P1)'], ['Zona muerta', '±2,5σ (MAD)'], ['Δt', '360 días']],
+    color: [['Rojo', 'B5–6, may 2025'], ['Cian', 'B5–6, abr–may 2026'], ['Estiramiento', 'asinh · corte 99,7 %']],
+    limpiar: [['Operación', 'B5–6 − α·B1–3'], ['α (de las estrellas del campo)', '0,2169 ± 0,0037'], ['Separación con la vecina', '4,18″ (pred. 4,27″)'], ['Estrellas atenuadas', '4,76× en la misma banda']]
+  };
+
+  function aviso(t) { var a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 2600); }
+
+  function pintar() {
+    var n = S.nivel;
+    $$('#franja [data-nivel]').forEach(function (b) { b.setAttribute('aria-pressed', String(Number(b.dataset.nivel) === n)); });
+    $('#que-nivel').textContent = NIVEL[n];
+    $('#panel').hidden = n === 0;
+    $('#pista').hidden = n !== 0 || S.pistaCerrada;
+    $('#ciencia').checked = n === 2;
+    $('#coords').hidden = n !== 2;
+    $('#tab-resultados').hidden = n !== 2;
+    $('#modo-limpiar').hidden = n !== 2;
+    $('#luz-um').hidden = n !== 2;
+    $('#ley-err').hidden = n !== 2;
+    $$('[data-ciencia]').forEach(function (e) { e.hidden = n !== 2; });
+    if (n !== 2 && S.tab === 'resultados') S.tab = 'fotos';
+    if (n !== 2 && S.modo === 'limpiar') S.modo = 'parpadeo';
+    if (n === 0) S.modo = 'parpadeo';
+    $$('[role="tab"]').forEach(function (t) { t.setAttribute('aria-selected', String(t.dataset.tab === S.tab)); });
+    $$('[data-panel]').forEach(function (p) { p.hidden = p.dataset.panel !== S.tab; });
+
+    // Lo que muestra el cielo
+    var m = S.modo, comparar = m !== 'parpadeo';
+    var img = $('#img');
+    if (m === 'parpadeo') img.src = IMG[LUZ[S.luz][1] + '_P' + (S.pasada + 1)];
+    else if (m === 'resta') img.src = IMG.resta_lejano;
+    else if (m === 'color') img.src = IMG.color_lejano;
+    else img.src = IMG.despues_P3;
+    $('#img-antes').hidden = m !== 'limpiar'; $('#linea').hidden = m !== 'limpiar';
+    if (m === 'limpiar') { $('#img-antes').src = IMG.antes_P3; $('#vista').style.setProperty('--pos', S.pos + '%'); $('#cortina').value = S.pos; }
+    $('#cortina-ctl').hidden = m !== 'limpiar';
+    $('#fechas').hidden = comparar;
+    $('#fecha').textContent = m === 'parpadeo' ? FECHAS[S.pasada] : m === 'limpiar' ? 'abr–may 2026' : 'may 2025 → abr–may 2026';
+    var p = POS[m === 'parpadeo' ? S.pasada : 2];
+    $('#marca').style.left = p[0] + '%'; $('#marca').style.top = p[1] + '%';
+    $('#etq').style.left = p[0] + '%';
+    $('#marca').hidden = comparar; $('#etq').hidden = comparar;
+    $('#tray').hidden = n === 0 || comparar;
+    $('#estrella').hidden = !(n === 2 && m === 'parpadeo');
+    var ley = { resta: 'rojo: dónde está · azul: dónde estaba', color: 'rojo: may 2025 · cian: abr–may 2026', limpiar: 'izquierda: antes · derecha: sin estrellas' }[m];
+    $('#leyenda-vista').hidden = !ley; $('#leyenda-vista').textContent = ley || '';
+    $$('.fechas [id^="pasada-"]').forEach(function (b, i) { b.setAttribute('aria-pressed', String(i === S.pasada)); });
+    $('#play').textContent = S.tocando ? '❚❚' : '▶'; $('#play').setAttribute('aria-label', S.tocando ? 'Pausar el parpadeo' : 'Reproducir el parpadeo');
+
+    // Luz
+    $$('.bandas button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.id === 'luz-' + (comparar ? 'lejano' : S.luz))); });
+    $('#luz-txt').textContent = comparar ? 'lejana (calor): las comparaciones usan B5–B6' : LUZ[S.luz][0];
+    $('#luz-um').textContent = comparar ? 'B5–B6 · 3,82–5,0 µm' : LUZ[S.luz][2];
+    $('#coord-luz').textContent = 'luz: ' + (comparar ? 'B5–B6' : LUZ[S.luz][2].split(' ·')[0]);
+
+    // Panel de fotos
+    ['parpadeo', 'resta', 'color', 'limpiar'].forEach(function (k) { $('#modo-' + k).setAttribute('aria-pressed', String(k === m)); });
+    $('#explica').innerHTML = EXPLICA[m];
+    $('#param').innerHTML = PARAM[m].map(function (r) { return '<span>' + r[0] + '</span><span>' + r[1] + '</span>'; }).join('');
+    $('#url').textContent = 'astrotrack…/?obj=wise_0855&luz=' + S.luz + '&modo=' + m + '&tab=' + S.tab + (n === 2 ? '&ciencia=1' : '');
+    grafico();
+  }
+
+  // Niveles: por la franja de la maqueta o usando la herramienta
+  $$('#franja [data-nivel]').forEach(function (b) { b.addEventListener('click', function () { S.nivel = Number(b.dataset.nivel); pintar(); }); });
+  $('#marca').addEventListener('click', function () { if (S.nivel === 0) S.nivel = 1; S.tab = 'fotos'; pintar(); });
+  $('#cerrar-panel').addEventListener('click', function () { S.nivel = 0; pintar(); });
+  $('#cerrar-pista').addEventListener('click', function () { S.pistaCerrada = true; pintar(); });
+  $('#ciencia').addEventListener('change', function () { S.nivel = $('#ciencia').checked ? 2 : 1; pintar(); });
+  $$('[role="tab"]').forEach(function (t) { t.addEventListener('click', function () { S.tab = t.dataset.tab; pintar(); }); });
+  ['parpadeo', 'resta', 'color', 'limpiar'].forEach(function (k) { $('#modo-' + k).addEventListener('click', function () { S.modo = k; if (k === 'limpiar') S.pos = 100; pintar(); }); });
+  ['todas', 'cercano', 'medio', 'lejano'].forEach(function (k) { $('#luz-' + k).addEventListener('click', function () { S.luz = k; if (S.modo !== 'parpadeo') S.modo = 'parpadeo'; pintar(); }); });
+  [0, 1, 2].forEach(function (i) { $('#pasada-' + (i + 1)).addEventListener('click', function () { S.pasada = i; S.tocando = false; pintar(); }); });
+  $('#play').addEventListener('click', function () { S.tocando = !S.tocando; pintar(); });
+  $('#cortina').addEventListener('input', function () { S.pos = Number(this.value); $('#vista').style.setProperty('--pos', S.pos + '%'); });
+  $('#ver-antes').addEventListener('click', function () { S.pos = 100; pintar(); });
+  $('#ver-despues').addEventListener('click', function () { S.pos = 0; pintar(); });
+  $('#formato').addEventListener('click', function () {
+    S.grados = !S.grados;
+    $('#ra').textContent = S.grados ? '133,758896°' : '08h55m02.14s';
+    $('#dec').textContent = S.grados ? '−7,242094°' : '−07°14′31.5″';
+    this.textContent = S.grados ? 'ver en h m s' : 'ver en grados';
+  });
+  $$('[data-otro]').forEach(function (b) { b.addEventListener('click', function () { aviso('En esta maqueta solo funciona WISE 0855.'); }); });
+  $$('[data-falta]').forEach(function (b) { b.addEventListener('click', function () { aviso('Maqueta: esta descarga todavía no existe.'); }); });
+  $('#ayuda').addEventListener('click', function () { aviso('SPHEREx fotografía todo el cielo cada seis meses en 102 colores infrarrojos.'); });
+  $('#busca').addEventListener('keydown', function (e) { if (e.key === 'Enter') { if (/wise|0855/i.test(this.value)) { S.nivel = Math.max(1, S.nivel); pintar(); } else aviso('En esta maqueta solo funciona WISE 0855.'); } });
+
+  setInterval(function () { if (S.tocando && S.modo === 'parpadeo') { S.pasada = (S.pasada + 1) % 3; pintar(); } }, 1300);
+
+  // Espectro: huella PSF en 12 tramos (mJy), pasadas 2 y 3 (eda/huella_espectral, huella_wise_0855.json)
+  var L = [0.81, 0.95, 1.11, 1.3, 1.53, 1.79, 2.1, 2.45, 2.88, 3.37, 3.94, 4.62];
+  var w2 = [[0.005, 0.014], [-0.048, 0.017], [-0.041, 0.031], [-0.01, 0.01], [-0.009, 0.009], [-0.025, 0.014], [-0.004, 0.012], [0.001, 0.015], [0.02, 0.014], [0.005, 0.012], [0.156, 0.035], [0.56, 0.047]];
+  var w3 = [[-0.029, 0.048], [-0.062, 0.034], [-0.05, 0.032], [-0.058, 0.122], [-0.019, 0.023], [-0.04, 0.038], [-0.003, 0.015], [-0.009, 0.032], [0.01, 0.015], [0.004, 0.023], [0.21, 0.072], [0.728, 0.046]];
+  var e3 = [[1.168, 0.051], [1.214, 0.034], [1.195, 0.031], [1.147, 0.132], [0.995, 0.036], [0.857, 0.035], [0.625, 0.017], [0.516, 0.041], [0.354, 0.022], [0.285, 0.023], [0.164, 0.041], [0.019, 0.053]];
+  var num = function (v, d) { return v.toFixed(d).replace('.', ','); };
+  function grafico() {
+    var W = 400, H = 230, m = { l: 40, r: 10, t: 12, b: 34 };
+    var x = function (l) { return m.l + (l - 0.7) / (4.8 - 0.7) * (W - m.l - m.r); };
+    var y = function (v) { return H - m.b - (v + 0.1) / (1.35 + 0.1) * (H - m.t - m.b); };
+    var exp = S.nivel === 2;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Espectro de WISE 0855 y de la estrella vecina">';
+    s += '<rect x="' + x(3.82) + '" y="' + m.t + '" width="' + (x(4.8) - x(3.82)) + '" height="' + (H - m.t - m.b) + '" fill="#ff5a4f" opacity="0.09"></rect>';
+    s += '<text x="' + x(4.31) + '" y="' + (m.t + 14) + '" text-anchor="middle" fill="#ff8a7a" font-size="11">calor</text>';
+    [0, 0.5, 1].forEach(function (v) { s += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="#26304f"></line><text x="' + (m.l - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end" fill="#a3adca" font-size="11">' + String(v).replace('.', ',') + '</text>'; });
+    [1, 2, 3, 4].forEach(function (l) { s += '<text x="' + x(l) + '" y="' + (H - m.b + 16) + '" text-anchor="middle" fill="#a3adca" font-size="11">' + l + ' µm</text>'; });
+    s += '<text x="4" y="' + (m.t + 8) + '" fill="#a3adca" font-size="10">mJy</text>';
+    function serie(d, color, nombre) {
+      var o = '<polyline points="' + d.map(function (p, i) { return x(L[i]) + ',' + y(p[0]); }).join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2"></polyline>';
+      d.forEach(function (p, i) {
+        if (exp) o += '<line x1="' + x(L[i]) + '" x2="' + x(L[i]) + '" y1="' + y(p[0] - p[1]) + '" y2="' + y(p[0] + p[1]) + '" stroke="' + color + '" stroke-width="1.2"></line>';
+        o += '<circle class="pt" cx="' + x(L[i]) + '" cy="' + y(p[0]) + '" r="5" fill="' + color + '" data-t="' + nombre + ' · ' + num(L[i], 2) + ' µm: ' + num(p[0], 3) + (exp ? ' ± ' + num(p[1], 3) : '') + ' mJy"></circle>';
+      });
+      return o;
+    }
+    s += serie(e3, '#ffffff', 'vecina');
+    if (exp) s += serie(w2, '#ff9d96', 'WISE P2');
+    s += serie(w3, '#ff5a4f', 'WISE 0855');
+    s += '</svg>';
+    var g = $('#grafico'), tip = $('#tip');
+    g.innerHTML = s; g.appendChild(tip);
+    $$('#grafico .pt').forEach(function (c) {
+      c.addEventListener('mouseenter', function () { var r = g.getBoundingClientRect(), b = c.getBoundingClientRect(); tip.textContent = c.dataset.t; tip.style.left = (b.left - r.left + b.width / 2) + 'px'; tip.style.top = (b.top - r.top) + 'px'; tip.hidden = false; });
+      c.addEventListener('mouseleave', function () { tip.hidden = true; });
+    });
+  }
+  pintar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+title: AstroTRACK es simple al entrar y tiene todos los números cuando se piden
+url: app/index.html?video=1
+viewport: [1600, 900]
+output: figures/demo_tres_niveles.es
+label: Maqueta grabada desde app/index.html · imágenes y cifras reales de SPHEREx (WISE 0855)
+mockup: true
+lang: es
+steps:
+  - caption: Así entra cualquier persona al visor, sin leer instrucciones
+    hold: 2400
+    zoom: false
+  - click: "#pasada-2"
+    caption: Las fotos de cada fecha, una tras otra; el punto naranja avanza
+    zoom: false
+    hold: 1500
+  - click: "#pasada-3"
+    caption: En abril–mayo de 2026 queda pegado a una estrella
+    zoom: false
+    hold: 1800
+  - click: "#luz-cercano"
+    caption: Con luz cercana solo se ven estrellas; WISE 0855 desaparece
+    zoom: false
+    hold: 2000
+  - click: "#luz-lejano"
+    caption: Con la luz del calor aparece
+    zoom: false
+    hold: 1800
+  - click: "#marca"
+    caption: La toco para saber qué es
+    hold: 900
+  - zoom: ".cab-panel"
+    caption: Una enana marrón muy fría que se movió 8,7″ en un año
+    hold: 2400
+  - click: "#modo-resta"
+    caption: "Resta entre fechas: rojo es dónde está, azul dónde estaba"
+    zoom: false
+    hold: 2600
+  - click: "#tab-prisma"
+    caption: Su luz, separada en colores
+    zoom: false
+    hold: 700
+  - zoom: "#grafico"
+    caption: Casi toda su luz es calor; la estrella vecina es al revés
+    hold: 2600
+  - view: full
+    caption: Hasta aquí, nada técnico a la vista
+    hold: 1200
+  - click: "#ciencia-lbl"
+    caption: Un astrónomo activa el Modo ciencia
+    hold: 1200
+  - zoom: "#coords"
+    caption: Coordenadas exactas en J2000, en horas o en grados
+    hold: 2200
+  - click: "#tab-fotos"
+    caption: En Fotos aparece una herramienta más
+    zoom: false
+    hold: 600
+  - click: "#modo-limpiar"
+    caption: "Limpiar estrellas: a la luz del calor se le resta la luz cercana"
+    zoom: false
+    hold: 1800
+  - click: "#ver-despues"
+    caption: Las estrellas se borran y WISE 0855 queda, a 0,09″ de lo predicho
+    zoom: false
+    hold: 2600
+  - zoom: "[data-panel='fotos'] .experto"
+    caption: Cada vista dice su operación, sus parámetros y qué se puede descargar
+    hold: 2600
+  - click: "#tab-resultados"
+    caption: Resultados, solo con datos de SPHEREx
+    zoom: false
+    hold: 700
+  - zoom: "[data-panel='resultados'] .grande"
+    caption: "8,67″ medido frente a 8,04″ predicho; 0 → 1 candidatas con la huella espectral"
+    hold: 3000
+  - view: full
+    caption: Simple al entrar; todos los números cuando se piden
+    hold: 2600
