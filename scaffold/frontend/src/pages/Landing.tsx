@@ -21,7 +21,12 @@ export default function Landing({ onEmpezar, onMision, onTutorial, onDescargas }
       <div className="portada-escena" aria-hidden="true">
         <div className="portada-orbita" />
         <img className="portada-tierra" src="/img/tierra.webp" alt="" width={900} height={900} />
-        <img className="portada-spherex" src="/img/spherex.webp" alt="" width={900} height={749} />
+        {/* SPHEREx recorre la órbita: el «giro» rota alrededor del centro de la Tierra y el «brazo» lo mantiene derecho. */}
+        <div className="portada-giro">
+          <div className="portada-brazo">
+            <img className="portada-spherex" src="/img/spherex.webp" alt="" width={900} height={749} />
+          </div>
+        </div>
       </div>
 
       <div className="portada-contenido">
