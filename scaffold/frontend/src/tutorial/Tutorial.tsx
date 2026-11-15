@@ -18,7 +18,8 @@ type Props = {
   /** «ciencia» = recorrido del Visor completo; «simple» = el de la vista simple. */
   variante?: "ciencia" | "simple";
   onCerrar: () => void;
-  onBarnard: () => void;
+  /** Botón principal del final: probar con Epsilon Indi B. */
+  onProbar: () => void;
   /** Botón del medio al final: Modo Misión (ciencia) o abrir el Modo ciencia (simple). */
   onMision: () => void;
 };
@@ -46,14 +47,14 @@ function ubicar(r: Rect | null, bw: number, bh: number): Lugar {
   return { estilo: { right: BORDE, bottom: BORDE } };
 }
 
-export default function Tutorial({ variante = "ciencia", onCerrar, onBarnard, onMision }: Props) {
+export default function Tutorial({ variante = "ciencia", onCerrar, onProbar, onMision }: Props) {
   // Textos en el idioma de la página (ES/EN) y los pasos del recorrido que corresponde.
   const { idioma } = useIdioma();
   const tutorial = textosTutorial(idioma);
   const PASOS = variante === "simple" ? tutorial.pasosSimple : tutorial.pasos;
   const final = variante === "simple"
-    ? { barnard: tutorial.finalSimple.barnard, medio: tutorial.finalSimple.ciencia, libre: tutorial.finalSimple.libre }
-    : { barnard: tutorial.final.barnard, medio: tutorial.final.mision, libre: tutorial.final.libre };
+    ? { probar: tutorial.finalSimple.probar, medio: tutorial.finalSimple.ciencia, libre: tutorial.finalSimple.libre }
+    : { probar: tutorial.final.probar, medio: tutorial.final.mision, libre: tutorial.final.libre };
   const [i, setI] = useState(0);
   const paso = PASOS[i];
   const ultimo = i === PASOS.length - 1;
@@ -169,7 +170,7 @@ export default function Tutorial({ variante = "ciencia", onCerrar, onBarnard, on
 
         {ultimo ? (
           <div className="tut-final">
-            <button className="primario" data-principal onClick={onBarnard}>{final.barnard}</button>
+            <button className="primario" data-principal onClick={onProbar}>{final.probar}</button>
             <button onClick={onMision}>{final.medio}</button>
             <button onClick={onCerrar}>{final.libre}</button>
           </div>
