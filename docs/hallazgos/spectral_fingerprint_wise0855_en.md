@@ -1,5 +1,9 @@
 # Spectral Fingerprinting in SPHEREx: Blind Tracking of WISE 0855, Background-Star Removal, All 5 Official Targets, and Sky-Background Diagnostics
 
+> [!NOTE]
+> **Corrections of 2026-11-15 (independent scientific review):** H₂O and CO₂ ices appear in absorption (a deficit), not as an excess; CO₂ at 4.26 µm falls in D5 only; SPHEREx resolution in D5 is R ≈ 120 (D5–D6, as the viewer states citing Hui et al. 2026), not 41.5; the “up to 11.8×” suppression compared different bands (same band: 3.0–4.8× with spectral subtraction, 5.0–6.0× with PSF subtraction); ε Ind B's steps between passes are mostly explained by unequal intervals: parallax is shown by the vector error (0.48″ with parallax vs 0.97″ without); Barnard's background excess (1.6–2.9× in D2 depending on the field) may be Galactic light or the star's own halo; at 4.27″ the blend is under one pixel (0.69 px), not half.
+
+
 **Key Finding:** Using solely calibrated SPHEREx Level 2 images (NASA/IPAC IRSA) and **zero external catalogues**, we blindly track the Y2 brown dwarf **WISE 0855−0714** across three sky passes (**8.67″ ± 0.66″** in one year vs **8.04″** proper-motion + parallax prediction), resolve its half-pixel Pass 3 blend with a background star using its `0.75–5.0 µm` spectral fingerprint, clean background stars directly in pixel space via $I_{\text{long}} - 0.2169\,I_{\text{short}}$ to recover its true orbital separation within **`0.09″`** (**4.18″** vs **4.27″** predicted), validate the pipeline across **all 5 official challenge example targets** (`1,918` exposures), and characterize the raw **sky background itself (`MJy/sr`) without median subtraction**.
 
 ---
@@ -74,7 +78,7 @@ We ran the unified blind multi-pass pipeline on all **5 official example targets
 | Target | Outcome Summary | Verified Numbers | Operating Regime & Limit |
 |---|---|---|---|
 | **wise_0855** | Blend resolved & unique blind mover | `8.67″ ± 0.66″` (`10.5σ`) vs `8.04″` pred; `D = 0.12–2.16`; `1` fingerprint vs `0` positional candidate | Optimal regime: extreme `B5–6` spectral contrast |
-| **eps_ind_b** | 4-pass blind tracking & parallax zigzag | Net `6.62″` (`13.16σ`) vs `6.31″` (`6.52″` at true group MJD; `0.57″`/`0.48″` vector diff vs `0.97″` without parallax); zigzag `2.24″ / 2.90″ / 1.99″` vs `1.78″ / 2.82″ / 1.86″`; `D(1–4)=0.67`; field star `58.56″` away static (`0.36″`, `D=0.27`) | Resilient to dropped detector arrays (`P4` missing `D1/D4`) |
+| **eps_ind_b** | 4-pass blind tracking; parallax confirmed by the vector error | Net `6.62″` (`13.16σ`) vs `6.31″` (`6.52″` at true group MJD; `0.57″`/`0.48″` vector diff vs `0.97″` without parallax); zigzag `2.24″ / 2.90″ / 1.99″` vs `1.78″ / 2.82″ / 1.86″`; `D(1–4)=0.67`; field star `58.56″` away static (`0.36″`, `D=0.27`) | Resilient to dropped detector arrays (`P4` missing `D1/D4`) |
 | **barnard** | Accurate orbit, saturated core spectrum | Net `10.26″` vs `10.31″` (`0.46″` vector diff); `1–2: 6.61″` (`5.94″`), `2–3: 4.10″` (`4.58″`); `1` source detected/pass | Bright `~K = 4.5` core causes non-Gaussian/partial saturation preventing automatic central PSF spectra |
 | **rw_aur** | Stationary spectral variable vs mover | Net shift `0.28″` (`P1–P3`), yet **`D(2–3) = 17.31`** (`0` moving candidates); `8` isolated outer stars stay `< 0.40″` (`med 0.13″`) | Non-Gaussian PSF wings induce `4 / 1 / 0` false secondary halo detections inside `r <= 5.5 px` |
 | **r_dra** | Central saturation boundary | `518 / 519` (`99.81%`) exposures have non-finite `3×3` center (`20 / 461 / 47` NaNs in `corto/medio/largo` stacks out of `5,043` px); outer wings fade `-0.97 MJy/sr` in `B5–6` | Beyond linear PSF photometry regime |
@@ -102,21 +106,21 @@ We processed **all `1,918` raw Level 2 cutouts without median subtraction** (`58
 |---|---:|---:|---:|---:|---:|---|
 | **rw_aur** | `+7.47` | `-6.00` | `0.3963` / `0.4178` | `0.2336` | `0.3119` / `0.3720` | Low ecliptic latitude: **strongest zodiacal floor** (`2.05×` brighter than `eps Ind B` in `D5`) |
 | **wise_0855** | `-23.62` | `+23.32` | `0.2253` / `0.2480` | `0.1224` | `0.1894` / `0.2396` | Clean sky: solar scattering below `1.5 µm`, dark minimum `0.115` at `2.88 µm`, thermal dust rise to `0.357` at `4.62 µm` |
-| **barnard** | `+28.21` | `+14.10` | **`0.6571` / `0.8102`** | `0.3399` | `0.3113` / `0.3903` | Inner Galactic plane proximity (`l=31.1°`): faint unresolved stars & diffuse light elevate `D1–D3` by `~2.7×` |
+| **barnard** | `+28.21` | `+14.10` | **`0.6571` / `0.8102`** | `0.3399` | `0.3113` / `0.3903` | Inner Galactic plane proximity (`l=31.1°`): `1.6–2.9×` excess in `D2` depending on the comparison field; Galactic light or the star's own halo (not separated) elevate `D1–D3` by `~2.7×` |
 | **eps_ind_b** | `-41.49` | `-48.16` | `0.2402` / `0.2648` | `0.1161` | **`0.1521` / `0.1900`** | Cleanest high-latitude sky: drops from `0.336` (`0.95 µm`) to cosmic window `0.108` (`3.37 µm`), rises to `0.279` (`4.62 µm`) |
 | **r_dra** | `+81.39` | `+38.23` | `2.2420` / `3.4787` | `2.6009` | `2.9738` / `4.3744` | **Saturated PSF halo fills `2.4′` box:** outer "sky" fades across passes (`5.79 → 3.99 → 3.37 MJy/sr` in `D5`), tracking Mira pulsation |
 
-Across the 4 unsaturated fields, thermal zodiacal emission in `D5` anticorrelates with $|\beta|$ (`r_Pearson = -0.692`, `+0.605` vs $\csc|\beta|$), while unresolved Galactic starlight in `barnard` breaks simple ecliptic monotonicity in `D2` (`r = -0.176`).
+Across the 4 unsaturated fields, thermal zodiacal emission in `D5` anticorrelates with $|\beta|$ (`r_Pearson = -0.692`, `+0.605` vs $\csc|\beta|$), while the `barnard` excess (Galactic light or its own halo) breaks simple ecliptic monotonicity in `D2` (`r = -0.176`).
 
 ### 8.2 Can This Technique Detect Nebulae and Classify Background Events?
 
 Yes—with a clean 2D residual discriminant verified by subtracting joint multi-source Gaussian PSFs from `pilas_wise_0855.npz` and `pilas_rw_aur.npz`:
 
-- **Thermal/Photon Background vs Non-Gaussian PSF Halos:** Inside `r <= 5 px` of the target, **WISE 0855** leaves clean normalized residuals **`std_norm = 0.592–1.439`** (`0.0%` of pixels `> 3σ` in `P1/P2/P3 largo` and `P1/P2 medio`), whereas **RW Aur** produces **`std_norm = 58.9–199.7`** with **`29.5%–71.8%`** of pixels `> +3σ` **paired with `26.9%–69.2%`** `< -3σ` (symmetric positive/negative rings extending outside `r > 5 px` at `std_norm = 12.4–27.2`). Genuine **diffuse ISM / nebular emission** appears instead as spatially coherent, **strictly positive** (`> +3σ` without negative PSF ringing) multi-pixel excess in targeted spectral bins:
+- **Thermal/Photon Background vs Non-Gaussian PSF Halos:** Inside `r <= 5 px` of the target, **WISE 0855** leaves clean normalized residuals **`std_norm = 0.592–1.439`** (`0.0%` of pixels `> 3σ` in `P1/P2/P3 largo` and `P1/P2 medio`), whereas **RW Aur** produces **`std_norm = 58.9–199.7`** with **`29.5%–71.8%`** of pixels `> +3σ` **paired with `26.9%–69.2%`** `< -3σ` (symmetric positive/negative rings extending outside `r > 5 px` at `std_norm = 12.4–27.2`). Genuine **diffuse ISM / nebular emission** appears instead as spatially coherent, **single-sign** (without the paired `+3σ`/`-3σ` halo rings) multi-pixel signal in targeted spectral bins: an excess in emission bands (PAH, Brα) or a deficit in ice absorption bands:
   - **`H₂O` ice (`3.05 µm`, `D4`, bin 8 `2.657–3.112 µm`)** — dark molecular clouds & protostellar ices.
   - **`PAH` emission (`3.29 µm`, `D4`, bin 9 `3.112–3.645 µm`)** — photodissociation fronts & $\text{H II}$ nebula rims.
-  - **`H I Brα` (`4.051 µm`, `D5`, bin 10 `3.645–4.269 µm`)** — bright ionized gas (at `R ~ 41.5`, narrow faint lines dilute within broad bins).
-  - **`CO₂` ice (`4.26 µm`, `D5/D6`, bins 10–11 `3.645–5.0 µm`)** — adjacent to `CO` ice (`4.67 µm`).
+  - **`H I Brα` (`4.051 µm`, `D5`, bin 10 `3.645–4.269 µm`)** — bright ionized gas (SPHEREx has `R ~ 120` in `D5`, but narrow faint lines dilute within these broad bins).
+  - **`CO₂` ice (`4.26 µm`, `D5`, bin 10 `3.645–4.269 µm`)** — adjacent to `CO` ice (`4.67 µm`).
 - **Unified `(Δpos, D)` Event Taxonomy:**
 
 | Event Class | Positional Shift (`Δpos`) | Spectral Distance ($D$) | Observed Example |
@@ -125,7 +129,7 @@ Yes—with a clean 2D residual discriminant verified by subtracting joint multi-
 | **Nearby mover (Planet X / brown dwarf)** | `>= 5σ` | Low self (`< 3`); high vs neighbors | `wise_0855` (`8.67″`, `10.5σ`), `eps_ind_b` (`6.62″`, `13.2σ`), `barnard` (`10.26″`) |
 | **Spectral variable / stationary YSO** | `< 3σ` (`<= 0.4″`) | Very high (`> 5`) | `rw_aur` (`0.28″` net, **`D(2–3) = 17.31`**) |
 | **Saturated bright source** | Central NaNs | Undefined core | `r_dra` (`99.81%` exposures non-finite in central `3×3`) |
-| **Nebula / diffuse extended feature** | Extended (`> 20″`, multi-pixel) | Unilateral `> 3σ` excess in narrow ISM bins after PSF subtraction | Clean `wise_0855` floor vs bipolar PSF halo in `rw_aur` |
+| **Nebula / diffuse extended feature** | Extended (`> 20″`, multi-pixel) | Single-sign signal after PSF subtraction: emission excess (`3.29; 4.05 µm`) or ice absorption deficit (`3.05; 4.26 µm`) | Clean `wise_0855` floor vs bipolar PSF halo in `rw_aur` |
 
 ---
 
@@ -162,10 +166,10 @@ Yes—with a clean 2D residual discriminant verified by subtracting joint multi-
 
 ### Pitch Paragraph (4–5 sentences, copy-ready)
 
-> Ground and infrared surveys have revealed nearby brown dwarfs through proper-motion blinking, yet traditional broadband viewers break down when a cold mover passes in front of a background star—as happens with SPHEREx's benchmark target **WISE 0855**, which blends within half a native SPHEREx pixel (`3.30″` measured, `4.27″` predicted) in May 2026. Because SPHEREx uses Linear Variable Filters that collect a nearly complete `0.75–5.0 µm` spectrum on every sky pass, our method assigns each detected source a **scale-free spectral fingerprint** alongside its position, allowing blind multi-pass tracking with zero external catalogues (`8.67″ ± 0.66″` motion in one year at `10.5σ` vs `8.04″` predicted) where nearest-position matching loses the target (`0` candidates found). Subtracting static background stars directly in pixel space via `B5–6 − 0.217 × B1–3` suppresses field stars by up to `11.8×` without PSF fitting and recovers WISE 0855 within **`0.09″`** of its true orbital separation (`4.18″` vs `4.27″` predicted). Testing all five official challenge targets (`1,918` exposures) confirms parallax zigzag tracking in **ε Ind B** (`6.62″`, `13.2σ`), separates stationary spectral variables (**RW Aur**, `D = 17.31`) from movers, and turns the unsubtracted sky background itself into a clean zodiacal and extended-structure diagnostic.
+> Ground and infrared surveys have revealed nearby brown dwarfs through proper-motion blinking, yet traditional broadband viewers break down when a cold mover passes in front of a background star—as happens with SPHEREx's benchmark target **WISE 0855**, which blends within less than one native `6.15″` SPHEREx pixel (`3.30″` measured, `4.27″` predicted) in May 2026. Because SPHEREx uses Linear Variable Filters that collect a nearly complete `0.75–5.0 µm` spectrum on every sky pass, our method assigns each detected source a **scale-free spectral fingerprint** alongside its position, allowing blind multi-pass tracking with zero external catalogues (`8.67″ ± 0.66″` motion in one year at `10.5σ` vs `8.04″` predicted) where nearest-position matching loses the target (`0` candidates found). Subtracting static background stars directly in pixel space via `B5–6 − 0.217 × B1–3` dims field stars `3.0–4.8×` relative to the raw long-band image without PSF fitting and recovers WISE 0855 within **`0.09″`** of its true orbital separation (`4.18″` vs `4.27″` predicted). Testing all five official challenge targets (`1,918` exposures) confirms parallax in **ε Ind B** (`6.62″`, `13.2σ`), separates stationary spectral variables (**RW Aur**, `D = 17.31`) from movers, and turns the unsubtracted sky background itself into a clean zodiacal and extended-structure diagnostic.
 
 ### Slide Bullets (3 concise bullets)
 
 - **Fingerprint breaks the blend:** Without external catalogues, SPHEREx's `0.75–5.0 µm` spectral fingerprint isolates WISE 0855 across `3` passes (`8.67″ ± 0.66″` / `10.5σ`, `96%` flux `> 3.8 µm`) through a half-pixel blend where positional matching fails (`0` blind candidates vs `1` with fingerprint).
-- **Direct spectral background removal (`−0.217 × B1–3`):** Pixel-level subtraction of the short-band stellar template suppresses static field stars up to `11.8×` with no PSF fit, recovering WISE 0855 at `4.18″` (`0.09″` from the `4.27″` prediction).
-- **Validated across all 5 targets & raw sky background:** Recovers `eps Ind B` parallax zigzag (`6.62″`, `13.2σ`, missing bands handled), distinguishes stationary spectral variables (`RW Aur`, `D=17.31`) and `R Dra` saturation (`99.8%`), and separates zodiacal/Galactic background from extended PSF wings.
+- **Direct spectral background removal (`−0.217 × B1–3`):** Pixel-level subtraction of the short-band stellar template dims static field stars `3.0–4.8×` (vs the raw long band) with no PSF fit, recovering WISE 0855 at `4.18″` (`0.09″` from the `4.27″` prediction).
+- **Validated across all 5 targets & raw sky background:** Recovers `eps Ind B` with parallax (vector error `0.48″` vs `0.97″` without it) (`6.62″`, `13.2σ`, missing bands handled), distinguishes stationary spectral variables (`RW Aur`, `D=17.31`) and `R Dra` saturation (`99.8%`), and separates zodiacal/Galactic background from extended PSF wings.

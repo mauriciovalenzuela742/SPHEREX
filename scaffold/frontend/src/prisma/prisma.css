@@ -95,3 +95,44 @@
 .h-mol-dep { fill: #ffd43b; font: 700 13px ui-monospace, monospace; }
 .h-mol-info { margin: 0; font-size: 0.82rem; color: #e9ecef; }
 .h-mol-info strong { color: #ffd43b; font-weight: 600; }
+
+/* Huella espectral entre pasadas y fondo del cielo (HuellaPasadas.tsx, FondoCielo.tsx; V2, PR #58) */
+.hp, .fc { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--borde); display: flex; flex-direction: column; gap: 0.6rem; }
+.hp h3, .fc h3 { margin: 0; font-size: 1.05rem; }
+.hp h4 { margin: 0 0 0.4rem; font-size: 0.95rem; color: var(--acento); }
+.hp-cuerpo { display: grid; grid-template-columns: minmax(260px, 400px) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+@media (max-width: 760px) { .hp-cuerpo { grid-template-columns: 1fr; } }
+.hp-mapa { margin: 0; }
+.hp-mapa svg, .fc-figura svg { width: 100%; height: auto; display: block; }
+.hp-caso { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+.hp-caso p { margin: 0 0 0.4rem; }
+.hp-quietas { fill: #6ecbff; opacity: 0.12; }
+.hp-umbral { stroke: var(--suave); stroke-dasharray: 6 4; opacity: 0.7; }
+.hp-nombre { fill: var(--texto); font-size: 11px; }
+.hp-nombre.sel { font-weight: 700; fill: var(--acento); }
+.hp-busquedas { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin: 0.3rem 0 0.6rem; }
+@media (max-width: 480px) { .hp-busquedas { grid-template-columns: 1fr; } }
+.hp-busq { border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 0.7rem; font-size: 0.82rem; }
+.hp-busq.ok { border-color: var(--acento); }
+.hp-busq ul { margin: 0.3rem 0; padding-left: 1.1rem; color: var(--suave); }
+.hp-cand { font: 700 2rem ui-monospace, monospace; margin: 0 !important; line-height: 1.1; }
+.hp-busq.ok .hp-cand { color: var(--acento); }
+.hp-busq > span { color: var(--suave); }
+.hp-barras { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.2rem 0 0.6rem; }
+.hp-barra { display: grid; grid-template-columns: minmax(120px, 1.3fr) minmax(100px, 2fr) 7.5rem; gap: 0.5rem; align-items: center; font-size: 0.78rem; }
+.hp-barra-et { color: var(--suave); }
+.hp-barra-pista { position: relative; height: 10px; background: rgba(255, 255, 255, 0.04); border-radius: 5px; }
+.hp-barra-pista > span { position: absolute; top: 0; bottom: 0; border-radius: 5px; }
+.hp-barra-v { font: 0.78rem ui-monospace, monospace; }
+.hp-escala .hp-barra-pista { background: none; height: 14px; }
+.hp-escala i { position: absolute; transform: translateX(-50%); font-style: normal; font-size: 0.7rem; color: var(--suave); }
+@media (max-width: 480px) { .hp-barra { grid-template-columns: 1fr; } }
+.fc-figura { margin: 0; max-width: 680px; }
+.fc-ventana { fill: #6ecbff; opacity: 0.08; }
+.fc-firma { stroke: #a9b3cf; stroke-dasharray: 2 3; opacity: 0.5; }
+.fc-lista { margin: 0; padding-left: 1.1rem; font-size: 0.86rem; display: flex; flex-direction: column; gap: 0.3rem; max-width: 80ch; }
+.fc-nebulosas { font-size: 0.86rem; max-width: 80ch; }
+.fc-nebulosas summary { cursor: pointer; color: var(--acento); }
+.fc-nebulosas p { margin: 0.4rem 0; }
+.qc-quieta { margin: 0.4rem 0; font-size: 0.85rem; border-left: 3px solid #ff6b9a; padding-left: 0.6rem; }
+.fc-firma.abs { stroke-dasharray: 1 4; opacity: 0.35; }
