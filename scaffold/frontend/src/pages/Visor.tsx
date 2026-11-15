@@ -136,7 +136,7 @@ export default function Visor({ estado, set, asistido }: Props) {
           {!enMision && (
             <>
             <Explorador datos={datos} />
-            <Prisma datos={datos} />
+            <Prisma datos={datos} ra={estado.ra} dec={estado.dec} />
             </>
           )}
         </div>

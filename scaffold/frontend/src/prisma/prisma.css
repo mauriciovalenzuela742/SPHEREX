@@ -43,9 +43,55 @@
 .h-leyenda span { display: inline-block; width: 12px; height: 12px; }
 .h-ley-medida { background: var(--b3); border-radius: 50%; }
 .h-ley-limite { background: var(--b3); opacity: 0.55; clip-path: polygon(0 0, 100% 0, 50% 100%); }
-.h-ley-sat { border: 2px solid var(--b3); border-radius: 50%; }
+.h-leyenda .h-ley-sat { color: var(--b3); width: auto; height: auto; line-height: 1; font-size: 13px; }
 .h-ley-vec { border-top: 2px dashed #a9b3cf; height: 0 !important; }
 .h-ley-mol { background: #a9b3cf; opacity: 0.25; }
 .h-actual { margin: 0; font: 0.85rem ui-monospace, monospace; }
 .h-aviso { margin: 0; font-size: 0.85rem; color: #f2b84b; }
+.h-aviso-fuerte { font-weight: 600; }
+.h-nota { margin: 0; font-size: 0.8rem; color: var(--suave); }
+.h-boton { font: inherit; font-size: 0.8rem; padding: 0.15rem 0.6rem; border-radius: 6px; border: 1px solid #f2b84b; background: transparent; color: #f2b84b; cursor: pointer; }
+.h-boton:hover { background: rgba(242, 184, 75, 0.15); }
+.h-sat-franja { fill: #f2b84b; opacity: 0.06; }
 .h-caveat { margin: 0; font-size: 0.78rem; color: var(--suave); }
+
+/* Espectro por pasada */
+.h-linea { fill: none; stroke-width: 1.5; opacity: 0.6; pointer-events: none; }
+.h-punto.sosp { stroke-dasharray: 2 2; }
+.h-leyenda .h-ley-pasada { border-radius: 50%; }
+.p-controles { display: flex; flex-direction: column; gap: 0.35rem; }
+.p-grupo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: var(--suave); }
+.p-grupo button { font: inherit; font-size: 0.8rem; padding: 0.15rem 0.55rem; border-radius: 999px; border: 1px solid var(--borde); background: transparent; color: var(--suave); cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; }
+.p-grupo button[aria-pressed="true"] { border-color: #a9b3cf; color: #fff; background: rgba(169, 179, 207, 0.12); }
+.p-punto { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+.qc { border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 0.8rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.qc h4 { margin: 0; font-size: 0.92rem; }
+.qc-frase { margin: 0; font-size: 0.9rem; }
+.qc-tramos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; font: 0.78rem ui-monospace, monospace; color: var(--suave); }
+.qc-tramos li { display: grid; grid-template-columns: 9.5rem 5rem 1fr; gap: 0.5rem; align-items: center; }
+.qc-barra { height: 6px; background: #1b2238; border-radius: 3px; overflow: hidden; }
+.qc-barra span { display: block; height: 100%; background: #5c6a8a; }
+.qc-tramos li.sube { color: #ffd8a8; }
+.qc-tramos li.sube .qc-barra span { background: #ffa94d; }
+.qc-tramos li.baja { color: #a5d8ff; }
+.qc-tramos li.baja .qc-barra span { background: #74c0fc; }
+
+/* Ficha del astro */
+.ficha { border: 1px solid var(--borde); border-left: 4px solid #5c6a8a; border-radius: 8px; padding: 0.6rem 0.8rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.ficha-enana_marron { border-left-color: #b197fc; }
+.ficha-estrella_joven_polvo { border-left-color: #ffa94d; }
+.ficha-estrella { border-left-color: #74c0fc; }
+.ficha h4 { margin: 0; font-size: 0.92rem; }
+.ficha-tipo { margin: 0; font-size: 1rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.6rem; }
+.ficha-conf { font-size: 0.75rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--borde); color: var(--suave); }
+.ficha-motivo { margin: 0; font-size: 0.86rem; }
+
+/* Zonas de moléculas: explicación al pasar el mouse y caída de luz resaltada */
+.h-mol-zona { cursor: help; }
+.h-mol-zona.sobre .h-mol { opacity: 0.2; }
+.h-mol-zona.dep .h-mol { fill: #ffd43b; opacity: 0.13; }
+.h-mol-zona.dep.sobre .h-mol { opacity: 0.25; }
+.h-mol-zona.dep .h-mol-t { fill: #ffd43b; opacity: 1; }
+.h-mol-dep { fill: #ffd43b; font: 700 13px ui-monospace, monospace; }
+.h-mol-info { margin: 0; font-size: 0.82rem; color: #e9ecef; }
+.h-mol-info strong { color: #ffd43b; font-weight: 600; }
