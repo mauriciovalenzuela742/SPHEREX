@@ -112,6 +112,9 @@ export const prisma = {
     sinComun: "Las pasadas no tienen medidas en los mismos colores: no se pueden comparar.",
     comparando: (a: string, b: string) => `Comparando ${a} con ${b} (razón = después / antes).`,
     ruido: "dentro del ruido",
+    parcial:
+      "Comparación parcial: no hay dos pasadas completas (90 o más de 102 canales), así que se compara al menos " +
+      "una incompleta. Tómalo con cautela.",
     regla:
       "Solo se dice que cambió si la diferencia supera 3σ, contando un 5 % de error de calibración además del " +
       "ruido del cielo.",
@@ -267,6 +270,9 @@ export const prismaEN: typeof prisma = {
     sinComun: "The passes have no measurements in the same colors: they cannot be compared.",
     comparando: (a: string, b: string) => `Comparing ${a} with ${b} (ratio = after / before).`,
     ruido: "within noise",
+    parcial:
+      "Partial comparison: there are not two complete passes (90 or more of 102 channels), so at least one " +
+      "incomplete pass is compared. Take it with caution.",
     regla:
       "A change is only claimed if the difference exceeds 3σ, counting a 5% calibration error on top of the " +
       "sky noise.",

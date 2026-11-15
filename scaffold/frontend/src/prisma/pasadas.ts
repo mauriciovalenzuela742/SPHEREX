@@ -223,10 +223,12 @@ export const TRAMOS: [number, number][] = [
 ];
 
 export type Tramo = { a: number; z: number; razon: number; sigma: number; nA: number; nB: number; significativo: boolean };
-export type Cambio = { antes: Pasada; despues: Pasada; meses: number; tramos: Tramo[] };
+/** `parcial`: no había dos pasadas completas y se comparó al menos una incompleta. */
+export type Cambio = { antes: Pasada; despues: Pasada; meses: number; tramos: Tramo[]; parcial: boolean };
 
 /**
- * Compara la primera y la última pasada que compartan al menos un tramo con medidas usables.
+ * Compara el par de pasadas COMPLETAS (≥ CANALES_MIN canales) más separadas en el tiempo que compartan al menos
+ * un tramo con medidas usables. Solo si no hay dos completas comparables usa incompletas (`parcial = true`).
  * Un tramo es «significativo» si |B − A| > 3σ (σ con el piso PISO_REL en cada lado).
  */
 export function cambios(pasadas: Pasada[]): Cambio | null {
@@ -239,15 +241,22 @@ export function cambios(pasadas: Pasada[]): Cambio | null {
       const sigma = Math.abs(mb.v - ma.v) / Math.hypot(ma.s, mb.s);
       return [{ a, z, razon: mb.v / ma.v, sigma, nA: ma.n, nB: mb.n, significativo: sigma > 3 }];
     });
-  // La pareja más separada en el tiempo con tramos en común.
-  for (let span = pasadas.length - 1; span >= 1; span--)
-    for (let i = 0; i + span < pasadas.length; i++) {
-      const A = pasadas[i];
-      const B = pasadas[i + span];
-      const tramos = comparar(A, B);
-      if (tramos.length) return { antes: A, despues: B, meses: Math.max(1, Math.round((B.mjdMedio - A.mjdMedio) / 30.44)), tramos };
-    }
-  return null;
+  // La pareja más separada en el tiempo con tramos en común, dentro de la lista dada (en orden de fecha).
+  const buscar = (lista: Pasada[]): Omit<Cambio, "parcial"> | null => {
+    for (let span = lista.length - 1; span >= 1; span--)
+      for (let i = 0; i + span < lista.length; i++) {
+        const A = lista[i];
+        const B = lista[i + span];
+        const tramos = comparar(A, B);
+        if (tramos.length) return { antes: A, despues: B, meses: Math.max(1, Math.round((B.mjdMedio - A.mjdMedio) / 30.44)), tramos };
+      }
+    return null;
+  };
+  const orden = [...pasadas].sort((a, b) => a.mjdMedio - b.mjdMedio);
+  const completas = buscar(orden.filter((p) => !incompleta(p)));
+  if (completas) return { ...completas, parcial: false };
+  const todas = buscar(orden);
+  return todas ? { ...todas, parcial: incompleta(todas.antes) || incompleta(todas.despues) } : null;
 }
 
 /** Une tramos significativos contiguos del mismo signo: [{a, z, sube}] para el texto simple. */

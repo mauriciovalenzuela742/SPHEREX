@@ -28,6 +28,7 @@ export default function QueCambio({ pasadas }: { pasadas: Pasada[] }) {
           ? res.map((r) => t.frase(r.sube, rango(r.a, r.z), c.meses, fmt(r.razon, 2))).join(" ")
           : t.sinCambio(c.tramos.length)}
       </p>
+      {c.parcial && <p className="h-aviso">{t.parcial}</p>}
       <p className="h-nota">{t.comparando(antes, despues)}</p>
       <ul className="qc-tramos">
         {c.tramos.map((tr) => (
