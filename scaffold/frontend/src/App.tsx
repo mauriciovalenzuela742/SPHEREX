@@ -1,8 +1,10 @@
 /** AstroTRACK: portada, visor, Modo Misión y tutorial guiado por Spherix. */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Landing from "./pages/Landing";
 import Visor from "./pages/Visor";
 import Tutorial from "./tutorial/Tutorial";
+import Simple from "./simple/Simple";
+import InterruptorCiencia from "./simple/InterruptorCiencia";
 import { useEstadoUrl, type Estado } from "./state/url";
 import { useIdioma } from "./state/idioma";
 import { CAMPOS, posicionActual } from "./content/campos";
@@ -36,13 +38,48 @@ export default function App() {
     set({ tutorial: undefined, ...siguiente });
   };
 
+  // Modo ciencia = el Visor completo; sin él, la vista simple. El tutorial y el Modo Misión viven en el Visor.
+  const enVisor = estado.vista === "visor";
+  const ciencia = Boolean(estado.ciencia || estado.tutorial || estado.mision);
+  const conInterruptor = enVisor && !estado.tutorial && !estado.mision;
+  // Transición: la vista actual se nubla («sale»), se cambia y la nueva se aclara («entra»).
+  const [mostrada, setMostrada] = useState(ciencia);
+  const [fase, setFase] = useState<"quieto" | "sale" | "entra">("quieto");
+  useEffect(() => {
+    if (ciencia === mostrada) return;
+    if (!enVisor) {
+      setMostrada(ciencia);
+      return;
+    }
+    setFase("sale");
+    const t1 = window.setTimeout(() => {
+      setMostrada(ciencia);
+      setFase("entra");
+      window.scrollTo({ top: 0 });
+    }, 350);
+    const t2 = window.setTimeout(() => setFase("quieto"), 850);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ciencia]);
+  const simple = enVisor && !mostrada;
+
   return (
     <div className="app">
+      <div className={`vista-modo ${fase}`}>
+      {simple ? (
+        <Simple estado={estado} set={set} onCiencia={() => set({ ciencia: true })} />
+      ) : (
+      <>
       <header>
         <button className="marca" onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>
           {t.titulo}
         </button>
         <span className="etiqueta">NASA Space Apps 2026</span>
+
+        {conInterruptor && <InterruptorCiencia activo onCambiar={(v) => set({ ciencia: v || undefined })} />}
 
         {/* Selector de idioma */}
         <div className="selector-idioma">
@@ -79,7 +116,7 @@ export default function App() {
       <main>
         {estado.vista === "landing" ? (
           <Landing
-            onEmpezar={() => set({ vista: "visor", mision: undefined })}
+            onEmpezar={() => set({ vista: "visor", mision: undefined, ciencia: undefined })}
             onMision={() => set({ vista: "visor", mision: "intro" })}
             onTutorial={abrirTutorial}
           />
@@ -87,6 +124,9 @@ export default function App() {
           <Visor estado={estado} set={set} asistido={asistido} />
         )}
       </main>
+      </>
+      )}
+      </div>
       <footer>{t.atribucion}</footer>
 
       {estado.vista === "visor" && estado.tutorial && !estado.mision && (

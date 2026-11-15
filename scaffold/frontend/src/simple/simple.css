@@ -1,0 +1,73 @@
+/* Vista simple (sin «Modo ciencia») y el interruptor que pasa al Visor completo. */
+.simple { min-height: 100vh; display: flex; flex-direction: column; background: var(--fondo); color: var(--texto); }
+
+.simple-barra { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 1rem; border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
+.simple-marca { background: none; border: 0; color: var(--texto); font-weight: 800; font-size: 1.2rem; padding: 0; cursor: pointer; }
+.simple-busca { position: relative; display: flex; align-items: center; gap: 0.4rem; flex: 0 1 380px; min-width: 220px; background: var(--panel); border: 1px solid var(--borde); border-radius: 999px; padding: 0.35rem 0.9rem; }
+.simple-busca span { color: var(--suave); }
+.simple-busca input { flex: 1; background: none; border: 0; color: var(--texto); font: inherit; outline: none; min-width: 0; }
+.simple-busca-error { position: absolute; top: calc(100% + 6px); left: 0; z-index: 5; background: var(--panel); border: 1px solid var(--acento); border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; width: max-content; max-width: 360px; }
+.simple-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.simple-chips button { border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.85rem; font-weight: 600; }
+.simple-chips button.activo { background: var(--acento); color: #111; border-color: var(--acento); }
+.simple-derecha { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
+.simple-ayuda-btn { width: 2.1rem; height: 2.1rem; border-radius: 50%; padding: 0; font-weight: 700; }
+.simple-idioma { display: flex; gap: 0.2rem; color: var(--suave); font-size: 0.85rem; }
+.simple-idioma button { background: none; border: 0; padding: 0 0.2rem; color: var(--suave); cursor: pointer; font-size: 0.85rem; }
+.simple-idioma button.activo { color: var(--acento); font-weight: 700; }
+.simple-ayuda { margin: 0.8rem auto 0; max-width: 640px; background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 0.6rem 1rem; font-size: 0.9rem; color: var(--suave); }
+.simple-ayuda p { margin: 0.3rem 0; }
+
+.simple-centro { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.7rem; padding: 1rem; }
+.simple-aviso { display: flex; align-items: center; gap: 1rem; max-width: 540px; background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
+.simple-aviso button { white-space: nowrap; font-weight: 600; }
+.simple-imagen { position: relative; width: min(520px, 90vw, 62vh); aspect-ratio: 1; background: #000; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
+/* Suavizado (no píxeles cuadrados): en la vista simple importa la forma, no el píxel. */
+.simple-imagen canvas { width: 100%; height: 100%; display: block; image-rendering: auto; filter: blur(1.2px) saturate(1.25); }
+.simple-mensaje { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 2rem; color: var(--suave); margin: 0; }
+.simple-marca-objeto { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 14%; aspect-ratio: 1; padding: 0; background: none; border: 0; cursor: pointer; }
+.smo-aro { position: absolute; inset: 0; border: 2px dashed #ffb000; border-radius: 50%; box-shadow: 0 0 12px rgba(255, 176, 0, 0.35); }
+.smo-nombre { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; color: #ffb000; font-weight: 700; font-size: 0.85rem; text-shadow: 0 1px 3px #000; }
+.simple-fecha, .simple-escala, .simple-cargando { position: absolute; bottom: 10px; font: 12px ui-monospace, Menlo, Consolas, monospace; background: rgba(0, 0, 0, 0.6); padding: 3px 8px; border-radius: 5px; }
+.simple-fecha { left: 10px; }
+.simple-escala { right: 44px; background: none; padding: 0; display: flex; align-items: center; height: 18px; }
+.simple-escala i { flex: 1; height: 2px; background: #fff; box-shadow: 0 0 2px #000; }
+.simple-escala b { position: absolute; left: calc(100% + 6px); font-weight: 400; background: rgba(0, 0, 0, 0.6); padding: 1px 5px; border-radius: 4px; }
+.simple-cargando { right: 10px; top: 10px; bottom: auto; }
+.simple-fechas { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; }
+.simple-fechas button { font: 13px ui-monospace, Menlo, Consolas, monospace; padding: 0.4rem 0.8rem; }
+.simple-fechas button.activo { background: var(--acento); color: #111; border-color: var(--acento); }
+
+.simple-luz { border-top: 1px solid var(--borde); background: var(--panel); padding: 0.6rem 1rem 0.8rem; }
+.simple-luz p { margin: 0 0 0.4rem; font-size: 0.85rem; color: var(--suave); }
+.simple-luz p b { color: var(--texto); }
+.simple-luz-botones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
+.simple-luz-botones button { border: 2px solid transparent; border-radius: 8px; padding: 0.5rem; font-weight: 700; color: #10131c; }
+.simple-luz-botones button.activo { border-color: #fff; box-shadow: 0 0 0 2px var(--acento); }
+.luz-todas { background: linear-gradient(90deg, #8ab4ff, #7dcfa3, #ff7a59); }
+.luz-cercana { background: #8ab4ff; }
+.luz-media { background: #7dcfa3; }
+.luz-lejana { background: #ff7a59; }
+.simple-luz-ejes { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--suave); margin-top: 0.3rem; }
+
+@media (max-width: 720px) {
+  .simple-luz-botones { grid-template-columns: repeat(2, 1fr); }
+  .simple-derecha { margin-left: 0; }
+}
+
+/* Interruptor «Modo ciencia» */
+.interruptor-ciencia { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 999px; padding: 0.3rem 0.8rem 0.3rem 0.4rem; font-size: 0.85rem; }
+.ic-riel { position: relative; width: 2.2rem; height: 1.2rem; border-radius: 999px; background: var(--borde); transition: background 0.25s; }
+.ic-perilla { position: absolute; top: 0.15rem; left: 0.15rem; width: 0.9rem; height: 0.9rem; border-radius: 50%; background: #fff; transition: transform 0.25s; }
+.interruptor-ciencia.activo .ic-riel { background: var(--acento); }
+.interruptor-ciencia.activo .ic-perilla { transform: translateX(1rem); }
+
+/* Transición entre modos: la vista se nubla y aparece la otra. */
+.vista-modo { transition: filter 0.35s ease, opacity 0.35s ease, transform 0.35s ease; }
+.vista-modo.sale { filter: blur(16px); opacity: 0; transform: scale(1.02); }
+.vista-modo.entra { animation: aclarar 0.45s ease both; }
+@keyframes aclarar { from { filter: blur(16px); opacity: 0; transform: scale(0.98); } to { filter: none; opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .vista-modo, .vista-modo.entra { transition: opacity 0.15s; animation: none; filter: none; transform: none; }
+  .ic-perilla, .ic-riel { transition: none; }
+}
