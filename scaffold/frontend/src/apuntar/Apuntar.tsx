@@ -9,6 +9,7 @@ import { decASexa, leerDec, leerPar, leerRA, raASexa } from "./coordenadas";
 import { puntoAlAzar, icrsAGalactica } from "./galactica";
 import { queHayAqui, RADIO_ARCSEC, tipoLegible, type Hallazgo } from "./queHayAqui";
 import { useIdioma } from "../state/idioma";
+import { nombrarPedido, pedirEspectro } from "./espectroPunto";
 
 type Punto = { ra: number; dec: number };
 
@@ -108,7 +109,10 @@ export function PanelDescubrir({
     const ctl = new AbortController();
     setEstado({ fase: "buscando", punto });
     queHayAqui(punto.ra, punto.dec, epoca, ctl.signal)
-      .then((hallazgos) => setEstado({ fase: "listo", punto, hallazgos }))
+      .then((hallazgos) => {
+        setEstado({ fase: "listo", punto, hallazgos });
+        if (hallazgos.length) nombrarPedido(punto.ra, punto.dec, hallazgos[0].nombre);
+      })
       .catch((e: unknown) => {
         if (ctl.signal.aborted) return;
         console.error("[apuntar] SIMBAD no respondió:", e);
@@ -151,6 +155,27 @@ export function PanelDescubrir({
             <strong>{tr("Nada registrado en SIMBAD en este punto", "Nothing listed in SIMBAD at this spot")}</strong> (
             {tr("a menos de", "within")} {RADIO_ARCSEC}″):{" "}
             {tr("si ves algo que se mueve o cambia, ¡puede valer la pena revisarlo!", "if you see something moving or changing, it may be worth a closer look!")}
+          </p>
+        )}
+        {estado.fase !== "nada" && (
+          <p>
+            <button
+              type="button"
+              onClick={() =>
+                pedirEspectro({
+                  ra: estado.punto.ra,
+                  dec: estado.punto.dec,
+                  nombre: estado.fase === "listo" ? estado.hallazgos[0]?.nombre : undefined,
+                  origen: "clic",
+                })
+              }
+              title={tr(
+                "Mide su brillo en las fotos de SPHEREx entre 0,75 y 5 µm y estima qué tipo de objeto podría ser",
+                "Measures its brightness in SPHEREx photos from 0.75 to 5 µm and estimates what kind of object it could be",
+              )}
+            >
+              {tr("Ver el espectro de este punto", "See the spectrum of this spot")}
+            </button>
           </p>
         )}
         {estado.fase === "error" && (
