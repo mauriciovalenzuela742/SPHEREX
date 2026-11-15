@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Landing from "./pages/Landing";
 import Visor from "./pages/Visor";
+import Descargas from "./pages/Descargas";
 import Tutorial from "./tutorial/Tutorial";
 import Simple from "./simple/Simple";
 import InterruptorCiencia from "./simple/InterruptorCiencia";
@@ -116,6 +117,7 @@ export default function App() {
             <button onClick={() => set({ vista: "visor", mision: undefined, tutorial: undefined })}>{t.visor}</button>
             <button onClick={() => set({ vista: "visor", mision: "intro", tutorial: undefined })}>{t.modoMision}</button>
             <button onClick={() => abrirTutorial("ciencia")}>{t.verTutorial}</button>
+            <button onClick={() => set({ vista: "descargas", mision: undefined, tutorial: undefined })}>{t.descargas}</button>
             <a href="https://github.com/mauriciovalenzuela742/SPHEREX">{t.repositorio}</a>
           </nav>
         )}
@@ -126,7 +128,10 @@ export default function App() {
             onEmpezar={() => set({ vista: "visor", mision: undefined, ciencia: undefined })}
             onMision={() => set({ vista: "visor", mision: "intro" })}
             onTutorial={() => abrirTutorial("simple")}
+            onDescargas={() => set({ vista: "descargas" })}
           />
+        ) : estado.vista === "descargas" ? (
+          <Descargas />
         ) : (
           <Visor estado={estado} set={set} asistido={asistido} />
         )}
