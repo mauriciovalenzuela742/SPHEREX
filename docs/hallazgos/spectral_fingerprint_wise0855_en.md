@@ -131,6 +131,31 @@ Yes—with a clean 2D residual discriminant verified by subtracting joint multi-
 | **Saturated bright source** | Central NaNs | Undefined core | `r_dra` (`99.81%` exposures non-finite in central `3×3`) |
 | **Nebula / diffuse extended feature** | Extended (`> 20″`, multi-pixel) | Single-sign signal after PSF subtraction: emission excess (`3.29; 4.05 µm`) or ice absorption deficit (`3.05; 4.26 µm`) | Clean `wise_0855` floor vs bipolar PSF halo in `rw_aur` |
 
+### 8.3 Barycentric Doppler Shift, LVF Geometric Coupling, and Intra-Pass Motion (`doppler_y_escaneo.py`)
+
+Does the physical Doppler shift—from a target's radial velocity or from Earth's orbital reversal every `6` months—bias our spectral fingerprints? And what happens when a fast target moves while SPHEREx scans a field over several weeks? Computing exact barycentric ephemerides and instrument resolution across all `5` targets yields three conclusions:
+
+1. **Invariance to physical Doppler shifts:** Because SPHEREx always observes near solar elongation $\epsilon \approx 90^\circ$, the line-of-sight projection of Earth's orbital velocity flips by up to **`58.82 km/s`** between six-month passes near the ecliptic (`RW Aur`). Even combining systemic radial velocities and bipolar outflows, total Doppler shifts span only **`0.8% – 10.6%` of a single SPHEREx resolution element**—far below the empirical Cramér–Rao floor measured on our WISE 0855 spectra (`±2,807` to `±3,588 km/s` statistical; `±2,849` to `±4,250 km/s` with the `5%` floor). Barycentric Doppler thus never perturbs $D$, though multi-channel wavelength shifts remain useful to separate local ($z \approx 0$) movers from redshifted extragalactic contaminants ($z \gtrsim 0.02$, $\ge 6,000\text{ km/s}$).
+2. **LVF geometric coupling ("apparent Doppler" from position drift):** Along SPHEREx's Linear Variable Filter (`0.176–0.684 nm/px`), holding a fixed J2000 or Pass-1 coordinate across epochs induces an artificial `WCS-WAVE` shift equivalent to **`21–94 km/s`** alongside **`85% – 100%`** PSF flux loss for our three moving targets.
+3. **Intra-pass blurring across `42.7–55.0 day` scan windows:** Real single passes can span up to `6–8` weeks as the survey fills wavelength coverage. Assuming a single static position inside one pass shifts `Barnard` by **`1.56″`** (`0.254 px`), `WISE 0855` by **`1.02″`** (`0.166 px`), and `ε Ind B` by **`0.62″`** (`0.100 px`), attenuating short-band PSF flux to `81.71%`, `91.71%`, and `96.92%` respectively—an effect already avoided in the web viewer whenever `pmra/pmdec` is propagated exposure by exposure (`/api/spectrum` and SIMBAD click-through).
+
+| Band | $\lambda$ Range (`µm`) | Resolution $R$ | Channel Width $\Delta\lambda$ (`nm`) | Velocity / Channel ($c/R$) | LVF Gradient (`nm/px`) | Equivalent LVF Drift per px / per `1″` |
+|---|---:|---:|---:|---:|---:|---:|
+| **D1** | `0.75 – 1.11` | `41` | `22.7` | `7,312 km/s` | `0.176` | `56.7 km/s/px` · `9.2 km/s/″` |
+| **D2** | `1.11 – 1.64` | `41` | `33.5` | `7,312 km/s` | `0.259` | `56.4 km/s/px` · `9.2 km/s/″` |
+| **D3** | `1.64 – 2.42` | `41` | `49.5` | `7,312 km/s` | `0.381` | `56.2 km/s/px` · `9.1 km/s/″` |
+| **D4** | `2.42 – 3.82` | `35` | `89.1` | `8,565 km/s` | `0.684` | `65.7 km/s/px` · `10.7 km/s/″` |
+| **D5** | `3.82 – 4.42` | `110` | `37.5` | `2,725 km/s` | `0.293` | `21.3 km/s/px` · `3.5 km/s/″` |
+| **D6** | `4.42 – 5.00` | `130` | `36.2` | `2,306 km/s` | `0.283` | `18.0 km/s/px` · `2.9 km/s/″` |
+
+| Target | Systemic RV (SIMBAD) | Inter-Pass $\Delta v_{\text{bary}}$ (`km/s`) | Max Total Channel Fraction (`D1–3` / `D6`) | Fixed-Coord Loss & LVF Drift Across Passes | Longest Pass (`days`) | **Intra-Pass** Shift & Retained PSF Flux (Short / Long) |
+|---|---:|---:|---:|---|---:|---|
+| **wise_0855** | Not published in SIMBAD | `54.04` (`P1–3`: `-27.00 / +27.04 / -26.85`) | `0.37%` / `1.17%` (barycentric only) | `0.2%` / `3.7%` (`27.7–79.5 km/s`) | `42.7` | `1.02″` (`0.166 px`) $\rightarrow$ **`91.71%` / `95.53%`** |
+| **eps_ind_b** | `-40.04 km/s` (`2018A&A...616A...7S`, system) | `44.10` (`+21.16 / -22.01 / +22.09 / -18.23`) | `0.85%` / `2.69%` | `2.7%` / `14.8%` (`21.2–60.6 km/s`) | `46.3` | `0.62″` (`0.100 px`) $\rightarrow$ **`96.92%` / `98.36%`** |
+| **barnard** | `-110.11 km/s` (`2018MNRAS.475.1960F`) | `50.41` (`-25.35 / +25.06 / -24.85`) | `1.85%` / `5.87%` | `0.0%` / `1.0%` (`32.8–94.1 km/s`) | `55.0` | **`1.56″`** (`0.254 px`) $\rightarrow$ **`81.71%` / `89.87%`** |
+| **rw_aur** | `+15.0 km/s` (`2012ApJ...745..119N`; jets `~200`) | **`58.82`** (`+29.32 / -29.49 / +29.33`) | `3.34%` / `10.60%` (incl. jets) | `99.4%` / `99.7%` (`0.9–2.6 km/s`) | `19.3` | `0.01″` (`0.002 px`) $\rightarrow$ `100.00%` / `100.00%` |
+| **r_dra** | `-132.8 km/s` (`1953GCRV..C......0W`; puls. `~15`) | `8.82` (`-4.34 / +4.45 / -4.37`) | `2.08%` / `6.60%` | `100.0%` / `100.0%` (`0.1–0.2 km/s`) | `87.8` | `0.01″` (`0.001 px`) $\rightarrow$ `100.00%` / `100.00%` |
+
 ---
 
 ## 9. Honest Limitations (Measured vs Assumed)

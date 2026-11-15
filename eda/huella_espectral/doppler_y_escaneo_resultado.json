@@ -1,0 +1,341 @@
+{
+  "c_kms": 299792.458,
+  "escala_pixel_arcsec": 6.15,
+  "escala_por_banda": [
+    {
+      "banda": "D1",
+      "lam_min_um": 0.75,
+      "lam_max_um": 1.11,
+      "R": 41,
+      "dlam_res_nm": 22.7,
+      "dv_res_kms": 7312.0,
+      "grad_lvf_nm_px": 0.176,
+      "v_eq_lvf_kms_px": 56.7,
+      "v_eq_lvf_kms_arcsec": 9.2
+    },
+    {
+      "banda": "D2",
+      "lam_min_um": 1.11,
+      "lam_max_um": 1.64,
+      "R": 41,
+      "dlam_res_nm": 33.5,
+      "dv_res_kms": 7312.0,
+      "grad_lvf_nm_px": 0.259,
+      "v_eq_lvf_kms_px": 56.4,
+      "v_eq_lvf_kms_arcsec": 9.2
+    },
+    {
+      "banda": "D3",
+      "lam_min_um": 1.64,
+      "lam_max_um": 2.42,
+      "R": 41,
+      "dlam_res_nm": 49.5,
+      "dv_res_kms": 7312.0,
+      "grad_lvf_nm_px": 0.381,
+      "v_eq_lvf_kms_px": 56.2,
+      "v_eq_lvf_kms_arcsec": 9.1
+    },
+    {
+      "banda": "D4",
+      "lam_min_um": 2.42,
+      "lam_max_um": 3.82,
+      "R": 35,
+      "dlam_res_nm": 89.1,
+      "dv_res_kms": 8565.0,
+      "grad_lvf_nm_px": 0.684,
+      "v_eq_lvf_kms_px": 65.7,
+      "v_eq_lvf_kms_arcsec": 10.7
+    },
+    {
+      "banda": "D5",
+      "lam_min_um": 3.82,
+      "lam_max_um": 4.42,
+      "R": 110,
+      "dlam_res_nm": 37.5,
+      "dv_res_kms": 2725.0,
+      "grad_lvf_nm_px": 0.293,
+      "v_eq_lvf_kms_px": 21.3,
+      "v_eq_lvf_kms_arcsec": 3.5
+    },
+    {
+      "banda": "D6",
+      "lam_min_um": 4.42,
+      "lam_max_um": 5.0,
+      "R": 130,
+      "dlam_res_nm": 36.2,
+      "dv_res_kms": 2306.0,
+      "grad_lvf_nm_px": 0.283,
+      "v_eq_lvf_kms_px": 18.0,
+      "v_eq_lvf_kms_arcsec": 2.9
+    }
+  ],
+  "cramer_rao_wise0855": {
+    "disponible": true,
+    "por_pasada": {
+      "P1": {
+        "n_bines": 8,
+        "sigma_v_est_kms": 2807.0,
+        "sigma_v_con_5pct_kms": 2849.0
+      },
+      "P2": {
+        "n_bines": 12,
+        "sigma_v_est_kms": 3384.0,
+        "sigma_v_con_5pct_kms": 3603.0
+      },
+      "P3": {
+        "n_bines": 12,
+        "sigma_v_est_kms": 3588.0,
+        "sigma_v_con_5pct_kms": 4250.0
+      }
+    }
+  },
+  "objetivos": {
+    "wise_0855": {
+      "meta": {
+        "ra_deg": 133.76008,
+        "dec_deg": -7.24221,
+        "beta_bme_deg": -23.62,
+        "beta_gme_deg": -23.62,
+        "abs_beta_deg": 23.62,
+        "ecl_lon_deg": 138.49,
+        "gal_b_deg": 23.32,
+        "abs_gal_b_deg": 23.32,
+        "gal_l_deg": 234.97
+      },
+      "simbad_rv": {
+        "simbad_id": "WISEA J085510.74-071442.5",
+        "rv_kms": null,
+        "nota": "Sin RV publicada en SIMBAD; solo se usa el salto baricentrico exacto y cota |v_r|<=50 km/s ilustrativa."
+      },
+      "v_bary_por_pasada_kms": [
+        -27.0,
+        27.04,
+        -26.85
+      ],
+      "max_delta_v_bary_entre_pasadas_kms": 54.04,
+      "frac_lam_bary": 0.00018,
+      "frac_canal_d1_3_pct": 0.739,
+      "frac_canal_d6_pct": 2.343,
+      "max_delta_v_bary_dentro_pasada_kms": 3.89,
+      "v_fisica_total_max_kms": 27.0,
+      "frac_canal_d1_3_total_pct": 0.37,
+      "frac_canal_d6_total_pct": 1.17,
+      "duracion_total_dias": 373.6,
+      "dt_centros_pasadas_dias": 361.6,
+      "movimiento_neto_arcsec": 8.67,
+      "si_coordenada_fija_entre_pasadas": {
+        "falso_doppler_lvf_corto_kms": 79.5,
+        "falso_doppler_lvf_largo_kms": 27.7,
+        "flujo_psf_retenido_corto_pct": 0.2,
+        "flujo_psf_retenido_largo_pct": 3.7
+      },
+      "dentro_de_misma_pasada": {
+        "max_duracion_pasada_dias": 42.7,
+        "movimiento_intra_arcsec": 1.02,
+        "movimiento_intra_px": 0.166,
+        "falso_doppler_lvf_corto_kms": 9.38,
+        "flujo_psf_retenido_corto_pct": 91.71,
+        "flujo_psf_retenido_largo_pct": 95.53
+      }
+    },
+    "eps_ind_b": {
+      "meta": {
+        "ra_deg": 331.09664,
+        "dec_deg": -56.80066,
+        "beta_bme_deg": -41.49,
+        "beta_gme_deg": -41.49,
+        "abs_beta_deg": 41.49,
+        "ecl_lon_deg": 309.78,
+        "gal_b_deg": -48.16,
+        "abs_gal_b_deg": 48.16,
+        "gal_l_deg": 336.08
+      },
+      "simbad_rv": {
+        "simbad_id": "* eps Ind (sistema)",
+        "rv_kms": -40.035,
+        "bibcode": "2018A&A...616A...7S",
+        "nota": "* eps Ind B hereda la RV del sistema eps Ind A (2018A&A...616A...7S)."
+      },
+      "v_bary_por_pasada_kms": [
+        21.16,
+        -22.01,
+        22.09,
+        -18.23
+      ],
+      "max_delta_v_bary_entre_pasadas_kms": 44.1,
+      "frac_lam_bary": 0.000147,
+      "frac_canal_d1_3_pct": 0.603,
+      "frac_canal_d6_pct": 1.912,
+      "max_delta_v_bary_dentro_pasada_kms": 5.0,
+      "v_fisica_total_max_kms": 62.1,
+      "frac_canal_d1_3_total_pct": 0.85,
+      "frac_canal_d6_total_pct": 2.69,
+      "duracion_total_dias": 525.6,
+      "dt_centros_pasadas_dias": 497.3,
+      "movimiento_neto_arcsec": 6.62,
+      "si_coordenada_fija_entre_pasadas": {
+        "falso_doppler_lvf_corto_kms": 60.6,
+        "falso_doppler_lvf_largo_kms": 21.2,
+        "flujo_psf_retenido_corto_pct": 2.7,
+        "flujo_psf_retenido_largo_pct": 14.8
+      },
+      "dentro_de_misma_pasada": {
+        "max_duracion_pasada_dias": 46.3,
+        "movimiento_intra_arcsec": 0.62,
+        "movimiento_intra_px": 0.1,
+        "falso_doppler_lvf_corto_kms": 5.65,
+        "flujo_psf_retenido_corto_pct": 96.92,
+        "flujo_psf_retenido_largo_pct": 98.36
+      }
+    },
+    "barnard": {
+      "meta": {
+        "ra_deg": 269.44621,
+        "dec_deg": 4.76891,
+        "beta_bme_deg": 28.21,
+        "beta_gme_deg": 28.21,
+        "abs_beta_deg": 28.21,
+        "ecl_lon_deg": 269.37,
+        "gal_b_deg": 14.1,
+        "abs_gal_b_deg": 14.1,
+        "gal_l_deg": 31.08
+      },
+      "simbad_rv": {
+        "simbad_id": "NAME Barnard's star",
+        "rv_kms": -110.11,
+        "bibcode": "2018MNRAS.475.1960F",
+        "nota": "Fouque et al. 2018."
+      },
+      "v_bary_por_pasada_kms": [
+        -25.35,
+        25.06,
+        -24.85
+      ],
+      "max_delta_v_bary_entre_pasadas_kms": 50.41,
+      "frac_lam_bary": 0.000168,
+      "frac_canal_d1_3_pct": 0.689,
+      "frac_canal_d6_pct": 2.186,
+      "max_delta_v_bary_dentro_pasada_kms": 7.31,
+      "v_fisica_total_max_kms": 135.3,
+      "frac_canal_d1_3_total_pct": 1.85,
+      "frac_canal_d6_total_pct": 5.87,
+      "duracion_total_dias": 402.8,
+      "dt_centros_pasadas_dias": 361.1,
+      "movimiento_neto_arcsec": 10.26,
+      "si_coordenada_fija_entre_pasadas": {
+        "falso_doppler_lvf_corto_kms": 94.1,
+        "falso_doppler_lvf_largo_kms": 32.8,
+        "flujo_psf_retenido_corto_pct": 0.0,
+        "flujo_psf_retenido_largo_pct": 1.0
+      },
+      "dentro_de_misma_pasada": {
+        "max_duracion_pasada_dias": 55.0,
+        "movimiento_intra_arcsec": 1.56,
+        "movimiento_intra_px": 0.254,
+        "falso_doppler_lvf_corto_kms": 14.33,
+        "flujo_psf_retenido_corto_pct": 81.71,
+        "flujo_psf_retenido_largo_pct": 89.87
+      }
+    },
+    "rw_aur": {
+      "meta": {
+        "ra_deg": 76.95659,
+        "dec_deg": 30.40129,
+        "beta_bme_deg": 7.47,
+        "beta_gme_deg": 7.47,
+        "abs_beta_deg": 7.47,
+        "ecl_lon_deg": 78.68,
+        "gal_b_deg": -6.0,
+        "abs_gal_b_deg": 6.0,
+        "gal_l_deg": 174.2
+      },
+      "simbad_rv": {
+        "simbad_id": "V* RW Aur",
+        "rv_kms": 15.0,
+        "bibcode": "2012ApJ...745..119N",
+        "v_int_kms": 200.0,
+        "nota": "Estrella T Tauri con chorros bipolares del orden de ~200 km/s."
+      },
+      "v_bary_por_pasada_kms": [
+        29.32,
+        -29.49,
+        29.33
+      ],
+      "max_delta_v_bary_entre_pasadas_kms": 58.82,
+      "frac_lam_bary": 0.000196,
+      "frac_canal_d1_3_pct": 0.804,
+      "frac_canal_d6_pct": 2.551,
+      "max_delta_v_bary_dentro_pasada_kms": 1.25,
+      "v_fisica_total_max_kms": 244.4,
+      "frac_canal_d1_3_total_pct": 3.34,
+      "frac_canal_d6_total_pct": 10.6,
+      "duracion_total_dias": 380.5,
+      "dt_centros_pasadas_dias": 363.7,
+      "movimiento_neto_arcsec": 0.28,
+      "si_coordenada_fija_entre_pasadas": {
+        "falso_doppler_lvf_corto_kms": 2.6,
+        "falso_doppler_lvf_largo_kms": 0.9,
+        "flujo_psf_retenido_corto_pct": 99.4,
+        "flujo_psf_retenido_largo_pct": 99.7
+      },
+      "dentro_de_misma_pasada": {
+        "max_duracion_pasada_dias": 19.3,
+        "movimiento_intra_arcsec": 0.01,
+        "movimiento_intra_px": 0.002,
+        "falso_doppler_lvf_corto_kms": 0.14,
+        "flujo_psf_retenido_corto_pct": 100.0,
+        "flujo_psf_retenido_largo_pct": 100.0
+      }
+    },
+    "r_dra": {
+      "meta": {
+        "ra_deg": 248.16723,
+        "dec_deg": 66.75502,
+        "beta_bme_deg": 81.39,
+        "beta_gme_deg": 81.39,
+        "abs_beta_deg": 81.39,
+        "ecl_lon_deg": 168.69,
+        "gal_b_deg": 38.23,
+        "abs_gal_b_deg": 38.23,
+        "gal_l_deg": 98.53
+      },
+      "simbad_rv": {
+        "simbad_id": "V* R Dra",
+        "rv_kms": -132.8,
+        "bibcode": "1953GCRV..C......0W",
+        "v_int_kms": 15.0,
+        "nota": "Estrella Mira con pulsacion tipica ~15 km/s."
+      },
+      "v_bary_por_pasada_kms": [
+        -4.34,
+        4.45,
+        -4.37
+      ],
+      "max_delta_v_bary_entre_pasadas_kms": 8.82,
+      "frac_lam_bary": 2.9e-05,
+      "frac_canal_d1_3_pct": 0.121,
+      "frac_canal_d6_pct": 0.382,
+      "max_delta_v_bary_dentro_pasada_kms": 1.11,
+      "v_fisica_total_max_kms": 152.2,
+      "frac_canal_d1_3_total_pct": 2.08,
+      "frac_canal_d6_total_pct": 6.6,
+      "duracion_total_dias": 425.9,
+      "dt_centros_pasadas_dias": 349.8,
+      "movimiento_neto_arcsec": 0.02,
+      "si_coordenada_fija_entre_pasadas": {
+        "falso_doppler_lvf_corto_kms": 0.2,
+        "falso_doppler_lvf_largo_kms": 0.1,
+        "flujo_psf_retenido_corto_pct": 100.0,
+        "flujo_psf_retenido_largo_pct": 100.0
+      },
+      "dentro_de_misma_pasada": {
+        "max_duracion_pasada_dias": 87.8,
+        "movimiento_intra_arcsec": 0.01,
+        "movimiento_intra_px": 0.001,
+        "falso_doppler_lvf_corto_kms": 0.05,
+        "flujo_psf_retenido_corto_pct": 100.0,
+        "flujo_psf_retenido_largo_pct": 100.0
+      }
+    }
+  }
+}

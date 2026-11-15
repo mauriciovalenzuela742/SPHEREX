@@ -162,14 +162,18 @@ export function PanelDescubrir({
           <p>
             <button
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const h = estado.fase === "listo" ? estado.hallazgos[0] : undefined;
                 pedirEspectro({
-                  ra: estado.punto.ra,
-                  dec: estado.punto.dec,
-                  nombre: estado.fase === "listo" ? estado.hallazgos[0]?.nombre : undefined,
+                  ra: h?.ra ?? estado.punto.ra,
+                  dec: h?.dec ?? estado.punto.dec,
+                  nombre: h?.nombre,
+                  pmra: h?.pmra,
+                  pmdec: h?.pmdec,
+                  epoca: h?.epoca,
                   origen: "clic",
-                })
-              }
+                });
+              }}
               title={tr(
                 "Mide su brillo en las fotos de SPHEREx entre 0,75 y 5 µm y estima qué tipo de objeto podría ser",
                 "Measures its brightness in SPHEREx photos from 0.75 to 5 µm and estimates what kind of object it could be",

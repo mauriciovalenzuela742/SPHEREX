@@ -95,6 +95,7 @@ export default function PanelApilar({ datos }: { datos: DatosSpherex }) {
           {objeto && tr(`${nombre} se mueve ${fmt(pmAnual)}″/año = ${fmt(pxAnual, 2)} píxeles/año; el corrimiento más grande fue ${fmt(ap.corrimientoMax, 2)} px. Época común: ${ap.fechaComun.slice(0, 10)}.`,
             `${nombre} moves ${fmt(pmAnual)}″/yr = ${fmt(pxAnual, 2)} pixels/yr; the largest shift was ${fmt(ap.corrimientoMax, 2)} px. Common epoch: ${ap.fechaComun.slice(0, 10)}.`)}
           {objeto && pxAnual < 1 && tr(" Se mueve menos de un píxel por año: la diferencia entre los dos apilados es sutil.", " It moves less than one pixel per year: the difference between the two stacks is subtle.")}
+          {objeto && pxAnual >= 1 && tr(" Incluso dentro de una misma pasada de escaneo (43–55 días mientras el filtro LVF recorre los colores), un astro rápido se desplaza 0,6″–1,6″ (0,10–0,25 px), por lo que seguir su movimiento evita perder hasta un 18 % de señal en bandas cortas.", " Even within a single scan pass (43–55 days while the LVF sweeps across wavelengths), a fast mover shifts by 0.6″–1.6″ (0.10–0.25 px), so tracking its motion prevents losing up to 18% of short-band signal.")}
         </p>
       )}
 

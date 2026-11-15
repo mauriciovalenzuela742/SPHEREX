@@ -134,6 +134,31 @@ Sí, con una condición diagnóstica clave demostrada en nuestras mediciones 2D 
 | **Fuente brillante saturada** | Centro con NaNs | No lineal / halo domina | `r_dra` (`99,81 %` exp con `3×3` central no finito) |
 | **Nebulosa / exceso difuso extendido** | Extendida (`> 20″`, multipíxel) | Señal de un solo signo tras restar PSF: exceso en emisión (`3,29; 4,05 µm`) o déficit en absorción por hielos (`3,05; 4,26 µm`) | `wise_0855` fondo limpio vs halo PSF simétrico de `rw_aur` |
 
+### 8.3 Efecto Doppler baricéntrico, acoplamiento geométrico del LVF y movimiento intra-pasada (`doppler_y_escaneo.py`)
+
+¿Afecta el efecto Doppler (por la velocidad del astro o por el cambio de dirección orbital de la Tierra cada `6` meses) a nuestras huellas espectrales? Y ¿qué ocurre mientras SPHEREx barre un campo durante semanas? El cálculo sobre los tiempos reales (`MJD`) y resoluciones oficiales muestra tres resultados concretos:
+
+1. **Invarianza frente al efecto Doppler físico:** Como SPHEREx observa siempre a elongación solar $\epsilon \approx 90^\circ$, la proyección de la velocidad orbital de la Tierra salta hasta **`58,82 km/s`** entre pasadas semestrales cerca de la eclíptica (`RW Aur`), pero incluso sumando la velocidad radial propia de cada fuente, el corrimiento físico $\Delta\lambda/\lambda$ es de apenas **`0,8 % – 10,6 %` de un solo canal** (muy por debajo de la cota de Cramér-Rao medida en WISE 0855: `±2.807` a `±3.588 km/s` estadísticos). Por tanto, el Doppler orbital no contamina $D$, aunque sí sirve para distinguir enanas marrones locales ($z \approx 0$) de contaminantes extragalácticos a redshift $z \gtrsim 0{,}02$ ($\ge 6.000\text{ km/s}$).
+2. **Acoplamiento geométrico del LVF («falso Doppler» espacial):** Debido al gradiente continuo de longitud de onda sobre el detector (`0,176–0,684 nm/px`), no propagar el movimiento propio entre pasadas induce un corrimiento aparente en `WCS-WAVE` equivalente a **`21–94 km/s`** además de perder el `85 % – 100 %` del flujo PSF en los 3 objetivos móviles.
+3. **Atenuación y distorsión dentro de una misma pasada (`42,7–55,0 días`):** Algunas pasadas reales abarcan entre `6` y `8` semanas mientras el satélite completa la cobertura de bandas. Si se asume una única posición fija dentro de esa pasada, `Barnard` (`1,56″ = 0,254 px`), `WISE 0855` (`1,02″ = 0,166 px`) y `ε Ind B` (`0,62″ = 0,100 px`) pierden flujo y sufren una leve inclinación cromática entre fechas tempranas y tardías —efecto que nuestro visor ya evita al propagar `pmra/pmdec` foto por foto en `/api/spectrum` y SIMBAD.
+
+| Banda | Rango $\lambda$ (`µm`) | Resolución $R$ | Ancho de canal $\Delta\lambda$ (`nm`) | Velocidad / canal ($c/R$) | Gradiente LVF (`nm/px`) | Equivalente LVF por píxel / por `1″` |
+|---|---:|---:|---:|---:|---:|---:|
+| **D1** | `0,75 – 1,11` | `41` | `22,7` | `7.312 km/s` | `0,176` | `56,7 km/s/px` · `9,2 km/s/″` |
+| **D2** | `1,11 – 1,64` | `41` | `33,5` | `7.312 km/s` | `0,259` | `56,4 km/s/px` · `9,2 km/s/″` |
+| **D3** | `1,64 – 2,42` | `41` | `49,5` | `7.312 km/s` | `0,381` | `56,2 km/s/px` · `9,1 km/s/″` |
+| **D4** | `2,42 – 3,82` | `35` | `89,1` | `8.565 km/s` | `0,684` | `65,7 km/s/px` · `10,7 km/s/″` |
+| **D5** | `3,82 – 4,42` | `110` | `37,5` | `2.725 km/s` | `0,293` | `21,3 km/s/px` · `3,5 km/s/″` |
+| **D6** | `4,42 – 5,00` | `130` | `36,2` | `2.306 km/s` | `0,283` | `18,0 km/s/px` · `2,9 km/s/″` |
+
+| Objetivo | RV sistémica (SIMBAD) | Salto $\Delta v_{\text{bary}}$ entre pasadas (`km/s`) | Fracción de canal máx. total (`D1–3` / `D6`) | Si coord. fija entre pasadas (flujo corto/largo y falso LVF) | Pasada máx. (`días`) | Desplazamiento **intra-pasada** y flujo PSF retenido (corto / largo) |
+|---|---:|---:|---:|---|---:|---|
+| **wise_0855** | Sin dato publicado en SIMBAD | `54,04` (`P1–3`: `-27,00 / +27,04 / -26,85`) | `0,37 %` / `1,17 %` (solo baricéntrico) | `0,2 %` / `3,7 %` (`27,7–79,5 km/s`) | `42,7` | `1,02″` (`0,166 px`) $\rightarrow$ **`91,71 %` / `95,53 %`** |
+| **eps_ind_b** | `-40,04 km/s` (`2018A&A...616A...7S`, sistema) | `44,10` (`+21,16 / -22,01 / +22,09 / -18,23`) | `0,85 %` / `2,69 %` | `2,7 %` / `14,8 %` (`21,2–60,6 km/s`) | `46,3` | `0,62″` (`0,100 px`) $\rightarrow$ **`96,92 %` / `98,36 %`** |
+| **barnard** | `-110,11 km/s` (`2018MNRAS.475.1960F`) | `50,41` (`-25,35 / +25,06 / -24,85`) | `1,85 %` / `5,87 %` | `0,0 %` / `1,0 %` (`32,8–94,1 km/s`) | `55,0` | **`1,56″`** (`0,254 px`) $\rightarrow$ **`81,71 %` / `89,87 %`** |
+| **rw_aur** | `+15,0 km/s` (`2012ApJ...745..119N`; chorros `~200`) | **`58,82`** (`+29,32 / -29,49 / +29,33`) | `3,34 %` / `10,60 %` (con chorros) | `99,4 %` / `99,7 %` (`0,9–2,6 km/s`) | `19,3` | `0,01″` (`0,002 px`) $\rightarrow$ `100,00 %` / `100,00 %` |
+| **r_dra** | `-132,8 km/s` (`1953GCRV..C......0W`; puls. `~15`) | `8,82` (`-4,34 / +4,45 / -4,37`) | `2,08 %` / `6,60 %` | `100,0 %` / `100,0 %` (`0,1–0,2 km/s`) | `87,8` | `0,01″` (`0,001 px`) $\rightarrow$ `100,00 %` / `100,00 %` |
+
 ---
 
 ## 9. Límites honestos (separación entre lo medido y lo supuesto)

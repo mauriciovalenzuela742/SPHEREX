@@ -4,6 +4,7 @@
  * La consulta es la del panel «¿Qué hay aquí?» de Juan Pablo (apuntar/queHayAqui.ts).
  */
 import { useEffect, useState } from "react";
+import { pedirEspectro } from "../apuntar/espectroPunto";
 import { queHayAqui, RADIO_ARCSEC, tipoLegible, type Hallazgo } from "../apuntar/queHayAqui";
 import { useIdioma } from "../state/idioma";
 
@@ -47,6 +48,13 @@ export default function Deteccion({ punto, epoca }: { punto: Punto | null; epoca
           {tr("SIMBAD no respondió.", "SIMBAD did not answer.")}{" "}
           <button type="button" className="deteccion-reintentar" onClick={() => setIntento((n) => n + 1)}>
             {tr("Reintentar", "Retry")}
+          </button>{" "}
+          <button
+            type="button"
+            className="deteccion-reintentar"
+            onClick={() => pedirEspectro({ ra: punto.ra, dec: punto.dec, origen: "clic" })}
+          >
+            {tr("Ver el espectro de este punto", "See the spectrum of this spot")}
           </button>
         </>
       )}
@@ -59,13 +67,42 @@ export default function Deteccion({ punto, epoca }: { punto: Punto | null; epoca
           {tr("del punto elegido", "from the chosen spot")}
           {estado.hallazgos[0].propagado ? tr(", contando lo que se movió desde el año 2000", ", counting how far it moved since 2000") : ""}.
           {estado.hallazgos.length > 1 &&
-            tr(` Hay ${estado.hallazgos.length - 1} más en el mismo punto.`, ` ${estado.hallazgos.length - 1} more at the same spot.`)}
+            tr(` Hay ${estado.hallazgos.length - 1} más en el mismo punto.`, ` ${estado.hallazgos.length - 1} more at the same spot.`)}{" "}
+          <button
+            type="button"
+            className="deteccion-reintentar"
+            onClick={() => {
+              const h = estado.hallazgos[0];
+              pedirEspectro({
+                ra: h.ra ?? punto.ra,
+                dec: h.dec ?? punto.dec,
+                nombre: h.nombre,
+                pmra: h.pmra,
+                pmdec: h.pmdec,
+                epoca: h.epoca,
+                origen: "clic",
+              });
+            }}
+            title={tr(
+              "Mide su brillo en las fotos de SPHEREx entre 0,75 y 5 µm siguiendo su movimiento propio",
+              "Measures its brightness in SPHEREx photos from 0.75 to 5 µm following its proper motion",
+            )}
+          >
+            {tr("Ver su espectro", "See its spectrum")}
+          </button>
         </>
       )}
       {estado.fase === "listo" && estado.hallazgos.length === 0 && (
         <>
           <strong>{tr("Nada registrado en SIMBAD aquí", "Nothing listed in SIMBAD here")}</strong> ({tr("a menos de", "within")} {RADIO_ARCSEC}″):{" "}
-          {tr("si ves algo que se mueve o cambia, ¡vale la pena revisarlo!", "if you see something moving or changing, it is worth a closer look!")}
+          {tr("si ves algo que se mueve o cambia, ¡vale la pena revisarlo!", "if you see something moving or changing, it is worth a closer look!")}{" "}
+          <button
+            type="button"
+            className="deteccion-reintentar"
+            onClick={() => pedirEspectro({ ra: punto.ra, dec: punto.dec, origen: "clic" })}
+          >
+            {tr("Ver el espectro de este punto", "See the spectrum of this spot")}
+          </button>
         </>
       )}
     </p>
