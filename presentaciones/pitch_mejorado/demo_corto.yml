@@ -1,0 +1,95 @@
+title: AstroTRACK in 30 s (short cut for the original deck)
+# Grabado de la app real (main #65 + los arreglos de la rama c/pitch-alternativa) corrida en local con
+# vite.demo.config.ts. Se graba con una copia local del grabador del kit que deja encuadrar un elemento distinto del
+# que se cliquea (frame/frac/pad): tools/demo_pitch.py. Ejemplos elegidos tras revisarlos uno por uno:
+# - Epsilon Indi B: par rojo/azul nítido en A − B (vista simple y Explorador) y ficha «parece una enana marrón».
+#   Sus fotos vienen del precalculado del sitio (IRSA estaba caído al grabar, 15-nov 07:00).
+# - Barnard: en el mapa, la estrella aparece dentro de cada aro (2MASS ~2000, AllWISE 2010, SPHEREx 2026).
+# Se evita la fecha oct-nov 2025 de eps Ind B: trae marcas de rayos cósmicos.
+url: "http://localhost:5191/?ra=331.098404&dec=-56.801258&size=0.1&band=4"
+init_script: "localStorage.setItem('astrotrack.idioma','en');localStorage.setItem('astrotrack.tutorial.visto','1')"
+viewport: [1600, 900]
+output: figures/demo_corto
+label: "Real app · local copy · cached data"
+lang: en
+steps:
+- caption: ''
+  wait: 4000
+  hold: 100
+  zoom: false
+- click: .simple-aviso button
+  caption: 'Anyone can start: a SPHEREx photo of Epsilon Indi B, a nearby brown dwarf'
+  zoom: false
+  wait: 1500
+  hold: 2200
+- click: .simple-fechas button:nth-child(2)
+  frame: .simple-imagen
+  frac:
+  - 0
+  - 0
+  - 1
+  - 1.13
+  pad: 1.05
+  caption: Spring 2025…
+  wait: 500
+  hold: 1100
+- click: .simple-fechas button:nth-child(5)
+  frame: .simple-imagen
+  frac:
+  - 0
+  - 0
+  - 1
+  - 1.13
+  pad: 1.05
+  caption: '…and October 2026: a small shift, about one pixel'
+  wait: 500
+  hold: 1500
+- click: .simple-fechas button:nth-child(2)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-ab button:nth-child(2)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-fechas button:nth-child(5)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-ab button:nth-child(3)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-ab-ver
+  frame: .simple-imagen
+  pad: 1.05
+  caption: 'A − B: red where it was in 2025, blue where it is in 2026. It moved.'
+  wait: 700
+  hold: 2600
+- click: .interruptor-ciencia
+  caption: One switch opens the science tools
+  zoom: false
+  wait: 9000
+  hold: 1300
+- zoom: .huella
+  pad: 1.08
+  caption: 'Its spectrum in 102 colors: dips where water and methane absorb'
+  hold: 2800
+- zoom: .ficha
+  frame: .ficha
+  frac:
+  - 0
+  - 0
+  - 0.6
+  - 1
+  pad: 1.1
+  caption: It looks like a brown dwarf. Real NASA data, free, in any browser
+  hold: 2800

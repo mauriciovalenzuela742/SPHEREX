@@ -57,3 +57,6 @@ native/tauri/src-tauri/gen/
 native/tauri/src-tauri/icons/
 native/tauri/src-tauri/Cargo.lock
 native/android/android/
+
+# Caché de la grabación de la demo del pitch (vite.demo.config.ts)
+scaffold/frontend/.demo-cache/

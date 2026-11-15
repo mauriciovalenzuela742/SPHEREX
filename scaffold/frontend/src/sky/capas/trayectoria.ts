@@ -47,8 +47,6 @@ const EPOCA_2MASS: Record<string, number> = {
   r_dra: 1999.397,
 };
 const EPOCA_2MASS_DEFECTO = 2000.0;
-/** No detectados en 2MASS (WISE 0855 es demasiado fría): el aro rodea cielo vacío y el rótulo lo dice. */
-const SIN_2MASS = new Set(["wise_0855"]);
 const EPOCA_ALLWISE: Record<string, number> = { wise_0855: 2010.45 };
 const EPOCA_ALLWISE_DEFECTO = 2010.5;
 const EPOCA_SPHEREX: Record<string, number> = {
@@ -117,7 +115,9 @@ function puntosDe(obj: Objeto): Punto[] {
   const [rw, dw] = p(ew);
   const [rh, dh] = p(es);
   return [
-    { ra: r2, dec: d2, rotulo: `${Math.floor(e2)} · 2MASS${SIN_2MASS.has(obj.id) ? " (no se ve)" : ""}`, color: MAGENTA },
+    { ra: r2, dec: d2, // Sin «(no se ve)»: el rótulo largo se montaba sobre el de SPHEREx y quedaba en español con la página en inglés.
+    // Que WISE 0855 no aparece en 2MASS ya lo dice el texto bajo el mapa (mapaAyuda).
+    rotulo: `${Math.floor(e2)} · 2MASS`, color: MAGENTA },
     { ra: rw, dec: dw, rotulo: `${Math.floor(ew)} · AllWISE`, color: AMARILLO },
     { ra: rh, dec: dh, rotulo: "2025–26 · SPHEREx", color: CIAN },
   ];
@@ -234,7 +234,22 @@ export const capaTrayectoria: Capa = {
       }
       // Rótulos alternados a uno y otro lado: con zoom lejano los aros quedan cerca y los textos se pisarían.
       const lado = i % 2 === 1 ? -1 : 1;
-      rotulo(c, p.rotulo, s.x, s.y, lado * nx, lado * ny, p.color);
+      let rx = lado * nx;
+      let ry = lado * ny;
+      // El primero y el último caen del mismo lado: se abren en diagonal (hacia atrás y hacia adelante del
+      // movimiento) para que no se monten cuando los aros quedan cerca (WISE 0855 con el zoom por defecto).
+      const extremo = i === 0 ? -1 : i === puntos.length - 1 ? 1 : 0;
+      if (extremo && i % 2 === 0 && a && z) {
+        const d = Math.hypot(z[0] - a[0], z[1] - a[1]);
+        if (d > 1) {
+          const sx = rx + (extremo * 0.9 * (z[0] - a[0])) / d;
+          const sy = ry + (extremo * 0.9 * (z[1] - a[1])) / d;
+          const m = Math.hypot(sx, sy) || 1;
+          rx = sx / m;
+          ry = sy / m;
+        }
+      }
+      rotulo(c, p.rotulo, s.x, s.y, rx, ry, p.color);
       const sig = i + 1 < puntos.length ? aPx(puntos[i + 1]) : null;
       if (sig) flecha(c, s.x, s.y, sig[0], sig[1]);
       c.restore();

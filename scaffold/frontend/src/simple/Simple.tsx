@@ -151,10 +151,25 @@ export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
       for (const b of TODAS) {
         const vs = grid.visits[b];
         if (!vs?.length) continue;
-        const i = visitaMasCercana(b, p.medio);
-        if (vs[i].mjd < p.desde - 1 || vs[i].mjd > p.hasta + 1) continue; // esa banda no tiene foto en esta pasada
-        const fr = frames.current.get(clave(b, i));
-        if (fr) m.set(b, fr);
+        // Dentro de la pasada, la visita con más exposiciones combinadas (mediana): con 1–2 fotos la mediana no
+        // quita rayos cósmicos ni píxeles calientes y aparecen manchas que no están en las otras fechas
+        // (eps Ind B: 2025-10-23 con 2 fotos, 2026-04-30 con 1). A igual cantidad, la más cercana al centro.
+        const iMedio = visitaMasCercana(b, p.medio);
+        let mejor: Frame | undefined;
+        let dMejor = Infinity;
+        vs.forEach((v, i) => {
+          if (v.mjd < p.desde - 1 || v.mjd > p.hasta + 1) return; // fuera de esta pasada
+          const fr = frames.current.get(clave(b, i));
+          if (!fr) return;
+          const d = Math.abs(i - iMedio);
+          const n = fr.meta.n_stacked ?? 1;
+          const nMejor = mejor?.meta.n_stacked ?? 0;
+          if (!mejor || n > nMejor || (n === nMejor && d < dMejor)) {
+            mejor = fr;
+            dMejor = d;
+          }
+        });
+        if (mejor) m.set(b, mejor);
       }
     return m;
   };

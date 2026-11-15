@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroTRACK · Pitch</title>
+<!-- Alternativa al deck de Canva de Mauricio (NASA SPACE APPS 2026). Mismo estilo y mismas imágenes; cambios:
+     una sola pregunta inicial, cifras con formato inglés, la demo en video (45 s) y una lámina fija con el
+     resultado científico. Teclas: → / espacio avanza, ← retrocede, N notas del orador (guion en español),
+     T cronómetro, F pantalla completa, V pausa el video. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#f4f1fb; --soft:#c9c2dc; --band:rgba(36,30,62,.88); --purple:#5b3d8f; --purple2:#47306f;
+    --orange:#f5821f; --blue:#4a7cf0; --amber:#ffc23d; --cyan:#62d8f0; --magenta:#ff5ad1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#05060d;color:var(--ink);font-family:Montserrat,'Segoe UI',system-ui,sans-serif;overflow:hidden}
+  #stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;}
+  .slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease;overflow:hidden;
+         background:#0b0d1c center/cover no-repeat}
+  .slide.on{opacity:1;pointer-events:auto}
+  .slide::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,6,16,.25),rgba(5,6,16,.55))}
+  .slide > *{position:relative}
+  h1,h2{font-family:'DM Serif Display',Georgia,serif;font-weight:400;letter-spacing:.5px}
+  .band{display:inline-block;background:var(--band);padding:22px 64px 26px;font-size:88px;line-height:1.05}
+  .band.small{font-size:72px}
+  .box{background:var(--purple);padding:26px 34px;font-size:40px;line-height:1.32;text-align:center}
+  .box b{font-weight:800}
+  .credit{position:absolute;font-size:19px;color:var(--soft)}
+  .src{position:absolute;left:60px;bottom:26px;font-size:20px;color:var(--soft)}
+  .src a{color:var(--soft)}
+  .pill{display:inline-block;padding:6px 16px;border-radius:999px;font-size:22px;font-weight:600;letter-spacing:1px}
+
+  /* 1 · portada */
+  #s1{background-image:url(img/bg_cover.jpg)}
+  #s1 .logo{position:absolute;left:58px;top:42px;width:270px;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  #s1 h1{position:absolute;left:64px;top:360px;font-size:150px;letter-spacing:3px}
+  #s1 .sub{position:absolute;left:68px;top:560px;width:900px;font-size:34px;line-height:1.45;color:var(--ink);
+           border-bottom:2px solid rgba(255,255,255,.7);padding-bottom:22px}
+  #s1 .q{position:absolute;right:90px;top:300px;width:720px;font-family:'DM Serif Display',Georgia,serif;font-size:66px;
+         line-height:1.15;text-align:right;text-shadow:0 4px 30px rgba(0,0,0,.8)}
+  #s1 .q em{color:var(--amber);font-style:normal}
+  #s1 .event{position:absolute;right:90px;bottom:60px;font-size:24px;color:var(--soft);text-align:right}
+
+  /* 2 · cualquiera puede descubrir */
+  #s2{background-image:url(img/bg_trees.jpg)}
+  #s2 .band{position:absolute;left:150px;top:48px}
+  #s2 .bw{position:absolute;left:110px;top:230px;width:560px}
+  #s2 .bw h3{font-size:46px;font-weight:800;margin:0 0 18px 30px}
+  #s2 .bw .box{font-size:42px}
+  #s2 .bw .box .tiny{display:block;font-size:19px;margin-top:14px;color:#e6dcff}
+  #s2 .bw img{display:block;width:420px;margin:26px 0 0 70px;border-radius:6px}
+  #s2 .arrow{position:absolute;left:720px;top:470px;font-size:120px;color:var(--amber);font-weight:800}
+  #s2 .sx{position:absolute;left:860px;top:210px;width:330px}
+  #s2 .sx img{width:330px}
+  #s2 .right{position:absolute;right:90px;top:200px;width:620px}
+  #s2 .right .box{text-align:left;font-size:40px}
+  #s2 .right .box + .box{margin-top:22px;background:var(--orange)}
+  #s2 .strip{position:absolute;left:0;right:0;bottom:84px;text-align:center;font-size:44px;font-weight:600}
+  #s2 .strip b{color:var(--amber)}
+
+  /* 3 · Chile */
+  #s3{background-image:url(img/bg_milky.jpg);background-position:center 30%}
+  #s3 .band{position:absolute;left:340px;top:60px}
+  #s3 .big{position:absolute;left:120px;top:300px;width:760px;background:var(--orange);padding:40px 46px;border-radius:26px}
+  #s3 .big .n{font-family:'DM Serif Display',Georgia,serif;font-size:190px;line-height:1}
+  #s3 .big p{font-size:42px;line-height:1.3;margin-top:10px}
+  #s3 .side{position:absolute;right:120px;top:320px;width:800px}
+  #s3 .side .box{background:var(--blue);border-radius:26px;text-align:left;font-size:40px}
+  #s3 .side .box + .box{margin-top:30px;background:var(--purple)}
+
+  /* 4 · demo */
+  #s4{background-image:url(img/bg_nebula.jpg)}
+  #s4 .band{position:absolute;left:60px;top:28px;font-size:60px;padding:14px 44px 18px}
+  #s4 video{position:absolute;left:50%;top:150px;transform:translateX(-50%);width:1560px;height:877.5px;
+            border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6);background:#000}
+  #s4 .credit{right:60px;bottom:14px}
+
+  /* 5 · lo que viste (lámina fija) */
+  #s5{background-image:url(img/bg_nebula.jpg)}
+  #s5 .band{position:absolute;left:60px;top:34px;font-size:64px;padding:16px 48px 20px}
+  #s5 .cols{position:absolute;left:60px;right:60px;top:200px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:34px}
+  #s5 .col h3{font-size:34px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+  #s5 .col p{font-size:25px;line-height:1.35;color:var(--soft);height:70px}
+  #s5 .col .img{height:330px;border-radius:12px;overflow:hidden;background:#000 center/cover no-repeat;border:2px solid rgba(255,255,255,.15)}
+  #s5 .science{position:absolute;left:60px;right:60px;bottom:40px;height:360px;display:grid;grid-template-columns:640px 1fr;gap:34px;
+               background:rgba(20,16,40,.85);border:2px solid var(--amber);border-radius:16px;padding:24px 30px}
+  #s5 .science .k{font-size:24px;font-weight:800;color:var(--amber);letter-spacing:2px}
+  #s5 .science .n{font-family:'DM Serif Display',Georgia,serif;font-size:80px;line-height:1;margin:4px 0}
+  #s5 .science .n small{font-size:40px;color:var(--soft)}
+  #s5 .science p{font-size:22px;line-height:1.32}
+  #s5 .science img{width:100%;height:300px;object-fit:contain;background:#fff;border-radius:8px}
+
+  /* 6 · cierre */
+  #s6{background-image:url(img/bg_cover.jpg)}
+  #s6 .logo{position:absolute;left:90px;top:150px;width:520px;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+  #s6 h2{position:absolute;left:90px;top:470px;font-size:96px;line-height:1.05;width:1000px}
+  #s6 h2 em{color:var(--amber);font-style:normal}
+  #s6 .team{position:absolute;left:94px;top:720px;font-size:32px;line-height:1.5;width:1000px;color:var(--ink)}
+  #s6 .qr{position:absolute;right:140px;top:200px;width:520px;text-align:center}
+  #s6 .qr .code{background:#fff;border-radius:22px;padding:26px;width:520px;height:520px}
+  #s6 .qr .code svg{width:100%;height:100%}
+  #s6 .qr .url{font-size:28px;margin-top:20px;font-weight:600}
+  #s6 .qr .hint{font-size:24px;color:var(--soft);margin-top:6px}
+  #s6 .data{position:absolute;left:94px;bottom:40px;font-size:19px;color:var(--soft);width:1700px}
+
+  /* barra de tiempo y notas */
+  #hud{position:fixed;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.08);z-index:5}
+  #hud i{display:block;height:100%;width:0;background:var(--amber);transition:width .3s}
+  #clock{position:fixed;right:14px;top:10px;font:600 18px Montserrat,sans-serif;color:var(--amber);z-index:6;display:none;
+         background:rgba(0,0,0,.6);padding:4px 10px;border-radius:6px}
+  #notes{position:fixed;left:0;right:0;bottom:5px;max-height:42vh;overflow:auto;z-index:6;display:none;
+         background:rgba(8,8,18,.94);border-top:2px solid var(--purple);padding:16px 26px;font-size:18px;line-height:1.5}
+  #notes .t{color:var(--amber);font-weight:800;margin-bottom:6px}
+  #help{position:fixed;left:12px;bottom:12px;font-size:13px;color:#8a83a3;z-index:4}
+  @media print{
+    @page{size:1920px 1080px;margin:0}
+    html,body{overflow:visible;background:#000}
+    #stage{position:static;transform:none!important}
+    .slide{position:relative;opacity:1;page-break-after:always;height:1080px}
+    #hud,#clock,#notes,#help{display:none!important}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1 -->
+  <section class="slide" id="s1" data-t="0:00–0:08"
+    data-notes="Levanten la mano: ¿quién cree que podría descubrir una estrella que nadie conoce? (pausa de 2 segundos, mirar al público) Bien… porque doscientas mil personas ya lo hicieron.">
+    <img class="logo" src="img/logo.png" alt="Transientes team logo">
+    <h1>ASTROTRACK</h1>
+    <p class="sub">A free web viewer for NASA's SPHEREx infrared sky: simple enough for any curious mind, deep enough for science (SDG 4).</p>
+    <p class="q">Who here could discover <em>a star nobody knows?</em></p>
+    <p class="event">NASA Space Apps Challenge 2026 · Planet X and SPHEREx · Team Transientes</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide" id="s2" data-t="0:08–0:28"
+    data-notes="En Backyard Worlds, de la NASA, voluntarios hicieron parpadear fotos del cielo y encontraron más de tres mil enanas marrones nuevas: duplicaron las que se conocían. Pero el telescopio que usaban, WISE, se apagó en 2024. Hoy SPHEREx fotografía todo el cielo cada seis meses, en 102 colores infrarrojos. Lo que faltaba era la herramienta.">
+    <h2 class="band">Anyone can discover</h2>
+    <div class="bw">
+      <h3>Backyard Worlds</h3>
+      <div class="box">≈200,000 volunteers<br><b>3,000+ brown dwarfs</b><br>doubled the known ones
+        <span class="tiny">NASA Science, “NASA Volunteers Double Known Population of Brown Dwarfs”, 5 May 2026</span></div>
+      <img src="img/backyard.jpg" alt="Backyard Worlds project art">
+    </div>
+    <div class="arrow">→</div>
+    <div class="sx"><img src="img/spherex.png" alt="SPHEREx spacecraft illustration"></div>
+    <div class="right">
+      <div class="box"><b>WISE</b>, the telescope they searched, was <b>switched off in 2024</b>.</div>
+      <div class="box"><b>SPHEREx</b> (NASA, 2025) maps <b>the whole sky every 6 months, in 102 infrared colors</b>.</div>
+    </div>
+    <p class="strip">Citizen science works. <b>SPHEREx had no tool for it — until now.</b></p>
+    <p class="credit" style="left:180px;bottom:30px">Credits: Zooniverse / Backyard Worlds: Planet 9 · Illustration: NASA/JPL-Caltech</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" id="s3" data-t="0:28–0:37"
+    data-notes="¿Y a Chile le importa? Tenemos telescopios gigantes, pero solo el 7,5 % de quienes estudian STEM elige ciencias naturales o matemáticas.">
+    <h2 class="band">Does Chile need this?</h2>
+    <div class="big"><div class="n">7.5%</div><p>of STEM students in Chile choose <b>natural sciences or mathematics</b>.</p></div>
+    <div class="side">
+      <div class="box">STEM enrollment <b>almost doubled</b>: 193k → 354k students (2007–2023).</div>
+      <div class="box">Chile hosts many of the world's largest telescopes, yet <b>few students choose the sciences</b> that use them.</div>
+    </div>
+    <p class="src">Source: Minuta 24, OPPES-USACH (2024), pp. 4 and 6; data from mifuturo.cl.</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" id="s4" data-t="0:37–1:24"
+    data-notes="(El video corre solo; narra siguiendo los subtítulos.) Por eso creamos AstroTRACK. Cualquiera entra y ve una foto de SPHEREx: Epsilon Indi B, una enana marrón cercana. Primavera de 2025… y octubre de 2026: se corrió apenas un píxel. Si restamos las dos fechas se ve clarísimo: rojo donde estaba, azul donde está. Se movió. Con un interruptor se abren las herramientas científicas: la misma resta, con la mediana de diez fotos por visita. Con los 102 colores armamos su espectro: tiene huecos donde absorben el agua y el metano, y la herramienta lo lee: parece una enana marrón. Y cualquier estrella tiene historia: la de Barnard, en 2000, en 2010 y hoy, siempre avanzando.">
+    <h2 class="band">AstroTRACK, live on real SPHEREx data</h2>
+    <video id="demo" src="figures/demo_pitch.mp4" poster="figures/demo_pitch.png" muted playsinline preload="auto"></video>
+    <p class="credit">Recorded from the real app · data cached so the video does not wait for downloads</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" id="s5" data-t="1:24–1:44"
+    data-notes="Y no es un juguete. Solo con imágenes de SPHEREx, sin catálogos, medimos que WISE 0855 se movió 8,7 segundos de arco en un año; la física predecía 8,0. Cualquiera puede explorar y ganarse su insignia, Spherix le explica cada paso, y quien quiera hace ciencia de verdad.">
+    <h2 class="band">With AstroTRACK you can…</h2>
+    <div class="cols">
+      <div class="col"><h3 style="color:var(--amber)">EXPLORE &amp; PLAY</h3><p>Blink dates and colors, then earn your badge in Mission mode.</p>
+        <div class="img" style="background-image:url(img/badge.jpg);background-size:contain;background-color:#0b0f26"></div></div>
+      <div class="col"><h3 style="color:var(--cyan)">CONSULT</h3><p>Spherix, the in-app guide, walks you through every step, in English or Spanish.</p>
+        <div class="img" style="background-image:url(img/spherix.jpg);background-size:80%;background-color:#000"></div></div>
+      <div class="col"><h3 style="color:var(--magenta)">ANALYZE</h3><p>Subtract, stack and build the 102-color spectrum of any spot.</p>
+        <div class="img" style="background-image:url(img/app_spectrum.png);background-size:cover;background-position:right 30%"></div></div>
+    </div>
+    <div class="science">
+      <div>
+        <div class="k">REAL SCIENCE · SPHEREx IMAGES ONLY, NO CATALOGS</div>
+        <div class="n">8.67″ <small>± 0.66″</small></div>
+        <p>WISE 0855 moved in one year; proper motion + parallax predict <b>8.04″</b>. In a blind search, matching by position found <b>no</b> moving source; matching by its <b>spectral fingerprint</b> found <b>one: WISE 0855</b>.</p>
+      </div>
+      <img src="img/fig_moved.png" alt="WISE 0855 positions in three SPHEREx passes, measured vs predicted">
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" id="s6" data-t="1:44–2:00"
+    data-notes="Somos Transientes: un equipo de 17 a 52 años, y nos ilusiona democratizar el acceso a la ciencia de frontera. Escaneen el QR y conviértanse en los próximos cazadores de estrellas. Yo ya tengo mi insignia.">
+    <img class="logo" src="img/logo.png" alt="Transientes team logo">
+    <h2>Be the next <em>star hunter</em>.</h2>
+    <p class="team"><b>Team Transientes</b> · ages 17 to 52 · making frontier science reachable for anyone with a browser.</p>
+    <div class="qr"><div class="code" id="qr"></div>
+      <div class="url">spherex-planet-x-tau.vercel.app</div>
+      <div class="hint">Free · no sign-up · English &amp; Spanish</div></div>
+    <p class="data">This project uses data products from SPHEREx, a joint project of JPL and Caltech funded by NASA, via NASA/IPAC IRSA; 2MASS and AllWISE via CDS/IRSA. Built with Aladin Lite and Astropy.</p>
+  </section>
+</div>
+
+<div id="hud"><i></i></div>
+<div id="clock">0:00</div>
+<div id="notes"></div>
+<div id="help">→ next · ← back · N notes · T timer · F full screen · V video</div>
+
+<script src="img/qr.js"></script>
+<script>
+  const slides=[...document.querySelectorAll('.slide')], stage=document.getElementById('stage');
+  const video=document.getElementById('demo'), notes=document.getElementById('notes'), clock=document.getElementById('clock');
+  let i=0, t0=null;
+  function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    document.querySelector('#hud i').style.width=((i+1)/slides.length*100)+'%';
+    const s=slides[i]; notes.innerHTML=`<div class="t">${i+1}/${slides.length} · ${s.dataset.t}</div>${s.dataset.notes}`;
+    if(slides[i].id==='s4'){try{video.currentTime=0;video.play()}catch(e){}}else{video.pause()}
+    try{history.replaceState(null,'','#'+(i+1))}catch(e){}
+  }
+  addEventListener('keydown',e=>{
+    const k=e.key.toLowerCase();
+    if(['arrowright','pagedown',' ','enter'].includes(e.key.toLowerCase())){if(!t0)t0=Date.now();show(i+1);e.preventDefault()}
+    else if(['arrowleft','pageup','backspace'].includes(k)){show(i-1);e.preventDefault()}
+    else if(k==='n'){notes.style.display=notes.style.display==='block'?'none':'block'}
+    else if(k==='t'){clock.style.display=clock.style.display==='block'?'none':'block'}
+    else if(k==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+    else if(k==='v'){video.paused?video.play():video.pause()}
+    else if(k==='home'){show(0);t0=null}
+  });
+  addEventListener('click',e=>{if(e.target.tagName!=='VIDEO'){if(!t0)t0=Date.now();show(i+1)}});
+  setInterval(()=>{if(!t0)return;const s=Math.floor((Date.now()-t0)/1000);clock.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;clock.style.color=s>120?'#ff6b6b':''},500);
+  addEventListener('resize',fit);fit();
+  show(parseInt(location.hash.slice(1)||'1',10)-1);
+  if(window.QR_SVG)document.getElementById('qr').innerHTML=window.QR_SVG;
+</script>
+</body>
+</html>
