@@ -54,7 +54,7 @@ function rotuloPasada(p: Pasada, idioma: "es" | "en") {
 export default function Simple({ estado, set, onCiencia }: Props) {
   const { tr, idioma, cambiar } = useIdioma();
   const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, true);
-  const { grid, frames, escalas, version, prog, mensaje, cargar, setCargar, visitaMasCercana } = datos;
+  const { grid, frames, escalas, version, prog, mensaje, cargar, setCargar, visitaMasCercana, setIntento, reintentarFallidas, reintentando, errores } = datos;
   // La vista simple siempre muestra las 6 bandas (los presets del Explorador cargan solo una).
   useEffect(() => {
     if (cargar.length < 6) setCargar(TODAS);
@@ -199,6 +199,23 @@ export default function Simple({ estado, set, onCiencia }: Props) {
     cerrarAviso();
     if (pasadas.length > 1) setPasadaSel((iPasada + 1) % pasadas.length);
   };
+  // ── Reintentar: si falló la consulta de visitas, si fallaron fotos o si la carga lleva demasiado ──
+  const cargando = (!grid && mensaje.startsWith("Consultando")) || (prog.total > 0 && prog.hechos < prog.total);
+  const [lento, setLento] = useState(false);
+  useEffect(() => {
+    setLento(false);
+    if (!cargando || n) return;
+    const id = window.setTimeout(() => setLento(true), 25000);
+    return () => window.clearTimeout(id);
+  }, [cargando, n, version]);
+  const fallaron = prog.errores;
+  const motivo = !grid && !cargando ? mensaje : fallaron ? [...errores.current.values()][0] : null;
+  const mostrarReintentar = (!cargando && (!grid || !n || fallaron > 0)) || (lento && !n);
+  const reintentar = () => {
+    setLento(false);
+    if (grid && fallaron > 0 && !lento) reintentarFallidas();
+    else setIntento((x) => x + 1);
+  };
   const escala30 = grid && n ? (30 / grid.pixel_scale_arcsec / n) * 100 : 0;
   const textoLuz: Record<Luz, string> = {
     todas: tr("todas, en falso color (azul: cercana · rojo: lejana)", "all of it, in false color (blue: near · red: far)"),
@@ -262,10 +279,27 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           {n > 0 && <canvas ref={lienzo} aria-label={tr("Foto de SPHEREx en falso color", "SPHEREx photo in false color")} />}
           {n > 0 && !hayLuz && <p className="simple-mensaje">{tr("No hay fotos con esta luz en esta fecha.", "No photos in this light on this date.")}</p>}
           {!n && (
-            <p className="simple-mensaje">
-              {grid || prog.total ? tr("Cargando fotos de SPHEREx…", "Loading SPHEREx photos…") : mensaje}
-              {prog.total > 0 && ` ${prog.hechos}/${prog.total}`}
-            </p>
+            <div className="simple-mensaje">
+              <p>
+                {cargando
+                  ? `${tr("Cargando fotos de SPHEREx…", "Loading SPHEREx photos…")}${prog.total > 0 ? ` ${prog.hechos}/${prog.total}` : ""}`
+                  : tr("No se pudieron cargar las fotos.", "The photos could not be loaded.")}
+              </p>
+              {lento && cargando && <p className="simple-motivo">{tr("Está tardando más de lo normal (IRSA puede estar lento).", "It is taking longer than usual (IRSA may be slow).")}</p>}
+              {motivo && !cargando && <p className="simple-motivo">{motivo}</p>}
+              {mostrarReintentar && (
+                <button className="simple-reintentar" onClick={reintentar} disabled={reintentando}>
+                  {reintentando ? tr("Reintentando…", "Retrying…") : tr("Reintentar", "Retry")}
+                </button>
+              )}
+            </div>
+          )}
+          {n > 0 && fallaron > 0 && !cargando && (
+            <button className="simple-reintentar simple-reintentar-chico" onClick={reintentar} disabled={reintentando} title={motivo ?? undefined}>
+              {reintentando
+                ? tr("Reintentando…", "Retrying…")
+                : tr(`${fallaron} foto(s) fallaron · Reintentar`, `${fallaron} photo(s) failed · Retry`)}
+            </button>
           )}
           {n > 0 && (
             <button className="simple-marca-objeto" onClick={tocar} aria-label={tr("Siguiente foto", "Next photo")}>

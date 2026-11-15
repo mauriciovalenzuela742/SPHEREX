@@ -24,7 +24,11 @@
 .simple-imagen { position: relative; width: min(520px, 90vw, 62vh); aspect-ratio: 1; background: #000; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; }
 /* Suavizado (no píxeles cuadrados): en la vista simple importa la forma, no el píxel. */
 .simple-imagen canvas { width: 100%; height: 100%; display: block; image-rendering: auto; filter: blur(1.2px) saturate(1.25); }
-.simple-mensaje { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 2rem; color: var(--suave); margin: 0; }
+.simple-mensaje { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.6rem; text-align: center; padding: 2rem; color: var(--suave); margin: 0; }
+.simple-mensaje p { margin: 0; }
+.simple-motivo { font-size: 0.8rem; max-width: 380px; }
+.simple-reintentar { font-weight: 700; padding: 0.45rem 1.1rem; }
+.simple-reintentar-chico { position: absolute; top: 10px; left: 10px; font-size: 0.8rem; padding: 0.25rem 0.7rem; background: rgba(0, 0, 0, 0.7); }
 .simple-marca-objeto { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 14%; aspect-ratio: 1; padding: 0; background: none; border: 0; cursor: pointer; }
 .smo-aro { position: absolute; inset: 0; border: 2px dashed #ffb000; border-radius: 50%; box-shadow: 0 0 12px rgba(255, 176, 0, 0.35); }
 .smo-nombre { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; color: #ffb000; font-weight: 700; font-size: 0.85rem; text-shadow: 0 1px 3px #000; }
