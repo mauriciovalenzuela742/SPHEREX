@@ -153,3 +153,15 @@
 .prisma-mas[open] > summary { margin-bottom: 0.5rem; }
 .prisma-mas .ojo-contenido { max-width: 320px; display: flex; flex-direction: column; gap: 0.5rem; }
 .prisma-cuerpo.prisma-unico { grid-template-columns: minmax(0, 1fr); }
+
+/* Panel «banda elegida», junto a la Huella espectral. */
+.huella-con-banda { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 0.8rem; align-items: start; }
+@media (max-width: 860px) { .huella-con-banda { grid-template-columns: 1fr; } }
+.banda-elegida { position: sticky; top: 0.5rem; border: 2px solid; border-radius: 8px; padding: 0.6rem; background: rgba(11, 16, 32, 0.85); display: flex; flex-direction: column; gap: 0.5rem; }
+.be-rotulo { margin: 0; font-weight: 700; font-size: 0.95rem; }
+.be-mini { margin: 0; }
+.be-mini img, .be-mini canvas, .be-vacio { width: 100%; aspect-ratio: 1; display: block; border-radius: 4px; object-fit: cover; image-rendering: pixelated; background: #05070f; }
+.be-mini img { image-rendering: auto; }
+.be-vacio { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.8rem; color: #a9b3cf; padding: 0.5rem; box-sizing: border-box; }
+.be-mini figcaption { font-size: 0.75rem; color: #a9b3cf; margin-top: 0.2rem; }
+.be-aviso { margin: 0; font-size: 0.8rem; color: #ffd43b; }

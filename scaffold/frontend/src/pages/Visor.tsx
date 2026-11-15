@@ -4,7 +4,7 @@
  * Hoy: controles conectados a la URL + cielo de SPHEREx en Aladin (Vía A).
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AladinView, { planoDeBanda } from "../sky/AladinView";
 import { CAMPOS, nombreDe, posicionActual } from "../content/campos";
 import { TAMANOS, type Estado } from "../state/url";
@@ -91,6 +91,14 @@ export default function Visor({ estado, set, asistido }: Props) {
     set(p);
     setPunto(p);
   };
+  // Miniatura del mapa junto a la Huella espectral (propuesta «espectro único»): captura de la vista de Aladin.
+  const capturarMapa = useCallback(async (): Promise<string | undefined> => {
+    try {
+      return (await aladin.current?.getViewDataURL?.({ format: "image/jpeg", width: 300, height: 300, logo: false })) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  }, []);
   const encuadrar = () => {
     aladin.current?.gotoRaDec(estado.ra, estado.dec);
     aladin.current?.setFoV(fovDeg);
@@ -293,7 +301,7 @@ export default function Visor({ estado, set, asistido }: Props) {
               <Explorador datos={datos} />
             </div>
           </div>
-          <Prisma datos={datos} ra={estado.ra} dec={estado.dec} banda={Number(estado.band)} onBanda={(b) => set({ band: String(b) })} />
+          <Prisma datos={datos} ra={estado.ra} dec={estado.dec} banda={Number(estado.band)} onBanda={(b) => set({ band: String(b) })} capturarMapa={capturarMapa} />
           <Comentarios ra={estado.ra} dec={estado.dec} />
         </>
       )}

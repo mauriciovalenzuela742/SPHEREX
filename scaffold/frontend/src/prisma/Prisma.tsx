@@ -14,6 +14,7 @@ import type { DatosSpherex } from "../explorador/useDatosSpherex";
 import { espectro } from "./fotometria";
 import HuellaEspectral from "./HuellaEspectral";
 import OjoInfrarrojo from "./OjoInfrarrojo";
+import BandaElegida from "./BandaElegida";
 import QueCambio from "./QueCambio";
 import FichaAstro from "./FichaAstro";
 import { COLORES_PASADA, desdePrecalc, desdeVivo, esPrecalc, etiquetaPasada, type PrecalcEspectro, type PuntoVista } from "./pasadas";
@@ -60,9 +61,11 @@ type Props = {
   /** Banda del mapa (1–6). Con `onBanda`, la Huella espectral sirve para elegirla (propuesta «espectro único»). */
   banda?: number;
   onBanda?: (banda: number) => void;
+  /** Captura del mapa del cielo, para la miniatura de la banda elegida. */
+  capturarMapa?: () => Promise<string | undefined>;
 };
 
-export default function Prisma({ datos, ra, dec, banda: bandaMapa, onBanda }: Props) {
+export default function Prisma({ datos, ra, dec, banda: bandaMapa, onBanda, capturarMapa }: Props) {
   const prisma = usePrisma();
   const { idioma, tr } = useIdioma();
   const { grid, frames, version, banda, visita, irA, visitaMasCercana } = datos;
@@ -118,15 +121,18 @@ export default function Prisma({ datos, ra, dec, banda: bandaMapa, onBanda }: Pr
                 </div>
               )}
             </div>
-            <HuellaEspectral
-              pasadas={pasadas}
-              ver={verValido}
-              sel={{ banda, visita }}
-              onPunto={onPunto}
-              cargarTodas={!usaPre && datos.cargar.length < 6 ? () => datos.setCargar([1, 2, 3, 4, 5, 6]) : undefined}
-              bandaMapa={bandaMapa}
-              onBanda={onBanda}
-            />
+            <div className="huella-con-banda">
+              <HuellaEspectral
+                pasadas={pasadas}
+                ver={verValido}
+                sel={{ banda, visita }}
+                onPunto={onPunto}
+                cargarTodas={!usaPre && datos.cargar.length < 6 ? () => datos.setCargar([1, 2, 3, 4, 5, 6]) : undefined}
+                bandaMapa={bandaMapa}
+                onBanda={onBanda}
+              />
+              {onBanda && bandaMapa ? <BandaElegida banda={bandaMapa} datos={datos} capturarMapa={capturarMapa} /> : null}
+            </div>
             {usaPre && pre && (
               <details className="h-caveat">
                 <summary>{prisma.fuente.notaPre(pre.generado.slice(0, 10))}</summary>

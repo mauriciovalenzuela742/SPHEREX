@@ -33,11 +33,20 @@ Las franjas D1–D6 y el eje λ aparecían dos veces, y la banda se podía elegi
 3. **«Ojo infrarrojo» queda plegado** debajo de la huella («Más detalles: Ojo infrarrojo»).
 4. **El selector de 102 canales queda plegado** bajo el mapa («Más detalles: los 102 canales de longitud de onda»).
    Sigue funcionando igual al abrirlo: es para quien quiera un canal fino.
+5. **Se ve qué pasó, sin desplazarse.** Al lado de la huella hay un panel con el color de la banda elegida:
+   - un rótulo: «Mapa y Explorador en D5 · 3,83–4,41 µm» (o «Mapa en D2 · …» si el Explorador no la tiene);
+   - una miniatura del mapa del cielo en esa banda (sirve para las seis bandas);
+   - la foto del Explorador en esa banda, si está cargada. Si no, una línea lo dice: «D2 no está cargada en el
+     Explorador (solo D5). Para bajarla, márcala en “Qué cargar”; necesita que IRSA responda».
+   El panel queda fijo mientras uno baja por la huella.
 
 No se borró nada: todo sigue a un clic.
 
 ![Después: la huella con las pestañas D1–D6 (D4 = banda del mapa)](img/espectro_unico/despues_1_huella_D4.jpg)
 ![Después: clic en D2 → el mapa pasa a D2](img/espectro_unico/despues_2_clic_D2.jpg)
+![Después: clic en D2 → el panel de al lado muestra el mapa en D2 y avisa que el Explorador no la tiene](img/espectro_unico/despues_6_clic_D2_panel.jpg)
+![Después: clic en D5 → «Mapa y Explorador en D5», con la foto del Explorador](img/espectro_unico/despues_7_D5_con_explorador.jpg)
+![Después, WISE 0855 en inglés: clic en D2](img/espectro_unico/despues_8_wise0855_ingles_D2.jpg)
 ![Después: bajo el mapa solo queda «Más detalles: los 102 canales»](img/espectro_unico/despues_3_mapa_plegado.jpg)
 ![Después: «Ojo infrarrojo» abierto desde «Más detalles»](img/espectro_unico/despues_4_ojo_plegado_abierto.jpg)
 ![Después, en inglés: clic en D3](img/espectro_unico/despues_5_ingles_D3.jpg)
@@ -51,7 +60,7 @@ No se borró nada: todo sigue a un clic.
 
 ## Archivos tocados
 
-`src/prisma/HuellaEspectral.tsx`, `src/prisma/Prisma.tsx`, `src/prisma/prisma.css`, `src/sky/AladinView.tsx`,
+`src/prisma/HuellaEspectral.tsx`, `src/prisma/BandaElegida.tsx` (nuevo), `src/prisma/Prisma.tsx`, `src/prisma/prisma.css`, `src/sky/AladinView.tsx`,
 `src/pages/Visor.tsx`, `src/pages/visor.css`, `src/content/prisma.ts` (solo la pista bajo el gráfico, ES y EN).
 No se tocó `src/explorador/render.ts` ni el backend. Sin dependencias nuevas. `npx tsc -b` y `npm run build` pasan.
 
@@ -59,7 +68,11 @@ No se tocó `src/explorador/render.ts` ni el backend. Sin dependencias nuevas. `
 
 - **El Explorador solo sigue la banda si la tiene cargada.** Con Epsilon Indi B se carga solo D5 por defecto, así
   que un clic en D2 cambia el mapa pero el Explorador se queda en D5 (es el mismo comportamiento que el menú
-  «Banda del mapa»). No lo pude probar con más bandas: IRSA estaba caído esta mañana.
+  «Banda del mapa»), y el panel de al lado lo avisa. No lo pude probar con más bandas: IRSA estaba caído esta
+  mañana y de Epsilon Indi B y WISE 0855 solo hay precalculado D5. No puse un botón «cargar esta banda» porque,
+  con IRSA caído, recargar borraría también las fotos de D5 que sí están.
+- La miniatura del mapa es una captura de la vista de Aladin: trae los rótulos y círculos del mapa encima, y si
+  alguien cambió el fondo a AllWISE o 2MASS muestra ese fondo.
 - **El tutorial** sigue apuntando a «Longitud de onda» y a «Ojo infrarrojo», que ahora están plegados: el paso los
   resalta cerrados. Si se aprueba, conviene cambiar esos dos textos (y quizá abrirlos solos en ese paso).
 - No se probó en celular.
