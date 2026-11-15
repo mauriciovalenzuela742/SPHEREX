@@ -61,6 +61,51 @@ export default function Visor({ estado, set, asistido }: Props) {
   };
   return (
     <section className="visor">
+      {/* Primero, qué es SPHEREx y cómo leer el Explorador: antes estaban en la columna lateral y en pantallas
+          angostas quedaban al final. */}
+      {!enMision && (
+        <>
+        <div className="tarjeta intro-spherex">
+          <strong>{tr("¿Qué es SPHEREx?", "What is SPHEREx?")}</strong>
+          <p>{t.queEsSpherex}</p>
+          <p>
+            {tr(
+              "Aquí puedes explorar el cielo, detectar lo que cambia en él, ver el espectro de cada objeto y hacer tu propia ciencia con datos reales.",
+              "Here you can explore the sky, detect what changes in it, see the spectrum of each object and do your own science with real data.",
+            )}
+          </p>
+        </div>
+      <div className="tarjeta intro-spherex">
+        {/* Habla del Explorador SPHEREx (al lado del mapa), no del botón «Parpadear» del mapa, que alterna SPHEREx con AllWISE/2MASS. */}
+        <strong>{tr("Cómo leer el Explorador", "How to read the Explorer")}</strong>
+        <p>{tr("En el Explorador SPHEREx (al lado del mapa), cada cuadro es una visita, de la más antigua a la más reciente. En «Resta vs t₀», lo que apareció desde la primera fecha sale en rojo y lo que se fue, en azul: una pareja roja y azul pegada es algo que se movió. «Resta A − B» hace lo mismo entre dos fechas que eliges tú. Ojo: en «Color» el rojo es al revés: la primera fecha va en rojo y la actual en cian, y lo que no cambia se ve blanco.", "In the SPHEREx Explorer (beside the map), each frame is a visit, from oldest to newest. In “Subtract vs t₀”, what appeared since the first date shows in red and what left in blue: a touching red and blue pair is something that moved. “Subtract A − B” does the same between two dates you choose. Careful: in “Color” red is the other way around: the first date is red and the current one cyan, and what doesn't change looks white.")}</p>
+        {/* Detalle de «Resta vs t₀» y «Color» (render.ts de Bryan), cerrado hasta que se pide. */}
+        <details className="mas-info">
+          <summary>{tr("Más información: Resta y Color", "More info: Subtract and Color")}</summary>
+          <h4>{tr("Resta vs t₀", "Subtract vs t₀")}</h4>
+          <p>{tr("Para cada píxel calcula ahora − t₀:", "For each pixel it computes now − t₀:")}</p>
+          <ul>
+            <li>{tr("Gris = sin cambio. Las estrellas que no se mueven desaparecen en el gris.", "Gray = no change. Stars that don't move disappear into the gray.")}</li>
+            <li>{tr("Rojo = más brillante ahora (algo apareció).", "Red = brighter now (something appeared).")}</li>
+            <li>{tr("Azul = más brillante en t₀ (algo se fue).", "Blue = brighter in t₀ (something left).")}</li>
+          </ul>
+          <p>{tr("Solo ves lo que cambió. Una estrella que se mueve aparece como una pareja roja y azul, y todo lo demás desaparece. Es el modo más sensible para movimientos pequeños, pero también hace más visible el ruido (los puntitos de color tenues).", "All you see is what changed. A moving star shows up as a red and blue pair, and everything else vanishes. It's the most sensitive mode for small movements, but it also makes noise more visible (the faint colored speckles).")}</p>
+          <h4>{tr("Color", "Color")}</h4>
+          <p>{tr("Superpone las dos fotos, cada una de un color:", "It overlays the two photos, each in a different color:")}</p>
+          <ul>
+            <li>{tr("la foto de t₀ en rojo,", "the t₀ photo in red,")}</li>
+            <li>{tr("la foto actual en cian (verde + azul).", "the current photo in cyan (green + blue).")}</li>
+          </ul>
+          <p>{tr("Al sumarse:", "When the two add up:")}</p>
+          <ul>
+            <li>{tr("Blanco = está en las dos (estrella quieta). Las estrellas no desaparecen.", "White = it's in both (still star). Stars don't disappear.")}</li>
+            <li>{tr("Rojo = solo en t₀ (estaba antes).", "Red = only in t₀ (it was there before).")}</li>
+            <li>{tr("Cian = solo ahora.", "Cyan = only now.")}</li>
+          </ul>
+        </details>
+      </div>
+        </>
+      )}
       <div className="barra" data-tour="busqueda">
         {/* Grados o sexagesimal («08 55 10.83 -07 14 42.5»): src/apuntar/coordenadas.ts. */}
         <EntradaCoordenadas ra={estado.ra} dec={estado.dec} onIr={set} />
@@ -95,7 +140,8 @@ export default function Visor({ estado, set, asistido }: Props) {
         ))}
       </div>
 
-      <div className={enMision ? "cuerpo cuerpo-mision" : "cuerpo"}>
+      {/* Fuera del Modo Misión ya no hay columna lateral: el contenido usa todo el ancho. */}
+      <div className={enMision ? "cuerpo cuerpo-mision" : "cuerpo cuerpo-solo"}>
         <div className="principal">
           {/* Arriba del mapa: así se ve justo después de escribir A.R./Dec o elegir la dimensión. */}
           <div className="sobre-mapa">
@@ -143,20 +189,9 @@ export default function Visor({ estado, set, asistido }: Props) {
             </>
           )}
         </div>
-        {enMision ? (
+        {enMision && (
           <aside className="lateral lateral-mision">
             <MisionPanel estado={estado} set={set} />
-          </aside>
-        ) : (
-          <aside className="lateral">
-            <div className="tarjeta">
-              <strong>{tr("¿Qué es SPHEREx?", "What is SPHEREx?")}</strong>
-              <p>{t.queEsSpherex}</p>
-            </div>
-            <div className="tarjeta">
-              <strong>{tr("Cómo leer el parpadeo", "How to read the blink")}</strong>
-              <p>{tr("Cada cuadro es una visita de SPHEREx, de la más antigua a la más reciente. En «Resta con la primera», lo que apareció queda de un color y lo que se fue, del otro: una pareja pegada es algo que se movió.", "Each frame is a SPHEREx visit, from oldest to newest. In “Subtract vs t₀”, what appeared shows in one color and what left in the other: a touching pair is something that moved.")}</p>
-            </div>
           </aside>
         )}
       </div>
