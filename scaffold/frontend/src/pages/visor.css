@@ -10,7 +10,10 @@
 .dupla .explorador { grid-template-columns: 1fr; }
 .dupla .exp-barra { border-left: 0; border-top: 1px solid var(--borde); }
 
-.bajo-dupla { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+/* Tarjetas a todo el ancho: introducción (arriba de los filtros) y ayuda del parpadeo (bajo los filtros). */
+.visor-intro { margin-bottom: 1rem; }
+.visor-ayuda { margin-bottom: 1rem; }
+.visor-intro p, .visor-ayuda p { margin: 0.3rem 0 0; }
 .visor .prisma { margin-top: 1rem; }
 
 /* Pantallas angostas: uno debajo del otro (mapa primero), sin pegado. */
