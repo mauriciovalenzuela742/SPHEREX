@@ -102,6 +102,8 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
   const nDebil = todosPuntos.filter((p) => p.estado === "limite").length;
   const nSat = todosPuntos.filter((p) => p.estado === "saturado").length;
   const nSosp = todosPuntos.filter((p) => p.sospechoso).length;
+  const nBorde = todosPuntos.filter((p) => p.bordeSat).length;
+  const tenue = (p: PuntoVista) => p.sospechoso || p.bordeSat;
   const todoSaturado = todosPuntos.length > 0 && nSat >= 0.9 * todosPuntos.length;
   const bandasConPuntos = new Set(todosPuntos.map((p) => p.banda));
   const unaBanda = bandasConPuntos.size === 1 ? [...bandasConPuntos][0] : 0;
@@ -121,7 +123,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
   const textoDep = (zn: (typeof zonas)[number]) =>
     zn.dep ? prisma.faltaLuz(zn.m.nombre, `${fmt(zn.a, 2)}–${fmt(zn.z, 2)} µm`, fmt(zn.dep.razon, 2), fmt(zn.dep.sigma, 0)) : "";
   const rotulo = (p: PuntoVista) =>
-    `D${p.banda} · ${p.fecha} · λ ${fmt(p.lam, 2)} µm · ${valor(p)}${p.sospechoso ? ` · ${prisma.huella.sospechosoCorto}` : ""}`;
+    `D${p.banda} · ${p.fecha} · λ ${fmt(p.lam, 2)} µm · ${valor(p)}${p.sospechoso ? ` · ${prisma.huella.sospechosoCorto}` : ""}${p.bordeSat ? ` · ${prisma.huella.bordeSatCorto}` : ""}`;
 
   return (
     <figure className="huella">
@@ -227,7 +229,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
             tabIndex: 0,
             role: "button" as const,
             "aria-label": titulo,
-            className: `h-punto ${s ? "sel" : ""} ${p.sospechoso ? "sosp" : ""}`,
+            className: `h-punto ${s ? "sel" : ""} ${tenue(p) ? "sosp" : ""}`,
           };
           const key = `${p.banda}:${p.visita ?? ""}:${p.mjd}:${i}`;
           if (p.estado === "saturado") {
@@ -242,13 +244,13 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
             const y = ly(valorLimite(p));
             const r = chico ? 4 : 6;
             return (
-              <path key={key} d={`M${x - r},${y - r * 0.66} L${x + r},${y - r * 0.66} L${x},${y + r} Z`} fill={color} opacity={p.sospechoso ? 0.25 : 0.55} {...comun}>
+              <path key={key} d={`M${x - r},${y - r * 0.66} L${x + r},${y - r * 0.66} L${x},${y + r} Z`} fill={color} opacity={tenue(p) ? 0.25 : 0.55} {...comun}>
                 <title>{titulo}</title>
               </path>
             );
           }
           return (
-            <circle key={key} cx={x} cy={ly(p.mJy)} r={s ? 7 : chico ? 3.5 : 5} fill={color} opacity={p.sospechoso ? 0.3 : 1} {...comun}>
+            <circle key={key} cx={x} cy={ly(p.mJy)} r={s ? 7 : chico ? 3.5 : 5} fill={color} opacity={tenue(p) ? 0.3 : 1} {...comun}>
               <title>{titulo}</title>
             </circle>
           );
@@ -311,6 +313,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
           </p>
         )}
         {nSosp > 0 && <p className="h-aviso">{prisma.huella.sospechosos(nSosp)}</p>}
+        {nBorde > 0 && <p className="h-aviso">{prisma.huella.bordeSat(nBorde)}</p>}
         {porColor ? (
           <p className="h-nota">{prisma.huella.porPasada}</p>
         ) : (

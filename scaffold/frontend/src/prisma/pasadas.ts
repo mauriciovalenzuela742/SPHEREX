@@ -25,6 +25,8 @@ export type PuntoVista = {
   banda: number;
   /** Medida que probablemente no es del objeto (p. ej. estrella de fondo en la apertura). */
   sospechoso: boolean;
+  /** Medida en una banda donde la mayoría de las fotos de la pasada saturan: probablemente subestimada. */
+  bordeSat: boolean;
   /** Visita del explorador (solo puntos vivos); en el precalculado se busca la más cercana por fecha. */
   visita: number | null;
   /** Fecha AAAA-MM-DD. */
@@ -86,7 +88,14 @@ export const fechaDe = (mjd: number) => new Date((mjd - MJD_UNIX) * 86400000).to
 export const valorLimite = (p: PuntoVista) => Math.max(p.mJy, 0) + 3 * p.err;
 
 /** Medida usable: no saturada, S/N ≥ 3, flujo positivo y no sospechosa. */
-export const usable = (p: PuntoVista) => p.estado === "medida" && p.mJy > 0 && p.err > 0 && !p.sospechoso;
+export const usable = (p: PuntoVista) => p.estado === "medida" && p.mJy > 0 && p.err > 0 && !p.sospechoso && !p.bordeSat;
+
+/** Marca `bordeSat` en las medidas de cada banda donde, en esa pasada, hay tantos saturados como medidas. */
+function marcarBordeSat(ps: PuntoVista[]): PuntoVista[] {
+  const n = (b: number, e: Estado) => ps.filter((p) => p.banda === b && p.estado === e).length;
+  const malas = new Set([1, 2, 3, 4, 5, 6].filter((b) => n(b, "saturado") > 0 && n(b, "saturado") >= n(b, "medida")));
+  return ps.map((p) => (p.estado === "medida" && malas.has(p.banda) ? { ...p, bordeSat: true } : p));
+}
 
 export function aVista(p: PuntoEspectral): PuntoVista {
   return {
@@ -97,6 +106,7 @@ export function aVista(p: PuntoEspectral): PuntoVista {
     mjd: mjdDe(p.t),
     banda: p.banda,
     sospechoso: false,
+    bordeSat: false,
     visita: p.visita,
     fecha: p.t.slice(0, 10),
     vecinas: p.vecinas,
@@ -117,7 +127,7 @@ export function agrupar(puntos: PuntoVista[]): Pasada[] {
     desde: g[0].fecha,
     hasta: g[g.length - 1].fecha,
     mjdMedio: (g[0].mjd + g[g.length - 1].mjd) / 2,
-    puntos: g.sort((a, b) => a.lam - b.lam),
+    puntos: marcarBordeSat(g).sort((a, b) => a.lam - b.lam),
   }));
 }
 
@@ -135,6 +145,7 @@ export function desdePrecalc(j: PrecalcEspectro): Pasada[] {
         mjd: p.mjd,
         banda: typeof p.banda === "number" ? p.banda : Number(String(p.banda).replace(/\D/g, "")) || 0,
         sospechoso: Boolean(p.sospechoso),
+        bordeSat: false,
         visita: null,
         fecha: fechaDe(p.mjd),
         vecinas: null,
@@ -146,7 +157,7 @@ export function desdePrecalc(j: PrecalcEspectro): Pasada[] {
       desde: pa.desde,
       hasta: pa.hasta,
       mjdMedio: mjds.length ? (Math.min(...mjds) + Math.max(...mjds)) / 2 : mjdDe(pa.desde),
-      puntos,
+      puntos: marcarBordeSat(puntos),
     };
   });
 }

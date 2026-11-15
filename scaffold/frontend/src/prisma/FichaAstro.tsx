@@ -12,7 +12,7 @@ export default function FichaAstro({ puntos, nombre }: { puntos: PuntoVista[]; n
   const { idioma } = useIdioma();
   const t = prisma.ficha;
   // Las medidas sospechosas (luz de otra fuente en la apertura) no cuentan.
-  const c = clasificar(puntos.filter((p) => !p.sospechoso), idioma === "en" ? "en" : "es");
+  const c = clasificar(puntos.filter((p) => !p.sospechoso && !p.bordeSat), idioma === "en" ? "en" : "es");
   return (
     <div className={`ficha ficha-${c.tipo}`}>
       <h4>{nombre ? `${t.titulo} · ${nombre}` : t.titulo}</h4>

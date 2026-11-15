@@ -57,6 +57,10 @@ export const prisma = {
       "brillo, el espectro mezcla momentos distintos.",
     pista: "Pasa el mouse por un punto para ver esa foto en el explorador.",
     sospechosoCorto: "sospechoso",
+    bordeSatCorto: "al borde de la saturación",
+    bordeSat: (n: number) =>
+      `${n} ${n === 1 ? "medida va atenuada" : "medidas van atenuadas"}: son de bandas donde la mayoría de las fotos ` +
+      "saturan, así que probablemente subestiman el brillo. No se usan para la forma ni para la ficha.",
     sospechosos: (n: number) =>
       `${n} puntos van atenuados: son medidas sospechosas (lo más probable es que la luz sea de otra fuente ` +
       "dentro de la apertura, no del objeto). No se usan para la forma ni para la ficha.",
@@ -205,6 +209,10 @@ export const prismaEN: typeof prisma = {
       "changes brightness, the spectrum mixes different moments.",
     pista: "Hover over a point to see that photo in the explorer.",
     sospechosoCorto: "suspect",
+    bordeSatCorto: "near saturation",
+    bordeSat: (n: number) =>
+      `${n} ${n === 1 ? "measurement is" : "measurements are"} faded: they come from bands where most photos ` +
+      "saturate, so they probably underestimate the brightness. They are not used for the shape or the card.",
     sospechosos: (n: number) =>
       `${n} points are faded: they are suspect measurements (most likely the light comes from another source ` +
       "inside the aperture, not from the object). They are not used for the shape or the card.",
