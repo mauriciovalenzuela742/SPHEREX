@@ -15,13 +15,13 @@ const PRESETS: Preset[] = [
     id: "wise_0855",
     banda: 5,
     porVisita: 10,
-    razon: "Este objeto es muy débil: sumamos 10 fotos de cada visita en la banda 5 para verlo. Ves la resta de la última visita contra la primera: azul es donde estaba y rojo, donde está.",
+    razon: "Este objeto es muy débil: combinamos hasta 10 fotos de cada visita en la banda 5 para verlo. Ves la resta de la última visita contra la primera: azul es donde estaba y rojo, donde está.",
   },
   {
     id: "eps_ind_b",
     banda: 5,
     porVisita: 10,
-    razon: "Este objeto es débil: sumamos 10 fotos de cada visita en la banda 5 para verlo. Ves la resta de la última visita contra la primera: azul es donde estaba y rojo, donde está.",
+    razon: "Este objeto es débil: combinamos hasta 10 fotos de cada visita en la banda 5 para verlo. Ves la resta de la última visita contra la primera: azul es donde estaba y rojo, donde está.",
   },
 ];
 
