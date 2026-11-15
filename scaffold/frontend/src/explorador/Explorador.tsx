@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIdioma } from "../state/idioma";
 import { dibujar, type Frame, type Modo } from "./render";
 import { clave, type DatosSpherex } from "./useDatosSpherex";
+import PanelApilar from "./PanelApilar";
 import "./explorador.css";
 
 const BANDAS_UM: Record<number, [number, number]> = {
@@ -55,6 +56,7 @@ export default function Explorador({ datos }: Props) {
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
   const [suave, setSuave] = useState(false);
+  const [apilar, setApilar] = useState(false); // modo Apilar (PanelApilar.tsx, V2)
   const [zoom, setZoom] = useState(1); // ampliación hacia la mira: el movimiento es de 1–2 px (docs/09)
   // Desplazamiento al arrastrar, en fracción del ancho del cuadro. Se limita para no dejar bordes negros.
   const [pan, setPan] = useState<Punto>({ x: 0, y: 0 });
@@ -184,8 +186,10 @@ export default function Explorador({ datos }: Props) {
           <span>{t.exploradorHint}</span>
         </div>
         {preset && <p className="exp-preset">{t.presetRazon(preset.muyDebil, preset.porVisita, preset.banda)}</p>}
+        {apilar && <PanelApilar datos={datos} />}
         <div
           ref={caja}
+          style={apilar ? { display: "none" } : undefined}
           data-tour="explorador-imagen"
           className={`exp-lienzo ${suave ? "suave" : ""} ${zoom > 1 ? "movible" : ""} ${arrastre.current ? "arrastrando" : ""}`}
           onPointerDown={(ev) => {
@@ -355,12 +359,16 @@ export default function Explorador({ datos }: Props) {
             </div>
             <div className="exp-modos" role="group" aria-label={t.modo}>
               {(["imagen", "resta", "color"] as Modo[]).map((m) => (
-                <button key={m} aria-pressed={modo === m} onClick={() => setModo(m)}>
+                <button key={m} aria-pressed={!apilar && modo === m} onClick={() => { setModo(m); setApilar(false); }}>
                   {m === "imagen" ? t.modoImagen : m === "resta" ? t.modoResta : t.modoColor}
                 </button>
               ))}
             </div>
-            <p className="exp-leyenda">{LEYENDA[modo]}</p>
+            <button className="exp-apilar" aria-pressed={apilar} onClick={() => setApilar((x) => !x)}
+              title={tr("Suma todas las visitas de la banda para bajar el ruido", "Adds up all visits of the band to lower the noise")}>
+              {tr("Apilar visitas", "Stack visits")}
+            </button>
+            <p className="exp-leyenda">{apilar ? tr("Apilar: quieto vs. siguiendo el movimiento propio. Ver los paneles.", "Stack: static vs. following the proper motion. See the panels.") : LEYENDA[modo]}</p>
             <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {tr("Suavizar píxeles", "Smooth pixels")}</label>
             <p className="exp-ayuda">
               {tr("La mira marca la posición pedida (A.R./Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento está hecho para espectros de todo el cielo, no para detalle fino. El grano es ruido; baja con la mediana de más exposiciones por visita.",
