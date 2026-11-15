@@ -5,14 +5,19 @@
 import { usePrisma } from "../content/prisma";
 import { useIdioma } from "../state/idioma";
 import { clasificar } from "./clasificar";
-import type { PuntoVista } from "./pasadas";
+import { incompleta, type Pasada } from "./pasadas";
 
-export default function FichaAstro({ puntos, nombre }: { puntos: PuntoVista[]; nombre: string | null }) {
+export default function FichaAstro({ pasadas, nombre }: { pasadas: Pasada[]; nombre: string | null }) {
   const prisma = usePrisma();
   const { idioma } = useIdioma();
   const t = prisma.ficha;
-  // Las medidas sospechosas (luz de otra fuente en la apertura) no cuentan.
-  const c = clasificar(puntos.filter((p) => !p.sospechoso && !p.bordeSat), idioma === "en" ? "en" : "es");
+  const puntos = pasadas.flatMap((pa) => pa.puntos);
+  // Una pasada incompleta (< 90 de 102 canales) no se clasifica sola.
+  const sola = pasadas.length === 1 && incompleta(pasadas[0]) ? pasadas[0] : null;
+  // Las medidas sospechosas (luz de otra fuente) y las de bandas al borde de la saturación no cuentan.
+  const c = sola
+    ? { tipo: "indeterminado" as const, confianza: "baja" as const, motivo: t.incompleta(sola.canales ?? 0) }
+    : clasificar(puntos.filter((p) => !p.sospechoso && !p.bordeSat), idioma === "en" ? "en" : "es");
   return (
     <div className={`ficha ficha-${c.tipo}`}>
       <h4>{nombre ? `${t.titulo} · ${nombre}` : t.titulo}</h4>

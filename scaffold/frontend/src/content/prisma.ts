@@ -93,6 +93,8 @@ export const prisma = {
       enana_marron: "una enana marrón",
     } as Record<string, string>,
     confianza: { baja: "confianza baja", media: "confianza media" } as Record<string, string>,
+    incompleta: (n: number) =>
+      `Esta pasada está incompleta (${n} de 102 canales): sola no alcanza para clasificar. Mira «todas» u otra pasada.`,
     aviso:
       "Orientativo: reglas simples sobre la forma del espectro entre 0,75 y 5 µm, sin modelos ni catálogos. " +
       "No reemplaza una clasificación espectral.",
@@ -245,6 +247,8 @@ export const prismaEN: typeof prisma = {
       enana_marron: "a brown dwarf",
     },
     confianza: { baja: "low confidence", media: "medium confidence" },
+    incompleta: (n: number) =>
+      `This pass is incomplete (${n} of 102 channels): on its own it is not enough to classify. See \u201call\u201d or another pass.`,
     aviso:
       "Indicative only: simple rules on the shape of the spectrum between 0.75 and 5 µm, no models or catalogs. " +
       "It does not replace a spectral classification.",

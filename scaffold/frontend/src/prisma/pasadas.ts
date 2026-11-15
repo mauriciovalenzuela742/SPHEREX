@@ -40,7 +40,13 @@ export type Pasada = {
   hasta: string;
   mjdMedio: number;
   puntos: PuntoVista[];
+  /** Canales de SPHEREx cubiertos (de 102), solo en el precalculado; < CANALES_MIN = pasada incompleta. */
+  canales: number | null;
 };
+
+/** Con menos canales que esto (de 102), la pasada es «incompleta» y no se clasifica sola. */
+export const CANALES_MIN = 90;
+export const incompleta = (p: Pasada) => p.canales !== null && p.canales < CANALES_MIN;
 
 /** Contrato del JSON precalculado (D:\dev\informes_v2\precalc_espectros, generado por otro agente). */
 export type PrecalcEspectro = {
@@ -128,6 +134,7 @@ export function agrupar(puntos: PuntoVista[]): Pasada[] {
     hasta: g[g.length - 1].fecha,
     mjdMedio: (g[0].mjd + g[g.length - 1].mjd) / 2,
     puntos: marcarBordeSat(g).sort((a, b) => a.lam - b.lam),
+    canales: null,
   }));
 }
 
@@ -139,8 +146,9 @@ export function desdePrecalc(j: PrecalcEspectro): Pasada[] {
       .filter((p) => Number.isFinite(p.lam) && (p.estado === "medida" || p.estado === "limite" || p.estado === "saturado"))
       .map((p) => ({
         lam: p.lam,
-        mJy: p.mJy ?? 0,
-        err: p.err ?? 0,
+        // Los saturados traen mJy/err null: NaN, nunca 0 (no se usan como flujo en ninguna parte).
+        mJy: p.mJy ?? NaN,
+        err: p.err ?? NaN,
         estado: p.estado,
         mjd: p.mjd,
         banda: typeof p.banda === "number" ? p.banda : Number(String(p.banda).replace(/\D/g, "")) || 0,
@@ -158,6 +166,7 @@ export function desdePrecalc(j: PrecalcEspectro): Pasada[] {
       hasta: pa.hasta,
       mjdMedio: mjds.length ? (Math.min(...mjds) + Math.max(...mjds)) / 2 : mjdDe(pa.desde),
       puntos: marcarBordeSat(puntos),
+      canales: Number.isFinite(pa.canales_cubiertos) ? pa.canales_cubiertos : null,
     };
   });
 }
@@ -175,9 +184,10 @@ export function etiquetaPasada(p: Pasada, idioma: string): string {
     new Date(iso + "T12:00:00Z").toLocaleDateString(loc, { month: "short", timeZone: "UTC" }).replace(".", "");
   const anio = (iso: string) => iso.slice(0, 4);
   const [a, z] = [p.desde, p.hasta];
-  if (a.slice(0, 7) === z.slice(0, 7)) return `${mes(a)} ${anio(a)}`;
-  if (anio(a) === anio(z)) return `${mes(a)}–${mes(z)} ${anio(z)}`;
-  return `${mes(a)} ${anio(a)}–${mes(z)} ${anio(z)}`;
+  const inc = incompleta(p) ? (idioma === "en" ? " (incomplete)" : " (incompleta)") : "";
+  if (a.slice(0, 7) === z.slice(0, 7)) return `${mes(a)} ${anio(a)}${inc}`;
+  if (anio(a) === anio(z)) return `${mes(a)}–${mes(z)} ${anio(z)}${inc}`;
+  return `${mes(a)} ${anio(a)}–${mes(z)} ${anio(z)}${inc}`;
 }
 
 /** Colores de pasada (distintos de los de banda para no confundirlos). */

@@ -120,7 +120,7 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
             />
             {usaPre && pre && <p className="h-caveat">{prisma.fuente.notaPre(pre.generado.slice(0, 10))} {pre.caveat}</p>}
             <FichaAstro
-              puntos={pasadas.filter((pa) => verValido === "todas" || pa.id === verValido).flatMap((pa) => pa.puntos)}
+              pasadas={pasadas.filter((pa) => verValido === "todas" || pa.id === verValido)}
               nombre={CAMPOS.find((c) => c.id === id)?.nombre ?? null}
             />
             <QueCambio pasadas={pasadas} />

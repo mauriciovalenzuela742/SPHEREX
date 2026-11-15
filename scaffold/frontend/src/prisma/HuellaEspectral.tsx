@@ -321,6 +321,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
             <p className="h-nota">{prisma.huella.fechasDistintas(fechas.length, fechas[0], fechas[fechas.length - 1])}</p>
           )
         )}
+        <p className="h-caveat">{prisma.huella.caveat}</p>
       </figcaption>
     </figure>
   );
