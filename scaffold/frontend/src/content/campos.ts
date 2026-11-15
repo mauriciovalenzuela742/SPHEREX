@@ -19,15 +19,20 @@ export type Campo = {
   pmra: number;
   pmdec: number;
   tipo: "se mueve" | "cambia de brillo";
+  /** Nombre en inglés, solo si cambia (los demás son iguales en los dos idiomas). */
+  nombreEn?: string;
 };
 
 export const CAMPOS: Campo[] = [
-  { id: "barnard", nombre: "Estrella de Barnard", ra: 269.4520769586187, dec: 4.693364966576667, pmra: -801.551, pmdec: 10362.394, tipo: "se mueve" },
+  { id: "barnard", nombre: "Estrella de Barnard", ra: 269.4520769586187, dec: 4.693364966576667, pmra: -801.551, pmdec: 10362.394, tipo: "se mueve", nombreEn: "Barnard's Star" },
   { id: "eps_ind_b", nombre: "Epsilon Indi B", ra: 331.04414658852124, dec: -56.782844195116105, pmra: 3981.977, pmdec: -2466.832, tipo: "se mueve" },
   { id: "wise_0855", nombre: "WISE 0855", ra: 133.81890825, dec: -7.247048, pmra: -8123.7, pmdec: 673.2, tipo: "se mueve" },
   { id: "rw_aur", nombre: "RW Aurigae", ra: 76.95652603458333, dec: 30.401438173888888, pmra: 7.23, pmdec: -20.33, tipo: "cambia de brillo" },
   { id: "r_dra", nombre: "R Draconis", ra: 248.16761083295, dec: 66.75497941722, pmra: -20.643, pmdec: 6.149, tipo: "cambia de brillo" },
 ];
+
+/** Nombre del objeto en el idioma de la página. */
+export const nombreDe = (c: Campo, idioma: string) => (idioma === "en" && c.nombreEn ? c.nombreEn : c.nombre);
 
 /** Posición del campo propagada a `fecha` (por defecto hoy), redondeada a 6 decimales (~4 mas). */
 export function posicionActual(c: Campo, fecha: Date = new Date()): { ra: number; dec: number } {

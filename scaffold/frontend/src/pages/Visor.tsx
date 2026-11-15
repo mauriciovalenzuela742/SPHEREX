@@ -6,7 +6,7 @@
  */
 import { useRef, useState } from "react";
 import AladinView, { planoDeBanda } from "../sky/AladinView";
-import { CAMPOS, posicionActual } from "../content/campos";
+import { CAMPOS, nombreDe, posicionActual } from "../content/campos";
 import { TAMANOS, type Estado } from "../state/url";
 import Spherix from "../spherix/Spherix";
 import MisionPanel from "../mision/MisionPanel";
@@ -67,7 +67,7 @@ function Hueco({ titulo, quien }: { titulo: string; quien: string }) {
 }
 
 export default function Visor({ estado, set, asistido }: Props) {
-  const { t, tr } = useIdioma();
+  const { t, tr, idioma } = useIdioma();
   const enMision = Boolean(estado.mision);
   // Un solo origen de datos para el Explorador (tiempo) y el Prisma (colores).
   const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, !enMision);
@@ -166,7 +166,7 @@ export default function Visor({ estado, set, asistido }: Props) {
             onClick={() => set(posicionActual(c))}
             title={`${AYUDA_OBJETO[c.id] ? tr(...AYUDA_OBJETO[c.id]) : c.tipo} ${tr("(El mapa se centra donde está hoy.)", "(The map centers on where it is today.)")}`}
           >
-            {c.nombre}
+            {nombreDe(c, idioma)}
           </button>
         ))}
       </div>
