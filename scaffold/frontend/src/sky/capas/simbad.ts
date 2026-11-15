@@ -22,6 +22,7 @@
  */
 import A from "aladin-lite";
 import type { Capa } from "./index";
+import { ponerEstado, TEXTO_SIN_RESPUESTA } from "./estado";
 
 /** Tope de objetos pedidos a SIMBAD. */
 const MAX_OBJETOS = 200;
@@ -32,7 +33,7 @@ const RADIO_MIN = 0.1;
 const ESPERA_MS = 40000;
 
 /** Servicios TAP de SIMBAD, en orden de preferencia. Los dos responden con CORS abierto.
- *  También los usa ../../apuntar/queHayAqui.ts (consulta de un punto al hacer clic). */
+ *  También los usan ./catwise.ts (candidatos) y ../../apuntar/queHayAqui.ts (consulta de un punto al hacer clic). */
 export const SERVICIOS_TAP = [
   "https://simbad.cds.unistra.fr/simbad/sim-tap/sync",
   "https://simbad.cfa.harvard.edu/simbad/sim-tap/sync",
@@ -119,16 +120,30 @@ export const capaSimbad: Capa = {
     aladin.addCatalog(catalogo);
     const bajaCatalogo = ctx.registrarCatalogo(catalogo);
 
-    pedirSimbad(ctx.ra, ctx.dec, radio, fin.signal)
-      .then((objetos) => {
-        if (fin.signal.aborted) return;
-        catalogo.addSources(objetos.map((o, rango) => A.source(o.ra, o.dec, { ...o, rango })));
-        console.info(`[sky] SIMBAD: ${objetos.length} objetos a ${radio}° de (${ctx.ra}, ${ctx.dec})`);
-      })
-      .catch((e: unknown) => {
-        if (fin.signal.aborted) return;
-        console.error("[sky] SIMBAD falló; el mapa sigue sin esa capa:", e);
-      });
+    // Se llama al montar y desde «Reintentar» del panel de catálogos. `fin` cancela todo al desmontar;
+    // `pedido` cancela solo el intento en curso.
+    let pedido = new AbortController();
+    const cargar = () => {
+      pedido.abort();
+      pedido = new AbortController();
+      const senal = AbortSignal.any([fin.signal, pedido.signal]);
+      ponerEstado({ id: "simbad", nombre: "SIMBAD", fase: "cargando", texto: "" });
+      pedirSimbad(ctx.ra, ctx.dec, radio, senal)
+        .then((objetos) => {
+          if (senal.aborted) return;
+          catalogo.removeAll();
+          catalogo.addSources(objetos.map((o, rango) => A.source(o.ra, o.dec, { ...o, rango })));
+          const tope = objetos.length >= MAX_OBJETOS ? ` (los ${MAX_OBJETOS} más estudiados)` : "";
+          ponerEstado({ id: "simbad", nombre: "SIMBAD", fase: "listo", texto: `${objetos.length} objetos conocidos${tope}` });
+          console.info(`[sky] SIMBAD: ${objetos.length} objetos a ${radio}° de (${ctx.ra}, ${ctx.dec})`);
+        })
+        .catch((e: unknown) => {
+          if (senal.aborted) return;
+          console.error("[sky] SIMBAD falló; el mapa sigue sin esa capa:", e);
+          ponerEstado({ id: "simbad", nombre: "SIMBAD", fase: "error", texto: TEXTO_SIN_RESPUESTA, reintentar: cargar });
+        });
+    };
+    cargar();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const esDeSimbad = (s: any) => (s?.getCatalog?.() ?? s?.catalog) === catalogo;

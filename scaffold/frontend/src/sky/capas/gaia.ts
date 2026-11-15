@@ -20,6 +20,7 @@
 import A from "aladin-lite";
 import type { Capa } from "./index";
 import { EPOCA_GAIA_DR3, propagar } from "../propagacion";
+import { ponerEstado, TEXTO_SIN_RESPUESTA } from "./estado";
 
 const ESPEJOS = [
   "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv",
@@ -163,45 +164,57 @@ async function consultar(ra: number, dec: number, radio: number, senal: AbortSig
 export const capaGaia: Capa = {
   id: "gaia",
   montar: (aladin, ctx) => {
-    const control = new AbortController();
+    let control = new AbortController();
     const radio = Math.max(ctx.size, RADIO_MIN_GRADOS);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let catalogo: any = null;
     let bajaCatalogo: (() => void) | null = null;
+    const nombre = "Gaia DR3";
 
-    consultar(ctx.ra, ctx.dec, radio, control.signal)
-      .then((estrellas) => {
-        if (control.signal.aborted) return;
-        catalogo = A.catalog({
-          name: `Gaia DR3 (época ${ctx.epoca.toFixed(1)})`,
-          color: "#4fc3f7",
-          sourceSize: 14,
-          shape: "circle",
-        });
-        const fuentes = estrellas.map((s) => {
-          // Sin movimiento propio (solución de 2 parámetros) la estrella se queda en su posición de 2016,0.
-          const [ra, dec] =
-            s.pmra !== null && s.pmdec !== null
-              ? propagar(s.ra, s.dec, s.pmra, s.pmdec, EPOCA_GAIA_DR3, ctx.epoca)
-              : [s.ra, s.dec];
-          return A.source(ra, dec, {
-            Source: s.source,
-            G: s.gmag,
-            pmRA: s.pmra,
-            pmDE: s.pmdec,
-            RA_2016: s.ra,
-            DE_2016: s.dec,
+    // Se llama al montar y desde «Reintentar» del panel de catálogos.
+    const cargar = () => {
+      control.abort();
+      control = new AbortController();
+      const senal = control.signal;
+      ponerEstado({ id: "gaia", nombre, fase: "cargando", texto: "" });
+      consultar(ctx.ra, ctx.dec, radio, senal)
+        .then((estrellas) => {
+          if (senal.aborted) return;
+          catalogo = A.catalog({
+            name: `Gaia DR3 (época ${ctx.epoca.toFixed(1)})`,
+            color: "#4fc3f7",
+            sourceSize: 14,
+            shape: "circle",
           });
+          const fuentes = estrellas.map((s) => {
+            // Sin movimiento propio (solución de 2 parámetros) la estrella se queda en su posición de 2016,0.
+            const [ra, dec] =
+              s.pmra !== null && s.pmdec !== null
+                ? propagar(s.ra, s.dec, s.pmra, s.pmdec, EPOCA_GAIA_DR3, ctx.epoca)
+                : [s.ra, s.dec];
+            return A.source(ra, dec, {
+              Source: s.source,
+              G: s.gmag,
+              pmRA: s.pmra,
+              pmDE: s.pmdec,
+              RA_2016: s.ra,
+              DE_2016: s.dec,
+            });
+          });
+          aladin.addCatalog(catalogo);
+          bajaCatalogo = ctx.registrarCatalogo(catalogo);
+          catalogo.addSources(fuentes);
+          const tope = fuentes.length >= MAX_ESTRELLAS ? ` (las ${MAX_ESTRELLAS} más brillantes)` : "";
+          ponerEstado({ id: "gaia", nombre, fase: "listo", texto: `${fuentes.length} estrellas${tope}` });
+          console.info(`[gaia] ${fuentes.length} estrellas de Gaia DR3 (radio ${radio}°)`);
+        })
+        .catch((e) => {
+          if (senal.aborted) return;
+          console.error("[gaia] no se pudo cargar Gaia DR3:", e);
+          ponerEstado({ id: "gaia", nombre, fase: "error", texto: TEXTO_SIN_RESPUESTA, reintentar: cargar });
         });
-        aladin.addCatalog(catalogo);
-        bajaCatalogo = ctx.registrarCatalogo(catalogo);
-        catalogo.addSources(fuentes);
-        console.info(`[gaia] ${fuentes.length} estrellas de Gaia DR3 (radio ${radio}°)`);
-      })
-      .catch((e) => {
-        if (control.signal.aborted) return;
-        console.error("[gaia] no se pudo cargar Gaia DR3:", e);
-      });
+    };
+    cargar();
 
     return () => {
       control.abort();
