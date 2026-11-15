@@ -80,6 +80,11 @@ footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-t
 .mas-info h4 { margin: 0.7rem 0 0; font-size: 0.9rem; color: var(--texto); }
 .mas-info ul { margin: 0.3rem 0 0; padding-left: 1.2rem; color: var(--suave); }
 .mas-info li { margin: 0.15rem 0; }
+/* «Cómo usar el mapa», plegable, justo arriba del mapa */
+.mapa-ayuda { padding: 0.5rem 0.8rem; margin: 0.5rem 0; }
+.mapa-ayuda summary { cursor: pointer; color: var(--texto); font-size: 0.9rem; }
+.mapa-ayuda ul { margin: 0.4rem 0 0; padding-left: 1.2rem; color: var(--suave); font-size: 0.9rem; }
+.mapa-ayuda li { margin: 0.2rem 0; }
 .hueco {
   border: 1px dashed var(--borde); border-radius: 8px; padding: 0.8rem; min-height: 80px;
   display: flex; flex-direction: column; gap: 0.3rem; color: var(--suave); font-size: 0.85rem;
