@@ -1,8 +1,9 @@
 /**
- * Vista simple (sin «Modo ciencia»): una imagen grande de SPHEREx en falso color con el objeto marcado, las fechas
- * (una por pasada de ~6 meses) y la barra «Luz» (todas / cercana / media / lejana). Para el público general.
+ * Vista simple (sin «Modo ciencia»): una imagen grande de SPHEREx con el objeto marcado, las fechas
+ * (una por pasada de ~6 meses) y la barra «Luz» (normal / cercana / media / lejana). Para el público general.
  * Usa las mismas fotos reales que el Explorador (useDatosSpherex), con las 6 bandas.
- * Falso color: D1–D2 → azul, D3–D4 → verde, D5–D6 → rojo (como el Ojo infrarrojo del Prisma).
+ * «Normal»: la imagen sin filtro, toda la luz junta (promedio de las 6 bandas) en blanco y negro.
+ * Cercana / media / lejana: solo esas bandas, teñidas de su color.
  */
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { CAMPOS, nombreDe, posicionActual } from "../content/campos";
@@ -15,14 +16,14 @@ import InterruptorCiencia from "./InterruptorCiencia";
 import "./simple.css";
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; onCiencia: () => void };
-type Luz = "todas" | "cercana" | "media" | "lejana";
+type Luz = "normal" | "cercana" | "media" | "lejana";
 type Pasada = { desde: number; hasta: number; medio: number };
 
 const TODAS = [1, 2, 3, 4, 5, 6];
 const HUECO_DIAS = 60;
 const CORTO: Record<string, string> = { barnard: "Barnard", eps_ind_b: "ε Indi B", wise_0855: "WISE 0855", rw_aur: "RW Aurigae", r_dra: "R Draconis" };
-/** Bandas y color de cada luz. En «todas», cada grupo va a un canal (R, G, B). */
-const LUCES: Record<Exclude<Luz, "todas">, { bandas: number[]; tinte: [number, number, number] }> = {
+/** Bandas y color de cada luz filtrada («normal» usa las 6 sin color). */
+const LUCES: Record<Exclude<Luz, "normal">, { bandas: number[]; tinte: [number, number, number] }> = {
   cercana: { bandas: [1, 2], tinte: [138, 180, 255] },
   media: { bandas: [3, 4], tinte: [125, 207, 163] },
   lejana: { bandas: [5, 6], tinte: [255, 122, 89] },
@@ -61,7 +62,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
   }, [cargar, setCargar]);
 
   const campo = campoEn(estado.ra, estado.dec);
-  const [luz, setLuz] = useState<Luz>("todas");
+  const [luz, setLuz] = useState<Luz>("normal");
   const [pasadaSel, setPasadaSel] = useState<number | null>(null);
   const [play, setPlay] = useState(false);
   const [busqueda, setBusqueda] = useState("");
@@ -121,7 +122,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
       if (fr) porBanda.set(b, fr);
     }
   const n = [...porBanda.values()][0]?.meta.n_px ?? 0;
-  const bandasLuz = luz === "todas" ? TODAS : LUCES[luz].bandas;
+  const bandasLuz = luz === "normal" ? TODAS : LUCES[luz].bandas;
   const hayLuz = bandasLuz.some((b) => porBanda.has(b));
 
   const lienzo = useRef<HTMLCanvasElement>(null);
@@ -152,10 +153,11 @@ export default function Simple({ estado, set, onCiencia }: Props) {
       for (let x = 0; x < n; x++) {
         const i = y * n + x;
         const o = ((n - 1 - y) * n + x) * 4; // fila 0 = sur
-        if (luz === "todas") {
-          img.data[o] = 255 * valor([5, 6], i);
-          img.data[o + 1] = 255 * valor([3, 4], i);
-          img.data[o + 2] = 255 * valor([1, 2], i);
+        if (luz === "normal") {
+          const v = 255 * valor(TODAS, i);
+          img.data[o] = v;
+          img.data[o + 1] = v;
+          img.data[o + 2] = v;
         } else {
           const v = valor(LUCES[luz].bandas, i);
           const [r, g, b] = LUCES[luz].tinte;
@@ -218,7 +220,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
   };
   const escala30 = grid && n ? (30 / grid.pixel_scale_arcsec / n) * 100 : 0;
   const textoLuz: Record<Luz, string> = {
-    todas: tr("todas, en falso color (azul: cercana · rojo: lejana)", "all of it, in false color (blue: near · red: far)"),
+    normal: tr("normal, sin filtro: toda la luz infrarroja junta", "normal, no filter: all the infrared light together"),
     cercana: tr("cercana (0,75–1,6 µm): la que más se parece a la que ven tus ojos", "near (0.75–1.6 µm): the closest to what your eyes see"),
     media: tr("media (1,6–3,8 µm)", "middle (1.6–3.8 µm)"),
     lejana: tr("lejana (3,8–5 µm): el calor de los objetos fríos, como las enanas marrones", "far (3.8–5 µm): the heat of cold objects such as brown dwarfs"),
@@ -276,7 +278,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           </div>
         )}
         <div className="simple-imagen">
-          {n > 0 && <canvas ref={lienzo} aria-label={tr("Foto de SPHEREx en falso color", "SPHEREx photo in false color")} />}
+          {n > 0 && <canvas ref={lienzo} aria-label={tr("Foto de SPHEREx", "SPHEREx photo")} />}
           {n > 0 && !hayLuz && <p className="simple-mensaje">{tr("No hay fotos con esta luz en esta fecha.", "No photos in this light on this date.")}</p>}
           {!n && (
             <div className="simple-mensaje">
@@ -337,9 +339,9 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           <b>{tr("Luz:", "Light:")}</b> {textoLuz[luz]}
         </p>
         <div className="simple-luz-botones" role="radiogroup" aria-label={tr("Luz", "Light")}>
-          {(["todas", "cercana", "media", "lejana"] as Luz[]).map((l) => (
+          {(["normal", "cercana", "media", "lejana"] as Luz[]).map((l) => (
             <button key={l} role="radio" aria-checked={luz === l} className={`luz-${l}${luz === l ? " activo" : ""}`} onClick={() => setLuz(l)}>
-              {l === "todas" ? tr("Todas", "All") : l === "cercana" ? tr("Cercana", "Near") : l === "media" ? tr("Media", "Middle") : tr("Lejana (calor)", "Far (heat)")}
+              {l === "normal" ? tr("Normal", "Normal") : l === "cercana" ? tr("Cercana", "Near") : l === "media" ? tr("Media", "Middle") : tr("Lejana (calor)", "Far (heat)")}
             </button>
           ))}
         </div>

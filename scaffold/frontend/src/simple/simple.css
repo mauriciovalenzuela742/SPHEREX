@@ -48,7 +48,7 @@
 .simple-luz-botones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
 .simple-luz-botones button { border: 2px solid transparent; border-radius: 8px; padding: 0.5rem; font-weight: 700; color: #10131c; }
 .simple-luz-botones button.activo { border-color: #fff; box-shadow: 0 0 0 2px var(--acento); }
-.luz-todas { background: linear-gradient(90deg, #8ab4ff, #7dcfa3, #ff7a59); }
+.luz-normal { background: #e6e8ee; }
 .luz-cercana { background: #8ab4ff; }
 .luz-media { background: #7dcfa3; }
 .luz-lejana { background: #ff7a59; }

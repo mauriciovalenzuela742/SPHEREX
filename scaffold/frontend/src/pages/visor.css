@@ -67,3 +67,7 @@
   .dupla { grid-template-columns: 1fr; }
   .dupla .aladin { height: 460px; }
 }
+
+/* «Mostrar catálogos» encendido: en naranja y con ✓, para que se note que está activo. */
+button[data-tour="catalogos"][aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: #111; font-weight: 700; }
+button[data-tour="catalogos"][aria-pressed="true"]::before { content: "✓ "; }
