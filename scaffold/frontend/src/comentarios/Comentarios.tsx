@@ -1,20 +1,22 @@
 /**
- * Comentarios al final del Visor. Se leen de `public/comentarios.json` (en el repo): para agregar uno, se edita
- * ese archivo y se hace commit; no hay formulario ni backend (en Vercel el disco del backend es temporal).
- * Límites al mostrar: nombre ≤ 60 y texto ≤ 600 caracteres, solo texto plano (React escapa todo; los enlaces no se
- * vuelven clicables) y se descartan las entradas mal formadas.
+ * Comentarios al final del Visor: formulario para que cualquiera comente y lista de lo comentado.
+ * Envío y lectura: backend `GET/POST /api/comments` (scaffold/backend/app/comentarios.py), que guarda en
+ * `scaffold/frontend/public/comentarios.json` del repo (en producción con un commit por la API de GitHub; en
+ * desarrollo, en el archivo local). Si la API no responde, se muestra el `comentarios.json` publicado.
+ * Límites (los mismos que valida el backend): nombre ≤ 60 y texto ≤ 600 caracteres, sin enlaces, solo texto plano.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useIdioma } from "../state/idioma";
 import "./comentarios.css";
 
-export type Comentario = { nombre: string; fecha: string | null; texto: string };
+export type Comentario = { id?: string; nombre: string; fecha: string | null; texto: string };
 
 const MAX_NOMBRE = 60;
 const MAX_TEXTO = 600;
 const MAX_MOSTRADOS = 100;
+const ENLACE = /(https?:\/\/|www\.)/i;
 
-/** Valida una entrada del JSON; devuelve null si no sirve. Exportada para probarla. */
+/** Valida una entrada; devuelve null si no sirve. Exportada para probarla. */
 export function validar(x: unknown): Comentario | null {
   if (!x || typeof x !== "object") return null;
   const o = x as Record<string, unknown>;
@@ -22,39 +24,98 @@ export function validar(x: unknown): Comentario | null {
   const texto = typeof o.texto === "string" ? o.texto.trim() : "";
   if (!nombre || !texto || nombre.length > MAX_NOMBRE || texto.length > MAX_TEXTO) return null;
   const fecha = typeof o.fecha === "string" && /^\d{4}-\d{2}-\d{2}$/.test(o.fecha) ? o.fecha : null;
-  return { nombre, fecha, texto };
+  const id = typeof o.id === "string" ? o.id : undefined;
+  return { id, nombre, fecha, texto };
 }
 
-type Estado = { fase: "cargando" } | { fase: "listo"; lista: Comentario[]; descartados: number } | { fase: "error" };
+function listaDe(d: unknown): unknown[] | null {
+  return d && typeof d === "object" && Array.isArray((d as { comentarios?: unknown }).comentarios)
+    ? (d as { comentarios: unknown[] }).comentarios
+    : null;
+}
+
+async function leerJson(url: string): Promise<unknown> {
+  const r = await fetch(url, { cache: "no-cache" });
+  if (!r.ok) throw new Error(String(r.status));
+  // Sin archivo o sin backend, el servidor de desarrollo puede responder index.html con 200: JSON.parse falla.
+  return JSON.parse(await r.text());
+}
+
+type Lista = { fase: "cargando" } | { fase: "listo"; lista: Comentario[] } | { fase: "error" };
+type Envio = { fase: "nada" } | { fase: "enviando" } | { fase: "ok" } | { fase: "error"; motivo: string };
 
 export default function Comentarios() {
   const { tr, idioma } = useIdioma();
-  const [estado, setEstado] = useState<Estado>({ fase: "cargando" });
+  const [lista, setLista] = useState<Lista>({ fase: "cargando" });
+  const [nombre, setNombre] = useState("");
+  const [texto, setTexto] = useState("");
+  const [sitio, setSitio] = useState(""); // campo trampa para bots (invisible)
+  const [envio, setEnvio] = useState<Envio>({ fase: "nada" });
 
   useEffect(() => {
     let vivo = true;
-    fetch("/comentarios.json", { cache: "no-cache" })
-      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
-      .then((txt) => {
-        // Sin archivo, el servidor de desarrollo responde index.html con 200: JSON.parse falla y cae al catch.
-        const d: unknown = JSON.parse(txt);
-        const crudos = d && typeof d === "object" && Array.isArray((d as { comentarios?: unknown }).comentarios)
-          ? ((d as { comentarios: unknown[] }).comentarios)
-          : null;
-        if (!crudos) throw new Error("formato");
-        const lista = crudos.map(validar).filter((c): c is Comentario => c !== null);
-        // Más recientes primero; los sin fecha al final, en el orden del archivo.
-        lista.sort((a, b) => (b.fecha ?? "").localeCompare(a.fecha ?? ""));
-        if (vivo) setEstado({ fase: "listo", lista: lista.slice(0, MAX_MOSTRADOS), descartados: crudos.length - lista.length });
-      })
-      .catch((e: unknown) => {
-        console.error("[comentarios] no se pudo leer comentarios.json:", e);
-        if (vivo) setEstado({ fase: "error" });
-      });
+    (async () => {
+      let crudos: unknown[] | null = null;
+      let desdeApi = false;
+      try {
+        crudos = listaDe(await leerJson("/api/comments"));
+        desdeApi = crudos !== null;
+      } catch {
+        /* sin backend: se usa el archivo publicado */
+      }
+      if (!crudos) {
+        try {
+          crudos = listaDe(await leerJson("/comentarios.json"));
+        } catch (e) {
+          console.error("[comentarios] no se pudieron leer:", e);
+        }
+      }
+      if (!vivo) return;
+      if (!crudos) return setLista({ fase: "error" });
+      const l = crudos.map(validar).filter((c): c is Comentario => c !== null);
+      // La API ya los entrega del más reciente al más antiguo; el archivo va en orden de llegada.
+      if (!desdeApi) l.reverse();
+      setLista({ fase: "listo", lista: l.slice(0, MAX_MOSTRADOS) });
+    })();
     return () => {
       vivo = false;
     };
   }, []);
+
+  const nombreLimpio = nombre.trim();
+  const textoLimpio = texto.trim();
+  const conEnlace = ENLACE.test(nombre) || ENLACE.test(texto);
+  const puedeEnviar = nombreLimpio.length > 0 && textoLimpio.length > 0 && !conEnlace && envio.fase !== "enviando";
+
+  const enviar = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!puedeEnviar) return;
+    setEnvio({ fase: "enviando" });
+    try {
+      const r = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: nombreLimpio, texto: textoLimpio, sitio }),
+      });
+      const j: unknown = await r.json().catch(() => null);
+      if (r.status === 429)
+        return setEnvio({ fase: "error", motivo: tr("Demasiados comentarios seguidos: espera un minuto.", "Too many comments in a row: wait a minute.") });
+      if (r.status === 503 || r.status >= 500)
+        return setEnvio({ fase: "error", motivo: tr("No se pudo guardar el comentario ahora. Inténtalo más tarde.", "The comment could not be saved right now. Try again later.") });
+      if (!r.ok) {
+        const detalle = j && typeof j === "object" && typeof (j as { detail?: unknown }).detail === "string"
+          ? (j as { detail: string }).detail
+          : tr(`El servidor respondió ${r.status}.`, `The server answered ${r.status}.`);
+        return setEnvio({ fase: "error", motivo: detalle });
+      }
+      const nuevo = validar(j);
+      if (nuevo) setLista((l) => ({ fase: "listo", lista: [nuevo, ...(l.fase === "listo" ? l.lista : [])] }));
+      setTexto("");
+      setEnvio({ fase: "ok" });
+    } catch {
+      setEnvio({ fase: "error", motivo: tr("No hay conexión con el servidor de comentarios.", "Could not reach the comments server.") });
+    }
+  };
 
   const fechaLegible = (f: string) =>
     new Date(`${f}T12:00:00Z`).toLocaleDateString(idioma === "en" ? "en-US" : "es-CL", { day: "numeric", month: "short", year: "numeric" });
@@ -62,15 +123,47 @@ export default function Comentarios() {
   return (
     <section className="comentarios" aria-labelledby="comentarios-titulo">
       <h2 id="comentarios-titulo">{tr("Comentarios", "Comments")}</h2>
-      {estado.fase === "cargando" && <p className="com-vacio">{tr("Cargando comentarios…", "Loading comments…")}</p>}
-      {estado.fase === "error" && <p className="com-vacio">{tr("No se pudieron cargar los comentarios.", "Could not load the comments.")}</p>}
-      {estado.fase === "listo" && estado.lista.length === 0 && (
-        <p className="com-vacio">{tr("Todavía no hay comentarios.", "No comments yet.")}</p>
+
+      <form className="com-form" onSubmit={enviar}>
+        <label>
+          {tr("Tu nombre", "Your name")}
+          <input value={nombre} maxLength={MAX_NOMBRE} onChange={(e) => setNombre(e.target.value)} autoComplete="name" required />
+        </label>
+        <label>
+          {tr("Comentario", "Comment")}
+          <textarea value={texto} maxLength={MAX_TEXTO} rows={3} onChange={(e) => setTexto(e.target.value)} required />
+          <span className="com-contador">{texto.length}/{MAX_TEXTO}</span>
+        </label>
+        {/* Trampa para bots: fuera de la vista y del tabulador; una persona nunca la llena. */}
+        <label className="com-trampa" aria-hidden="true">
+          Sitio web
+          <input tabIndex={-1} autoComplete="off" value={sitio} onChange={(e) => setSitio(e.target.value)} />
+        </label>
+        <div className="com-enviar">
+          <button type="submit" disabled={!puedeEnviar}>
+            {envio.fase === "enviando" ? tr("Enviando…", "Sending…") : tr("Publicar comentario", "Post comment")}
+          </button>
+          <span className="com-nota" aria-live="polite">
+            {conEnlace
+              ? tr("Los comentarios no pueden llevar enlaces.", "Comments cannot contain links.")
+              : envio.fase === "ok"
+                ? tr("¡Gracias! Tu comentario quedó publicado.", "Thanks! Your comment is posted.")
+                : envio.fase === "error"
+                  ? envio.motivo
+                  : tr("Es público y queda guardado en el repositorio del proyecto. Sin enlaces.", "It is public and saved in the project repository. No links.")}
+          </span>
+        </div>
+      </form>
+
+      {lista.fase === "cargando" && <p className="com-vacio">{tr("Cargando comentarios…", "Loading comments…")}</p>}
+      {lista.fase === "error" && <p className="com-vacio">{tr("No se pudieron cargar los comentarios.", "Could not load the comments.")}</p>}
+      {lista.fase === "listo" && lista.lista.length === 0 && (
+        <p className="com-vacio">{tr("Todavía no hay comentarios: ¡sé el primero!", "No comments yet: be the first!")}</p>
       )}
-      {estado.fase === "listo" && estado.lista.length > 0 && (
+      {lista.fase === "listo" && lista.lista.length > 0 && (
         <ul className="com-lista">
-          {estado.lista.map((c, i) => (
-            <li key={`${c.nombre}-${c.fecha}-${i}`} className="com-item">
+          {lista.lista.map((c, i) => (
+            <li key={c.id ?? `${c.nombre}-${c.fecha}-${i}`} className="com-item">
               <div className="com-cabecera">
                 <strong>{c.nombre}</strong>
                 {c.fecha && <time dateTime={c.fecha}>{fechaLegible(c.fecha)}</time>}
@@ -80,28 +173,6 @@ export default function Comentarios() {
           ))}
         </ul>
       )}
-      <details className="com-como">
-        <summary>{tr("¿Cómo agregar un comentario?", "How to add a comment?")}</summary>
-        <p>
-          {tr(
-            "Edita scaffold/frontend/public/comentarios.json en el repositorio y agrega a la lista «comentarios» un objeto con nombre, fecha (AAAA-MM-DD) y texto. Nombre hasta 60 caracteres y texto hasta 600; se muestra como texto plano.",
-            "Edit scaffold/frontend/public/comentarios.json in the repository and add to the «comentarios» list an object with nombre (name), fecha (date, YYYY-MM-DD) and texto (text). Name up to 60 characters and text up to 600; it is shown as plain text.",
-          )}
-        </p>
-        <pre>{`{ "nombre": "Ana", "fecha": "2026-11-15", "texto": "${tr("¡Muy buena herramienta!", "Great tool!")}" }`}</pre>
-        {estado.fase === "listo" && estado.descartados > 0 && (
-          <p className="com-aviso">
-            {tr(
-              estado.descartados === 1
-                ? "1 entrada del archivo no se muestra porque le falta el nombre o el texto, o supera el largo máximo."
-                : `${estado.descartados} entradas del archivo no se muestran porque les falta el nombre o el texto, o superan el largo máximo.`,
-              estado.descartados === 1
-                ? "1 entry in the file is hidden because it lacks a name or text, or exceeds the maximum length."
-                : `${estado.descartados} entries in the file are hidden because they lack a name or text, or exceed the maximum length.`,
-            )}
-          </p>
-        )}
-      </details>
     </section>
   );
 }

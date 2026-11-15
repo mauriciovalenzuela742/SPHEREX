@@ -7,7 +7,13 @@
 .com-cabecera { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem; }
 .com-cabecera time { font-size: 0.8rem; color: var(--suave); }
 .com-item p { margin: 0.3rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-.com-como { margin-top: 0.8rem; font-size: 0.85rem; color: var(--suave); }
-.com-como summary { cursor: pointer; }
-.com-como pre { overflow-x: auto; padding: 0.5rem; background: var(--fondo); border-radius: 4px; font-size: 0.8rem; }
-.com-aviso { color: var(--acento); }
+.com-form { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.com-form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--suave); position: relative; }
+.com-form input, .com-form textarea { font: inherit; color: var(--texto); background: var(--fondo); border: 1px solid var(--borde); border-radius: 6px; padding: 0.45rem 0.6rem; }
+.com-form input { max-width: 320px; }
+.com-form textarea { resize: vertical; min-height: 4.5rem; }
+.com-contador { align-self: flex-end; font-size: 0.75rem; }
+.com-enviar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
+.com-nota { font-size: 0.8rem; color: var(--suave); }
+/* Campo trampa para bots: fuera de la pantalla, no con display:none (algunos bots lo detectan). */
+.com-trampa { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

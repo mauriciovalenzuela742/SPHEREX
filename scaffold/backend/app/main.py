@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import demo
+from app.comentarios import router as router_comentarios
 from app.irsa import cache
 from app.irsa.config import COLECCIONES
 from app.irsa.sia2 import buscar_epocas, filtrar_fechas
@@ -27,9 +28,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origenes,
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+# Comentarios del público (app/comentarios.py): GET/POST /api/comments.
+app.include_router(router_comentarios)
 
 
 @app.get("/health")
