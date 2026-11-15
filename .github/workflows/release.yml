@@ -57,6 +57,7 @@ jobs:
       matrix:
         include:
           - { os: windows-latest, etiqueta: windows, args: "" }
+          - { os: windows-latest, etiqueta: windows-arm64, args: "--target aarch64-pc-windows-msvc" }
           - { os: macos-latest, etiqueta: macos, args: "--target universal-apple-darwin" }
           - { os: ubuntu-22.04, etiqueta: linux, args: "" }
     runs-on: ${{ matrix.os }}
@@ -70,12 +71,19 @@ jobs:
           node-version: "20"
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.etiqueta == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.etiqueta == 'macos' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.etiqueta == 'windows-arm64' && 'aarch64-pc-windows-msvc' || '' }}
       - name: Dependencias de Linux
         if: matrix.etiqueta == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libxdo-dev libssl-dev
+      - name: Versión de la app = versión de la etiqueta
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          sed -i.bak -E "s/\"version\": \"[^\"]*\"/\"version\": \"${V}\"/" native/tauri/src-tauri/tauri.conf.json
+          rm -f native/tauri/src-tauri/tauri.conf.json.bak
+          grep '"version"' native/tauri/src-tauri/tauri.conf.json
       - name: Íconos a partir de native/app-icon.png
         working-directory: native/tauri/src-tauri
         run: npx --yes @tauri-apps/cli@2 icon ../../app-icon.png
@@ -138,3 +146,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "$GITHUB_REF_NAME" salida/* --clobber
+
+  sumas:
+    # Un SHA256SUMS con todos los archivos del release, para verificar las descargas.
+    needs: [pwa, escritorio, android]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calcular y adjuntar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir bajado && cd bajado
+          gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --pattern '*' --skip-existing
+          rm -f SHA256SUMS.txt
+          sha256sum * > ../SHA256SUMS.txt
+          cat ../SHA256SUMS.txt
+          gh release upload "$GITHUB_REF_NAME" ../SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber
