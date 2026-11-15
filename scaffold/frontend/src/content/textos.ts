@@ -8,7 +8,7 @@ export type Idioma = "es" | "en";
 
 const ES = {
   // Header / nav
-  titulo: "AstroTRACK",
+  titulo: "AstroTrack",
   inicio: "Inicio",
   visor: "Visor",
   modoMision: "Modo Misión",
@@ -16,7 +16,7 @@ const ES = {
   repositorio: "Repositorio",
 
   // Landing
-  bienvenida: "Bienvenido a AstroTRACK",
+  bienvenida: "Bienvenido a AstroTrack",
   queEsSec: "¿Qué somos?",
   queSomos:
     "Una ventana al cielo infrarrojo: escribe un lugar del cielo y mira cómo cambia con el tiempo, " +
@@ -94,14 +94,14 @@ const ES = {
 };
 
 const EN: typeof ES = {
-  titulo: "AstroTRACK",
+  titulo: "AstroTrack",
   inicio: "Home",
   visor: "Viewer",
   modoMision: "Mission Mode",
   verTutorial: "View tutorial",
   repositorio: "Repository",
 
-  bienvenida: "Welcome to AstroTRACK",
+  bienvenida: "Welcome to AstroTrack",
   queEsSec: "What are we?",
   queSomos:
     "A window into the infrared sky: enter a location in the sky and watch how it changes over time, " +

@@ -1,6 +1,6 @@
 {
-  "name": "AstroTRACK · SPHEREx",
-  "short_name": "AstroTRACK",
+  "name": "AstroTrack · SPHEREx",
+  "short_name": "AstroTrack",
   "description": "Visor público de imágenes de SPHEREx para ver cómo cambia el cielo con el tiempo.",
   "lang": "es",
   "start_url": "/",

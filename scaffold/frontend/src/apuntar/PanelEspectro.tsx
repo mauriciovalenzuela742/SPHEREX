@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePrisma } from "../content/prisma";
 import { useIdioma } from "../state/idioma";
+import { enIdioma } from "../explorador/errores";
 import { clasificar } from "../prisma/clasificar";
 import "../prisma/prisma.css";
 import {
@@ -211,7 +212,7 @@ export default function PanelEspectro() {
       )}
       {estado.fase === "error" && (
         <p role="alert">
-          {tr("No se pudo traer el espectro", "Could not get the spectrum")} ({estado.error}).{" "}
+          {tr("No se pudo traer el espectro", "Could not get the spectrum")} ({enIdioma(estado.error, idioma)}).{" "}
           <button type="button" onClick={reintentar}>
             {tr("Reintentar", "Retry")}
           </button>

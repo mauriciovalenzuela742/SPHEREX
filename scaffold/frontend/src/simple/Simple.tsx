@@ -11,6 +11,7 @@ import { leerPar } from "../apuntar/coordenadas";
 import { EntradaCoordenadas } from "../apuntar/Apuntar";
 import { asinh01, type Frame } from "../explorador/render";
 import { clave, useDatosSpherex } from "../explorador/useDatosSpherex";
+import { enIdioma } from "../explorador/errores";
 import type { Estado } from "../state/url";
 import { useIdioma } from "../state/idioma";
 import InterruptorCiencia from "./InterruptorCiencia";
@@ -338,7 +339,7 @@ export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
   return (
     <div className="simple">
       <header className="simple-barra">
-        <button className="simple-marca" onClick={() => set({ vista: "landing" })}>AstroTRACK</button>
+        <button className="simple-marca" onClick={() => set({ vista: "landing" })}>AstroTrack</button>
         <form className="simple-busca" onSubmit={buscar} role="search" data-tour="simple-busca">
           <span aria-hidden="true">⌕</span>
           <input
@@ -447,7 +448,7 @@ export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
                   : tr("No se pudieron cargar las fotos.", "The photos could not be loaded.")}
               </p>
               {lento && cargando && <p className="simple-motivo">{tr("Está tardando más de lo normal (IRSA puede estar lento).", "It is taking longer than usual (IRSA may be slow).")}</p>}
-              {motivo && !cargando && <p className="simple-motivo">{motivo}</p>}
+              {motivo && !cargando && <p className="simple-motivo">{enIdioma(motivo, idioma)}</p>}
               {mostrarReintentar && (
                 <button className="simple-reintentar" onClick={reintentar} disabled={reintentando}>
                   {reintentando ? tr("Reintentando…", "Retrying…") : tr("Reintentar", "Retry")}
@@ -456,7 +457,7 @@ export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
             </div>
           )}
           {n > 0 && fallaron > 0 && !cargando && (
-            <button className="simple-reintentar simple-reintentar-chico" onClick={reintentar} disabled={reintentando} title={motivo ?? undefined}>
+            <button className="simple-reintentar simple-reintentar-chico" onClick={reintentar} disabled={reintentando} title={motivo ? enIdioma(motivo, idioma) : undefined}>
               {reintentando
                 ? tr("Reintentando…", "Retrying…")
                 : tr(`${fallaron} foto(s) fallaron · Reintentar`, `${fallaron} photo(s) failed · Retry`)}

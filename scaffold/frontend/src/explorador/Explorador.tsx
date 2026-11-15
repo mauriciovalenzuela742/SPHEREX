@@ -16,6 +16,7 @@ import { dibujar, type Frame, type Modo } from "./render";
 import { clave, type DatosSpherex } from "./useDatosSpherex";
 import PanelApilar from "./PanelApilar";
 import PanelLimpieza from "./PanelLimpieza";
+import { enIdioma } from "./errores";
 import "./explorador.css";
 
 const BANDAS_UM: Record<number, [number, number]> = {
@@ -278,9 +279,9 @@ export default function Explorador({ datos }: Props) {
           {!actual && (
             <div className="exp-mensaje">
               {!grid
-                ? mensaje
+                ? enIdioma(mensaje, idioma)
                 : error
-                  ? t.noSePudoTraer(error)
+                  ? t.noSePudoTraer(enIdioma(error, idioma))
                   : t.cargandoImagenDel(visitas[visita]?.start.slice(0, 10) ?? "")}
               {/* Reintentar cuando puede servir: errores de IRSA, de red o del servidor (mensajes de errores.ts) */}
               {!grid && /IRSA|HTTP|\(50\d\)|conexión|servidor/.test(mensaje) && (
