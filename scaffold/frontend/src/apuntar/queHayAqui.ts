@@ -3,8 +3,9 @@
  *
  * SIMBAD da posiciones J2000 y el cubo de SPHEREx es de 2025–2026: una estrella rápida aparece corrida
  * (Barnard, ~270″). Por eso la consulta trae los objetos a menos de RADIO_ARCSEC del punto y, además,
- * los de movimiento propio alto (> 0,5″/año) en un cono de RADIO_RAPIDAS_DEG; a cada uno se le compara
- * su posición J2000 y la propagada a la época de la vista, y gana el más cercano (empate: el más citado).
+ * los de movimiento propio alto (> 0,3″/año) en un cono de RADIO_RAPIDAS_DEG. A cada uno se le compara
+ * SOLO su posición propagada a la época de la imagen que se mira (quien llama pasa esa época): donde estuvo
+ * en 2000 ya no está, así que un clic ahí no lo nombra. Gana el más cercano (empate: el más citado).
  */
 import { SERVICIOS_TAP } from "../sky/capas/simbad";
 import { EPOCA_J2000, propagar } from "../sky/propagacion";
@@ -13,8 +14,10 @@ import { EPOCA_J2000, propagar } from "../sky/propagacion";
 export const RADIO_ARCSEC = 10;
 /** Cono para estrellas rápidas: Barnard (10,4″/año) se corre 0,08° en 27 años. */
 const RADIO_RAPIDAS_DEG = 0.1;
-/** Movimiento propio mínimo (mas/año) para buscar más lejos: 0,5″/año × 27 años ≈ 13″ > RADIO_ARCSEC. */
-const PM_RAPIDA = 500;
+/** Movimiento propio mínimo (mas/año) para buscar más lejos. Una estrella más lenta que esto tiene que caer
+ *  dentro del cono de RADIO_ARCSEC alrededor de su posición J2000, así que el umbral debe cumplir
+ *  pm × 27 años < RADIO_ARCSEC, o sea < 372 mas/año: 0,3″/año × 27 años ≈ 8″, con margen para el error del clic. */
+const PM_RAPIDA = 300;
 const ESPERA_MS = 30000;
 
 export type Hallazgo = { nombre: string; tipo: string; distancia: number; propagado: boolean };
@@ -65,16 +68,16 @@ export async function queHayAqui(ra: number, dec: number, epoca: number, senal: 
         const oDec = Number(f[iDec]);
         const pmra = Number(f[iPmra] ?? 0) || 0;
         const pmdec = Number(f[iPmdec] ?? 0) || 0;
-        const dJ2000 = separacion(ra, dec, oRa, oDec);
+        // Solo la posición en la época de la imagen: sin movimiento propio es la misma de J2000.
         const [pRa, pDec] = propagar(oRa, oDec, pmra, pmdec, EPOCA_J2000, epoca);
-        const dHoy = separacion(ra, dec, pRa, pDec);
-        const distancia = Math.min(dJ2000, dHoy);
+        const distancia = separacion(ra, dec, pRa, pDec);
         if (distancia <= RADIO_ARCSEC) {
           hallazgos.push({
             nombre: String(f[iId]).trim().replace(/^NAME /, ""),
             tipo: String(f[iTipo] ?? "").trim(),
             distancia,
-            propagado: dHoy < dJ2000,
+            // Se dice «contando lo que se movió» solo si se movió algo apreciable (> 1″) desde 2000.
+            propagado: separacion(oRa, oDec, pRa, pDec) > 1,
           });
         }
       }
@@ -91,35 +94,64 @@ export async function queHayAqui(ra: number, dec: number, epoca: number, senal: 
   throw new Error(`ningún servicio de SIMBAD respondió (${errores.join("; ")})`);
 }
 
-/** Tipos de objeto de SIMBAD más comunes, en palabras simples. Los demás se muestran con su código. */
+/** Tipos de objeto de SIMBAD más comunes, en palabras simples (tabla otypedef de SIMBAD, revisada el 14-nov-2026).
+ *  Los demás se muestran con su código. Los candidatos («?») se arman en `tipoLegible`. */
 const TIPOS: Record<string, string> = {
   "*": "estrella",
   "BY*": "estrella variable de tipo BY Dra",
   "PM*": "estrella de movimiento propio alto",
   "BD*": "enana marrón",
   "LM*": "estrella de poca masa",
-  "Pl": "planeta",
+  "MS*": "estrella de secuencia principal",
+  "Y*O": "objeto estelar joven",
+  "AB*": "estrella de la rama asintótica de las gigantes",
+  "Pl": "exoplaneta",
   "G": "galaxia",
-  "GiG": "galaxia en un grupo",
-  "GiC": "galaxia en un cúmulo",
+  "GiG": "galaxia en dirección a un grupo de galaxias",
+  "GiC": "galaxia en dirección a un cúmulo de galaxias",
+  "ClG": "cúmulo de galaxias",
+  "AGN": "núcleo galáctico activo",
   "QSO": "cuásar",
   "Mi*": "estrella variable de tipo Mira",
   "LP*": "estrella variable de período largo",
   "V*": "estrella variable",
   "Or*": "estrella joven variable (tipo Orión)",
   "TT*": "estrella T Tauri",
+  "Ce*": "cefeida",
+  "RR*": "estrella variable RR Lyrae",
   "WD*": "enana blanca",
   "**": "estrella doble",
   "EB*": "estrella binaria eclipsante",
+  "SB*": "estrella binaria espectroscópica",
+  "Em*": "estrella con líneas de emisión",
   "IR": "fuente infrarroja",
+  "NIR": "fuente en el infrarrojo cercano",
+  "MIR": "fuente en el infrarrojo medio",
   "X": "fuente de rayos X",
   "Rad": "fuente de radio",
   "Cl*": "cúmulo de estrellas",
+  "OpC": "cúmulo abierto",
   "GlC": "cúmulo globular",
+  "DNe": "nube oscura",
   "PN": "nebulosa planetaria",
   "HII": "región HII",
   "C*": "estrella de carbono",
-  "RG*": "gigante roja",
+  "RG*": "estrella de la rama de las gigantes rojas",
 };
 
-export const tipoLegible = (otype: string) => (TIPOS[otype] ? `${TIPOS[otype]}, ${otype}` : otype || "tipo sin dato");
+/** Candidatos cuyo tipo base no sale de cambiar «?» por «*». */
+const BASE_CANDIDATO: Record<string, string> = { "Y*?": "Y*O", "RB?": "RG*", "AB?": "AB*" };
+
+/** Tipo base de un candidato de SIMBAD («BD?» → «BD*», «WD?» → «WD*», «LM?» → «LM*»), o undefined. */
+function baseCandidato(otype: string): string | undefined {
+  if (!otype.endsWith("?")) return undefined;
+  const base = BASE_CANDIDATO[otype] ?? [otype.slice(0, -1) + "*", otype.slice(0, -1)].find((b) => TIPOS[b]);
+  return base && TIPOS[base] ? base : undefined;
+}
+
+export function tipoLegible(otype: string): string {
+  if (TIPOS[otype]) return `${TIPOS[otype]}, ${otype}`;
+  const base = baseCandidato(otype);
+  if (base) return `candidata a ${TIPOS[base]}, ${otype}`;
+  return otype || "tipo sin dato";
+}

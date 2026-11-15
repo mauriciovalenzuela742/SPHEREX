@@ -2,7 +2,7 @@
  * Apuntar a cualquier parte del cielo. Dueño: Juan Pablo (V2).
  * - `EntradaCoordenadas`: los campos A.R./Dec de la barra del visor, en grados o sexagesimal.
  * - `PanelDescubrir`: «¿Qué hay aquí?» (SIMBAD en el punto del clic), «Explorar una zona al azar» y
- *   «¿Encontraste algo?» (WiseView y Backyard Worlds).
+ *   «¿Encontraste algo?» (remite al enlace de WiseView sobre el mapa y a Backyard Worlds).
  */
 import { useEffect, useState } from "react";
 import { decASexa, leerDec, leerPar, leerRA, raASexa } from "./coordenadas";
@@ -109,7 +109,6 @@ export function PanelDescubrir({
   }, [punto, epoca, intento]);
 
   const [l, b] = icrsAGalactica(ra, dec);
-  const wiseview = `http://byw.tools/wiseview#ra=${ra}&dec=${dec}&size=176`;
 
   return (
     <div className="tarjeta descubrir" data-tour="descubrir" style={{ marginTop: 8 }}>
@@ -154,11 +153,9 @@ export function PanelDescubrir({
         </span>
       </div>
       <p style={{ marginTop: 8 }}>
-        <strong>¿Encontraste algo?</strong> Míralo en{" "}
-        <a href={wiseview} target="_blank" rel="noopener noreferrer" data-enlace="wiseview">
-          WiseView
-        </a>{" "}
-        (las imágenes de WISE y NEOWISE de 2010 a 2024, en el mismo punto) y, si se sigue moviendo, súmate a{" "}
+        {/* El enlace a WiseView de este punto es «Ver en WiseView ↗», sobre el mapa (Visor.tsx): uno solo por vista. */}
+        <strong>¿Encontraste algo?</strong> Míralo con «Ver en WiseView ↗», sobre el mapa (las imágenes de WISE y
+        NEOWISE de 2010 a 2024, en el mismo punto) y, si se sigue moviendo, súmate a{" "}
         <a href="https://www.backyardworlds.org" target="_blank" rel="noopener noreferrer">
           Backyard Worlds
         </a>

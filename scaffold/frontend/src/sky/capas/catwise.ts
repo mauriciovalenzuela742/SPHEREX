@@ -296,6 +296,10 @@ async function consultar(ra: number, dec: number, radio: number, senal: AbortSig
 // recorre 15″, así que comparar sin mover daría falsos candidatos. Se aceptan dos caminos:
 //  (1) Se lleva el objeto de CatWISE a 2000,0 con SU movimiento y se compara con la posición de SIMBAD.
 //      Tolerancia = RADIO_COTEJO + SIGMAS_COTEJO · σ_pm · 15,4 años (el error del movimiento acumulado).
+//      Si SIMBAD NO trae movimiento propio, su coordenada no está propagada a 2000: es la del catálogo de
+//      origen tal como se midió (2MASS ≈ 2000, AllWISE ≈ 2010,5…). Entonces se compara contra todo el tramo
+//      que recorre el objeto de CatWISE entre 2000,0 y 2015,4 (cápsula de `distanciaSegmento`), con la misma
+//      tolerancia: cubre cualquier época intermedia.
 //  (2) Si SIMBAD trae movimiento propio, se lleva el objeto de SIMBAD a 2015,4 y se compara con CatWISE
 //      con RADIO_COTEJO.
 // RADIO_COTEJO = 5″: el ancho a media altura de la imagen de WISE en W2 es ~6,4″ (Wright et al. 2010), así
@@ -336,11 +340,14 @@ export function cotejar(m: Movil, objetos: ObjetoSimbad[]): Cotejo {
   const [ra00, dec00] = propagar(m.ra, m.dec, m.pmra * 1000, m.pmdec * 1000, EPOCA_CATWISE, EPOCA_SIMBAD);
   const tol = toleranciaCotejo(m);
   let mejor: Cotejo = { conocido: false };
+  // Tramo del objeto de CatWISE entre 2000,0 y 2015,4, para las posiciones de SIMBAD sin movimiento propio.
+  const tramo: Brillante = { ra0: ra00, dec0: dec00, ra1: m.ra, dec1: m.dec, radio: tol };
   for (const s of objetos) {
-    let d = separacion(ra00, dec00, s.ra, s.dec);
+    const conPm = s.pmra !== null && s.pmdec !== null;
+    let d = conPm ? separacion(ra00, dec00, s.ra, s.dec) : distanciaSegmento(s.ra, s.dec, tramo);
     let coincide = d < tol;
-    if (s.pmra !== null && s.pmdec !== null) {
-      const [ra15, dec15] = propagar(s.ra, s.dec, s.pmra, s.pmdec, EPOCA_SIMBAD, EPOCA_CATWISE);
+    if (conPm) {
+      const [ra15, dec15] = propagar(s.ra, s.dec, s.pmra!, s.pmdec!, EPOCA_SIMBAD, EPOCA_CATWISE);
       const d2 = separacion(ra15, dec15, m.ra, m.dec);
       if (d2 < RADIO_COTEJO) {
         coincide = true;
