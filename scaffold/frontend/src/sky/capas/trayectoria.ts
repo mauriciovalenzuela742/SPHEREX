@@ -8,7 +8,7 @@
  * Posiciones: movimiento propio real de SIMBAD (J2000.0, ICRS; tabla de `objetivo.ts`, copiada de
  * `data/campos_de_prueba.yml`, verificado el 14-nov-2026) propagado con `propagar` (lineal). Se omiten el paralaje
  * (Barnard: hasta 0,55″ de desvío, 1,1″ entre extremos, del orden de un píxel de 2MASS y < 0,2 píxel de SPHEREx) y
- * la aceleración de perspectiva (Barnard: ~1,3 mas/año², ~0,4″ entre 2000 y 2026).
+ * la aceleración de perspectiva (Barnard: ~1,3 mas/año², ≤ 0,2″ entre 2000 y 2026).
  *
  * Fechas de cada imagen (no se usa «2000» ni «2010» redondo: Barnard se mueve 10,4″/año):
  * - 2MASS: `jdate` de la fuente en el catálogo 2MASS PSC (IRSA Gator, `fp_psc`, consultado el 14-nov-2026),
