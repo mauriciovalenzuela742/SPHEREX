@@ -1,4 +1,4 @@
-/** AstroTRACK: portada, visor, Modo Misión y tutorial guiado por Spherix. */
+/** AstroTrack: portada, visor, Modo Misión y tutorial guiado por Spherix. */
 import { useEffect, useState } from "react";
 import Landing from "./pages/Landing";
 import Visor from "./pages/Visor";

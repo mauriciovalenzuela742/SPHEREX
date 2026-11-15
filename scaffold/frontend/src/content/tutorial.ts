@@ -33,7 +33,7 @@ const ES = {
     {
       titulo: "¡Hola! Soy Spherix",
       texto:
-        "Bienvenido a AstroTRACK. Aquí puedes mirar cómo cambia el cielo usando fotos reales del telescopio SPHEREx de la NASA. " +
+        "Bienvenido a AstroTrack. Aquí puedes mirar cómo cambia el cielo usando fotos reales del telescopio SPHEREx de la NASA. " +
         "Te muestro cada parte en un par de minutos. Mientras te explico una, el resto queda a oscuras.",
       prueba: "Usa las flechas ← → del teclado o los botones. Con Esc sales cuando quieras.",
     },
@@ -146,7 +146,7 @@ const ES = {
     {
       titulo: "¡Ahora te toca a ti!",
       texto:
-        "Ya conoces AstroTRACK. Lo mejor es probar: mira Epsilon Indi B, una pareja de enanas marrones a 12 años luz, y compara " +
+        "Ya conoces AstroTrack. Lo mejor es probar: mira Epsilon Indi B, una pareja de enanas marrones a 12 años luz, y compara " +
         "la primera fecha con la última para ver cómo se corre. O ponte a prueba en el Modo Misión.",
     },
   ] as PasoTutorial[],
@@ -162,7 +162,7 @@ const ES = {
     {
       titulo: "¡Hola! Soy Spherix",
       texto:
-        "Bienvenido a AstroTRACK. Aquí ves fotos reales del telescopio SPHEREx de la NASA, que mira todo el cielo cada seis " +
+        "Bienvenido a AstroTrack. Aquí ves fotos reales del telescopio SPHEREx de la NASA, que mira todo el cielo cada seis " +
         "meses. Te muestro cómo usarlo en un minuto.",
       prueba: "Usa las flechas ← → del teclado o los botones. Con Esc sales cuando quieras.",
     },
@@ -251,7 +251,7 @@ const EN: typeof ES = {
     {
       titulo: "Hi! I'm Spherix",
       texto:
-        "Welcome to AstroTRACK. Here you can watch how the sky changes using real photos from NASA's SPHEREx telescope. " +
+        "Welcome to AstroTrack. Here you can watch how the sky changes using real photos from NASA's SPHEREx telescope. " +
         "I'll show you each part in a couple of minutes. While I explain one, the rest goes dark.",
       prueba: "Use the ← → keys or the buttons. Press Esc to leave whenever you want.",
     },
@@ -363,7 +363,7 @@ const EN: typeof ES = {
     {
       titulo: "Now it's your turn!",
       texto:
-        "Now you know AstroTRACK. The best thing is to try it: look at Epsilon Indi B, a pair of brown dwarfs 12 light-years " +
+        "Now you know AstroTrack. The best thing is to try it: look at Epsilon Indi B, a pair of brown dwarfs 12 light-years " +
         "away, and compare the first date with the last to see how it shifts. Or test yourself in Mission Mode.",
     },
   ],
@@ -378,7 +378,7 @@ const EN: typeof ES = {
     {
       titulo: "Hi! I'm Spherix",
       texto:
-        "Welcome to AstroTRACK. Here you see real photos from NASA's SPHEREx telescope, which looks at the whole sky every six " +
+        "Welcome to AstroTrack. Here you see real photos from NASA's SPHEREx telescope, which looks at the whole sky every six " +
         "months. I'll show you how to use it in a minute.",
       prueba: "Use the ← → keys or the buttons. Press Esc to leave whenever you want.",
     },

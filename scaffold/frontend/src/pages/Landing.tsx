@@ -1,4 +1,4 @@
-/** Portada de AstroTRACK. Dueña del layout: Antonia (V1); textos: Javiera (N). */
+/** Portada de AstroTrack. Dueña del layout: Antonia (V1); textos: Javiera (N). */
 import { useIdioma } from "../state/idioma";
 import { mision } from "../content/mision";
 
