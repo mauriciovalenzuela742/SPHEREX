@@ -175,6 +175,8 @@ export default function Visor({ estado, set, asistido }: Props) {
         </>
       )}
       <div className="barra" data-tour="busqueda">
+        {/* Izquierda: A.R., Dec, dimensión y banda, con la equivalencia «= 08h 55m…» justo debajo. */}
+        <div className="barra-filtros">
         {/* Grados o sexagesimal («08 55 10.83 -07 14 42.5»): src/apuntar/coordenadas.ts. */}
         <EntradaCoordenadas ra={estado.ra} dec={estado.dec} onIr={set} />
         <label>
@@ -198,6 +200,7 @@ export default function Visor({ estado, set, asistido }: Props) {
             ))}
           </select>
         </label>
+        </div>
         {/* A la derecha de los filtros: saltar a una zona al azar y qué hacer si aparece algo. */}
         <div className="barra-azar">
           <Deteccion punto={punto} epoca={EPOCA_SPHEREX} />
