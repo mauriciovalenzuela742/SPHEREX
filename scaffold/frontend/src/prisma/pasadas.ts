@@ -222,6 +222,9 @@ export const TRAMOS: [number, number][] = [
   [0.75, 1.1], [1.1, 1.63], [1.63, 2.42], [2.42, 3.1], [3.1, 3.83], [3.83, 4.42], [4.42, 5.05],
 ];
 
+/** Medidas mínimas por pasada para comparar un tramo. */
+export const N_MIN_TRAMO = 3;
+
 export type Tramo = { a: number; z: number; razon: number; sigma: number; nA: number; nB: number; significativo: boolean };
 /** `parcial`: no había dos pasadas completas y se comparó al menos una incompleta. */
 export type Cambio = { antes: Pasada; despues: Pasada; meses: number; tramos: Tramo[]; parcial: boolean };
@@ -237,7 +240,8 @@ export function cambios(pasadas: Pasada[]): Cambio | null {
     TRAMOS.flatMap(([a, z]) => {
       const ma = mediaEn(A.puntos, a, z);
       const mb = mediaEn(B.puntos, a, z);
-      if (!ma || !mb || ma.v <= 0) return [];
+      // Al menos N_MIN_TRAMO medidas por pasada: un punto suelto en el borde de una banda no es un tramo.
+      if (!ma || !mb || ma.v <= 0 || ma.n < N_MIN_TRAMO || mb.n < N_MIN_TRAMO) return [];
       const sigma = Math.abs(mb.v - ma.v) / Math.hypot(ma.s, mb.s);
       return [{ a, z, razon: mb.v / ma.v, sigma, nA: ma.n, nB: mb.n, significativo: sigma > 3 }];
     });
@@ -255,6 +259,17 @@ export function cambios(pasadas: Pasada[]): Cambio | null {
   const orden = [...pasadas].sort((a, b) => a.mjdMedio - b.mjdMedio);
   const completas = buscar(orden.filter((p) => !incompleta(p)));
   if (completas) return { ...completas, parcial: false };
+  // Parcial: si hay una pasada completa, es una de las dos; la otra es la incompleta más separada en el tiempo
+  // que comparta colores con ella.
+  const llena = orden.filter((p) => !incompleta(p));
+  if (llena.length === 1) {
+    const C = llena[0];
+    const otras = orden.filter((p) => p !== C).sort((x, y) => Math.abs(y.mjdMedio - C.mjdMedio) - Math.abs(x.mjdMedio - C.mjdMedio));
+    for (const O of otras) {
+      const par = buscar([C, O].sort((x, y) => x.mjdMedio - y.mjdMedio));
+      if (par) return { ...par, parcial: true };
+    }
+  }
   const todas = buscar(orden);
   return todas ? { ...todas, parcial: incompleta(todas.antes) || incompleta(todas.despues) } : null;
 }
