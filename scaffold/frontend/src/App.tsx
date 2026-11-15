@@ -82,6 +82,7 @@ export default function App() {
       <>
       <header>
         <button className="marca" onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>
+          <img src="/logo-icono.webp" alt="" width={160} height={133} />
           {t.titulo}
         </button>
         <span className="etiqueta">NASA Space Apps 2026</span>

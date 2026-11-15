@@ -13,7 +13,7 @@
   background: var(--fondo);
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--fondo); }
+body { margin: 0; } /* sin fondo propio: lo pone :root; así se ve el cielo animado de la portada (pages/landing) */
 button, input, select { font: inherit; }
 button {
   background: var(--panel); color: var(--texto); border: 1px solid var(--borde);
@@ -30,7 +30,8 @@ header {
   display: flex; align-items: center; gap: 1rem; padding: 0.6rem 1rem;
   border-bottom: 1px solid var(--borde); position: relative;
 }
-.marca { font-size: 1.3rem; font-weight: 700; border: none; background: none; padding: 0; }
+.marca { font-size: 1.3rem; font-weight: 700; border: none; background: none; padding: 0; display: flex; align-items: center; gap: 0.5rem; }
+.marca img { height: 2rem; width: auto; }
 .etiqueta { color: var(--suave); font-size: 0.85rem; flex: 1; }
 .hamburguesa { font-size: 1.2rem; }
 .selector-idioma { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; color: var(--suave); }

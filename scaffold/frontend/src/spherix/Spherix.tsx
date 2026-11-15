@@ -18,10 +18,10 @@ type Props = {
   onAccion: (a: Accion) => void;
 };
 
-export function Cara() {
-  // La carita de la pizarra: un círculo con ojos y sonrisa. Decorativa.
+export function Cara({ className = "" }: { className?: string } = {}) {
+  // La carita de la pizarra: un círculo con ojos y sonrisa. Decorativa. `className` suma tamaño/animación (p. ej. la portada).
   return (
-    <svg className="spherix-cara" viewBox="0 0 40 40" aria-hidden="true">
+    <svg className={`spherix-cara ${className}`.trim()} viewBox="0 0 40 40" aria-hidden="true">
       <circle cx="20" cy="20" r="18" fill="var(--panel)" stroke="var(--acento)" strokeWidth="2.5" />
       <circle cx="14" cy="17" r="2.6" fill="var(--texto)" />
       <circle cx="26" cy="17" r="2.6" fill="var(--texto)" />

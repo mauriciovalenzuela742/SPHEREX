@@ -1,0 +1,89 @@
+/* Portada (V1, Antonia). Paleta de styles.css (--fondo, --panel, --acento, --texto, --suave, --borde): sin colores nuevos. */
+
+/* El lienzo del cielo queda fijo detrás de todo y no recibe clics. Para que se vea, <body> no pinta fondo (styles.css). */
+.cielo-animado { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+/* La portada ocupa todo el ancho (anula el padding de <main>) y el alto que deja el header. */
+.portada {
+  position: relative; overflow: hidden; margin: -1rem;
+  min-height: calc(100dvh - 140px);
+  display: grid; grid-template-columns: 1fr minmax(0, 540px); align-items: center;
+  padding: 3rem clamp(1rem, 6vw, 6rem) 4rem;
+}
+
+/* ── Escena: Tierra, órbita y SPHEREx ── */
+.portada-escena { position: absolute; inset: 0; pointer-events: none; --tierra: min(50vw, 780px); }
+.portada-tierra {
+  position: absolute; width: var(--tierra); height: auto;
+  left: calc(var(--tierra) * -0.22); bottom: calc(var(--tierra) * -0.42);
+  border-radius: 50%;
+  box-shadow: 0 0 40px 6px rgba(120, 170, 255, 0.22), 0 0 120px 30px rgba(80, 130, 255, 0.10); /* atmósfera */
+}
+/* Órbita: círculo punteado centrado en la Tierra, que pasa por SPHEREx. */
+.portada-orbita {
+  position: absolute; border-radius: 50%; border: 1px dashed rgba(169, 179, 207, 0.28);
+  --r: calc(var(--tierra) * 0.82);
+  width: calc(var(--r) * 2); height: calc(var(--r) * 2);
+  left: calc(var(--tierra) * 0.28 - var(--r)); bottom: calc(var(--tierra) * 0.08 - var(--r));
+}
+/* SPHEREx sobre la órbita, a ~50° (arriba y a la derecha de la Tierra). */
+.portada-spherex {
+  position: absolute; width: calc(var(--tierra) * 0.3); height: auto;
+  left: calc(var(--tierra) * (0.28 + 0.82 * 0.64) - var(--tierra) * 0.15);
+  bottom: calc(var(--tierra) * (0.08 + 0.82 * 0.77) - var(--tierra) * 0.125);
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5));
+  animation: portada-flota 7s ease-in-out infinite;
+}
+@keyframes portada-flota {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+/* ── Contenido ── */
+.portada-contenido { grid-column: 2; position: relative; display: flex; flex-direction: column; gap: 1.2rem; }
+.portada-titulo { margin: 0; line-height: 0; }
+.portada-titulo img { width: min(260px, 60vw); height: auto; }
+.portada-linea { margin: 0; font-size: 1.2rem; color: var(--suave); max-width: 32ch; }
+
+.portada-spherix { display: flex; align-items: center; gap: 1rem; margin-top: 0.6rem; }
+.portada-spherix .portada-cara { width: 88px; height: 88px; flex: none; }
+.portada-burbuja {
+  position: relative; margin: 0; padding: 0.7rem 1rem; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--borde); font-size: 1.15rem; font-weight: 600;
+}
+.portada-burbuja::before { /* piquito hacia Spherix */
+  content: ""; position: absolute; left: -7px; top: 50%; width: 12px; height: 12px; margin-top: -6px;
+  background: var(--panel); border-left: 1px solid var(--borde); border-bottom: 1px solid var(--borde);
+  transform: rotate(45deg);
+}
+/* Parpadeo de Spherix: los ojos (2.º y 3.er círculo de Cara) se cierran un instante cada ~5 s. */
+.portada-cara circle:nth-of-type(2), .portada-cara circle:nth-of-type(3) {
+  transform-box: fill-box; transform-origin: center; animation: portada-parpadeo 5s infinite;
+}
+@keyframes portada-parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+.portada-respuestas { display: flex; flex-direction: column; align-items: stretch; gap: 0.6rem; max-width: 380px; }
+.portada-respuestas button { text-align: left; padding: 0.7rem 1rem; font-size: 1.05rem; }
+.portada-respuestas button:not(.primario) { background: rgba(20, 27, 51, 0.88); }
+
+.portada-creditos {
+  position: absolute; right: clamp(1rem, 6vw, 6rem); bottom: 0.8rem; margin: 0;
+  font-size: 0.75rem; color: var(--suave); opacity: 0.8;
+}
+
+/* ── Móvil: Tierra más chica asomando abajo, sin SPHEREx ni órbita, contenido centrado ── */
+@media (max-width: 700px) {
+  .portada { grid-template-columns: 1fr; padding: 1.5rem 1rem 9rem; align-items: start; }
+  .portada-contenido { grid-column: 1; align-items: center; text-align: center; }
+  .portada-linea { max-width: none; }
+  .portada-escena { --tierra: 80vw; }
+  .portada-tierra { left: 50%; transform: translateX(-50%); bottom: calc(var(--tierra) * -0.72); }
+  .portada-orbita, .portada-spherex { display: none; }
+  .portada-respuestas { width: 100%; }
+  .portada-respuestas button { text-align: center; }
+  .portada-creditos { right: 0; left: 0; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portada-spherex, .portada-cara circle { animation: none; }
+}
