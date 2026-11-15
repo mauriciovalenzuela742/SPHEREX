@@ -30,7 +30,7 @@ const ES = {
 
   // Explorador
   exploradorTitulo: "Explorador SPHEREx",
-  exploradorHint: "Arrastra o pasa el mouse por la línea de tiempo para cambiar la fecha.",
+  exploradorHint: "Haz clic o arrastra en la línea de tiempo para elegir la fecha.",
   modoImagen: "Imagen",
   modoResta: "Resta vs t₀",
   modoColor: "Color",
@@ -114,7 +114,7 @@ const EN: typeof ES = {
   tutorialAyuda: "Spherix will show you everything in a couple of minutes.",
 
   exploradorTitulo: "SPHEREx Explorer",
-  exploradorHint: "Drag or hover over the timeline to change the date.",
+  exploradorHint: "Click or drag on the timeline to pick a date.",
   modoImagen: "Image",
   modoResta: "Subtract vs t₀",
   modoColor: "Color",
