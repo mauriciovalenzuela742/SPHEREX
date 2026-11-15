@@ -42,9 +42,9 @@ export const prisma = {
     debil:
       "Este objeto es muy débil en una sola foto: la mayoría de los puntos son límites. Para verlo bien hay que " +
       "sumar muchas exposiciones («Exp. por visita» en el explorador).",
-    saturadoAviso:
-      "Este objeto es tan brillante que satura el detector en algunas fotos: esos puntos van como ▲ huecos en la " +
-      "franja de arriba («saturado»), sin altura, y no se usan para la forma.",
+    saturadoAviso: (n: number) =>
+      `${n} ${n === 1 ? "punto tiene" : "puntos tienen"} píxeles saturados o sin dato en la apertura: van como △ ` +
+      "en la franja de arriba («saturado»), sin altura, y no se usan para la forma.",
     todoSaturado:
       "Demasiado brillante para medir con SPHEREx: todos los puntos están saturados. La franja de arriba solo " +
       "marca en qué colores hay fotos; el brillo real es mayor de lo que el detector registra.",
@@ -56,6 +56,42 @@ export const prisma = {
       `Ojo: los puntos vienen de fotos de ${n} fechas distintas (${desde} a ${hasta}). Si el objeto cambia de ` +
       "brillo, el espectro mezcla momentos distintos.",
     pista: "Pasa el mouse por un punto para ver esa foto en el explorador.",
+    sospechosoCorto: "sospechoso",
+    sospechosos: (n: number) =>
+      `${n} puntos van atenuados: son medidas sospechosas (lo más probable es que la luz sea de otra fuente ` +
+      "dentro de la apertura, no del objeto). No se usan para la forma ni para la ficha.",
+    porPasada:
+      "Cada color es una pasada: SPHEREx vuelve al mismo cielo cada ~6 meses. Compara los colores para ver si " +
+      "el objeto cambió; la línea une las medianas de cada pasada.",
+  },
+
+  fuente: {
+    titulo: "Datos",
+    pre: "todas las exposiciones (precalculado)",
+    vivo: "fotos del explorador (en vivo)",
+    notaPre: (fecha: string) =>
+      `Precalculado el ${fecha} con cada exposición de SPHEREx en IRSA (no solo las fotos del explorador).`,
+  },
+
+  pasadas: {
+    titulo: "Pasadas",
+    todas: "todas",
+  },
+
+  cambio: {
+    titulo: "¿Qué cambió entre pasadas?",
+    frase: (sube: boolean, rango: string, meses: number, razon: string) =>
+      `${sube ? "Más brillante" : "Más débil"} en ${rango} que hace ${meses} ${meses === 1 ? "mes" : "meses"} ` +
+      `(×${razon}).`,
+    sinCambio: (n: number) =>
+      `Sin cambios claros: en ${n} ${n === 1 ? "tramo comparable" : "tramos comparables"} la diferencia no supera ` +
+      "el ruido (3σ).",
+    sinComun: "Las pasadas no tienen medidas en los mismos colores: no se pueden comparar.",
+    comparando: (a: string, b: string) => `Comparando ${a} con ${b} (razón = después / antes).`,
+    ruido: "dentro del ruido",
+    regla:
+      "Solo se dice que cambió si la diferencia supera 3σ, contando un 5 % de error de calibración además del " +
+      "ruido del cielo.",
   },
 
 
@@ -106,9 +142,9 @@ export const prismaEN: typeof prisma = {
     debil:
       "This object is very faint in a single photo: most points are upper limits. To see it well you need to " +
       "stack many exposures (\u201cExp. per visit\u201d in the explorer).",
-    saturadoAviso:
-      "This object is so bright it saturates the detector in some photos: those points are hollow \u25b2 in the top " +
-      "strip (\u201csaturated\u201d), with no height, and are not used for the shape.",
+    saturadoAviso: (n: number) =>
+      `${n} ${n === 1 ? "point has" : "points have"} saturated or missing pixels in the aperture: they are hollow △ ` +
+      "in the top strip (“saturated”), with no height, and are not used for the shape.",
     todoSaturado:
       "Too bright to measure with SPHEREx: every point is saturated. The top strip only marks which colors " +
       "have photos; the real brightness is higher than the detector records.",
@@ -120,6 +156,42 @@ export const prismaEN: typeof prisma = {
       `Note: the points come from photos taken on ${n} different dates (${desde} to ${hasta}). If the object ` +
       "changes brightness, the spectrum mixes different moments.",
     pista: "Hover over a point to see that photo in the explorer.",
+    sospechosoCorto: "suspect",
+    sospechosos: (n: number) =>
+      `${n} points are faded: they are suspect measurements (most likely the light comes from another source ` +
+      "inside the aperture, not from the object). They are not used for the shape or the card.",
+    porPasada:
+      "Each color is one pass: SPHEREx returns to the same sky every ~6 months. Compare the colors to see " +
+      "whether the object changed; the line joins each pass's medians.",
+  },
+
+  fuente: {
+    titulo: "Data",
+    pre: "all exposures (precomputed)",
+    vivo: "explorer photos (live)",
+    notaPre: (fecha: string) =>
+      `Precomputed on ${fecha} from every SPHEREx exposure in IRSA (not just the explorer's photos).`,
+  },
+
+  pasadas: {
+    titulo: "Passes",
+    todas: "all",
+  },
+
+  cambio: {
+    titulo: "What changed between passes?",
+    frase: (sube: boolean, rango: string, meses: number, razon: string) =>
+      `${sube ? "Brighter" : "Fainter"} at ${rango} than ${meses} ${meses === 1 ? "month" : "months"} earlier ` +
+      `(×${razon}).`,
+    sinCambio: (n: number) =>
+      `No clear change: in ${n} comparable ${n === 1 ? "range" : "ranges"} the difference does not exceed ` +
+      "the noise (3σ).",
+    sinComun: "The passes have no measurements in the same colors: they cannot be compared.",
+    comparando: (a: string, b: string) => `Comparing ${a} with ${b} (ratio = after / before).`,
+    ruido: "within noise",
+    regla:
+      "A change is only claimed if the difference exceeds 3σ, counting a 5% calibration error on top of the " +
+      "sky noise.",
   },
 
   moleculas: [

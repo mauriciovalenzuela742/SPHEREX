@@ -54,3 +54,24 @@
 .h-boton:hover { background: rgba(242, 184, 75, 0.15); }
 .h-sat-franja { fill: #f2b84b; opacity: 0.06; }
 .h-caveat { margin: 0; font-size: 0.78rem; color: var(--suave); }
+
+/* Espectro por pasada */
+.h-linea { fill: none; stroke-width: 1.5; opacity: 0.6; pointer-events: none; }
+.h-punto.sosp { stroke-dasharray: 2 2; }
+.h-leyenda .h-ley-pasada { border-radius: 50%; }
+.p-controles { display: flex; flex-direction: column; gap: 0.35rem; }
+.p-grupo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; font-size: 0.8rem; color: var(--suave); }
+.p-grupo button { font: inherit; font-size: 0.8rem; padding: 0.15rem 0.55rem; border-radius: 999px; border: 1px solid var(--borde); background: transparent; color: var(--suave); cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; }
+.p-grupo button[aria-pressed="true"] { border-color: #a9b3cf; color: #fff; background: rgba(169, 179, 207, 0.12); }
+.p-punto { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+.qc { border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 0.8rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.qc h4 { margin: 0; font-size: 0.92rem; }
+.qc-frase { margin: 0; font-size: 0.9rem; }
+.qc-tramos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; font: 0.78rem ui-monospace, monospace; color: var(--suave); }
+.qc-tramos li { display: grid; grid-template-columns: 9.5rem 5rem 1fr; gap: 0.5rem; align-items: center; }
+.qc-barra { height: 6px; background: #1b2238; border-radius: 3px; overflow: hidden; }
+.qc-barra span { display: block; height: 100%; background: #5c6a8a; }
+.qc-tramos li.sube { color: #ffd8a8; }
+.qc-tramos li.sube .qc-barra span { background: #ffa94d; }
+.qc-tramos li.baja { color: #a5d8ff; }
+.qc-tramos li.baja .qc-barra span { background: #74c0fc; }

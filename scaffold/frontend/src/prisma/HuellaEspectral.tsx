@@ -1,17 +1,20 @@
 /**
  * Huella espectral (Prisma): brillo del objeto en cada foto, ordenado por λ, sobre la barra del espectro
  * electromagnético. SVG sin librerías. Pasar el mouse por un punto lleva el explorador a esa banda/visita.
- * Puntos: lleno = medida; ▽ = límite superior (S/N < 3); hueco = saturado. Gris = forma de las vecinas.
+ * Puntos: lleno = medida; ▽ = límite superior (S/N < 3); △ en la franja de arriba = saturado (sin altura).
+ * Con dos o más pasadas, cada pasada tiene su color y una línea por sus medianas. Gris = forma de las vecinas.
  */
 import { usePrisma } from "../content/prisma";
 import { useIdioma } from "../state/idioma";
-import type { PuntoEspectral } from "./fotometria";
 import { useFmt } from "./formato";
+import { COLORES_PASADA, etiquetaPasada, usable, valorLimite, type Pasada, type PuntoVista } from "./pasadas";
 
 type Props = {
-  puntos: PuntoEspectral[];
+  /** Todas las pasadas (los colores dependen del orden); `ver` elige cuáles se dibujan. */
+  pasadas: Pasada[];
+  ver: string;
   sel: { banda: number; visita: number };
-  onPunto: (banda: number, visita: number) => void;
+  onPunto: (p: PuntoVista) => void;
   /** Si el explorador puede cargar las 6 bandas, el botón del aviso «solo 1 banda» lo hace. */
   cargarTodas?: () => void;
 };
@@ -38,24 +41,42 @@ function mediana(a: number[]) {
   return s.length ? (s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2) : NaN;
 }
 
-export default function HuellaEspectral({ puntos, sel, onPunto, cargarTodas }: Props) {
+/** Medianas de las medidas usables en cajas de ~7 % en λ: la línea de cada pasada. */
+function linea(ps: PuntoVista[]): { l: number; v: number }[] {
+  const cajas = new Map<number, PuntoVista[]>();
+  for (const p of ps.filter(usable)) {
+    const k = Math.floor(Math.log10(p.lam) / 0.03);
+    cajas.set(k, [...(cajas.get(k) ?? []), p]);
+  }
+  return [...cajas.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([, g]) => ({ l: mediana(g.map((p) => p.lam)), v: mediana(g.map((p) => p.mJy)) }));
+}
+
+export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarTodas }: Props) {
   const prisma = usePrisma();
-  const { tr } = useIdioma();
+  const { tr, idioma } = useIdioma();
   const fmt = useFmt();
-  const usables = puntos.filter((p) => p.detectado && p.mJy > 0);
-  const limites = puntos
-    .filter((p) => !p.saturado)
-    .map((p) => (p.detectado ? p.mJy : Math.max(p.mJy, 0) + 3 * p.errMJy))
+  const porColor = pasadas.length > 1;
+  const visibles = pasadas.map((pa, i) => ({ pa, color: COLORES_PASADA[i % COLORES_PASADA.length] })).filter(({ pa }) => ver === "todas" || pa.id === ver);
+  const puntos = visibles.flatMap(({ pa, color }) => pa.puntos.map((p) => ({ p, color })));
+  const todosPuntos = puntos.map(({ p }) => p);
+
+  const usables = todosPuntos.filter(usable);
+  const limites = todosPuntos
+    .filter((p) => p.estado !== "saturado" && (p.estado === "limite" || p.mJy > 0))
+    .map((p) => (p.estado === "medida" ? p.mJy : valorLimite(p)))
     .filter((v) => v > 0);
-  // Forma de las vecinas: UNA mediana por banda (en la λ mediana de la banda), escalada para que su mediana
-  // coincida con la del objeto. Por banda y no por punto, para que un fotograma raro no deforme la línea.
-  const conVec = puntos.filter((p) => p.vecinas && p.vecinas > 0);
+  // Forma de las vecinas (solo puntos vivos): UNA mediana por banda, escalada para que su mediana coincida
+  // con la del objeto. Por banda y no por punto, para que un fotograma raro no deforme la línea.
+  const conVec = todosPuntos.filter((p) => p.vecinas && p.vecinas > 0);
   const porBanda = BANDAS.map(([b]) => conVec.filter((p) => p.banda === b))
     .filter((g) => g.length)
-    .map((g) => ({ l: mediana(g.map((p) => p.lambda)), v: mediana(g.map((p) => p.vecinas!)) }));
+    .map((g) => ({ l: mediana(g.map((p) => p.lam)), v: mediana(g.map((p) => p.vecinas!)) }));
   const kVec =
     usables.length && porBanda.length ? mediana(usables.map((p) => p.mJy)) / mediana(porBanda.map((g) => g.v)) : NaN;
   const vecinas = Number.isFinite(kVec) ? porBanda.map((g) => ({ l: g.l, v: g.v * kVec })) : [];
+  const lineas = porColor ? visibles.map(({ pa, color }) => ({ id: pa.id, color, pts: linea(pa.puntos) })) : [];
 
   const todos = [...limites, ...vecinas.map((v) => v.v)];
   const yLo = todos.length ? Math.log10(Math.min(...todos)) - 0.3 : -1;
@@ -73,23 +94,28 @@ export default function HuellaEspectral({ puntos, sel, onPunto, cargarTodas }: P
       }
   }
 
-  const actual = puntos.find((p) => p.banda === sel.banda && p.visita === sel.visita);
-  const nDebil = puntos.filter((p) => !p.detectado && !p.saturado).length;
-  const nSat = puntos.filter((p) => p.saturado).length;
-  const todoSaturado = puntos.length > 0 && nSat === puntos.length;
-  const bandasConPuntos = new Set(puntos.map((p) => p.banda));
+  const esSel = (p: PuntoVista) => p.visita !== null && p.banda === sel.banda && p.visita === sel.visita;
+  const actual = todosPuntos.find(esSel);
+  const nDebil = todosPuntos.filter((p) => p.estado === "limite").length;
+  const nSat = todosPuntos.filter((p) => p.estado === "saturado").length;
+  const nSosp = todosPuntos.filter((p) => p.sospechoso).length;
+  const todoSaturado = todosPuntos.length > 0 && nSat === todosPuntos.length;
+  const bandasConPuntos = new Set(todosPuntos.map((p) => p.banda));
   const unaBanda = bandasConPuntos.size === 1 ? [...bandasConPuntos][0] : 0;
-  const fechas = [...new Set(puntos.map((p) => p.t.slice(0, 10)))].sort();
-  const valor = (p: PuntoEspectral) =>
-    p.saturado
+  const fechas = [...new Set(todosPuntos.map((p) => p.fecha))].sort();
+  const chico = todosPuntos.length > 80;
+  const valor = (p: PuntoVista) =>
+    p.estado === "saturado"
       ? tr("saturado", "saturated")
-      : p.detectado
-        ? `${fmt(p.mJy)} ± ${fmt(p.errMJy)} mJy`
-        : `< ${fmt(Math.max(p.mJy, 0) + 3 * p.errMJy)} mJy`;
+      : p.estado === "medida"
+        ? `${fmt(p.mJy)} ± ${fmt(p.err)} mJy`
+        : `< ${fmt(valorLimite(p))} mJy`;
+  const rotulo = (p: PuntoVista) =>
+    `D${p.banda} · ${p.fecha} · λ ${fmt(p.lam, 2)} µm · ${valor(p)}${p.sospechoso ? ` · ${prisma.huella.sospechosoCorto}` : ""}`;
 
   return (
     <figure className="huella">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${prisma.huella.titulo}: ${puntos.length} ${tr("puntos entre 0,75 y 5 micrómetros", "points between 0.75 and 5 micrometers")}`}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${prisma.huella.titulo}: ${todosPuntos.length} ${tr("puntos entre 0,75 y 5 micrómetros", "points between 0.75 and 5 micrometers")}`}>
         {/* Barra del espectro electromagnético */}
         <defs>
           <linearGradient id="visible" x1="0" x2="1">
@@ -144,6 +170,9 @@ export default function HuellaEspectral({ puntos, sel, onPunto, cargarTodas }: P
             </text>
           </g>
         ))}
+        <text x={14} y={(M.arr + H - M.aba) / 2} className="h-tick" textAnchor="middle" transform={`rotate(-90 14 ${(M.arr + H - M.aba) / 2})`}>
+          {prisma.huella.ejeY}
+        </text>
 
         {/* Franja de saturados (fuera del eje) */}
         {nSat > 0 && (
@@ -152,9 +181,6 @@ export default function HuellaEspectral({ puntos, sel, onPunto, cargarTodas }: P
             <text x={M.izq - 8} y={SAT_Y + 4} className="h-tick" textAnchor="end">{tr("saturado", "saturated")}</text>
           </g>
         )}
-        <text x={14} y={(M.arr + H - M.aba) / 2} className="h-tick" textAnchor="middle" transform={`rotate(-90 14 ${(M.arr + H - M.aba) / 2})`}>
-          {prisma.huella.ejeY}
-        </text>
 
         {/* Vecinas (forma) */}
         {vecinas.length > 1 && (
@@ -164,61 +190,80 @@ export default function HuellaEspectral({ puntos, sel, onPunto, cargarTodas }: P
           />
         )}
 
+        {/* Una línea por pasada (medianas) */}
+        {lineas.map((l) =>
+          l.pts.length > 1 ? (
+            <polyline key={l.id} className="h-linea" stroke={l.color} points={l.pts.map((v) => `${lx(v.l)},${ly(v.v)}`).join(" ")} />
+          ) : null,
+        )}
+
         {/* Puntos del objeto */}
-        {puntos.map((p) => {
-          const x = lx(p.lambda);
-          const esSel = p.banda === sel.banda && p.visita === sel.visita;
-          const color = `var(--b${p.banda})`;
-          const titulo = `D${p.banda} · ${p.t.slice(0, 10)} · λ ${fmt(p.lambda, 2)} µm · ${valor(p)}`;
+        {puntos.map(({ p, color: cPasada }, i) => {
+          const x = lx(p.lam);
+          const s = esSel(p);
+          const color = porColor ? cPasada : `var(--b${p.banda})`;
+          const titulo = rotulo(p);
           const comun = {
-            onMouseEnter: () => onPunto(p.banda, p.visita),
-            onFocus: () => onPunto(p.banda, p.visita),
-            onClick: () => onPunto(p.banda, p.visita),
+            onMouseEnter: () => onPunto(p),
+            onFocus: () => onPunto(p),
+            onClick: () => onPunto(p),
             tabIndex: 0,
             role: "button" as const,
             "aria-label": titulo,
-            className: `h-punto ${esSel ? "sel" : ""}`,
+            className: `h-punto ${s ? "sel" : ""} ${p.sospechoso ? "sosp" : ""}`,
           };
-          if (p.saturado) {
-            // ▲ hueco en la franja fija: «más brillante de lo que el detector mide», sin altura inventada.
+          const key = `${p.banda}:${p.visita ?? ""}:${p.mjd}:${i}`;
+          if (p.estado === "saturado") {
+            // △ en la franja fija: «más brillante de lo que el detector mide», sin altura inventada.
             return (
-              <path key={`${p.banda}:${p.visita}`} d={`M${x},${SAT_Y - 7} L${x + 6},${SAT_Y + 5} L${x - 6},${SAT_Y + 5} Z`} fill="none" stroke={color} strokeWidth={2} {...comun}>
+              <path key={key} d={`M${x},${SAT_Y - 7} L${x + 6},${SAT_Y + 5} L${x - 6},${SAT_Y + 5} Z`} fill="none" stroke={color} strokeWidth={2} {...comun}>
                 <title>{titulo}</title>
               </path>
             );
           }
-          if (!p.detectado) {
-            const y = ly(Math.max(p.mJy, 0) + 3 * p.errMJy);
+          if (p.estado === "limite") {
+            const y = ly(valorLimite(p));
+            const r = chico ? 4 : 6;
             return (
-              <path key={`${p.banda}:${p.visita}`} d={`M${x - 6},${y - 4} L${x + 6},${y - 4} L${x},${y + 6} Z`} fill={color} opacity={0.55} {...comun}>
+              <path key={key} d={`M${x - r},${y - r * 0.66} L${x + r},${y - r * 0.66} L${x},${y + r} Z`} fill={color} opacity={p.sospechoso ? 0.25 : 0.55} {...comun}>
                 <title>{titulo}</title>
               </path>
             );
           }
-          return <circle key={`${p.banda}:${p.visita}`} cx={x} cy={ly(p.mJy)} r={esSel ? 7 : 5} fill={color} {...comun}><title>{titulo}</title></circle>;
+          return (
+            <circle key={key} cx={x} cy={ly(p.mJy)} r={s ? 7 : chico ? 3.5 : 5} fill={color} opacity={p.sospechoso ? 0.3 : 1} {...comun}>
+              <title>{titulo}</title>
+            </circle>
+          );
         })}
       </svg>
 
       <figcaption>
         <ul className="h-leyenda">
+          {porColor &&
+            visibles.map(({ pa, color }) => (
+              <li key={pa.id}>
+                <span className="h-ley-pasada" style={{ background: color }} /> {etiquetaPasada(pa, idioma)}
+              </li>
+            ))}
           <li><span className="h-ley-medida" /> {prisma.huella.leyenda.medida}</li>
           <li><span className="h-ley-limite" /> {prisma.huella.leyenda.limite}</li>
           <li><span className="h-ley-sat">△</span> {prisma.huella.leyenda.saturado}</li>
-          <li><span className="h-ley-vec" /> {prisma.huella.leyenda.vecinas}</li>
+          {vecinas.length > 1 && <li><span className="h-ley-vec" /> {prisma.huella.leyenda.vecinas}</li>}
           <li><span className="h-ley-mol" /> {prisma.huella.moleculas}</li>
         </ul>
         <p className="h-actual" aria-live="polite">
           {actual
-            ? `D${actual.banda} · ${actual.t.slice(0, 10)} · λ ${fmt(actual.lambda, 2)} µm · ${
-                actual.saturado || actual.detectado ? valor(actual) : tr("demasiado débil en esta foto", "too faint in this photo")
-              }`
+            ? actual.estado === "limite"
+              ? `D${actual.banda} · ${actual.fecha} · λ ${fmt(actual.lam, 2)} µm · ${tr("demasiado débil en esta foto", "too faint in this photo")}`
+              : rotulo(actual)
             : prisma.huella.pista}
         </p>
-        {puntos.length > 0 && nDebil > puntos.length / 2 && <p className="h-aviso">{prisma.huella.debil}</p>}
+        {todosPuntos.length > 0 && nDebil > todosPuntos.length / 2 && <p className="h-aviso">{prisma.huella.debil}</p>}
         {todoSaturado ? (
           <p className="h-aviso h-aviso-fuerte">{prisma.huella.todoSaturado}</p>
         ) : (
-          nSat > 0 && <p className="h-aviso">{prisma.huella.saturadoAviso}</p>
+          nSat > 0 && <p className="h-aviso">{prisma.huella.saturadoAviso(nSat)}</p>
         )}
         {unaBanda > 0 && (
           <p className="h-aviso">
@@ -230,10 +275,14 @@ export default function HuellaEspectral({ puntos, sel, onPunto, cargarTodas }: P
             )}
           </p>
         )}
-        {fechas.length > 1 && (
-          <p className="h-nota">{prisma.huella.fechasDistintas(fechas.length, fechas[0], fechas[fechas.length - 1])}</p>
+        {nSosp > 0 && <p className="h-aviso">{prisma.huella.sospechosos(nSosp)}</p>}
+        {porColor ? (
+          <p className="h-nota">{prisma.huella.porPasada}</p>
+        ) : (
+          fechas.length > 1 && (
+            <p className="h-nota">{prisma.huella.fechasDistintas(fechas.length, fechas[0], fechas[fechas.length - 1])}</p>
+          )
         )}
-        <p className="h-caveat">{prisma.huella.caveat}</p>
       </figcaption>
     </figure>
   );
