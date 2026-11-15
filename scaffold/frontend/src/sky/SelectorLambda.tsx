@@ -14,6 +14,7 @@
  * Ancho de cada curva: λ/R con R por banda de la literatura (sin verificar); altura ilustrativa.
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as PE, type ReactElement } from "react";
+import { useMovimientoReducido } from "./movimiento";
 import { bandaDePlano, leerPlanos, PLANOS_VACIOS } from "./planos";
 import { useIdioma } from "../state/idioma";
 
@@ -49,6 +50,8 @@ const Y0 = 215;
 const Y1 = 30;
 const DURACION_MS = 450;
 const PASO_RECORRIDO_MS = 800;
+/** Con «reducir movimiento» del sistema: el acordeón se abre sin animación y «Recorrer» va a la mitad. */
+const PASO_RECORRIDO_REDUCIDO_MS = 1600;
 
 const BANDAS = [0, 1, 2, 3, 4, 5];
 const vacio = (p: number) => PLANOS_VACIOS.includes(p);
@@ -91,6 +94,8 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
   const emitido = useRef(plano);
   const onPlanoRef = useRef(onPlano);
   onPlanoRef.current = onPlano;
+  const reducir = useMovimientoReducido();
+  const pasoMs = reducir ? PASO_RECORRIDO_REDUCIDO_MS : PASO_RECORRIDO_MS;
 
   // λ reales del cubo.
   useEffect(() => {
@@ -154,6 +159,11 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
     setAbierta(nueva);
     const wt = BANDAS.map((i) => (nueva ? (i === nueva - 1 ? 9 : 0.6) : 1));
     if (anim.current !== null) cancelAnimationFrame(anim.current);
+    if (reducir) {
+      setW(wt);
+      anim.current = null;
+      return;
+    }
     const w0 = wRef.current.slice();
     const t0 = performance.now();
     const paso = (t: number) => {
@@ -263,7 +273,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         return;
       }
       emitir(recorrido[i]);
-    }, PASO_RECORRIDO_MS);
+    }, pasoMs);
     return () => window.clearInterval(id);
   }, [recorrido]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -446,7 +456,9 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
               type="button"
               style={botonChico}
               onClick={() => setRecorrido(elegidos)}
-              title={tr("Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)", "Steps the sky through each channel in the range, one after another (0.8 s per channel)")}
+              title={reducir
+                ? tr("Pasa el cielo por cada canal del tramo, uno tras otro (1,6 s por canal: más lento porque tu sistema pide reducir el movimiento)", "Steps the sky through each channel in the range, one after another (1.6 s per channel: slower because your system asks for reduced motion)")
+                : tr("Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)", "Steps the sky through each channel in the range, one after another (0.8 s per channel)")}
             >
               {tr("Recorrer", "Sweep")}
             </button>

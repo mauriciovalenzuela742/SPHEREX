@@ -64,6 +64,14 @@ const ES = {
   cieloDesc: (band: string) =>
     `Cielo: cubo SPHEREx DR1 de IRSA (mosaico de todas las épocas, sin eje de tiempo). Banda ${band}, canal central.`,
 
+  // Épocas del visor: trayectoria y movimiento reducido
+  trayectoriaMostrar: "Mostrar trayectoria",
+  trayectoriaExplica:
+    "Los círculos marcan dónde debía estar el objeto en la fecha de cada imagen, según su movimiento propio; la flecha, hacia dónde se mueve.",
+  epocasAlternar: "Alternar época",
+  epocasMovimientoReducido:
+    "Tu sistema pide reducir el movimiento: el parpadeo automático está apagado. Usa «Alternar época» para cambiar de imagen a mano.",
+
   // Footer
   atribucion:
     "This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of " +
@@ -125,6 +133,13 @@ const EN: typeof ES = {
   pausa: "Pause",
   cieloDesc: (band: string) =>
     `Sky: SPHEREx DR1 cube from IRSA (mosaic of all epochs, no time axis). Band ${band}, central channel.`,
+
+  trayectoriaMostrar: "Show trajectory",
+  trayectoriaExplica:
+    "The circles mark where the object should have been on the date of each image, from its proper motion; the arrow shows where it is moving.",
+  epocasAlternar: "Switch epoch",
+  epocasMovimientoReducido:
+    "Your system asks for reduced motion: automatic blinking is off. Use «Switch epoch» to change images by hand.",
 
   atribucion:
     "This publication makes use of data products from the Spectro-Photometer for the History of the Universe, Epoch of " +
