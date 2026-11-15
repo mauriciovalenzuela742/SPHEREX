@@ -9,6 +9,8 @@ type IdiomaCtx = {
   idioma: Idioma;
   t: ReturnType<typeof getTraducciones>;
   cambiar: (i: Idioma) => void;
+  /** Traducción en línea: tr("Hola", "Hello"). */
+  tr: (es: string, en: string) => string;
 };
 
 const Ctx = createContext<IdiomaCtx | null>(null);
@@ -28,7 +30,7 @@ export function IdiomaProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ idioma, t: getTraducciones(idioma), cambiar }}>
+    <Ctx.Provider value={{ idioma, t: getTraducciones(idioma), cambiar, tr: (es: string, en: string) => (idioma === "en" ? en : es) }}>
       {children}
     </Ctx.Provider>
   );

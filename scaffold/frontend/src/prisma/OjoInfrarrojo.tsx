@@ -6,7 +6,8 @@
 import { useEffect, useRef } from "react";
 import { asinh01, type Frame } from "../explorador/render";
 import { clave, type DatosSpherex } from "../explorador/useDatosSpherex";
-import { prisma } from "../content/prisma";
+import { usePrisma } from "../content/prisma";
+import { useIdioma } from "../state/idioma";
 import { medirObjeto } from "./fotometria";
 
 const CANALES: [number, number][] = [
@@ -16,6 +17,8 @@ const CANALES: [number, number][] = [
 ];
 
 export default function OjoInfrarrojo({ datos }: { datos: DatosSpherex }) {
+  const prisma = usePrisma();
+  const { tr } = useIdioma();
   const { grid, frames, escalas, version, banda, visita, visitaMasCercana, mjdActual } = datos;
   const lienzo = useRef<HTMLCanvasElement>(null);
 
@@ -67,7 +70,7 @@ export default function OjoInfrarrojo({ datos }: { datos: DatosSpherex }) {
   return (
     <figure className="ojo">
       <div className="ojo-lienzo">
-        {n ? <canvas ref={lienzo} aria-label="Campo en color infrarrojo traducido" /> : <p className="ojo-vacio">{prisma.ojo.sinDatos}</p>}
+        {n ? <canvas ref={lienzo} aria-label={tr("Campo en color infrarrojo traducido", "Field in translated infrared color")} /> : <p className="ojo-vacio">{prisma.ojo.sinDatos}</p>}
         {n > 0 && medida && medido?.meta.n_px === n && (
           <span
             className="ojo-apertura"

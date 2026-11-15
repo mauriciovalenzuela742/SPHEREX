@@ -3,7 +3,8 @@
  * electromagnético. SVG sin librerías. Pasar el mouse por un punto lleva el explorador a esa banda/visita.
  * Puntos: lleno = medida; ▽ = límite superior (S/N < 3); hueco = saturado. Gris = forma de las vecinas.
  */
-import { prisma } from "../content/prisma";
+import { usePrisma } from "../content/prisma";
+import { useIdioma } from "../state/idioma";
 import type { PuntoEspectral } from "./fotometria";
 
 type Props = {
@@ -32,6 +33,8 @@ function mediana(a: number[]) {
 }
 
 export default function HuellaEspectral({ puntos, sel, onPunto }: Props) {
+  const prisma = usePrisma();
+  const { tr } = useIdioma();
   const usables = puntos.filter((p) => p.detectado && p.mJy > 0);
   const limites = puntos.map((p) => (p.detectado ? p.mJy : Math.max(p.mJy, 0) + 3 * p.errMJy)).filter((v) => v > 0);
   // Forma de las vecinas: UNA mediana por banda (en la λ mediana de la banda), escalada para que su mediana
@@ -57,7 +60,7 @@ export default function HuellaEspectral({ puntos, sel, onPunto }: Props) {
 
   return (
     <figure className="huella">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${prisma.huella.titulo}: ${puntos.length} puntos entre 0,75 y 5 micrómetros`}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${prisma.huella.titulo}: ${puntos.length} ${tr("puntos entre 0,75 y 5 micrómetros", "points between 0.75 and 5 micrometers")}`}>
         {/* Barra del espectro electromagnético */}
         <defs>
           <linearGradient id="visible" x1="0" x2="1">
@@ -75,7 +78,7 @@ export default function HuellaEspectral({ puntos, sel, onPunto }: Props) {
         <text x={(lx(L_MIN) + lx(0.38)) / 2} y={36} className="h-eti" textAnchor="middle">UV</text>
         <text x={(lx(0.38) + lx(0.75)) / 2} y={36} className="h-eti" textAnchor="middle">{prisma.huella.ojoHumano}</text>
         <text x={(lx(0.75) + lx(L_MAX)) / 2} y={36} className="h-eti" textAnchor="middle">
-          infrarrojo · {prisma.huella.spherex}
+          {tr("infrarrojo", "infrared")} · {prisma.huella.spherex}
         </text>
 
         {/* Franjas de bandas B1–B6 */}
@@ -130,7 +133,7 @@ export default function HuellaEspectral({ puntos, sel, onPunto }: Props) {
           const esSel = p.banda === sel.banda && p.visita === sel.visita;
           const color = `var(--b${p.banda})`;
           const titulo = `D${p.banda} · ${p.t.slice(0, 10)} · λ ${p.lambda.toFixed(2)} µm · ${
-            p.saturado ? "saturado" : p.detectado ? `${p.mJy.toFixed(1)} ± ${p.errMJy.toFixed(1)} mJy` : `< ${(Math.max(p.mJy, 0) + 3 * p.errMJy).toFixed(2)} mJy`
+            p.saturado ? tr("saturado", "saturated") : p.detectado ? `${p.mJy.toFixed(1)} ± ${p.errMJy.toFixed(1)} mJy` : `< ${(Math.max(p.mJy, 0) + 3 * p.errMJy).toFixed(2)} mJy`
           }`;
           const comun = {
             onMouseEnter: () => onPunto(p.banda, p.visita),
@@ -168,7 +171,7 @@ export default function HuellaEspectral({ puntos, sel, onPunto }: Props) {
         <p className="h-actual" aria-live="polite">
           {actual
             ? `D${actual.banda} · ${actual.t.slice(0, 10)} · λ ${actual.lambda.toFixed(2)} µm · ${
-                actual.saturado ? "saturado" : actual.detectado ? `${actual.mJy.toFixed(1)} ± ${actual.errMJy.toFixed(1)} mJy` : "demasiado débil en esta foto"
+                actual.saturado ? tr("saturado", "saturated") : actual.detectado ? `${actual.mJy.toFixed(1)} ± ${actual.errMJy.toFixed(1)} mJy` : tr("demasiado débil en esta foto", "too faint in this photo")
               }`
             : prisma.huella.pista}
         </p>
