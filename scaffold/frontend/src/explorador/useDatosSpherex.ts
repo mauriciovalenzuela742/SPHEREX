@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { decodificar, escalaDe, type Frame, type MetaFrame } from "./render";
 import { leerJson, mensajeDeError } from "./errores";
 import { distanciaArcsec, presetEn } from "./presets";
+import { CAMPOS, posicionActual } from "../content/campos";
 
 export const API = "/proto-api";
 const PARALELO = 3;
@@ -28,6 +29,8 @@ const TODAS = [1, 2, 3, 4, 5, 6];
 
 /** Fotos precalculadas de un objeto con preset (scripts/precalcular_explorador.ts). */
 type Precalc = { ra: number; dec: number; size: number; banda: number; porVisita: number; desde: string; grid: Grid; frames: Record<string, MetaFrame> };
+/** public/precalc/simple/<id>.json: rejilla y fotos de las 6 bandas de un objeto de prueba (scripts/precalc_desde_cache.py). */
+type PrecalcSimple = { ra: number; dec: number; size: number; porVisita: number; desde: string; hasta: string; grid: Grid; frames: Record<string, MetaFrame> };
 
 /** `activo = false` (p. ej. en el Modo Misión) no descarga nada. */
 export function useDatosSpherex(ra: number, dec: number, size: number, activo = true) {
@@ -125,12 +128,53 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
       }
     };
 
+    // Fotos precalculadas de las 6 bandas de un objeto de prueba (public/precalc/simple/<id>.json, generadas con
+    // scripts/precalc_desde_cache.py). `estricto`: solo con la configuración de siempre (fechas y exposiciones).
+    const usarPrecalcSimple = async (estricto: boolean): Promise<boolean> => {
+      const campo = CAMPOS.find((c) => {
+        const p = posicionActual(c);
+        return distanciaArcsec(ra, dec, p.ra, p.dec) < 3;
+      });
+      if (!campo) return false;
+      try {
+        const r = await fetch(`/precalc/simple/${campo.id}.json`, { signal: ctl.signal });
+        const p: PrecalcSimple | null = r.ok ? await r.json() : null;
+        if (gen !== generacion.current || !p) return false;
+        if (p.size !== size || distanciaArcsec(ra, dec, p.ra, p.dec) >= 3) return false;
+        if (estricto && (p.porVisita !== porVisita || desde !== p.desde || hasta < p.hasta)) return false;
+        const fs = p.grid.bands.filter((b) => cargar.includes(b) && p.grid.visits[b]?.length);
+        if (!fs.length) return false;
+        let n = 0;
+        for (const b of fs)
+          p.grid.visits[b].forEach((_, v) => {
+            const m = p.frames[clave(b, v)];
+            if (m) {
+              guardar(b, v, m);
+              n++;
+            }
+          });
+        const b0 = fs.includes(5) && p.porVisita > 1 ? 5 : fs[0];
+        setGrid({ ...p.grid, bands: fs });
+        setBanda(b0);
+        setVisita(presetVigente && b0 === preset?.banda ? p.grid.visits[b0].length - 1 : 0);
+        setProg({ hechos: n, total: n, errores: 0 });
+        setVersion((x) => x + 1);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
     const t = window.setTimeout(async () => {
       // Objeto con preset y la configuración de siempre: fotos precalculadas, sin consultar IRSA.
       if (preset && cargar.length === 1 && cargar[0] === preset.banda && porVisita === preset.porVisita && desde === DESDE && hasta === hoy()) {
         if (await usarPrecalc(true)) return;
         if (gen !== generacion.current) return;
       }
+      // Objeto de prueba con la configuración de siempre: sus fotos precalculadas de las 6 bandas. Es lo que ve el
+      // jurado al abrir la vista simple: carga al instante y no depende de que IRSA responda.
+      if (await usarPrecalcSimple(true)) return;
+      if (gen !== generacion.current) return;
 
       let g: Grid;
       try {
@@ -140,7 +184,7 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
         if (gen !== generacion.current || (e as Error).name === "AbortError") return;
         // IRSA no responde: si el objeto trae fotos precalculadas (su banda, mediana de 10 por visita), se muestran
         // esas en vez del error. Lo usa la vista simple, que pide las 6 bandas y nunca entraba al caso de arriba.
-        if (await usarPrecalc(false)) return;
+        if ((await usarPrecalcSimple(false)) || (await usarPrecalc(false))) return;
         if (gen === generacion.current) setMensaje(mensajeDeError(e));
         return;
       }
