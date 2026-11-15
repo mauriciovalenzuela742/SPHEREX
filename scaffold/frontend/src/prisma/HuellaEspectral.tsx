@@ -1,10 +1,12 @@
 /**
  * Huella espectral (Prisma): brillo del objeto en cada foto, ordenado por λ, sobre la barra del espectro
  * electromagnético. SVG sin librerías. Pasar el mouse por un punto lleva el explorador a esa banda/visita.
+ * Propuesta «espectro único» (JP, 15-nov): es el gráfico de longitud de onda principal del Modo ciencia. Un clic en una
+ * franja D1–D6 (o en su pestaña de arriba, o en un punto) cambia la banda del mapa y del explorador (`onBanda`).
  * Puntos: lleno = medida; ▽ = límite superior (S/N < 3); △ en la franja de arriba = saturado (sin altura).
  * Con dos o más pasadas, cada pasada tiene su color y una línea por sus medianas. Gris = forma de las vecinas.
  */
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { usePrisma } from "../content/prisma";
 import { useIdioma } from "../state/idioma";
 import { useFmt } from "./formato";
@@ -19,6 +21,10 @@ type Props = {
   onPunto: (p: PuntoVista) => void;
   /** Si el explorador puede cargar las 6 bandas, el botón del aviso «solo 1 banda» lo hace. */
   cargarTodas?: () => void;
+  /** Banda del mapa (1–6): su franja queda marcada. */
+  bandaMapa?: number;
+  /** Clic en una franja, su pestaña o un punto: fija la banda del mapa y del explorador. */
+  onBanda?: (banda: number) => void;
 };
 
 // Lienzo lógico del SVG.
@@ -55,7 +61,13 @@ function linea(ps: PuntoVista[]): { l: number; v: number }[] {
     .map(([, g]) => ({ l: mediana(g.map((p) => p.lam)), v: mediana(g.map((p) => p.mJy)) }));
 }
 
-export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarTodas }: Props) {
+/** Banda D1–D6 que contiene λ (µm), o 0 si cae fuera. */
+const bandaDeLam = (l: number) => BANDAS.find(([, a, z]) => l >= a && l <= z)?.[0] ?? 0;
+// Pestañas de banda, entre la barra del espectro y la franja de saturados.
+const TAB_Y = 42;
+const TAB_H = 16;
+
+export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarTodas, bandaMapa, onBanda }: Props) {
   const prisma = usePrisma();
   const { tr, idioma } = useIdioma();
   const fmt = useFmt();
@@ -148,13 +160,40 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
           {tr("infrarrojo", "infrared")} · {prisma.huella.spherex}
         </text>
 
-        {/* Franjas de bandas B1–B6 */}
-        {BANDAS.map(([b, a, z]) => (
-          <g key={b}>
-            <rect x={lx(a)} y={M.arr} width={lx(z) - lx(a)} height={H - M.arr - M.aba} fill={`var(--b${b})`} opacity={0.07} />
-            <text x={(lx(a) + lx(z)) / 2} y={M.arr - 6} className="h-banda" fill={`var(--b${b})`} textAnchor="middle">D{b}</text>
-          </g>
-        ))}
+        {/* Franjas de bandas D1–D6: clic (o Enter) en la franja o en su pestaña = banda del mapa y del explorador. */}
+        {BANDAS.map(([b, a, z]) => {
+          const marcada = b === bandaMapa;
+          const elegir = onBanda
+            ? {
+                onClick: () => onBanda(b),
+                onKeyDown: (e: KeyboardEvent<SVGGElement>) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onBanda(b);
+                  }
+                },
+              }
+            : {};
+          const titulo = onBanda ? tr(`Ver D${b} en el mapa y en el explorador`, `Show D${b} on the map and in the explorer`) : `D${b}`;
+          return (
+            <g key={b} className={`h-franja ${onBanda ? "activa" : ""} ${marcada ? "marcada" : ""}`}>
+              <rect x={lx(a)} y={M.arr} width={lx(z) - lx(a)} height={H - M.arr - M.aba} fill={`var(--b${b})`} className="h-franja-fondo" {...elegir}>
+                <title>{titulo}</title>
+              </rect>
+              <g
+                className="h-tab"
+                {...elegir}
+                {...(onBanda ? { tabIndex: 0, role: "button" as const, "aria-pressed": marcada, "aria-label": titulo } : {})}
+              >
+                <title>{titulo}</title>
+                <rect x={lx(a) + 1} y={TAB_Y} width={lx(z) - lx(a) - 2} height={TAB_H} rx={3} stroke={`var(--b${b})`} fill={marcada ? `var(--b${b})` : "transparent"} />
+                <text x={(lx(a) + lx(z)) / 2} y={TAB_Y + TAB_H - 4} className="h-banda" fill={marcada ? "#0b1020" : `var(--b${b})`} textAnchor="middle">
+                  D{b}
+                </text>
+              </g>
+            </g>
+          );
+        })}
 
         {/* Regiones de moléculas */}
         {zonas.map((zn) => (
@@ -163,6 +202,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
             className={`h-mol-zona ${zn.dep ? "dep" : ""} ${molSobre === zn.k ? "sobre" : ""}`}
             onMouseEnter={() => setMolSobre(zn.k)}
             onMouseLeave={() => setMolSobre((k) => (k === zn.k ? null : k))}
+            onClick={onBanda && bandaDeLam((zn.a + zn.z) / 2) ? () => onBanda(bandaDeLam((zn.a + zn.z) / 2)) : undefined}
           >
             <title>{`${zn.m.texto}${zn.dep ? ` ${textoDep(zn)}` : ""}`}</title>
             <rect x={lx(zn.a)} y={M.arr} width={lx(zn.z) - lx(zn.a)} height={H - M.arr - M.aba} className="h-mol" />
@@ -225,7 +265,10 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
           const comun = {
             onMouseEnter: () => onPunto(p),
             onFocus: () => onPunto(p),
-            onClick: () => onPunto(p),
+            onClick: () => {
+              onPunto(p);
+              onBanda?.(p.banda);
+            },
             tabIndex: 0,
             role: "button" as const,
             "aria-label": titulo,

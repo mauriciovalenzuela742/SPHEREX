@@ -136,3 +136,20 @@
 .fc-nebulosas p { margin: 0.4rem 0; }
 .qc-quieta { margin: 0.4rem 0; font-size: 0.85rem; border-left: 3px solid #ff6b9a; padding-left: 0.6rem; }
 .fc-firma.abs { stroke-dasharray: 1 4; opacity: 0.35; }
+
+/* Propuesta «espectro único»: franjas D1–D6 clickeables (banda del mapa y del explorador). */
+.h-franja-fondo { opacity: 0.07; }
+.h-franja.marcada .h-franja-fondo { opacity: 0.2; }
+.h-franja.activa .h-franja-fondo, .h-franja.activa .h-tab { cursor: pointer; }
+.h-franja.activa:hover .h-franja-fondo { opacity: 0.16; }
+.h-franja.marcada:hover .h-franja-fondo { opacity: 0.24; }
+.h-tab rect { stroke-width: 1.2; }
+.h-franja.activa .h-tab:hover rect { stroke-width: 2.2; }
+.h-tab:focus { outline: none; }
+.h-tab:focus-visible rect { stroke: #fff; stroke-width: 2.5; }
+.h-franja.activa ~ .h-mol-zona { cursor: pointer; }
+.prisma-mas { border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.5rem; }
+.prisma-mas > summary { cursor: pointer; font-size: 0.9rem; color: #a9b3cf; }
+.prisma-mas[open] > summary { margin-bottom: 0.5rem; }
+.prisma-mas .ojo-contenido { max-width: 320px; display: flex; flex-direction: column; gap: 0.5rem; }
+.prisma-cuerpo.prisma-unico { grid-template-columns: minmax(0, 1fr); }

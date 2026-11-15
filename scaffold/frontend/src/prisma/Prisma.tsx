@@ -53,9 +53,18 @@ function usePrecalc(id: string | null): PrecalcEspectro | null {
   return j && j.id === id ? j.d : null;
 }
 
-export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: number; dec: number }) {
+type Props = {
+  datos: DatosSpherex;
+  ra: number;
+  dec: number;
+  /** Banda del mapa (1–6). Con `onBanda`, la Huella espectral sirve para elegirla (propuesta «espectro único»). */
+  banda?: number;
+  onBanda?: (banda: number) => void;
+};
+
+export default function Prisma({ datos, ra, dec, banda: bandaMapa, onBanda }: Props) {
   const prisma = usePrisma();
-  const { idioma } = useIdioma();
+  const { idioma, tr } = useIdioma();
   const { grid, frames, version, banda, visita, irA, visitaMasCercana } = datos;
   // `version` sube con cada fotograma que llega: recalcular el espectro entonces.
   const puntos = useMemo(() => (grid ? espectro(frames.current) : []), [grid, version, frames]);
@@ -83,12 +92,8 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
       {!grid && !usaPre ? (
         <p className="prisma-vacio">{prisma.ojo.sinDatos}</p>
       ) : (
-        <div className="prisma-cuerpo">
-          <div className="prisma-col" data-tour="prisma-ojo">
-            <h3>{prisma.ojo.titulo}</h3>
-            <p className="prisma-texto">{prisma.ojo.texto}</p>
-            {grid ? <OjoInfrarrojo datos={datos} /> : <p className="prisma-vacio">{prisma.ojo.sinDatos}</p>}
-          </div>
+        // Propuesta «espectro único»: la Huella espectral va a lo ancho y el Ojo infrarrojo queda plegado debajo.
+        <div className="prisma-cuerpo prisma-unico">
           <div className="prisma-col prisma-ancha" data-tour="prisma-huella">
             <h3>{prisma.huella.titulo}</h3>
             <p className="prisma-texto">{prisma.huella.texto}</p>
@@ -119,6 +124,8 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
               sel={{ banda, visita }}
               onPunto={onPunto}
               cargarTodas={!usaPre && datos.cargar.length < 6 ? () => datos.setCargar([1, 2, 3, 4, 5, 6]) : undefined}
+              bandaMapa={bandaMapa}
+              onBanda={onBanda}
             />
             {usaPre && pre && (
               <details className="h-caveat">
@@ -134,6 +141,13 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
               })()}
             />
             <QueCambio pasadas={pasadas} id={id} />
+            <details className="prisma-mas" data-tour="prisma-ojo">
+              <summary>{tr("Más detalles", "More details")}: {prisma.ojo.titulo}</summary>
+              <div className="ojo-contenido">
+                <p className="prisma-texto">{prisma.ojo.texto}</p>
+                {grid ? <OjoInfrarrojo datos={datos} /> : <p className="prisma-vacio">{prisma.ojo.sinDatos}</p>}
+              </div>
+            </details>
           </div>
         </div>
       )}

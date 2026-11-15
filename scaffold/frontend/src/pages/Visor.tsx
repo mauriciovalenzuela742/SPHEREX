@@ -132,7 +132,7 @@ export default function Visor({ estado, set, asistido }: Props) {
       <details className="tarjeta mapa-ayuda">
         <summary>ⓘ {tr("Cómo usar el mapa", "How to use the map")}</summary>
         <ul>
-          <li>{tr("El fondo es el cielo de SPHEREx (todas sus fechas juntas) en un color de infrarrojo. El menú «Banda del mapa» y el panel «Longitud de onda» de abajo eligen cuál.", "The background is the SPHEREx sky (all its dates combined) in one infrared color. The “Map band” menu and the “Wavelength” panel below choose which.")}</li>
+          <li>{tr("El fondo es el cielo de SPHEREx (todas sus fechas juntas) en un color de infrarrojo. El menú «Banda del mapa» y las franjas D1–D6 de la «Huella espectral» (más abajo) eligen cuál.", "The background is the SPHEREx sky (all its dates combined) in one infrared color. The “Map band” menu and the D1–D6 strips of the “Spectral fingerprint” (further down) choose which.")}</li>
           <li>{tr("Arrastra para moverte; usa la rueda, el pellizco o − / + (abajo a la izquierda) para acercar o alejar.", "Drag to move around; use the scroll wheel, a pinch or − / + (bottom left) to zoom in or out.")}</li>
           <li>{tr("Haz clic en el cielo: el visor va a ese punto y la línea sobre «Explorar una zona al azar» dice si SIMBAD ya lo conoce.", "Click on the sky: the viewer moves to that point and the line above “Explore a random area” says whether SIMBAD already knows it.")}</li>
           <li>{tr("La marca es el objeto; el cuadrado punteado, el recorte que usan el Explorador y el Prisma; los círculos y la flecha, dónde estaba el objeto en cada época y hacia dónde se mueve.", "The marker is the object; the dashed square, the cutout the Explorer and the Prism use; the circles and the arrow, where the object was in each epoch and where it is heading.")}</li>
@@ -293,7 +293,7 @@ export default function Visor({ estado, set, asistido }: Props) {
               <Explorador datos={datos} />
             </div>
           </div>
-          <Prisma datos={datos} ra={estado.ra} dec={estado.dec} />
+          <Prisma datos={datos} ra={estado.ra} dec={estado.dec} banda={Number(estado.band)} onBanda={(b) => set({ band: String(b) })} />
           <Comentarios ra={estado.ra} dec={estado.dec} />
         </>
       )}

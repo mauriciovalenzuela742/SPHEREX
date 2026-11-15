@@ -76,3 +76,7 @@
 /* «Mostrar catálogos» encendido: en naranja y con ✓, para que se note que está activo. */
 button[data-tour="catalogos"][aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: #111; font-weight: 700; }
 button[data-tour="catalogos"][aria-pressed="true"]::before { content: "✓ "; }
+
+/* Propuesta «espectro único»: selector de los 102 canales plegado bajo el mapa. */
+.lambda-plegado > summary { cursor: pointer; font-size: 0.9rem; color: #a9b3cf; padding: 0.3rem 0; }
+.lambda-plegado[open] > summary { margin-bottom: 0.4rem; }

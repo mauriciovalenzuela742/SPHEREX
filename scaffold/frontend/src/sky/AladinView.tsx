@@ -197,9 +197,13 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
       </div>
       {/* Estado de cada catálogo (cargando / N objetos / no respondió + Reintentar) y su leyenda. */}
       {mostrarCatalogos && <PanelCatalogos />}
-      <div data-tour="lambda">
+      {/* Propuesta «espectro único»: la banda se elige en la Huella espectral (Prisma); los 102 canales quedan plegados. */}
+      <details className="lambda-plegado" data-tour="lambda">
+        <summary>
+          {tr("Más detalles: los 102 canales de longitud de onda", "More details: the 102 wavelength channels")}
+        </summary>
         <SelectorLambda plano={planoActivo} onPlano={elegirPlano} survey={SURVEY_SPHEREX} />
-      </div>
+      </details>
     </>
   );
 }

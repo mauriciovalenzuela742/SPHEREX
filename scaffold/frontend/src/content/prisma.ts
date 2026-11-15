@@ -56,7 +56,7 @@ export const prisma = {
     fechasDistintas: (n: number, desde: string, hasta: string) =>
       `Ojo: los puntos vienen de fotos de ${n} fechas distintas (${desde} a ${hasta}). Si el objeto cambia de ` +
       "brillo, el espectro mezcla momentos distintos.",
-    pista: "Pasa el mouse por un punto para ver esa foto en el explorador.",
+    pista: "Pasa el mouse por un punto para ver esa foto en el explorador. Haz clic en una franja D1–D6 (o en un punto) para ver esa banda en el mapa.",
     sospechosoCorto: "sospechoso",
     bordeSatCorto: "al borde de la saturación",
     bordeSat: (n: number) =>
@@ -215,7 +215,7 @@ export const prismaEN: typeof prisma = {
     fechasDistintas: (n: number, desde: string, hasta: string) =>
       `Note: the points come from photos taken on ${n} different dates (${desde} to ${hasta}). If the object ` +
       "changes brightness, the spectrum mixes different moments.",
-    pista: "Hover over a point to see that photo in the explorer.",
+    pista: "Hover over a point to see that photo in the explorer. Click a D1–D6 strip (or a point) to show that band on the map.",
     sospechosoCorto: "suspect",
     bordeSatCorto: "near saturation",
     bordeSat: (n: number) =>
