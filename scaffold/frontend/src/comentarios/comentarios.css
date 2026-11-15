@@ -15,5 +15,6 @@
 .com-contador { align-self: flex-end; font-size: 0.75rem; }
 .com-enviar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
 .com-nota { font-size: 0.8rem; color: var(--suave); }
-/* Campo trampa para bots: fuera de la pantalla, no con display:none (algunos bots lo detectan). */
-.com-trampa { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.com-objeto { color: var(--acento); font-weight: 600; }
+.com-local { font-size: 0.75rem; color: var(--acento); border: 1px solid var(--acento); border-radius: 4px; padding: 0 0.3rem; }
+.com-archivo { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(--borde); }
