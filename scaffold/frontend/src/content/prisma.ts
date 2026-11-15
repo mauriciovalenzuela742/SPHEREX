@@ -46,7 +46,7 @@ export const prisma = {
       `${n} ${n === 1 ? "punto tiene" : "puntos tienen"} píxeles saturados o sin dato en la apertura: van como △ ` +
       "en la franja de arriba («saturado»), sin altura, y no se usan para la forma.",
     todoSaturado:
-      "Demasiado brillante para medir con SPHEREx: todos los puntos están saturados. La franja de arriba solo " +
+      "Demasiado brillante para medir con SPHEREx: todos o casi todos los puntos están saturados. La franja de arriba solo " +
       "marca en qué colores hay fotos; el brillo real es mayor de lo que el detector registra.",
     unaBanda: (b: number) =>
       `Solo hay fotos de la banda D${b}: eso no alcanza para ver la forma del espectro. Carga las 6 bandas ` +
@@ -194,7 +194,7 @@ export const prismaEN: typeof prisma = {
       `${n} ${n === 1 ? "point has" : "points have"} saturated or missing pixels in the aperture: they are hollow △ ` +
       "in the top strip (“saturated”), with no height, and are not used for the shape.",
     todoSaturado:
-      "Too bright to measure with SPHEREx: every point is saturated. The top strip only marks which colors " +
+      "Too bright to measure with SPHEREx: every point, or nearly every point, is saturated. The top strip only marks which colors " +
       "have photos; the real brightness is higher than the detector records.",
     unaBanda: (b: number) =>
       `Only band D${b} has photos: that is not enough to see the shape of the spectrum. Load all 6 bands ` +

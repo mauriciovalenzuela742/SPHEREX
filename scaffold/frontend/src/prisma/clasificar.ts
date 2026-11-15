@@ -3,6 +3,7 @@
  * EXPORT ESTABLE: `clasificar(puntos)` también lo usarán los candidatos de CatWISE. No cambiar la firma.
  *
  * Solo se usan medidas no saturadas con S/N ≥ 3 (estado "medida"). Flujo en mJy (fν). Reglas, en orden:
+ *  0. En las bandas con tantos saturados como medidas, las medidas no se usan (al borde de la saturación).
  *  1. Indeterminado si todo está saturado, si hay medidas en menos de 3 bandas de SPHEREx o si no cubren
  *     al menos un factor 2 en λ (con una sola banda no se clasifica nada).
  *  2. Enana marrón: pico en ~3,9–4,5 µm (P), con depresión de metano en 2,8–3,6 µm (P/M ≥ 2) y poca luz bajo
@@ -18,7 +19,7 @@ export type PuntoClasif = { lam: number; mJy: number; err: number; estado: strin
 export type Tipo = "estrella" | "estrella_joven_polvo" | "enana_marron" | "indeterminado";
 export type Clasificacion = { tipo: Tipo; confianza: "baja" | "media"; motivo: string };
 
-const BANDAS: [number, number][] = [[0.74, 1.1], [1.1, 1.63], [1.63, 2.42], [2.42, 3.83], [3.83, 4.42], [4.42, 5.1]];
+const BANDAS: [number, number][] = [[0.7, 1.1], [1.1, 1.63], [1.63, 2.42], [2.42, 3.83], [3.83, 4.42], [4.42, 5.1]];
 const REG = { S: [0.74, 1.5], K: [1.5, 2.5], M: [2.8, 3.6], P: [3.9, 4.5], L: [4.5, 5.1] } as const;
 
 function mediana(a: number[]): number {
@@ -51,10 +52,16 @@ export function clasificar(puntos: PuntoClasif[], idioma: "es" | "en" = "es"): C
   const ind = (motivo: string): Clasificacion => ({ tipo: "indeterminado", confianza: "baja", motivo });
 
   if (!puntos.length) return ind(tr("No hay puntos.", "No points."));
-  const ok = puntos.filter((p) => p.estado === "medida" && p.mJy > 0 && p.err > 0 && p.mJy / p.err >= 3 && Number.isFinite(p.lam));
-  const nSat = puntos.filter((p) => p.estado === "saturado").length;
+  const medidas = puntos.filter((p) => p.estado === "medida" && p.mJy > 0 && p.err > 0 && p.mJy / p.err >= 3 && Number.isFinite(p.lam));
+  const sat = puntos.filter((p) => p.estado === "saturado");
+  const nSat = sat.length;
+  // En una banda con tantos saturados como medidas, las medidas están al borde de la saturación y
+  // probablemente subestimadas (Barnard en D1): no se usan.
+  const enBanda = (p: PuntoClasif, [a, z]: [number, number]) => p.lam >= a && p.lam < z;
+  const dudosas = BANDAS.filter((b) => sat.filter((p) => enBanda(p, b)).length >= medidas.filter((p) => enBanda(p, b)).length);
+  const ok = medidas.filter((p) => BANDAS.some((b) => enBanda(p, b)) && !dudosas.some((b) => enBanda(p, b)));
   if (!ok.length && nSat > 0)
-    return ind(tr("Todo está saturado: es demasiado brillante para medir su forma.", "Everything is saturated: too bright to measure its shape."));
+    return ind(tr("Todo o casi todo está saturado: es demasiado brillante para medir su forma.", "Everything or nearly everything is saturated: too bright to measure its shape."));
   const bandas = BANDAS.filter(([a, z]) => ok.some((p) => p.lam >= a && p.lam < z)).length;
   const lams = ok.map((p) => p.lam);
   const cubre = lams.length ? Math.max(...lams) / Math.min(...lams) : 0;

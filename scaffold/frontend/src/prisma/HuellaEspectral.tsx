@@ -102,7 +102,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
   const nDebil = todosPuntos.filter((p) => p.estado === "limite").length;
   const nSat = todosPuntos.filter((p) => p.estado === "saturado").length;
   const nSosp = todosPuntos.filter((p) => p.sospechoso).length;
-  const todoSaturado = todosPuntos.length > 0 && nSat === todosPuntos.length;
+  const todoSaturado = todosPuntos.length > 0 && nSat >= 0.9 * todosPuntos.length;
   const bandasConPuntos = new Set(todosPuntos.map((p) => p.banda));
   const unaBanda = bandasConPuntos.size === 1 ? [...bandasConPuntos][0] : 0;
   const fechas = [...new Set(todosPuntos.map((p) => p.fecha))].sort();
