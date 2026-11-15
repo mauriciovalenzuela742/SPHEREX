@@ -1,23 +1,24 @@
 /** Portada de AstroTRACK. Dueña del layout: Antonia (V1); textos: Javiera (N). */
-import { textos } from "../content/textos";
+import { useIdioma } from "../state/idioma";
 import { mision } from "../content/mision";
 
 type Props = { onEmpezar: () => void; onMision: () => void; onTutorial: () => void };
 
 export default function Landing({ onEmpezar, onMision, onTutorial }: Props) {
+  const { t, idioma } = useIdioma();
   return (
     <section className="landing">
-      <h1>{textos.bienvenida}</h1>
-      <h2>¿Qué somos?</h2>
-      <p className="lead">{textos.queSomos}</p>
+      <h1>{t.bienvenida}</h1>
+      <h2>{idioma === "es" ? "¿Qué somos?" : "What are we?"}</h2>
+      <p className="lead">{t.queSomos}</p>
 
       <div className="acciones">
         <button className="primario" onClick={onTutorial}>
-          {textos.empecemosTutorial}
+          {t.empecemosTutorial}
         </button>
-        <button onClick={onEmpezar}>{textos.empecemos}</button>
+        <button onClick={onEmpezar}>{t.empecemos}</button>
       </div>
-      <p className="nota">{textos.tutorialAyuda}</p>
+      <p className="nota">{t.tutorialAyuda}</p>
 
       <div className="mision-invitacion">
         <p className="mision-etiqueta">{mision.nombre}</p>

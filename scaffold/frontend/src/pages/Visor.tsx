@@ -1,5 +1,6 @@
 /**
- * Pantalla 3 de la pizarra («Planet X»). Dueña: Antonia (V1).
+ * Pantalla 3 de la pizarra: el visor de AstroTRACK (en la pizarra se llamaba «Planet X»; ya no se usa ese nombre).
+ * Dueña: Antonia (V1).
  * Hoy: controles conectados a la URL + cielo de SPHEREx en Aladin (Vía A).
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
@@ -90,13 +91,28 @@ export default function Visor({ estado, set, asistido }: Props) {
       <div className={enMision ? "cuerpo cuerpo-mision" : "cuerpo"}>
         <div className="principal">
           {/* Arriba del mapa: así se ve justo después de escribir A.R./Dec o elegir la dimensión. */}
-          <button
-            className="encuadrar"
-            onClick={encuadrar}
-            title={`Vuelve al objeto y a la dimensión elegida (${estado.size}°)`}
-          >
-            ⤢ Encuadrar el recorte
-          </button>
+          <div className="sobre-mapa">
+            <button
+              className="encuadrar"
+              onClick={encuadrar}
+              title={`Vuelve al objeto y a la dimensión elegida (${estado.size}°)`}
+            >
+              ⤢ Encuadrar el recorte
+            </button>
+            {/* Tarea #14: el mismo punto en WiseView, la herramienta que el desafío nombra como modelo
+                (biblio/fichas/wiseview-el-precedente.md). Diferencia con AstroTRACK: WiseView hace parpadear
+                WISE/NEOWISE (2010–2024, 4 bandas anchas) y sirve para ver bien el movimiento en años;
+                AstroTRACK hace lo mismo con SPHEREx y suma el eje de longitud de onda (102 canales). */}
+            <a
+              className="wiseview"
+              href={`http://byw.tools/wiseview#ra=${estado.ra.toFixed(5)}&dec=${estado.dec.toFixed(5)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Abre estas coordenadas en WiseView (parpadeo de WISE/NEOWISE, 2010–2024) en otra pestaña"
+            >
+              Ver en WiseView ↗
+            </a>
+          </div>
           <AladinView
             ra={estado.ra}
             dec={estado.dec}

@@ -1,15 +1,23 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd scaffold/frontend && npm install && npm run build",
+  "installCommand": "cd scaffold/frontend && npm ci",
+  "buildCommand": "cd scaffold/frontend && npm run build",
   "outputDirectory": "scaffold/frontend/dist",
+  "framework": null,
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://spherex-api.vercel.app/api/:path*"
+    },
     {
       "source": "/proto-api/:path*",
       "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
-    },
-    {
-      "source": "/api/:path*",
-      "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "**": false
+    }
+  }
 }
