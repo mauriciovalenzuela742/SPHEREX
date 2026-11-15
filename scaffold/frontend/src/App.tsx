@@ -4,7 +4,7 @@ import Landing from "./pages/Landing";
 import Visor from "./pages/Visor";
 import Tutorial from "./tutorial/Tutorial";
 import { useEstadoUrl, type Estado } from "./state/url";
-import { textos } from "./content/textos";
+import { useIdioma } from "./state/idioma";
 import { CAMPOS, posicionActual } from "./content/campos";
 import "./styles.css";
 
@@ -26,6 +26,7 @@ function marcarVisto() {
 
 export default function App() {
   const { estado, set } = useEstadoUrl();
+  const { t, idioma, cambiar } = useIdioma();
   const [asistido] = useState(false);
   const [menu, setMenu] = useState(false);
 
@@ -39,19 +40,39 @@ export default function App() {
     <div className="app">
       <header>
         <button className="marca" onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>
-          {textos.titulo}
+          {t.titulo}
         </button>
         <span className="etiqueta">NASA Space Apps 2026</span>
+
+        {/* Selector de idioma */}
+        <div className="selector-idioma">
+          <button
+            onClick={() => cambiar("es")}
+            className={idioma === "es" ? "activo" : ""}
+            title="Español"
+          >
+            ES
+          </button>
+          <span>|</span>
+          <button
+            onClick={() => cambiar("en")}
+            className={idioma === "en" ? "activo" : ""}
+            title="English"
+          >
+            EN
+          </button>
+        </div>
+
         <button className="hamburguesa" data-tour="menu" aria-label="Menú" aria-expanded={menu} onClick={() => setMenu(!menu)}>
           ☰
         </button>
         {menu && (
           <nav className="menu" onClick={() => setMenu(false)}>
-            <button onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>Inicio</button>
-            <button onClick={() => set({ vista: "visor", mision: undefined, tutorial: undefined })}>Visor</button>
-            <button onClick={() => set({ vista: "visor", mision: "intro", tutorial: undefined })}>Modo Misión</button>
-            <button onClick={abrirTutorial}>Ver tutorial</button>
-            <a href="https://github.com/mauriciovalenzuela742/SPHEREX">Repositorio</a>
+            <button onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>{t.inicio}</button>
+            <button onClick={() => set({ vista: "visor", mision: undefined, tutorial: undefined })}>{t.visor}</button>
+            <button onClick={() => set({ vista: "visor", mision: "intro", tutorial: undefined })}>{t.modoMision}</button>
+            <button onClick={abrirTutorial}>{t.verTutorial}</button>
+            <a href="https://github.com/mauriciovalenzuela742/SPHEREX">{t.repositorio}</a>
           </nav>
         )}
       </header>
@@ -66,7 +87,7 @@ export default function App() {
           <Visor estado={estado} set={set} asistido={asistido} />
         )}
       </main>
-      <footer>{textos.atribucion}</footer>
+      <footer>{t.atribucion}</footer>
 
       {estado.vista === "visor" && estado.tutorial && !estado.mision && (
         <Tutorial
