@@ -103,26 +103,33 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
       escalas.current.set(b, escalaDe(deBanda));
     };
 
+    // Fotos precalculadas del objeto (public/precalc/explorador/). `estricto`: solo con la configuración de siempre.
+    const usarPrecalc = async (estricto: boolean): Promise<boolean> => {
+      if (!preset) return false;
+      try {
+        const r = await fetch(`/precalc/explorador/${preset.id}.json`, { signal: ctl.signal });
+        const p: Precalc | null = r.ok ? await r.json() : null;
+        if (gen !== generacion.current || !p) return false;
+        if (p.size !== size || p.banda !== preset.banda || distanciaArcsec(ra, dec, p.ra, p.dec) >= 3) return false;
+        if (estricto && p.porVisita !== porVisita) return false;
+        const vs = p.grid.visits[p.banda] ?? [];
+        vs.forEach((_, v) => p.frames[clave(p.banda, v)] && guardar(p.banda, v, p.frames[clave(p.banda, v)]));
+        setGrid(p.grid);
+        setBanda(p.banda);
+        setVisita(Math.max(0, vs.length - 1));
+        setProg({ hechos: vs.length, total: vs.length, errores: 0 });
+        setVersion((x) => x + 1);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
+
     const t = window.setTimeout(async () => {
       // Objeto con preset y la configuración de siempre: fotos precalculadas, sin consultar IRSA.
       if (preset && cargar.length === 1 && cargar[0] === preset.banda && porVisita === preset.porVisita && desde === DESDE && hasta === hoy()) {
-        try {
-          const r = await fetch(`/precalc/explorador/${preset.id}.json`, { signal: ctl.signal });
-          const p: Precalc | null = r.ok ? await r.json() : null;
-          if (gen !== generacion.current) return;
-          if (p && p.size === size && p.banda === preset.banda && p.porVisita === porVisita && distanciaArcsec(ra, dec, p.ra, p.dec) < 3) {
-            const vs = p.grid.visits[p.banda] ?? [];
-            vs.forEach((_, v) => p.frames[clave(p.banda, v)] && guardar(p.banda, v, p.frames[clave(p.banda, v)]));
-            setGrid(p.grid);
-            setBanda(p.banda);
-            setVisita(Math.max(0, vs.length - 1));
-            setProg({ hechos: vs.length, total: vs.length, errores: 0 });
-            setVersion((x) => x + 1);
-            return;
-          }
-        } catch (e) {
-          if ((e as Error).name === "AbortError") return;
-        }
+        if (await usarPrecalc(true)) return;
+        if (gen !== generacion.current) return;
       }
 
       let g: Grid;
@@ -130,7 +137,11 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
         const r = await fetch(`${API}/grid?${new URLSearchParams({ ...base, bands: bandas })}`, { signal: ctl.signal });
         g = await leerJson(r); // con error, lanza un mensaje legible (no «[object Object]»)
       } catch (e) {
-        if (gen === generacion.current && (e as Error).name !== "AbortError") setMensaje(mensajeDeError(e));
+        if (gen !== generacion.current || (e as Error).name === "AbortError") return;
+        // IRSA no responde: si el objeto trae fotos precalculadas (su banda, mediana de 10 por visita), se muestran
+        // esas en vez del error. Lo usa la vista simple, que pide las 6 bandas y nunca entraba al caso de arriba.
+        if (await usarPrecalc(false)) return;
+        if (gen === generacion.current) setMensaje(mensajeDeError(e));
         return;
       }
       if (gen !== generacion.current) return;

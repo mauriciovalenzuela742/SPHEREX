@@ -142,3 +142,6 @@
 .lmp-m-est { border-color: #6ecbff !important; }
 .lmp-m-obj { border-color: var(--acento) !important; border-style: dashed !important; }
 .lmp-tabla .lmp-destacada td, .lmp-tabla .lmp-destacada th { color: var(--acento); font-weight: 600; }
+
+/* Aviso: visita con 1–2 exposiciones (la mediana no limpia rayos cósmicos). */
+.exp-aviso-pocas { margin: 8px 0 0; padding: 6px 8px; font-size: 12px; line-height: 1.4; color: #ffd27a; background: rgba(245, 166, 35, 0.1); border-left: 3px solid #f5a623; border-radius: 4px; }

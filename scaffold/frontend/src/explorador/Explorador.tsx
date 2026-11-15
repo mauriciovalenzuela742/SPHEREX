@@ -465,6 +465,14 @@ export default function Explorador({ datos }: Props) {
                 <div key={k} className="exp-info-fila"><dt>{k}</dt><dd>{x}</dd></div>
               ))}
             </dl>
+            {actual && actual.meta.n_stacked <= 2 && (
+              <p className="exp-aviso-pocas">
+                {tr(
+                  `Solo ${actual.meta.n_stacked} ${actual.meta.n_stacked === 1 ? "foto" : "fotos"} en esta visita: la mediana no puede quitar rayos cósmicos ni píxeles calientes. Un punto que aparece solo aquí probablemente no es real.`,
+                  `Only ${actual.meta.n_stacked} ${actual.meta.n_stacked === 1 ? "exposure" : "exposures"} in this visit: the median cannot remove cosmic rays or hot pixels. A spot that shows up only here is probably not real.`,
+                )}
+              </p>
+            )}
           </div>
         )}
 

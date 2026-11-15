@@ -1,79 +1,148 @@
-title: AstroTRACK finds WISE 0855 moving, from the simple view to the science tools
-# Grabado del producto real (main, PR #65) corrido en local con vite.demo.config.ts: las respuestas del servidor de
-# fotos quedan en disco para que no haya esperas. Mismos datos que entrega el servidor de producción.
-url: http://localhost:5191/?vista=visor
+title: AstroTRACK, from blinking photos to a brown dwarf's spectrum
+# Grabado de la app real (main #65 + los arreglos de la rama c/pitch-alternativa) corrida en local con
+# vite.demo.config.ts. Se graba con una copia local del grabador del kit que deja encuadrar un elemento distinto del
+# que se cliquea (frame/frac/pad): tools/demo_pitch.py. Ejemplos elegidos tras revisarlos uno por uno:
+# - Epsilon Indi B: par rojo/azul nítido en A − B (vista simple y Explorador) y ficha «parece una enana marrón».
+#   Sus fotos vienen del precalculado del sitio (IRSA estaba caído al grabar, 15-nov 07:00).
+# - Barnard: en el mapa, la estrella aparece dentro de cada aro (2MASS ~2000, AllWISE 2010, SPHEREx 2026).
+# Se evita la fecha oct-nov 2025 de eps Ind B: trae marcas de rayos cósmicos.
+url: "http://localhost:5191/?ra=331.098404&dec=-56.801258&size=0.1&band=4"
+init_script: "localStorage.setItem('astrotrack.idioma','en');localStorage.setItem('astrotrack.tutorial.visto','1')"
 viewport: [1600, 900]
 output: figures/demo_pitch
 label: "Real app · local copy · cached data"
 lang: en
 steps:
-  - click: ".simple-idioma button:nth-child(2)"
-    caption: "Anyone can start: the sky, in SPHEREx photos"
-    wait: 2500
-    hold: 1200
-    zoom: false
-  - click: ".simple-chips button:has-text('WISE 0855')"
-    caption: "Pick WISE 0855, the coldest brown dwarf known"
-    wait: 3500
-    hold: 1400
-  - click: ".luz-lejana"
-    caption: "Far infrared (3.8–5 µm): where cold objects glow"
-    wait: 1200
-    hold: 1300
-  - click: ".simple-fechas button:nth-child(2)"
-    caption: "May 2025…"
-    wait: 900
-    hold: 900
-  - click: ".simple-fechas button:nth-child(4)"
-    caption: "…one year later"
-    wait: 900
-    hold: 900
-  - click: ".simple-fechas button:nth-child(2)"
-    caption: "Blink the dates, like volunteers do"
-    wait: 700
-    hold: 700
-  - click: ".simple-fechas button:nth-child(4)"
-    caption: "Blink the dates, like volunteers do"
-    wait: 700
-    hold: 700
-  - click: ".interruptor-ciencia"
-    caption: "One switch opens the full science tools"
-    wait: 6000
-    hold: 1200
-    zoom: false
-  - zoom: ".aladin-container"
-    caption: "Its path on the sky: 2MASS 1998 → WISE 2010 → SPHEREx 2025"
-    hold: 2400
-  - click: ".dupla-mapa button:has-text('2MASS')"
-    zoom: false
-    wait: 3500
-    hold: 150
-  - zoom: ".aladin-container"
-    caption: "Same spot in 1998 (2MASS): too cold to show up"
-    hold: 1300
-  - click: ".dupla-mapa button:has-text('AllWISE')"
-    zoom: false
-    wait: 3500
-    hold: 150
-  - zoom: ".aladin-container"
-    caption: "2010 (WISE, 4.6 µm): there it is"
-    hold: 1300
-  - click: ".dupla-mapa button:has-text('SPHEREx 2025')"
-    zoom: false
-    wait: 3000
-    hold: 150
-  - zoom: ".aladin-container"
-    caption: "2025–26 (SPHEREx): it keeps moving"
-    hold: 1400
-  - zoom: ".exp-escena canvas"
-    caption: "Median of 10 exposures, last visit minus first: blue = where it was, red = where it is"
-    hold: 3200
-  - scroll: ".huella"
-    caption: "Its spectrum from SPHEREx's 102 colors"
-    hold: 1800
-  - zoom: ".ficha"
-    caption: "Clean measurements only at 3.8–4.8 µm, where WISE 0855 gives off almost all its light"
-    hold: 3000
-  - view: full
-    caption: "Real NASA data, in any browser, free"
-    hold: 2000
+- caption: ''
+  wait: 4000
+  hold: 100
+  zoom: false
+- click: .simple-aviso button
+  caption: 'Anyone can start: a SPHEREx photo of Epsilon Indi B, a nearby brown dwarf'
+  zoom: false
+  wait: 1500
+  hold: 2200
+- click: .simple-fechas button:nth-child(2)
+  frame: .simple-imagen
+  frac:
+  - 0
+  - 0
+  - 1
+  - 1.13
+  pad: 1.05
+  caption: Spring 2025…
+  wait: 500
+  hold: 1100
+- click: .simple-fechas button:nth-child(5)
+  frame: .simple-imagen
+  frac:
+  - 0
+  - 0
+  - 1
+  - 1.13
+  pad: 1.05
+  caption: '…and October 2026: a small shift, about one pixel'
+  wait: 500
+  hold: 1500
+- click: .simple-fechas button:nth-child(2)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-ab button:nth-child(2)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-fechas button:nth-child(5)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-ab button:nth-child(3)
+  frame: .simple-centro
+  pad: 1.0
+  caption: Subtract them to see it clearly
+  wait: 300
+  hold: 250
+- click: .simple-ab-ver
+  frame: .simple-imagen
+  pad: 1.05
+  caption: 'A − B: red where it was in 2025, blue where it is in 2026. It moved.'
+  wait: 700
+  hold: 2600
+- click: .interruptor-ciencia
+  caption: One switch opens the science tools
+  zoom: false
+  wait: 9000
+  hold: 1300
+- zoom: .exp-escena canvas
+  pad: 1.25
+  caption: 'Median of 10 exposures per visit: the same motion, measured'
+  hold: 2400
+- zoom: .huella
+  pad: 1.08
+  caption: 'Its spectrum in 102 colors: dips where water and methane absorb'
+  hold: 2800
+- zoom: .ficha
+  frame: .ficha
+  frac:
+  - 0
+  - 0
+  - 0.6
+  - 1
+  pad: 1.1
+  caption: 'The tool''s reading: it looks like a brown dwarf'
+  hold: 2600
+- click: .objetos button:has-text('Barnard')
+  caption: 'Any star has a history: Barnard''s Star'
+  zoom: false
+  wait: 6000
+  hold: 500
+- zoom: .dupla-mapa button:has-text('2MASS')
+  frame: .aladin-container
+  frac:
+  - 0.25
+  - 0.28
+  - 0.5
+  - 0.66
+  pad: 1.05
+  nobox: true
+  caption: 'Circles: where it should be in each survey'
+  hold: 1800
+- click: .dupla-mapa button:has-text('2MASS')
+  frame: .aladin-container
+  frac:
+  - 0.25
+  - 0.28
+  - 0.5
+  - 0.66
+  pad: 1.05
+  wait: 8000
+  caption: '~2000 (2MASS): in the pink circle'
+  hold: 1700
+- click: .dupla-mapa button:has-text('AllWISE')
+  frame: .aladin-container
+  frac:
+  - 0.25
+  - 0.28
+  - 0.5
+  - 0.66
+  pad: 1.05
+  wait: 8000
+  caption: '2010 (WISE): in the yellow one'
+  hold: 1700
+- click: .dupla-mapa button:has-text('SPHEREx 2025')
+  frame: .aladin-container
+  frac:
+  - 0.25
+  - 0.28
+  - 0.5
+  - 0.66
+  pad: 1.05
+  wait: 6000
+  caption: '2026 (SPHEREx): still moving. Real NASA data, free, in any browser'
+  hold: 2600

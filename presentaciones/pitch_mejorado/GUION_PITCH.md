@@ -8,25 +8,26 @@ Las láminas están en inglés (jurado NASA) y el guion hablado en español, igu
 | Archivo | Qué es |
 |---|---|
 | `astrotrack_pitch.html` | Presentación alternativa, con el estilo de tu Canva (mismas imágenes y colores). Doble clic para abrir |
-| `figures/demo_pitch.mp4` | Video de la demo, **47 s**, mudo, con subtítulos en inglés. Va en la lámina 4 de la versión alternativa |
-| `figures/demo_corto.mp4` | Corte de **~30 s** del mismo video, para tu lámina 4 («video») si te quedas con tu guion |
+| `figures/demo_pitch.mp4` | Video de la demo, **46 s**, mudo, con subtítulos en inglés. Va en la lámina 4 de la versión alternativa |
+| `figures/demo_corto.mp4` | Corte de **28 s** (vista simple, resta, espectro y ficha de Epsilon Indi B), para tu lámina 4 («video») si te quedas con tu guion |
 | `demo.yml`, `demo_corto.yml` | La receta de cada video (para regrabarlos) |
 
 **Teclas de la presentación:** → o espacio avanza · ← retrocede · **N** muestra el guion debajo · **T** cronómetro
 (se pone rojo después de 2:00) · **F** pantalla completa · **V** pausa el video. El video parte solo al llegar a la
 lámina 4.
 
-**Sobre el video:** es la aplicación real (lo que está en main) grabada en el PC de JP. Las respuestas del servidor de
-fotos quedaron guardadas en disco para que la grabación no espere las descargas (el servidor tarda ~20 s y a veces
-falla). Es lo esperable en una demo de hackatón y el rótulo del video lo dice: «Real app · local copy · cached data».
+**Sobre el video:** es la aplicación real grabada en el PC de JP, con los arreglos de esta rama. Las fotos de Epsilon
+Indi B salen de los datos precalculados del sitio, porque IRSA estuvo caído (error 502) al grabar; las de 2MASS y WISE
+del mapa sí se cargaron en vivo. El rótulo del video lo dice: «Real app · local copy · cached data».
 
 ## Qué cambia respecto de tu versión, y por qué
 
 1. **Una sola pregunta al inicio.** La de vida extraterrestre no conecta con lo que mostramos y cuesta 4 segundos.
    «¿Quién podría descubrir una estrella que nadie conoce?» lleva directo a Backyard Worlds.
-2. **La demo es un video de 47 s y lo protagoniza WISE 0855,** que está en el enunciado del desafío. Muestra lo que
-   tu penúltima lámina promete: comparar fechas, la luz infrarroja, el recorrido desde 1998, la resta rojo/azul y el
-   espectro.
+2. **La demo es un video de 46 s con ejemplos que se ven:** Epsilon Indi B (se mueve un píxel entre 2025 y 2026; la
+   resta A − B lo deja clarísimo; su espectro muestra agua y metano y la ficha dice «parece una enana marrón») y la
+   Estrella de Barnard en el mapa (aparece dentro de cada aro: 2000, 2010 y 2026). Cada ejemplo se probó antes de
+   grabar; WISE 0855 quedó fuera del video porque en las fotos casi no se distingue y su ficha no concluye nada.
 3. **La penúltima lámina queda como imagen fija** (tenías razón: hace falta algo que se quede en la cabeza), pero
    agrega **el resultado científico**: con imágenes de SPHEREx solamente, medimos que WISE 0855 se movió
    **8,67″ ± 0,66″ en un año (lo predicho es 8,04″)**. Es lo que separa a AstroTRACK de un juguete ante un jurado
@@ -55,19 +56,17 @@ fotografía todo el cielo cada seis meses, en 102 colores infrarrojos. Lo que fa
 «¿Y a Chile le importa? Tenemos telescopios gigantes, pero solo el 7,5 % de quienes estudian STEM elige ciencias
 naturales o matemáticas.»
 
-**Lámina 4 · Demo en video (0:37–1:24)** — *el video corre solo; habla siguiendo los subtítulos*
-- *(subtítulo «Anyone can start»)* «Por eso creamos AstroTRACK. Entras y eliges un objeto:
-- *(«Pick WISE 0855»)* WISE 0855, la enana marrón más fría que se conoce.
-- *(«Far infrared»)* Cambias a la luz lejana, donde brillan los objetos fríos,
-- *(fechas)* y comparas fechas, como hacían los voluntarios.
-- *(«One switch»)* Con un interruptor se abre lo científico:
-- *(«Its path on the sky»)* su recorrido desde 1998.
-- *(«1998, 2MASS»)* En 2MASS no aparece: es demasiado fría.
-- *(«2010, WISE»)* En WISE, sí.
-- *(«2025–26»)* Y en SPHEREx sigue avanzando.
-- *(«Median of 10 exposures»)* Restamos la última visita menos la primera: azul donde estaba, rojo donde está.
-- *(«Its spectrum»)* Y con los 102 colores armamos su espectro:
-- *(«Clean measurements»)* casi toda su luz sale entre 3,8 y 4,8 micras.»
+**Lámina 4 · Demo en video (0:37–1:24)** — *el video corre solo (46 s); habla siguiendo los subtítulos*
+- *(«Anyone can start»)* «Por eso creamos AstroTRACK. Cualquiera entra y ve una foto de SPHEREx: Epsilon Indi B, una
+  enana marrón cercana.
+- *(«Spring 2025… October 2026»)* Primavera de 2025… y octubre de 2026: se corrió apenas un píxel.
+- *(«A − B»)* Si restamos las dos fechas se ve clarísimo: rojo donde estaba, azul donde está. Se movió.
+- *(«One switch»)* Con un interruptor se abren las herramientas científicas:
+- *(«Median of 10 exposures»)* la misma resta, con la mediana de diez fotos por visita.
+- *(«Its spectrum»)* Con los 102 colores armamos su espectro: tiene huecos donde absorben el agua y el metano,
+- *(«The tool's reading»)* y la herramienta lo lee: parece una enana marrón.
+- *(«Barnard's Star»)* Y cualquier estrella tiene historia: la de Barnard,
+- *(2MASS, WISE, SPHEREx)* en 2000, en 2010 y hoy, siempre avanzando.»
 
 **Lámina 5 · Lo que puedes hacer + resultado (1:24–1:44)**
 «Y no es un juguete. Solo con imágenes de SPHEREx, sin catálogos, medimos que WISE 0855 se movió 8,7 segundos de
@@ -87,11 +86,12 @@ Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)
    sky every six months in 102 infrared colors. What was missing was the tool.»
 3. «Does Chile care? We host some of the largest telescopes on Earth, yet only 7.5% of STEM students choose natural
    sciences or math.»
-4. *(video)* «So we built AstroTRACK. You pick a target: WISE 0855, the coldest brown dwarf known. Switch to far
-   infrared, where cold objects glow, and blink the dates, like the volunteers did. One switch opens the science
-   tools: its path since 1998. Invisible to 2MASS — too cold. Visible to WISE. Still moving in SPHEREx. Last visit
-   minus first: blue where it was, red where it is. And from 102 colors, its spectrum: almost all its light comes out
-   between 3.8 and 4.8 microns.»
+4. *(video)* «So we built AstroTRACK. Anyone opens a SPHEREx photo: Epsilon Indi B, a nearby brown dwarf. Spring
+   2025… and October 2026: it shifted by just one pixel. Subtract the two dates and it's obvious: red where it was,
+   blue where it is. It moved. One switch opens the science tools: the same subtraction, with the median of ten
+   exposures per visit. From 102 colors we build its spectrum: dips where water and methane absorb, and the tool reads
+   it: it looks like a brown dwarf. And every star has a history: Barnard's Star in 2000, in 2010 and today, always
+   moving.»
 5. «And it's not a toy. Using SPHEREx images alone, no catalogs, we measured WISE 0855 moving 8.7 arcseconds in one
    year; physics predicts 8.0. Anyone can explore and earn a badge, Spherix explains each step, and anyone who wants
    can do real science.»
@@ -100,12 +100,8 @@ Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)
 
 ## Si te quedas con tu versión
 
-- **Video para tu lámina 4:** `figures/demo_corto.mp4` (~30 s). Tu texto de las láminas 4 y 5 (0:42–1:15) calza
-  con él si lo dices al ritmo de los subtítulos.
-- **Tu frase de Epsilon Indi B** («encuentra el metano y el agua… se parece a una enana marrón») viene de la captura
-  del equipo en `docs/pitch/img/ciencia_espectro_enana_marron.png`. En el video corto el objeto es WISE 0855, cuya
-  ficha dice «no se puede decir con estos datos» (honesto: es demasiado débil bajo 3,5 µm). Si usas el video, conviene
-  decir «arma su espectro» sin prometer la clasificación.
+- **Video para tu lámina 4:** `figures/demo_corto.mp4` (28 s). Calza con tu frase de Epsilon Indi B: muestra el
+  movimiento, el espectro con agua y metano y la ficha «parece una enana marrón».
 - **Correcciones de texto** en el Canva: las del punto 4 de arriba.
 
 ## Si el jurado pregunta (respuestas de 15 s)
@@ -113,7 +109,7 @@ Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)
 | Pregunta | Respuesta |
 |---|---|
 | ¿El 8,67″ es un resultado o una demo? | «Un resultado: 258 exposiciones reales de SPHEREx, sin catálogos. Coincide con lo predicho dentro del error. Los umbrales los ajustamos con este mismo campo, así que falta probarlo en otros.» |
-| ¿Por qué el video y no en vivo? | «La app está en vivo en el QR. El servidor de IRSA tarda; el video guarda las respuestas para no esperar, con los mismos datos.» |
+| ¿Por qué el video y no en vivo? | «La app está en vivo en el QR. IRSA a veces tarda o se cae (esta mañana estuvo caído); el video usa datos guardados, los mismos que entrega IRSA.» |
 | ¿En qué se diferencia de Backyard Worlds? | «Ellos usaban WISE, que se apagó, con 4 colores. Nosotros usamos SPHEREx, que sigue observando, con 102 colores y espectro.» |
 | ¿Qué tan exacto es el espectro? | «Aproximado y lo decimos en pantalla: sirve para ver la forma. Para fotometría fina está la herramienta de IRSA.» |
 
@@ -124,5 +120,5 @@ Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)
 - 7,5 % y 193 mil → 354 mil: Minuta 24 OPPES-USACH (2024), pp. 4 y 6.
 - 8,67″ ± 0,66″ vs 8,04″: `docs/hallazgos/huella_espectral_wise0855.md` (PR #58), figura
   `docs/hallazgos/img/huella_espectral_fig2_posiciones_en.png`.
-- «Mediana de 10 exposiciones», «medidas buenas solo entre 3,8 y 4,8 µm»: lo que muestra la propia aplicación en el
-  video.
+- «Mediana de 10 exposiciones», «parece una enana marrón», los huecos de agua y metano: lo que muestra la propia
+  aplicación en el video (fotos precalculadas de Epsilon Indi B en `scaffold/frontend/public/precalc/`).
