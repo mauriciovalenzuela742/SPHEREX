@@ -22,6 +22,8 @@ export const TAMANOS = [0.05, 0.1, 0.2, 0.5];
 export const TAMANO_MAX = TAMANOS[TAMANOS.length - 1];
 // Un enlace viejo (?size=1) o Spherix pueden pedir más: se recorta al máximo en vez de dejar que el servidor falle.
 const tamanoValido = (s: number) => (s > 0 ? Math.min(s, TAMANO_MAX) : 0.1);
+// Banda del mapa: solo D1–D6. «all» ya no existe (mostraba solo D2): un enlace viejo con band=all abre la de por defecto.
+const bandaValida = (b: string | null, d: string) => (b && /^[1-6]$/.test(b) ? b : d);
 
 // Por defecto, Epsilon Indi B en su posición de hoy: el movimiento que el EDA midió con datos reales.
 const EPS_IND_B = posicionActual(CAMPOS.find((c) => c.id === "eps_ind_b")!);
@@ -37,7 +39,7 @@ function leer(): Estado {
     ra: num("ra", DEFECTO.ra),
     dec: num("dec", DEFECTO.dec),
     size: tamanoValido(num("size", DEFECTO.size)),
-    band: q.get("band") ?? DEFECTO.band,
+    band: bandaValida(q.get("band"), DEFECTO.band),
     vista: q.has("ra") || q.has("mision") || q.has("tutorial") || q.get("vista") === "visor" ? "visor" : "landing",
     mision: q.get("mision") ?? undefined,
     tutorial: q.get("tutorial") === "1" || undefined,

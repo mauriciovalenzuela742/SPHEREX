@@ -18,7 +18,7 @@ import PanelCatalogos from "./capas/PanelCatalogos";
 import { crearRepartidor, type Suscribir } from "./eventos";
 import ControlEpocas from "./Epocas";
 import SelectorLambda from "./SelectorLambda";
-import { ponerPlano, SURVEY_SPHEREX } from "./planos";
+import { bandaDePlano, planoDeBanda, ponerPlano, SURVEY_SPHEREX } from "./planos";
 import { epocaDeFecha } from "./propagacion";
 import { useIdioma } from "../state/idioma";
 
@@ -47,9 +47,11 @@ type Props = {
   onReady?: (aladin: any) => void;
   /** Clic en el cielo (o en una estrella): posición elegida, en grados ICRS. */
   onSelect?: (ra: number, dec: number) => void;
+  /** El selector de λ eligió un canal de otra banda (1–6): para que el menú «Banda del mapa» del visor la siga. */
+  onBanda?: (banda: number) => void;
 };
 
-export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA_POR_DEFECTO, onReady, onSelect }: Props) {
+export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA_POR_DEFECTO, onReady, onSelect, onBanda }: Props) {
   const { tr } = useIdioma();
   const div = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,6 +71,10 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
   onSelectRef.current = onSelect;
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
+  const onBandaRef = useRef(onBanda);
+  onBandaRef.current = onBanda;
+  // Plano central de la banda que avisamos con onBanda: cuando vuelve como `plano`, no debe pisar el canal elegido.
+  const planoPropio = useRef<number | null>(null);
 
   useEffect(() => {
     let cancel = false;
@@ -102,8 +108,25 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
     aladin.current?.setFoV(fovDeg);
   }, [ra, dec, fovDeg]);
 
-  // Si cambia el plano pedido desde fuera (la banda), manda sobre lo elegido en el deslizador.
-  useEffect(() => setPlanoActivo(plano), [plano]);
+  // Si cambia el plano pedido desde fuera (la banda), manda sobre lo elegido en el deslizador,
+  // salvo que el cambio de banda lo haya pedido el propio selector de λ (ver elegirPlano).
+  useEffect(() => {
+    if (plano === planoPropio.current) {
+      planoPropio.current = null;
+      return;
+    }
+    setPlanoActivo(plano);
+  }, [plano]);
+
+  /** Canal elegido en el selector de λ. Si es de otra banda, avisa para que el menú «Banda del mapa» la siga. */
+  const elegirPlano = (p: number) => {
+    setPlanoActivo(p);
+    const b = bandaDePlano(p);
+    if (onBandaRef.current && b !== bandaDePlano(plano)) {
+      planoPropio.current = planoDeBanda(String(b));
+      onBandaRef.current(b);
+    }
+  };
 
   useEffect(() => {
     if (!listo) return;
@@ -175,7 +198,7 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
       {/* Estado de cada catálogo (cargando / N objetos / no respondió + Reintentar) y su leyenda. */}
       {mostrarCatalogos && <PanelCatalogos />}
       <div data-tour="lambda">
-        <SelectorLambda plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
+        <SelectorLambda plano={planoActivo} onPlano={elegirPlano} survey={SURVEY_SPHEREX} />
       </div>
     </>
   );

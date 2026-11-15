@@ -1,0 +1,69 @@
+/* Visor: tres columnas bajo la misma barra de filtros:
+   mapa del cielo | imagen del Explorador SPHEREx | panel del Explorador (bandas, modo, «Esta imagen»…). */
+.dupla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+  gap: 1rem;
+  /* Las dos columnas terminan a la misma altura: el Explorador se estira hasta el final de «Longitud de onda». */
+  align-items: stretch;
+}
+.dupla-col > .explorador { flex: 1; }
+.dupla-col { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+/* Mapa más bajo para que no domine el centro. */
+.dupla .aladin { height: 380px; }
+/* Explorador: imagen al centro (más chica) y su panel de controles a la derecha. */
+.dupla .exp-lienzo { width: min(calc(100% - 24px), 540px); margin: auto; }
+.dupla .exp-escena { justify-content: space-between; }
+/* Panel del Explorador repartido: los controles (qué cargar, banda visible, modo) a la derecha de la imagen y
+   las secciones largas («Esta imagen» y la tabla de bandas y fechas) en una caja debajo, para que la columna
+   derecha no quede más larga que la imagen. `display: contents` deja las secciones como celdas de la rejilla. */
+.dupla .explorador {
+  grid-template-columns: minmax(0, 1fr) 290px;
+  grid-template-rows: auto auto 1fr auto;
+}
+.dupla .exp-escena { grid-column: 1; grid-row: 1 / 4; }
+.dupla .exp-barra { display: contents; }
+.dupla .exp-barra > .exp-seccion { background: var(--panel); padding: 12px; min-width: 0; }
+.dupla .exp-barra > .exp-seccion:first-child { grid-column: 2; grid-row: 1; border-left: 1px solid var(--borde); }
+.dupla .exp-barra > [data-tour="explorador-modos"] { grid-column: 2; grid-row: 2 / 4; border-left: 1px solid var(--borde); }
+/* Caja de abajo: tabla de bandas y fechas (ancha) y «Esta imagen» al lado. */
+.dupla .exp-barra > [data-tour="explorador-rejilla"] { grid-column: 1; grid-row: 4; border-top: 1px solid var(--borde); }
+.dupla .exp-barra > .exp-seccion:not(:first-child):not([data-tour]) {
+  grid-column: 2; grid-row: 4; border-top: 1px solid var(--borde); border-left: 1px solid var(--borde);
+}
+
+/* Barra de filtros: «Explorar una zona al azar» y «¿Encontraste algo?» a la derecha, en el espacio libre. */
+.barra-azar { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; max-width: 560px; }
+.barra-pista { margin: 0; font-size: 0.8rem; color: var(--suave); text-align: right; }
+/* Detección de SIMBAD del último punto elegido, sobre el botón al azar. */
+.deteccion { margin: 0; font-size: 0.85rem; color: var(--texto); text-align: right; }
+.deteccion-pista { color: var(--suave); font-size: 0.8rem; }
+.deteccion-reintentar { font-size: 0.8rem; padding: 0.1rem 0.5rem; }
+/* La ayuda de coordenadas («= 22h 04m…», ancho 100 %) va al final: A.R., Dec, dimensión, bandas y el botón al azar
+   quedan en una sola fila. */
+.barra-azar { order: 1; }
+.barra .coord-ayuda { order: 2; }
+@media (max-width: 860px) {
+  .barra-azar { margin-left: 0; align-items: flex-start; max-width: none; }
+  .barra-pista, .deteccion { text-align: left; }
+}
+
+/* Tarjetas a todo el ancho: introducción (arriba de los filtros) y ayuda del parpadeo (bajo los filtros). */
+.visor-intro { margin-bottom: 1rem; }
+.visor-ayuda { margin-bottom: 1rem; }
+.visor-intro p, .visor-ayuda p { margin: 0.3rem 0 0; }
+.visor .prisma { margin-top: 1rem; }
+
+/* Pantalla mediana: el panel del Explorador baja bajo su imagen. */
+@media (max-width: 1280px) {
+  .dupla { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .dupla .explorador { grid-template-columns: 1fr; grid-template-rows: none; }
+  .dupla .exp-escena { grid-row: auto; }
+  .dupla .exp-barra { display: flex; border-left: 0; border-top: 1px solid var(--borde); padding: 12px; gap: 12px; }
+  .dupla .exp-barra > .exp-seccion { grid-column: auto !important; grid-row: auto !important; border: 0 !important; padding: 0; background: none; }
+}
+/* Pantallas angostas: uno debajo del otro (mapa primero). */
+@media (max-width: 1100px) {
+  .dupla { grid-template-columns: 1fr; }
+  .dupla .aladin { height: 460px; }
+}

@@ -1,0 +1,4 @@
+{
+  "_instrucciones": "Comentarios agrupados por objeto. La clave es el id del objeto de prueba (barnard, eps_ind_b, wise_0855, rw_aur, r_dra) o, en cualquier otro punto, las coordenadas «ra,dec» en grados con 4 decimales (ej. «128.8628,+3.0030»). Cada comentario: id, nombre (≤ 60), fecha (AAAA-MM-DD) y texto (≤ 600, sin enlaces). Para sumar los comentarios guardados en un navegador: botón «Descargar comments.json» al final del Visor, reemplazar este archivo y hacer commit.",
+  "objetos": {}
+}

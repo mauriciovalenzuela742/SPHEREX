@@ -8,7 +8,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { usePrisma } from "../content/prisma";
-import { CAMPOS, posicionActual } from "../content/campos";
+import { CAMPOS, nombreDe, posicionActual } from "../content/campos";
 import { useIdioma } from "../state/idioma";
 import type { DatosSpherex } from "../explorador/useDatosSpherex";
 import { espectro } from "./fotometria";
@@ -130,7 +130,10 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
             )}
             <FichaAstro
               pasadas={pasadas.filter((pa) => verValido === "todas" || pa.id === verValido)}
-              nombre={CAMPOS.find((c) => c.id === id)?.nombre ?? null}
+              nombre={(() => {
+                const c = CAMPOS.find((x) => x.id === id);
+                return c ? nombreDe(c, idioma) : null;
+              })()}
             />
             <QueCambio pasadas={pasadas} id={id} />
           </div>

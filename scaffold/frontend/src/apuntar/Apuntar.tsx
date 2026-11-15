@@ -5,7 +5,7 @@
  *   «¿Encontraste algo?» (remite al enlace de WiseView sobre el mapa y a Backyard Worlds).
  */
 import { useEffect, useState } from "react";
-import { decASexa, leerDec, leerPar, leerRA, raASexa } from "./coordenadas";
+import { decASexa, errorEnIngles, leerDec, leerPar, leerRA, raASexa } from "./coordenadas";
 import { puntoAlAzar, icrsAGalactica } from "./galactica";
 import { queHayAqui, RADIO_ARCSEC, tipoLegible, type Hallazgo } from "./queHayAqui";
 import { useIdioma } from "../state/idioma";
@@ -79,7 +79,8 @@ export function EntradaCoordenadas({ ra, dec, onIr }: Punto & { onIr: (p: Partia
         />
       </label>
       <span className="coord-ayuda" role={error ? "alert" : undefined} style={{ flexBasis: "100%", fontSize: "0.8rem", color: error ? "#ff8080" : "var(--suave)" }}>
-        {error ??
+        {/* Los errores llegan en español desde coordenadas.ts; con la página en inglés se traducen. */}
+        {error ? tr(error, errorEnIngles(error)) :
           `= ${raASexa(ra)}, ${decASexa(dec)} · ${tr("escribe en grados o en sexagesimal y pulsa Enter", "type degrees or sexagesimal and press Enter")}`}
       </span>
     </>
