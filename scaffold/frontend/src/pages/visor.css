@@ -10,9 +10,24 @@
 /* Mapa más bajo para que no domine el centro. */
 .dupla .aladin { height: 380px; }
 /* Explorador: imagen al centro (más chica) y su panel de controles a la derecha. */
-.dupla .explorador { grid-template-columns: minmax(0, 1fr) 290px; }
 .dupla .exp-lienzo { width: min(calc(100% - 24px), 460px); }
-.dupla .exp-barra { border-left: 1px solid var(--borde); border-top: 0; padding: 12px; gap: 12px; }
+/* Panel del Explorador repartido: los controles (qué cargar, banda visible, modo) a la derecha de la imagen y
+   las secciones largas («Esta imagen» y la tabla de bandas y fechas) en una caja debajo, para que la columna
+   derecha no quede más larga que la imagen. `display: contents` deja las secciones como celdas de la rejilla. */
+.dupla .explorador {
+  grid-template-columns: minmax(0, 1fr) 290px;
+  grid-template-rows: auto auto 1fr auto;
+}
+.dupla .exp-escena { grid-column: 1; grid-row: 1 / 4; }
+.dupla .exp-barra { display: contents; }
+.dupla .exp-barra > .exp-seccion { background: var(--panel); padding: 12px; min-width: 0; }
+.dupla .exp-barra > .exp-seccion:first-child { grid-column: 2; grid-row: 1; border-left: 1px solid var(--borde); }
+.dupla .exp-barra > [data-tour="explorador-modos"] { grid-column: 2; grid-row: 2 / 4; border-left: 1px solid var(--borde); }
+/* Caja de abajo: tabla de bandas y fechas (ancha) y «Esta imagen» al lado. */
+.dupla .exp-barra > [data-tour="explorador-rejilla"] { grid-column: 1; grid-row: 4; border-top: 1px solid var(--borde); }
+.dupla .exp-barra > .exp-seccion:not(:first-child):not([data-tour]) {
+  grid-column: 2; grid-row: 4; border-top: 1px solid var(--borde); border-left: 1px solid var(--borde);
+}
 
 /* Tarjetas a todo el ancho: introducción (arriba de los filtros) y ayuda del parpadeo (bajo los filtros). */
 .visor-intro { margin-bottom: 1rem; }
@@ -23,8 +38,10 @@
 /* Pantalla mediana: el panel del Explorador baja bajo su imagen. */
 @media (max-width: 1280px) {
   .dupla { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .dupla .explorador { grid-template-columns: 1fr; }
-  .dupla .exp-barra { border-left: 0; border-top: 1px solid var(--borde); }
+  .dupla .explorador { grid-template-columns: 1fr; grid-template-rows: none; }
+  .dupla .exp-escena { grid-row: auto; }
+  .dupla .exp-barra { display: flex; border-left: 0; border-top: 1px solid var(--borde); padding: 12px; gap: 12px; }
+  .dupla .exp-barra > .exp-seccion { grid-column: auto !important; grid-row: auto !important; border: 0 !important; padding: 0; background: none; }
 }
 /* Pantallas angostas: uno debajo del otro (mapa primero). */
 @media (max-width: 1100px) {
