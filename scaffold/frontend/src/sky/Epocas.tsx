@@ -13,6 +13,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import A from "aladin-lite";
 import { CAMPOS, posicionActual } from "../content/campos";
+import { alCambiarTrayectoria, mostrarTrayectoria, trayectoriaVisible } from "./capas/trayectoria";
+import { useMovimientoReducido } from "./movimiento";
 import { useIdioma } from "../state/idioma";
 
 type IdEpoca = "spherex" | "allwise" | "2mass";
@@ -64,6 +66,7 @@ function separacionDeg(ra1: number, dec1: number, ra2: number, dec2: number): nu
     Math.sin(((dec2 - dec1) * r) / 2) ** 2 + Math.cos(dec1 * r) * Math.cos(dec2 * r) * Math.sin(((ra2 - ra1) * r) / 2) ** 2;
   return (2 * Math.asin(Math.min(1, Math.sqrt(s)))) / r;
 }
+/** Periodo del parpadeo. Con «reducir movimiento» del sistema no hay parpadeo automático: el botón alterna a mano. */
 const PERIODO_MS = 1000;
 
 /** Devuelve la primera URL cuyo `properties` responde 200; lanza si ninguna responde. */
@@ -92,7 +95,7 @@ type Props = {
 };
 
 export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
-  const { tr } = useIdioma();
+  const { t, tr } = useIdioma();
   const [elegida, setElegida] = useState<EpocaAntigua["id"]>("allwise");
   const [mostrada, setMostrada] = useState<IdEpoca>("spherex");
   const [parpadeando, setParpadeando] = useState(false);
@@ -101,6 +104,9 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
   // Capas superpuestas ya creadas (o en creación), por época.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const capas = useRef(new Map<string, Promise<any>>());
+  const reducir = useMovimientoReducido();
+  const [trayectoria, setTrayectoria] = useState(trayectoriaVisible);
+  useEffect(() => alCambiarTrayectoria(setTrayectoria), []);
 
   /** Crea (una sola vez) la capa de una época antigua, invisible. */
   function capaDe(ep: EpocaAntigua) {
@@ -140,13 +146,17 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
     // capaDe usa refs y setters estables.
   }, [aladin, mostrada]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Parpadeo: alterna SPHEREx ↔ época elegida cada ~1 s.
+  // Parpadeo: alterna SPHEREx ↔ época elegida cada ~1 s. Si el sistema pide reducir el movimiento
+  // (prefers-reduced-motion), no hay parpadeo automático: se apaga y el botón pasa a alternar a mano.
   useEffect(() => {
-    if (!parpadeando) return;
+    if (reducir) setParpadeando(false);
+  }, [reducir]);
+  useEffect(() => {
+    if (!parpadeando || reducir) return;
     setMostrada(elegida);
     const id = window.setInterval(() => setMostrada((m) => (m === "spherex" ? elegida : "spherex")), PERIODO_MS);
     return () => window.clearInterval(id);
-  }, [parpadeando, elegida]);
+  }, [parpadeando, elegida, reducir]);
 
   const antigua = EPOCAS.find((e) => e.id === mostrada);
   const rotuloActual = antigua ? antigua.rotulo : ROTULO_SPHEREX;
@@ -211,15 +221,35 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
           </button>
         );
       })}
-      <button
-        type="button"
-        aria-pressed={parpadeando}
-        style={boton(parpadeando)}
-        onClick={() => setParpadeando((v) => !v)}
-        title={tr(`Alterna SPHEREx y ${EPOCAS.find((e) => e.id === elegida)?.boton} cada ${PERIODO_MS / 1000} s`, `Alternates SPHEREx and ${EPOCAS.find((e) => e.id === elegida)?.boton} every ${PERIODO_MS / 1000} s`)}
-      >
-        {parpadeando ? tr("Detener parpadeo", "Stop blinking") : tr("Parpadear", "Blink")}
-      </button>
+      {reducir ? (
+        <button
+          type="button"
+          onClick={() => setMostrada((m) => (m === "spherex" ? elegida : "spherex"))}
+          title={`SPHEREx ↔ ${EPOCAS.find((e) => e.id === elegida)?.boton}`}
+        >
+          {t.epocasAlternar}
+        </button>
+      ) : (
+        <button
+          type="button"
+          aria-pressed={parpadeando}
+          style={boton(parpadeando)}
+          onClick={() => setParpadeando((v) => !v)}
+          title={tr(`Alterna SPHEREx y ${EPOCAS.find((e) => e.id === elegida)?.boton} cada ${PERIODO_MS / 1000} s`, `Alternates SPHEREx and ${EPOCAS.find((e) => e.id === elegida)?.boton} every ${PERIODO_MS / 1000} s`)}
+        >
+          {parpadeando ? tr("Detener parpadeo", "Stop blinking") : tr("Parpadear", "Blink")}
+        </button>
+      )}
+      <label style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: "0.9rem" }}>
+        <input type="checkbox" checked={trayectoria} onChange={(e) => mostrarTrayectoria(e.target.checked)} />
+        {t.trayectoriaMostrar}
+      </label>
+      {trayectoria && (
+        <span style={{ color: "var(--suave)", fontSize: "0.85rem", flexBasis: "100%" }}>{t.trayectoriaExplica}</span>
+      )}
+      {reducir && (
+        <span style={{ color: "var(--suave)", fontSize: "0.85rem", flexBasis: "100%" }}>{t.epocasMovimientoReducido}</span>
+      )}
       {cargando && <span style={{ color: "var(--suave)", fontSize: "0.85rem" }}>{tr("Cargando", "Loading")} {cargando}…</span>}
       {error && (
         <span role="alert" style={{ color: "var(--acento)", fontSize: "0.85rem" }}>

@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import A from "aladin-lite"; // v3.8.2, fijada en package.json
 import { CAPAS, type ContextoCapa } from "./capas";
+import PanelCatalogos from "./capas/PanelCatalogos";
 import { crearRepartidor, type Suscribir } from "./eventos";
 import ControlEpocas from "./Epocas";
 import SelectorLambda from "./SelectorLambda";
@@ -171,6 +172,8 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
           {mostrarCatalogos ? tr("Ocultar catálogos", "Hide catalogs") : tr("Mostrar catálogos (Gaia, CatWISE, SIMBAD)", "Show catalogs (Gaia, CatWISE, SIMBAD)")}
         </button>
       </div>
+      {/* Estado de cada catálogo (cargando / N objetos / no respondió + Reintentar) y su leyenda. */}
+      {mostrarCatalogos && <PanelCatalogos />}
       <div data-tour="lambda">
         <SelectorLambda plano={planoActivo} onPlano={setPlanoActivo} survey={SURVEY_SPHEREX} />
       </div>

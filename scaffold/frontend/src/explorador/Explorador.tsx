@@ -2,7 +2,8 @@
  * Explorador SPHEREx dentro del visor: port a React del explorador de Bryan
  * (`prototipos/rango_fechas/static/explorar.html`, D2) con su diseño y su lógica:
  * imagen grande con mira, escala de 30″ y rótulo; línea de tiempo proporcional a la fecha (pasar el mouse
- * cambia la visita); las 6 bandas a la vez; modos Imagen / Resta vs t₀ / Color; «Esta imagen»;
+ * cambia la visita); las 6 bandas a la vez; modos Imagen / Resta vs t₀ / Color / Resta A − B; «Esta imagen»;
+ * «Resta A − B»: dos fechas cualesquiera elegidas por la persona (docs/11: «resta entre dos fechas cualesquiera»);
  * rejilla bandas × fechas; teclado ← → ↑ ↓ y espacio; carga progresiva (t₀ y la última primero).
  *
  * Datos: `/proto-api/grid` y `/proto-api/frame` (prototipo de Bryan; rewrite en vercel.json).
@@ -42,6 +43,8 @@ const limitar = (p: Punto, z: number) => {
   return { x: Math.max(-m, Math.min(m, p.x)), y: Math.max(-m, Math.min(m, p.y)) };
 };
 const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
+/** Modos de la vista: los de `render.ts` más «ab» (resta de dos fechas elegidas), que se dibuja con «resta». */
+type Vista = Modo | "ab";
 
 type Props = { datos: DatosSpherex };
 
@@ -51,10 +54,21 @@ export default function Explorador({ datos }: Props) {
   const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando, preset } = datos;
 
   // ── Leyenda dinámica ──
-  const LEYENDA: Record<Modo, string> = { imagen: t.modoImagenDesc, resta: t.modoRestaDesc, color: t.modoColorDesc };
+  const LEYENDA: Record<Vista, string> = {
+    imagen: t.modoImagenDesc,
+    resta: t.modoRestaDesc,
+    color: t.modoColorDesc,
+    ab: tr(
+      "Rojo = brillo que está en A y no en B · Azul = brillo que está en B y no en A. Elige A y B en la línea de tiempo.",
+      "Red = brightness in A but not in B · Blue = brightness in B but not in A. Pick A and B on the timeline.",
+    ),
+  };
 
   // ── Vista ──
-  const [modo, setModo] = useState<Modo>("imagen");
+  const [modo, setModo] = useState<Vista>("imagen");
+  // Fechas A y B de «Resta A − B», como MJD: cada banda tiene sus propias visitas y usa la más cercana.
+  const [ab, setAb] = useState<{ a: number | null; b: number | null }>({ a: null, b: null });
+  useEffect(() => setAb({ a: null, b: null }), [grid]);
   const [suave, setSuave] = useState(false);
   const [apilar, setApilar] = useState(false); // modo Apilar (PanelApilar.tsx, V2)
   const [zoom, setZoom] = useState(1); // ampliación hacia la mira: el movimiento es de 1–2 px (docs/09)
@@ -137,15 +151,26 @@ export default function Explorador({ datos }: Props) {
   const lienzo = useRef<HTMLCanvasElement>(null);
   const actual = grid ? frames.current.get(clave(banda, visita)) : undefined;
   const ref0 = grid ? frames.current.get(clave(banda, 0)) : undefined;
+  // «Resta A − B»: visita de A y de B en la banda visible, y sus fotos (si ya llegaron).
+  const visA = grid && ab.a !== null ? visitaMasCercana(banda, ab.a) : null;
+  const visB = grid && ab.b !== null ? visitaMasCercana(banda, ab.b) : null;
+  const frA = visA !== null ? frames.current.get(clave(banda, visA)) : undefined;
+  const frB = visB !== null ? frames.current.get(clave(banda, visB)) : undefined;
+  const conAB = modo === "ab" && !!frA && !!frB; // con A y B listas se muestra la resta; si no, la foto de la fecha
   useEffect(() => {
     const c = lienzo.current;
     if (!c) return;
+    const escala = escalas.current.get(banda) ?? { vmin: 0, vmax: 1 };
+    if (conAB) {
+      dibujar(c, frA!, frB, escala, "resta"); // A − B: rojo = está en A, azul = está en B
+      return;
+    }
     if (!actual) {
       c.getContext("2d")?.clearRect(0, 0, c.width, c.height);
       return;
     }
-    dibujar(c, actual, ref0, escalas.current.get(banda) ?? { vmin: 0, vmax: 1 }, modo);
-  }, [actual, ref0, banda, modo, version]);
+    dibujar(c, actual, ref0, escala, modo === "ab" ? "imagen" : modo);
+  }, [actual, ref0, frA, frB, conAB, banda, modo, version]);
 
   const error = errores.current.get(clave(banda, visita));
   const dias = actual && ref0 ? (Date.parse(actual.meta.t) - Date.parse(ref0.meta.t)) / 864e5 : 0;
@@ -235,7 +260,9 @@ export default function Explorador({ datos }: Props) {
               B{banda} · {(actual?.meta.t ?? visitas[visita].start).slice(0, 10)}
               {actual && (
                 <small>
-                  {dias >= 0 ? "+" : ""}{(dias / 365.25).toFixed(2)} {tr("años desde t₀", "years since t₀")} · λ {actual.meta.wavelength_um ?? "?"} µm
+                  {conAB
+                    ? `A ${frA!.meta.t.slice(0, 10)} − B ${frB!.meta.t.slice(0, 10)} · ${(Math.abs(Date.parse(frB!.meta.t) - Date.parse(frA!.meta.t)) / 864e5 / 365.25).toFixed(2)} ${tr("años entre ambas", "years apart")}`
+                    : `${dias >= 0 ? "+" : ""}${(dias / 365.25).toFixed(2)} ${tr("años desde t₀", "years since t₀")} · λ ${actual.meta.wavelength_um ?? "?"} µm`}
                 </small>
               )}
             </div>
@@ -284,8 +311,11 @@ export default function Explorador({ datos }: Props) {
               if (!grid) return;
               const mjd = mjdEnPista(ev.clientX);
               setFantasma(xDe(mjd));
+              // Pasar el mouse solo muestra la línea guía; la fecha cambia con clic o arrastrando (botón apretado).
+              // Así, una vez elegida, no se pierde al mover el cursor para ir a otra parte.
+              if ((ev.buttons & 1) === 0) return;
               const v = visitaMasCercana(banda, mjd);
-              if (v !== visita) irA(banda, v); // con solo pasar el mouse cambia la fecha
+              if (v !== visita) irA(banda, v);
             }}
             onPointerLeave={() => setFantasma(null)}
           >
@@ -302,6 +332,8 @@ export default function Explorador({ datos }: Props) {
               />
             ))}
             {fantasma !== null && <div className="fantasma" style={{ left: `${fantasma}%` }} />}
+            {modo === "ab" && visA !== null && visitas[visA] && <div className="ab-marca" data-l="A" style={{ left: `${xDe(visitas[visA].mjd)}%` }} />}
+            {modo === "ab" && visB !== null && visitas[visB] && <div className="ab-marca" data-l="B" style={{ left: `${xDe(visitas[visB].mjd)}%` }} />}
             {grid && visitas[visita] && <div className="puntero" style={{ left: `${xDe(mjdActual)}%` }} />}
           </div>
         </div>
@@ -358,9 +390,9 @@ export default function Explorador({ datos }: Props) {
               ))}
             </div>
             <div className="exp-modos" role="group" aria-label={t.modo}>
-              {(["imagen", "resta", "color"] as Modo[]).map((m) => (
+              {(["imagen", "resta", "color", "ab"] as Vista[]).map((m) => (
                 <button key={m} aria-pressed={!apilar && modo === m} onClick={() => { setModo(m); setApilar(false); }}>
-                  {m === "imagen" ? t.modoImagen : m === "resta" ? t.modoResta : t.modoColor}
+                  {m === "imagen" ? t.modoImagen : m === "resta" ? t.modoResta : m === "color" ? t.modoColor : tr("Resta A − B", "Subtract A − B")}
                 </button>
               ))}
             </div>
@@ -368,6 +400,32 @@ export default function Explorador({ datos }: Props) {
               title={tr("Suma todas las visitas de la banda para bajar el ruido", "Adds up all visits of the band to lower the noise")}>
               {tr("Apilar visitas", "Stack visits")}
             </button>
+            {!apilar && modo === "ab" && (
+              <div className="exp-ab">
+                {(["a", "b"] as const).map((k) => {
+                  const v = k === "a" ? visA : visB;
+                  const f = k === "a" ? frA : frB;
+                  const L = k.toUpperCase();
+                  return (
+                    <div key={k} className="exp-ab-fila">
+                      <span>
+                        <b>{L}</b>: {v !== null && visitas[v] ? (f?.meta.t ?? visitas[v].start).slice(0, 10) : tr("sin elegir", "not set")}
+                        {v !== null && !f && tr(" · cargando…", " · loading…")}
+                      </span>
+                      <button
+                        onClick={() => visitas[visita] && setAb((x) => ({ ...x, [k]: visitas[visita].mjd }))}
+                        disabled={!visitas[visita] || v === visita}
+                      >
+                        {tr(`Esta fecha como ${L}`, `This date as ${L}`)}
+                      </button>
+                    </div>
+                  );
+                })}
+                {(ab.a !== null || ab.b !== null) && (
+                  <button onClick={() => setAb({ a: null, b: null })}>{tr("Borrar A y B", "Clear A and B")}</button>
+                )}
+              </div>
+            )}
             <p className="exp-leyenda">{apilar ? tr("Apilar: quieto vs. siguiendo el movimiento propio. Ver los paneles.", "Stack: static vs. following the proper motion. See the panels.") : LEYENDA[modo]}</p>
             <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {tr("Suavizar píxeles", "Smooth pixels")}</label>
             <p className="exp-ayuda">
@@ -426,7 +484,7 @@ export default function Explorador({ datos }: Props) {
                                 fr={frames.current.get(clave(b, v))}
                                 ref0={frames.current.get(clave(b, 0))}
                                 escala={escalas.current.get(b)}
-                                modo={modo}
+                                modo={modo === "ab" ? "imagen" : modo}
                                 version={version}
                                 sel={b === banda && v === visita}
                                 titulo={`B${b} · ${c.date}`}

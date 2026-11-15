@@ -4,7 +4,7 @@
  * Hoy: controles conectados a la URL + cielo de SPHEREx en Aladin (Vía A).
  * Cada recuadro con borde punteado es un hueco con su responsable.
  */
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import AladinView, { planoDeBanda } from "../sky/AladinView";
 import { CAMPOS, posicionActual } from "../content/campos";
 import { TAMANOS, type Estado } from "../state/url";
@@ -14,7 +14,18 @@ import Explorador from "../explorador/Explorador";
 import { useDatosSpherex } from "../explorador/useDatosSpherex";
 import Prisma from "../prisma/Prisma";
 import type { Accion } from "../spherix/motor";
+import { epocaDeFecha } from "../sky/propagacion";
+import { EntradaCoordenadas, PanelDescubrir } from "../apuntar/Apuntar";
 import { useIdioma } from "../state/idioma";
+
+// Misma fecha que usa posicionActual() para centrar: así la marca del objeto cae en el centro del recorte.
+// TODO: cuando el explorador avise la fecha del fotograma elegido, pasar esa época en vez de la de hoy.
+const EPOCA_HOY = epocaDeFecha(new Date());
+// Época media del cubo SPHEREx DR1 (≈ 2025,94; la misma que usa capas/trayectoria.ts en la rama de trayectoria:
+// cuando entre, unificar con su EPOCA_SPHEREX). «¿Qué hay aquí?» propaga SIMBAD a la imagen que se mira, no a hoy:
+// Barnard se corre 9,7″ entre 2025,94 y fines de 2026, casi todo el radio de 10″. La época de la capa visible
+// (2MASS/AllWISE al parpadear) vive dentro de ControlEpocas y no llega aquí; se usa la del cubo, que es la base.
+const EPOCA_SPHEREX = 2025.94;
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
 
@@ -37,6 +48,12 @@ export default function Visor({ estado, set, asistido }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aladin = useRef<any>(null);
   const fovDeg = Math.max(estado.size * 4, 0.3);
+  // Último punto elegido con un clic o al azar: el panel «¿Qué hay aquí?» lo consulta en SIMBAD.
+  const [punto, setPunto] = useState<{ ra: number; dec: number } | null>(null);
+  const irA = (p: { ra: number; dec: number }) => {
+    set(p);
+    setPunto(p);
+  };
   const encuadrar = () => {
     aladin.current?.gotoRaDec(estado.ra, estado.dec);
     aladin.current?.setFoV(fovDeg);
@@ -44,14 +61,8 @@ export default function Visor({ estado, set, asistido }: Props) {
   return (
     <section className="visor">
       <div className="barra" data-tour="busqueda">
-        <label>
-          {tr("A.R. (°)", "R.A. (°)")}
-          <input type="number" step="0.0001" value={estado.ra} onChange={(e) => set({ ra: Number(e.target.value) })} />
-        </label>
-        <label>
-          Dec (°)
-          <input type="number" step="0.0001" value={estado.dec} onChange={(e) => set({ dec: Number(e.target.value) })} />
-        </label>
+        {/* Grados o sexagesimal («08 55 10.83 -07 14 42.5»): src/apuntar/coordenadas.ts. */}
+        <EntradaCoordenadas ra={estado.ra} dec={estado.dec} onIr={set} />
         <label>
           {tr("Dimensión (°)", "Size (°)")}
           <select value={estado.size} onChange={(e) => set({ size: Number(e.target.value) })}>
@@ -114,7 +125,11 @@ export default function Visor({ estado, set, asistido }: Props) {
             fovDeg={fovDeg}
             plano={planoDeBanda(estado.band)}
             onReady={(a) => (aladin.current = a)}
+            size={estado.size}
+            epoca={EPOCA_HOY}
+            onSelect={(ra, dec) => irA({ ra: Number(ra.toFixed(6)), dec: Number(dec.toFixed(6)) })}
           />
+          <PanelDescubrir ra={estado.ra} dec={estado.dec} punto={punto} epoca={EPOCA_SPHEREX} onAzar={(p) => irA({ ra: p.ra, dec: p.dec })} />
           <p className="quien">
             {t.cieloDesc(estado.band === "all" ? "D2" : `D${estado.band}`)}
           </p>
