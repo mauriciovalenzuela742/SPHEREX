@@ -32,7 +32,10 @@ export default function App() {
   const [asistido] = useState(false);
   const [menu, setMenu] = useState(false);
 
-  const abrirTutorial = () => set({ ...BARNARD, vista: "visor", mision: undefined, tutorial: true });
+  // Dos recorridos: el del Modo ciencia (menú ☰) y el de la vista simple (botón «?» de esa vista y la portada,
+  // que abre la vista simple). Los dos empiezan en Barnard, que tiene datos en todas las secciones.
+  const abrirTutorial = (tipo: "ciencia" | "simple" = "ciencia") =>
+    set({ ...BARNARD, vista: "visor", mision: undefined, tutorial: tipo, ciencia: tipo === "ciencia" ? true : undefined });
   const cerrarTutorial = (siguiente: Partial<Estado> = {}) => {
     marcarVisto();
     set({ tutorial: undefined, ...siguiente });
@@ -40,7 +43,7 @@ export default function App() {
 
   // Modo ciencia = el Visor completo; sin él, la vista simple. El tutorial y el Modo Misión viven en el Visor.
   const enVisor = estado.vista === "visor";
-  const ciencia = Boolean(estado.ciencia || estado.tutorial || estado.mision);
+  const ciencia = Boolean(estado.ciencia || estado.tutorial === "ciencia" || estado.mision);
   const conInterruptor = enVisor && !estado.tutorial && !estado.mision;
   // Transición: la vista actual se nubla («sale»), se cambia y la nueva se aclara («entra»).
   const [mostrada, setMostrada] = useState(ciencia);
@@ -70,7 +73,7 @@ export default function App() {
     <div className="app">
       <div className={`vista-modo ${fase}`}>
       {simple ? (
-        <Simple estado={estado} set={set} onCiencia={() => set({ ciencia: true })} />
+        <Simple estado={estado} set={set} onCiencia={() => set({ ciencia: true })} onTutorial={() => abrirTutorial("simple")} />
       ) : (
       <>
       <header>
@@ -108,7 +111,7 @@ export default function App() {
             <button onClick={() => set({ vista: "landing", mision: undefined, tutorial: undefined })}>{t.inicio}</button>
             <button onClick={() => set({ vista: "visor", mision: undefined, tutorial: undefined })}>{t.visor}</button>
             <button onClick={() => set({ vista: "visor", mision: "intro", tutorial: undefined })}>{t.modoMision}</button>
-            <button onClick={abrirTutorial}>{t.verTutorial}</button>
+            <button onClick={() => abrirTutorial("ciencia")}>{t.verTutorial}</button>
             <a href="https://github.com/mauriciovalenzuela742/SPHEREX">{t.repositorio}</a>
           </nav>
         )}
@@ -118,7 +121,7 @@ export default function App() {
           <Landing
             onEmpezar={() => set({ vista: "visor", mision: undefined, ciencia: undefined })}
             onMision={() => set({ vista: "visor", mision: "intro" })}
-            onTutorial={abrirTutorial}
+            onTutorial={() => abrirTutorial("simple")}
           />
         ) : (
           <Visor estado={estado} set={set} asistido={asistido} />
@@ -131,9 +134,11 @@ export default function App() {
 
       {estado.vista === "visor" && estado.tutorial && !estado.mision && (
         <Tutorial
+          key={estado.tutorial}
+          variante={estado.tutorial}
           onCerrar={() => cerrarTutorial()}
           onBarnard={() => cerrarTutorial(BARNARD)}
-          onMision={() => cerrarTutorial({ mision: "intro" })}
+          onMision={() => cerrarTutorial(estado.tutorial === "simple" ? { ciencia: true } : { mision: "intro" })}
         />
       )}
     </div>

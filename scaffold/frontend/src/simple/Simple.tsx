@@ -16,7 +16,7 @@ import { useIdioma } from "../state/idioma";
 import InterruptorCiencia from "./InterruptorCiencia";
 import "./simple.css";
 
-type Props = { estado: Estado; set: (p: Partial<Estado>) => void; onCiencia: () => void };
+type Props = { estado: Estado; set: (p: Partial<Estado>) => void; onCiencia: () => void; onTutorial?: () => void };
 type Luz = "normal" | "cercana" | "media" | "lejana";
 type Pasada = { desde: number; hasta: number; medio: number };
 
@@ -55,7 +55,7 @@ function rotuloPasada(p: Pasada, idioma: "es" | "en") {
   return `${m[ma]} ${ya}–${m[mz]} ${yz}`;
 }
 
-export default function Simple({ estado, set, onCiencia }: Props) {
+export default function Simple({ estado, set, onCiencia, onTutorial }: Props) {
   const { tr, idioma, cambiar } = useIdioma();
   const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, true);
   // Rango de fechas que se pide a SPHEREx: el mismo «Desde / Hasta» del Explorador, con calendario.
@@ -129,6 +129,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
     const tecla = (ev: KeyboardEvent) => {
       const tag = (document.activeElement?.tagName ?? "").toUpperCase();
       if (["INPUT", "SELECT", "TEXTAREA"].includes(tag) || pasadas.length < 2) return;
+      if (document.querySelector(".tut")) return; // con el tutorial abierto, las flechas son suyas
       if (ev.key === " " && tag !== "BUTTON") {
         ev.preventDefault();
         setPlay((v) => !v);
@@ -323,7 +324,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
     <div className="simple">
       <header className="simple-barra">
         <button className="simple-marca" onClick={() => set({ vista: "landing" })}>AstroTRACK</button>
-        <form className="simple-busca" onSubmit={buscar} role="search">
+        <form className="simple-busca" onSubmit={buscar} role="search" data-tour="simple-busca">
           <span aria-hidden="true">⌕</span>
           <input
             value={busqueda}
@@ -336,7 +337,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           />
           {errorBusqueda && <span className="simple-busca-error" role="alert">{errorBusqueda}</span>}
         </form>
-        <nav className="simple-chips" aria-label={tr("Objetos", "Objects")}>
+        <nav className="simple-chips" aria-label={tr("Objetos", "Objects")} data-tour="simple-objetos">
           {CAMPOS.map((c) => (
             <button key={c.id} className={campo?.id === c.id ? "activo" : ""} onClick={() => set(posicionActual(c))} title={nombreDe(c, idioma)}>
               {CORTO[c.id] ?? nombreDe(c, idioma)}
@@ -344,7 +345,9 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           ))}
         </nav>
         <div className="simple-derecha">
-          <InterruptorCiencia activo={false} onCambiar={onCiencia} />
+          <span data-tour="simple-ciencia">
+            <InterruptorCiencia activo={false} onCambiar={onCiencia} />
+          </span>
           <button className="simple-ayuda-btn" aria-expanded={ayuda} onClick={() => setAyuda((v) => !v)} aria-label={tr("Ayuda", "Help")}>?</button>
           <span className="simple-idioma">
             <button className={idioma === "es" ? "activo" : ""} onClick={() => cambiar("es")}>ES</button>|
@@ -358,12 +361,17 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           <p>{tr("Estas son fotos reales del telescopio SPHEREx de la NASA, tomadas cada ~6 meses. Elige un objeto arriba, pasa las fechas y mira qué cambia.", "These are real photos from NASA's SPHEREx telescope, taken every ~6 months. Pick an object above, step through the dates and see what changes.")}</p>
           <p>{tr("La barra «Luz» elige qué tipo de luz infrarroja ves: cada objeto brilla distinto según la luz.", "The “Light” bar picks which kind of infrared light you see: each object shines differently in each light.")}</p>
           <p>{tr("¿Quieres todas las herramientas (resta de fotos, espectro, catálogos)? Activa «Modo ciencia».", "Want every tool (photo subtraction, spectrum, catalogs)? Turn on “Science mode”.")}</p>
+          {onTutorial && (
+            <button className="primario" onClick={onTutorial}>
+              {tr("Ver el tutorial de Spherix", "Watch Spherix's tutorial")}
+            </button>
+          )}
         </div>
       )}
 
       <div className="simple-cuerpo">
       {/* A la izquierda de la imagen: coordenadas (como en Modo ciencia) y rango de fechas con calendario. */}
-      <aside className="simple-lado" aria-label={tr("Dónde y cuándo", "Where and when")}>
+      <aside className="simple-lado" aria-label={tr("Dónde y cuándo", "Where and when")} data-tour="simple-lado">
         <h3>{tr("¿Dónde?", "Where?")}</h3>
         <div className="simple-coords">
           <EntradaCoordenadas ra={estado.ra} dec={estado.dec} onIr={set} />
@@ -413,7 +421,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
             <button onClick={cerrarAviso}>{tr("Entendido", "Got it")}</button>
           </div>
         )}
-        <div className="simple-imagen">
+        <div className="simple-imagen" data-tour="simple-imagen">
           {n > 0 && <canvas ref={lienzo} aria-label={tr("Foto de SPHEREx", "SPHEREx photo")} />}
           {n > 0 && !hayLuz && <p className="simple-mensaje">{tr("No hay fotos con esta luz en esta fecha.", "No photos in this light on this date.")}</p>}
           {!n && (
@@ -463,7 +471,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
           <span hidden data-version={version} />
         </div>
         {pasadas.length > 0 && (
-          <div className="simple-fechas" role="group" aria-label={tr("Fechas", "Dates")}>
+          <div className="simple-fechas" role="group" aria-label={tr("Fechas", "Dates")} data-tour="simple-fechas">
             <button
               className="simple-play"
               onClick={() => {
@@ -495,7 +503,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
         )}
         {/* Compara dos fechas: la que se ve pasa a ser A o B; con las dos, «Ver A − B» muestra la resta. */}
         {pasadas.length > 1 && (
-          <div className="simple-ab" role="group" aria-label={tr("Compara dos fechas", "Compare two dates")}>
+          <div className="simple-ab" role="group" aria-label={tr("Compara dos fechas", "Compare two dates")} data-tour="simple-ab">
             <span className="simple-ab-titulo">{tr("Compara dos fechas:", "Compare two dates:")}</span>
             {(["a", "b"] as const).map((k) => {
               const p = k === "a" ? pasadaA : pasadaB;
@@ -547,7 +555,7 @@ export default function Simple({ estado, set, onCiencia }: Props) {
       </main>
       </div>
 
-      <footer className="simple-luz">
+      <footer className="simple-luz" data-tour="simple-luz">
         <div className="simple-luz-botones" role="radiogroup" aria-label={tr("Luz", "Light")}>
           {(["normal", "cercana", "media", "lejana"] as Luz[]).map((l) => (
             <div key={l} className={`luz-celda${luz === l ? " activa" : ""}`}>
