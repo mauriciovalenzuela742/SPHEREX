@@ -11,7 +11,10 @@ export default function FichaAstro({ pasadas, nombre }: { pasadas: Pasada[]; nom
   const prisma = usePrisma();
   const { idioma } = useIdioma();
   const t = prisma.ficha;
-  const puntos = pasadas.flatMap((pa) => pa.puntos);
+  // Con varias pasadas, si hay completas se clasifica solo con ellas (las incompletas sesgan la forma).
+  const completas = pasadas.filter((pa) => !incompleta(pa));
+  const usadas = pasadas.length > 1 && completas.length && completas.length < pasadas.length ? completas : pasadas;
+  const puntos = usadas.flatMap((pa) => pa.puntos);
   // Una pasada incompleta (< 90 de 102 canales) no se clasifica sola.
   const sola = pasadas.length === 1 && incompleta(pasadas[0]) ? pasadas[0] : null;
   // Las medidas sospechosas (luz de otra fuente) y las de bandas al borde de la saturación no cuentan.
@@ -29,6 +32,7 @@ export default function FichaAstro({ pasadas, nombre }: { pasadas: Pasada[]; nom
         {c.tipo === "indeterminado" ? "" : `${t.porque} `}
         {c.motivo}
       </p>
+      {usadas !== pasadas && <p className="h-nota">{t.soloCompletas(usadas.length)}</p>}
       <p className="h-nota">{t.aviso}</p>
     </div>
   );

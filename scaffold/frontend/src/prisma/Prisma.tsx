@@ -118,7 +118,12 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
               onPunto={onPunto}
               cargarTodas={!usaPre && datos.cargar.length < 6 ? () => datos.setCargar([1, 2, 3, 4, 5, 6]) : undefined}
             />
-            {usaPre && pre && <p className="h-caveat">{prisma.fuente.notaPre(pre.generado.slice(0, 10))} {pre.caveat}</p>}
+            {usaPre && pre && (
+              <details className="h-caveat">
+                <summary>{prisma.fuente.notaPre(pre.generado.slice(0, 10))}</summary>
+                {pre.caveat}
+              </details>
+            )}
             <FichaAstro
               pasadas={pasadas.filter((pa) => verValido === "todas" || pa.id === verValido)}
               nombre={CAMPOS.find((c) => c.id === id)?.nombre ?? null}

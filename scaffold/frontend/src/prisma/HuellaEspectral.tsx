@@ -312,8 +312,8 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
             )}
           </p>
         )}
-        {nSosp > 0 && <p className="h-aviso">{prisma.huella.sospechosos(nSosp)}</p>}
-        {nBorde > 0 && <p className="h-aviso">{prisma.huella.bordeSat(nBorde)}</p>}
+        {nSosp > 0 && !todoSaturado && <p className="h-aviso">{prisma.huella.sospechosos(nSosp)}</p>}
+        {nBorde > 0 && !todoSaturado && <p className="h-aviso">{prisma.huella.bordeSat(nBorde)}</p>}
         {porColor ? (
           <p className="h-nota">{prisma.huella.porPasada}</p>
         ) : (

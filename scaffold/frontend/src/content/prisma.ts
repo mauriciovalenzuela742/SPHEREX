@@ -46,7 +46,7 @@ export const prisma = {
       `${n} ${n === 1 ? "punto tiene" : "puntos tienen"} píxeles saturados o sin dato en la apertura: van como △ ` +
       "en la franja de arriba («saturado»), sin altura, y no se usan para la forma.",
     todoSaturado:
-      "Demasiado brillante para medir con SPHEREx: todos o casi todos los puntos están saturados. La franja de arriba solo " +
+      "Demasiado brillante, sin espectro: en SPHEREx todos o casi todos los puntos están saturados. La franja de arriba solo " +
       "marca en qué colores hay fotos; el brillo real es mayor de lo que el detector registra.",
     unaBanda: (b: number) =>
       `Solo hay fotos de la banda D${b}: eso no alcanza para ver la forma del espectro. Carga las 6 bandas ` +
@@ -62,8 +62,8 @@ export const prisma = {
       `${n} ${n === 1 ? "medida va atenuada" : "medidas van atenuadas"}: son de bandas donde la mayoría de las fotos ` +
       "saturan, así que probablemente subestiman el brillo. No se usan para la forma ni para la ficha.",
     sospechosos: (n: number) =>
-      `${n} puntos van atenuados: son medidas sospechosas (lo más probable es que la luz sea de otra fuente ` +
-      "dentro de la apertura, no del objeto). No se usan para la forma ni para la ficha.",
+      `${n} puntos van atenuados: son medidas sospechosas (luz de otra fuente dentro de la apertura, o un ` +
+      "pico aislado como un rayo cósmico). No se usan para la forma ni para la ficha.",
     porPasada:
       "Cada color es una pasada: SPHEREx vuelve al mismo cielo cada ~6 meses. Compara los colores para ver si " +
       "el objeto cambió; la línea une las medianas de cada pasada.",
@@ -93,6 +93,7 @@ export const prisma = {
       enana_marron: "una enana marrón",
     } as Record<string, string>,
     confianza: { baja: "confianza baja", media: "confianza media" } as Record<string, string>,
+    soloCompletas: (n: number) => `Clasificado solo con ${n === 1 ? "la pasada completa" : `las ${n} pasadas completas`} (90 o más de 102 canales).`,
     incompleta: (n: number) =>
       `Esta pasada está incompleta (${n} de 102 canales): sola no alcanza para clasificar. Mira «todas» u otra pasada.`,
     aviso:
@@ -200,7 +201,7 @@ export const prismaEN: typeof prisma = {
       `${n} ${n === 1 ? "point has" : "points have"} saturated or missing pixels in the aperture: they are hollow △ ` +
       "in the top strip (“saturated”), with no height, and are not used for the shape.",
     todoSaturado:
-      "Too bright to measure with SPHEREx: every point, or nearly every point, is saturated. The top strip only marks which colors " +
+      "Too bright, no spectrum: in SPHEREx every point, or nearly every point, is saturated. The top strip only marks which colors " +
       "have photos; the real brightness is higher than the detector records.",
     unaBanda: (b: number) =>
       `Only band D${b} has photos: that is not enough to see the shape of the spectrum. Load all 6 bands ` +
@@ -216,8 +217,8 @@ export const prismaEN: typeof prisma = {
       `${n} ${n === 1 ? "measurement is" : "measurements are"} faded: they come from bands where most photos ` +
       "saturate, so they probably underestimate the brightness. They are not used for the shape or the card.",
     sospechosos: (n: number) =>
-      `${n} points are faded: they are suspect measurements (most likely the light comes from another source ` +
-      "inside the aperture, not from the object). They are not used for the shape or the card.",
+      `${n} points are faded: they are suspect measurements (light from another source inside the aperture, ` +
+      "or an isolated spike such as a cosmic ray). They are not used for the shape or the card.",
     porPasada:
       "Each color is one pass: SPHEREx returns to the same sky every ~6 months. Compare the colors to see " +
       "whether the object changed; the line joins each pass's medians.",
@@ -247,6 +248,7 @@ export const prismaEN: typeof prisma = {
       enana_marron: "a brown dwarf",
     },
     confianza: { baja: "low confidence", media: "medium confidence" },
+    soloCompletas: (n: number) => `Classified with ${n === 1 ? "the complete pass" : `the ${n} complete passes`} only (90 or more of 102 channels).`,
     incompleta: (n: number) =>
       `This pass is incomplete (${n} of 102 channels): on its own it is not enough to classify. See \u201call\u201d or another pass.`,
     aviso:
