@@ -15,6 +15,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as PE, type ReactElement } from "react";
 import { bandaDePlano, leerPlanos, PLANOS_VACIOS } from "./planos";
+import { useIdioma } from "../state/idioma";
 
 type Props = {
   /** Plano activo (0–101). */
@@ -74,6 +75,7 @@ const pastilla: CSSProperties = {
 const botonChico: CSSProperties = { fontSize: "0.8rem", padding: "0.2rem 0.6rem" };
 
 export default function SelectorLambda({ plano, onPlano, survey }: Props) {
+  const { tr } = useIdioma();
   const [lam, setLam] = useState<number[]>(L_RESPALDO);
   const [fuente, setFuente] = useState<Fuente>({ tipo: "cargando" });
   const [w, setW] = useState<number[]>([1, 1, 1, 1, 1, 1]);
@@ -358,14 +360,14 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
     <div style={caja}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap", alignItems: "center" }}>
-          <strong style={{ marginRight: 4 }}>Longitud de onda</strong>
+          <strong style={{ marginRight: 4 }}>{tr("Longitud de onda", "Wavelength")}</strong>
           {BANDAS.map((b) => (
             <button
               key={b}
               type="button"
               aria-pressed={abierta === b + 1}
               onClick={() => abrir(b + 1)}
-              title={`Expandir la banda D${b + 1} (${lam[17 * b].toFixed(2)}–${lam[17 * b + 16].toFixed(2)} µm)`}
+              title={`${tr("Expandir la banda", "Expand band")} D${b + 1} (${lam[17 * b].toFixed(2)}–${lam[17 * b + 16].toFixed(2)} µm)`}
               style={{
                 ...botonChico,
                 borderColor: abierta === b + 1 ? COL[b] : undefined,
@@ -377,7 +379,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
           ))}
         </div>
         <output aria-live="polite" style={{ fontVariantNumeric: "tabular-nums", color: "var(--acento)" }}>
-          En el cielo: canal {rotuloCanal(plano)} · λ = {lam[plano]?.toFixed(2)} µm
+          {tr("En el cielo: canal", "On the sky: channel")} {rotuloCanal(plano)} · λ = {lam[plano]?.toFixed(2)} µm
         </output>
       </div>
       <svg
@@ -385,7 +387,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
         tabIndex={0}
-        aria-label="Canales de SPHEREx por longitud de onda. Clic para elegir un canal, arrastrar para elegir un tramo; flechas izquierda y derecha para cambiar de canal."
+        aria-label={tr("Canales de SPHEREx por longitud de onda. Clic para elegir un canal, arrastrar para elegir un tramo; flechas izquierda y derecha para cambiar de canal.", "SPHEREx channels by wavelength. Click to pick a channel, drag to pick a range; left and right arrows change channel.")}
         onPointerDown={alBajar}
         onPointerMove={alMover}
         onPointerUp={alSoltar}
@@ -403,7 +405,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
           borderRadius: 6,
         }}
       >
-        <title>Ancho λ/R con R por banda de la literatura; altura ilustrativa</title>
+        <title>{tr("Ancho λ/R con R por banda de la literatura; altura ilustrativa", "Width λ/R with per-band R from the literature; illustrative height")}</title>
         {fondo}
         {sel && <rect x={xa} y={Y1 - 22} width={Math.max(1.5, xz - xa)} height={Y0 - Y1 + 22} fill="#2a3360" />}
         <line x1={X0} x2={X1} y1={Y0} y2={Y0} stroke="#3a4268" />
@@ -411,25 +413,25 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         {curvas}
         {textos}
         <text x={10} y={120} fontSize={10} fill="#a9b3cf" transform="rotate(-90 10 120)" textAnchor="middle">
-          Respuesta (ilustrativa)
+          {tr("Respuesta (ilustrativa)", "Response (illustrative)")}
         </text>
       </svg>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6, alignItems: "center" }}>
         {!sel || elegidos.length === 0 ? (
           <span style={{ color: "var(--suave)", fontSize: "0.8rem" }}>
-            {sel ? "El tramo no tiene canales con imagen." : "Clic en un canal o arrastra para elegir un tramo."}
+            {sel ? tr("El tramo no tiene canales con imagen.", "The range has no channels with images.") : tr("Clic en un canal o arrastra para elegir un tramo.", "Click a channel or drag to pick a range.")}
           </span>
         ) : (
           <>
             {porBanda.map((ps) => (
               <span key={ps[0]} style={pastilla}>
                 D{bandaDePlano(ps[0])} ·{" "}
-                {ps.length > 1 ? `canales ${rotuloCanal(ps[0])}–${rotuloCanal(ps[ps.length - 1])}` : `canal ${rotuloCanal(ps[0])}`}
+                {ps.length > 1 ? `${tr("canales", "channels")} ${rotuloCanal(ps[0])}–${rotuloCanal(ps[ps.length - 1])}` : `${tr("canal", "channel")} ${rotuloCanal(ps[0])}`}
               </span>
             ))}
             <span style={{ color: "var(--suave)", fontSize: "0.8rem", fontVariantNumeric: "tabular-nums" }}>
               {lam[elegidos[0]].toFixed(2)}–{lam[elegidos[elegidos.length - 1]].toFixed(2)} µm · {elegidos.length}{" "}
-              {elegidos.length === 1 ? "canal" : "canales"}
+              {elegidos.length === 1 ? tr("canal", "channel") : tr("canales", "channels")}
             </span>
           </>
         )}
@@ -437,16 +439,16 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         {elegidos.length > 1 &&
           (recorrido ? (
             <button type="button" style={botonChico} onClick={() => setRecorrido(null)}>
-              Detener
+              {tr("Detener", "Stop")}
             </button>
           ) : (
             <button
               type="button"
               style={botonChico}
               onClick={() => setRecorrido(elegidos)}
-              title="Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)"
+              title={tr("Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)", "Steps the sky through each channel in the range, one after another (0.8 s per channel)")}
             >
-              Recorrer
+              {tr("Recorrer", "Sweep")}
             </button>
           ))}
         {sel && (
@@ -458,14 +460,14 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
               setSel(null);
             }}
           >
-            Limpiar
+            {tr("Limpiar", "Clear")}
           </button>
         )}
       </div>
       <div style={{ color: "var(--suave)", fontSize: "0.75rem", marginTop: 4 }}>
-        Ancho λ/R con R por banda de la literatura; altura ilustrativa. Los canales 3.17 y 4.1 vienen vacíos en el cubo.
-        {fuente.tipo === "respaldo" && ` No se pudo leer el properties del cubo (${fuente.motivo}): λ de respaldo, redondeadas.`}
-        {fuente.tipo === "cargando" && " Leyendo las λ del cubo…"}
+        {tr("Ancho λ/R con R por banda de la literatura; altura ilustrativa. Los canales 3.17 y 4.1 vienen vacíos en el cubo.", "Width λ/R with per-band R from the literature; illustrative height. Channels 3.17 and 4.1 are empty in the cube.")}
+        {fuente.tipo === "respaldo" && tr(` No se pudo leer el properties del cubo (${fuente.motivo}): λ de respaldo, redondeadas.`, ` Could not read the cube properties (${fuente.motivo}): fallback λ, rounded.`)}
+        {fuente.tipo === "cargando" && tr(" Leyendo las λ del cubo…", " Reading the cube λ…")}
       </div>
     </div>
   );

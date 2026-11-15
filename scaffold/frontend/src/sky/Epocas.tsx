@@ -13,6 +13,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import A from "aladin-lite";
 import { CAMPOS, posicionActual } from "../content/campos";
+import { useIdioma } from "../state/idioma";
 
 type IdEpoca = "spherex" | "allwise" | "2mass";
 
@@ -91,6 +92,7 @@ type Props = {
 };
 
 export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
+  const { tr } = useIdioma();
   const [elegida, setElegida] = useState<EpocaAntigua["id"]>("allwise");
   const [mostrada, setMostrada] = useState<IdEpoca>("spherex");
   const [parpadeando, setParpadeando] = useState(false);
@@ -116,7 +118,7 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
         (e: unknown) => {
           capas.current.delete(ep.id);
           setCargando(null);
-          setError(`No se pudo cargar ${ep.boton} (${e instanceof Error ? e.message : String(e)}). Se sigue viendo SPHEREx.`);
+          setError(tr(`No se pudo cargar ${ep.boton} (${e instanceof Error ? e.message : String(e)}). Se sigue viendo SPHEREx.`, `Could not load ${ep.boton} (${e instanceof Error ? e.message : String(e)}). Still showing SPHEREx.`));
           setParpadeando(false);
           setMostrada("spherex");
         },
@@ -172,8 +174,8 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
     <div
       style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}
       role="group"
-      aria-label="Época de la imagen de fondo"
-      title={`Compara el cielo de SPHEREx con imágenes de otras épocas para ver el movimiento propio. ${atribuciones}`}
+      aria-label={tr("Época de la imagen de fondo", "Background image epoch")}
+      title={tr(`Compara el cielo de SPHEREx con imágenes de otras épocas para ver el movimiento propio. ${atribuciones}`, `Compare the SPHEREx sky with images from other epochs to see proper motion. ${atribuciones}`)}
     >
       <span
         aria-live="polite"
@@ -189,7 +191,7 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
           boxSizing: "border-box",
         }}
       >
-        Mostrando: {rotuloActual}
+        {tr("Mostrando:", "Showing:")} {rotuloActual}
       </span>
       <button type="button" aria-pressed={mostrada === "spherex" && !parpadeando} style={boton(mostrada === "spherex" && !parpadeando)} onClick={() => elegir("spherex")}>
         SPHEREx 2025–26
@@ -214,11 +216,11 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
         aria-pressed={parpadeando}
         style={boton(parpadeando)}
         onClick={() => setParpadeando((v) => !v)}
-        title={`Alterna SPHEREx y ${EPOCAS.find((e) => e.id === elegida)?.boton} cada ${PERIODO_MS / 1000} s`}
+        title={tr(`Alterna SPHEREx y ${EPOCAS.find((e) => e.id === elegida)?.boton} cada ${PERIODO_MS / 1000} s`, `Alternates SPHEREx and ${EPOCAS.find((e) => e.id === elegida)?.boton} every ${PERIODO_MS / 1000} s`)}
       >
-        {parpadeando ? "Detener parpadeo" : "Parpadear"}
+        {parpadeando ? tr("Detener parpadeo", "Stop blinking") : tr("Parpadear", "Blink")}
       </button>
-      {cargando && <span style={{ color: "var(--suave)", fontSize: "0.85rem" }}>Cargando {cargando}…</span>}
+      {cargando && <span style={{ color: "var(--suave)", fontSize: "0.85rem" }}>{tr("Cargando", "Loading")} {cargando}…</span>}
       {error && (
         <span role="alert" style={{ color: "var(--acento)", fontSize: "0.85rem" }}>
           {error}
@@ -226,7 +228,7 @@ export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
       )}
       {avisoWise0855 && (
         <span style={{ color: "var(--suave)", fontSize: "0.85rem", flexBasis: "100%" }}>
-          En 2MASS no se ven objetos muy fríos como WISE 0855: compara con AllWISE.
+          {tr("En 2MASS no se ven objetos muy fríos como WISE 0855: compara con AllWISE.", "Very cold objects like WISE 0855 are not visible in 2MASS: compare with AllWISE.")}
         </span>
       )}
       <span style={{ color: "var(--suave)", fontSize: "0.75rem", flexBasis: "100%" }}>{atribuciones}</span>
