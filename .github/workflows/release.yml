@@ -1,0 +1,38 @@
+# Release: al empujar una etiqueta vX.Y.Z se construye la app web instalable (PWA)
+# y se adjunta como .zip al release de GitHub.
+#
+# Plataformas: la PWA se instala en iPhone (Safari), Android (Chrome), Windows y macOS
+# (Chrome/Edge/Safari). No hay binarios nativos ni firmas de tiendas.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  pwa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Construir
+        working-directory: scaffold/frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Empaquetar
+        run: |
+          cd scaffold/frontend/dist
+          zip -r "$GITHUB_WORKSPACE/spherex-pwa-${GITHUB_REF_NAME}.zip" .
+      - name: Publicar release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "spherex-pwa-${GITHUB_REF_NAME}.zip" \
+            --title "SPHEREX ${GITHUB_REF_NAME}" \
+            --generate-notes             --notes "App web instalable (PWA). La publicación principal es la de Vercel; este .zip es el build estático para servirlo desde la raíz de un dominio con los rewrites de /api y /proto-api de vercel.json."

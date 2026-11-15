@@ -19,6 +19,7 @@ import ControlEpocas from "./Epocas";
 import SelectorLambda from "./SelectorLambda";
 import { ponerPlano, SURVEY_SPHEREX } from "./planos";
 import { epocaDeFecha } from "./propagacion";
+import { useIdioma } from "../state/idioma";
 
 // Visor.tsx importa planoDeBanda desde aquí: se mantiene la exportación.
 export { planoDeBanda } from "./planos";
@@ -48,6 +49,7 @@ type Props = {
 };
 
 export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA_POR_DEFECTO, onReady, onSelect }: Props) {
+  const { tr } = useIdioma();
   const div = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const aladin = useRef<any>(null);
@@ -149,12 +151,12 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
   }, [mostrarCatalogos]);
 
   if (error) {
-    return <div className="vacio">No se pudo iniciar el mapa del cielo: {error}</div>;
+    return <div className="vacio">{tr("No se pudo iniciar el mapa del cielo:", "Could not start the sky map:")} {error}</div>;
   }
   return (
     <>
       {/* data-tour: anclas del tutorial de Spherix (src/tutorial); no cambian el comportamiento. */}
-      <div ref={div} className="aladin" aria-label="Mapa del cielo de SPHEREx" data-tour="mapa" />
+      <div ref={div} className="aladin" aria-label={tr("Mapa del cielo de SPHEREx", "SPHEREx sky map")} data-tour="mapa" />
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 6, marginTop: 6 }}>
         <div data-tour="epocas">
           <ControlEpocas aladin={listo ? aladin.current : null} ra={ra} dec={dec} fovDeg={fovDeg} />
@@ -164,9 +166,9 @@ export default function AladinView({ ra, dec, fovDeg, plano, size, epoca = EPOCA
           data-tour="catalogos"
           aria-pressed={mostrarCatalogos}
           onClick={() => setMostrarCatalogos((v) => !v)}
-          title="Gaia DR3 (círculos), CatWISE2020 (triángulos) y SIMBAD (cuadrados)"
+          title={tr("Gaia DR3 (círculos), CatWISE2020 (triángulos) y SIMBAD (cuadrados)", "Gaia DR3 (circles), CatWISE2020 (triangles) and SIMBAD (squares)")}
         >
-          {mostrarCatalogos ? "Ocultar catálogos" : "Mostrar catálogos (Gaia, CatWISE, SIMBAD)"}
+          {mostrarCatalogos ? tr("Ocultar catálogos", "Hide catalogs") : tr("Mostrar catálogos (Gaia, CatWISE, SIMBAD)", "Show catalogs (Gaia, CatWISE, SIMBAD)")}
         </button>
       </div>
       <div data-tour="lambda">

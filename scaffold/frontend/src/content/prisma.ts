@@ -3,6 +3,8 @@
  * Regla de honestidad: nada aquí afirma más de lo que muestran los datos. Si un objeto es demasiado
  * débil en una sola foto, se dice; si un punto está saturado, se dice.
  */
+import { useIdioma } from "../state/idioma";
+
 export const prisma = {
   titulo: "Prisma: la luz invisible en colores",
   intro:
@@ -55,3 +57,61 @@ export const prisma = {
     { nombre: "monóxido de carbono", formula: "CO", rangos: [[4.55, 4.75]] },
   ] as { nombre: string; formula: string; rangos: [number, number][] }[],
 };
+
+/** Versión en inglés: misma forma que `prisma`. */
+export const prismaEN: typeof prisma = {
+  titulo: "Prism: invisible light in colors",
+  intro:
+    "SPHEREx doesn't take one photo: it takes 102, each in an infrared \u201ccolor\u201d your eyes can't see. " +
+    "Here we translate them into visible colors and build the object's light fingerprint, like a prism.",
+
+  ojo: {
+    titulo: "Infrared eye",
+    texto:
+      "This is how the sky would look if your eyes saw infrared: short bands (D1–D2) in blue, middle " +
+      "(D3–D4) in green and long (D5–D6) in red. The coldest things look red; hot stars look bluish.",
+    medida: "The circle marks where we measure the object's light.",
+    sinDatos: "Loading the bands…",
+  },
+
+  huella: {
+    titulo: "Spectral fingerprint",
+    texto:
+      "Each point is the object's brightness in one photo, sorted by its color (wavelength). " +
+      "The gray line is the typical shape of neighboring stars in the same field: compare it with the object's.",
+    ejeX: "Wavelength (µm)",
+    ejeY: "Brightness (mJy, log scale)",
+    ojoHumano: "your eye sees here",
+    spherex: "SPHEREx sees here",
+    leyenda: {
+      medida: "measurement",
+      limite: "too faint (upper limit)",
+      saturado: "saturated (too bright)",
+      vecinas: "neighboring stars (shape)",
+    },
+    moleculas: "Typical regions where these molecules absorb",
+    caveat:
+      "Approximate values (fixed ~15″ aperture, no fine calibration): good for seeing the shape, not as " +
+      "scientific photometry. For that there is IRSA's Spectrophotometry Tool.",
+    debil:
+      "This object is very faint in a single photo: most points are upper limits. To see it well you need to " +
+      "stack many exposures (\u201cExp. per visit\u201d in the explorer).",
+    saturadoAviso:
+      "This object is so bright it saturates the detector in several bands: those points are drawn hollow and " +
+      "not used for the shape.",
+    pista: "Hover over a point to see that photo in the explorer.",
+  },
+
+  moleculas: [
+    { nombre: "water", formula: "H₂O", rangos: [[1.33, 1.48], [1.8, 1.95], [2.6, 2.95]] },
+    { nombre: "methane", formula: "CH₄", rangos: [[2.2, 2.4], [3.2, 3.45]] },
+    { nombre: "carbon dioxide", formula: "CO₂", rangos: [[4.2, 4.35]] },
+    { nombre: "carbon monoxide", formula: "CO", rangos: [[4.55, 4.75]] },
+  ],
+};
+
+/** Textos del Prisma en el idioma activo. */
+export function usePrisma() {
+  const { idioma } = useIdioma();
+  return idioma === "en" ? prismaEN : prisma;
+}

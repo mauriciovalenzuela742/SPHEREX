@@ -18,6 +18,15 @@ import "./explorador.css";
 const BANDAS_UM: Record<number, [number, number]> = {
   1: [0.75, 1.09], 2: [1.1, 1.62], 3: [1.63, 2.41], 4: [2.42, 3.82], 5: [3.83, 4.41], 6: [4.42, 5.0],
 };
+const MESES_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const MESES_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+const LEYENDA_ES: Record<Modo, string> = {
+  imagen: "Brillo con escala común para todas las fechas de la banda. La mira marca el punto pedido.",
+  resta: "Rojo = brillo que aparece respecto de t₀ · Azul = brillo que estaba. Un par rojo/azul que se separa al avanzar el tiempo = movimiento.",
+  color: "Primera visita en rojo, la actual en cian. Lo quieto se ve blanco.",
+};
 
 // Pasos de los botones y teclas. Con el touchpad (pellizcar) el zoom es continuo entre el primero y el último.
 const ZOOMS = [1, 2, 4, 8];
@@ -36,7 +45,8 @@ const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 type Props = { datos: DatosSpherex };
 
 export default function Explorador({ datos }: Props) {
-  const { t } = useIdioma();
+  const { t, idioma, tr } = useIdioma();
+  const MESES = idioma === "en" ? MESES_EN : MESES_ES;
   const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando, preset } = datos;
 
   // ── Leyenda dinámica ──
@@ -158,15 +168,16 @@ export default function Explorador({ datos }: Props) {
     const paso = span > 500 ? 3 : span > 200 ? 2 : 1;
     const out: { x: number; txt: string }[] = [];
     for (let d = new Date(Date.UTC(ini.getUTCFullYear(), ini.getUTCMonth() + 1, 1)); d <= fin; d.setUTCMonth(d.getUTCMonth() + paso)) {
-      out.push({ x: ((+d / 864e5 + 40587 - tMin) / (tMax - tMin)) * 100, txt: `${t.meses[d.getUTCMonth()]}-${String(d.getUTCFullYear()).slice(2)}` });
+      out.push({ x: ((+d / 864e5 + 40587 - tMin) / (tMax - tMin)) * 100, txt: `${MESES[d.getUTCMonth()]}-${String(d.getUTCFullYear()).slice(2)}` });
     }
     return out;
-  }, [grid, tMin, tMax, t.meses]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grid, tMin, tMax, idioma]);
 
   const pct = prog.total ? Math.round((prog.hechos / prog.total) * 100) : 0;
 
   return (
-    <section className="explorador" aria-label={t.exploradorAria}>
+    <section className="explorador" aria-label={tr("Explorador SPHEREx: bandas y fechas", "SPHEREx Explorer: bands and dates")}>
       <div className="exp-escena">
         <div className="exp-titulo">
           <strong>{t.exploradorTitulo}</strong>
@@ -220,13 +231,13 @@ export default function Explorador({ datos }: Props) {
               B{banda} · {(actual?.meta.t ?? visitas[visita].start).slice(0, 10)}
               {actual && (
                 <small>
-                  {dias >= 0 ? "+" : ""}{(dias / 365.25).toFixed(2)} {t.aniosDesdeT0} · λ {actual.meta.wavelength_um ?? "?"} µm
+                  {dias >= 0 ? "+" : ""}{(dias / 365.25).toFixed(2)} {tr("años desde t₀", "years since t₀")} · λ {actual.meta.wavelength_um ?? "?"} µm
                 </small>
               )}
             </div>
           )}
           <span className="exp-orient">N↑ E←</span>
-          {prog.total > 0 && prog.hechos < prog.total && <div className="exp-cargando">{t.cargandoMin} {prog.hechos}/{prog.total}</div>}
+          {prog.total > 0 && prog.hechos < prog.total && <div className="exp-cargando">{tr("cargando", "loading")} {prog.hechos}/{prog.total}</div>}
           {!actual && (
             <div className="exp-mensaje">
               {!grid
@@ -255,7 +266,7 @@ export default function Explorador({ datos }: Props) {
             className="exp-pista"
             tabIndex={0}
             role="slider"
-            aria-label={t.fechaAria}
+            aria-label={tr("Fecha", "Date")}
             aria-valuemin={0}
             aria-valuemax={Math.max(0, visitas.length - 1)}
             aria-valuenow={visita}
@@ -299,7 +310,7 @@ export default function Explorador({ datos }: Props) {
             <label>{t.desde}<input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} /></label>
             <label>{t.hasta}<input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} /></label>
           </div>
-          <div className="exp-chips" role="group" aria-label={t.bandasACargar}>
+          <div className="exp-chips" role="group" aria-label={tr("Bandas a cargar", "Bands to load")}>
             {[1, 2, 3, 4, 5, 6].map((b) => (
               <button
                 key={b}
@@ -312,8 +323,8 @@ export default function Explorador({ datos }: Props) {
               </button>
             ))}
           </div>
-          <label title={t.expPorVisitaAyuda}>
-            {t.expPorVisita}
+          <label title={tr("Mediana de varias exposiciones de la visita: objetos débiles se ven mejor", "Median of several exposures per visit: faint objects show up better")}>
+            {tr("Exp. por visita", "Exp. per visit")}
             <input type="number" min={1} max={10} value={porVisita} onChange={(e) => setPorVisita(Math.max(1, Math.min(10, Number(e.target.value) || 1)))} />
           </label>
           {prog.total > 0 && (
@@ -350,8 +361,11 @@ export default function Explorador({ datos }: Props) {
               ))}
             </div>
             <p className="exp-leyenda">{LEYENDA[modo]}</p>
-            <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {t.suavizar}</label>
-            <p className="exp-ayuda">{t.ayudaPixel}</p>
+            <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {tr("Suavizar píxeles", "Smooth pixels")}</label>
+            <p className="exp-ayuda">
+              {tr("La mira marca la posición pedida (A.R./Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento está hecho para espectros de todo el cielo, no para detalle fino. El grano es ruido; baja con la mediana de más exposiciones por visita.",
+                  "The crosshair marks the requested position (R.A./Dec). Each square is a 6.15″ SPHEREx pixel: the instrument is built for all-sky spectra, not fine detail. The grain is noise; it drops with the median of more exposures per visit.")}
+            </p>
           </div>
         )}
 
@@ -364,9 +378,9 @@ export default function Explorador({ datos }: Props) {
                     [t.fecha, actual.meta.t.replace("T", " ").replace("Z", "")],
                     [t.longitudOnda, `${actual.meta.wavelength_um ?? "?"} µm`],
                     [t.exposiciones, actual.meta.n_stacked > 1 ? t.mediana(actual.meta.n_stacked) : "1"],
-                    [t.observacion, actual.meta.epoch_id],
-                    [t.coleccion, actual.meta.collection],
-                    [t.metodo, actual.meta.method === "rangos" ? t.metodoRapido : t.metodoRecorte],
+                    [tr("Observación", "Observation"), actual.meta.epoch_id],
+                    [tr("Colección", "Collection"), actual.meta.collection],
+                    [tr("Método", "Method"), actual.meta.method === "rangos" ? tr("rápido (solo píxeles)", "fast (pixels only)") : tr("recorte de IRSA", "IRSA cutout")],
                   ]
                 : [[t.fecha, visitas[visita].start.slice(0, 10)], [t.exposiciones, String(visitas[visita].n)], [t.estado, t.cargandoEstado]]
               ).map(([k, x]) => (
@@ -378,14 +392,14 @@ export default function Explorador({ datos }: Props) {
 
         {grid && (
           <div className="exp-seccion" data-tour="explorador-rejilla">
-            <h3>{t.todasBandasFechas}</h3>
+            <h3>{tr("Todas las bandas y fechas", "All bands and dates")}</h3>
             <div className="exp-minis">
               <table>
                 <thead>
                   <tr>
                     <th />
                     {grid.columns.map((c) => (
-                      <th key={c.date}>{t.meses[+c.date.slice(5, 7) - 1]}<br />{c.date.slice(2, 4)}</th>
+                      <th key={c.date}>{MESES[+c.date.slice(5, 7) - 1]}<br />{c.date.slice(2, 4)}</th>
                     ))}
                   </tr>
                 </thead>
@@ -420,7 +434,7 @@ export default function Explorador({ datos }: Props) {
               </table>
             </div>
             <p className="exp-ayuda">
-              <kbd>←</kbd><kbd>→</kbd> {t.teclaVisita} · <kbd>↑</kbd><kbd>↓</kbd> {t.teclaBanda} · <kbd>{t.teclaEspacio}</kbd> {t.teclaReproducir}
+              <kbd>←</kbd><kbd>→</kbd> {tr("visita", "visit")} · <kbd>↑</kbd><kbd>↓</kbd> {tr("banda", "band")} · <kbd>{tr("espacio", "space")}</kbd> {tr("reproducir", "play")}
             </p>
           </div>
         )}

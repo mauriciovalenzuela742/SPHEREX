@@ -5,7 +5,7 @@
  * (La sonificación se quitó el 14-nov por decisión del equipo.)
  */
 import { useMemo } from "react";
-import { prisma } from "../content/prisma";
+import { usePrisma } from "../content/prisma";
 import type { DatosSpherex } from "../explorador/useDatosSpherex";
 import { espectro } from "./fotometria";
 import HuellaEspectral from "./HuellaEspectral";
@@ -13,6 +13,7 @@ import OjoInfrarrojo from "./OjoInfrarrojo";
 import "./prisma.css";
 
 export default function Prisma({ datos }: { datos: DatosSpherex }) {
+  const prisma = usePrisma();
   const { grid, frames, version, banda, visita, irA } = datos;
   // `version` sube con cada fotograma que llega: recalcular el espectro entonces.
   const puntos = useMemo(() => (grid ? espectro(frames.current) : []), [grid, version, frames]);
