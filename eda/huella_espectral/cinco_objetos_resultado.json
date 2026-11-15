@@ -1,0 +1,596 @@
+{
+  "datos_dir": "D:\\dev\\informes_v2\\huella_espectral",
+  "objetivos": {
+    "wise_0855": {
+      "n_exp_total": 258,
+      "n_pasadas": 3,
+      "pasadas": [
+        {
+          "pasada": 1,
+          "n_exp": 30,
+          "mjd_min": 60800.7,
+          "mjd_max": 60801.52,
+          "mjd_media": 60801.24,
+          "duracion_dias": 0.82,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 2,
+          "n_exp": 128,
+          "mjd_min": 60979.72,
+          "mjd_max": 61022.37,
+          "mjd_media": 60991.32,
+          "duracion_dias": 42.65,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 3,
+          "n_exp": 100,
+          "mjd_min": 61151.2,
+          "mjd_max": 61174.29,
+          "mjd_media": 61161.93,
+          "duracion_dias": 23.09,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "estado": "exito_mezcla_resuelta",
+      "fuentes_por_pasada": {
+        "1": 9,
+        "2": 9,
+        "3": 9
+      },
+      "busqueda_ciega": {
+        "posicional": {
+          "n_completas": 6,
+          "rotas_desde_P1": 3,
+          "huerfanas_Pfin": 3,
+          "n_candidatas": 0
+        },
+        "huella": {
+          "n_completas": 7,
+          "rotas_desde_P1": 2,
+          "huerfanas_Pfin": 2,
+          "n_candidatas": 1,
+          "candidata": {
+            "cadena": {
+              "1": 8,
+              "2": 8,
+              "3": 8
+            },
+            "x_y_ref": [
+              20.01,
+              19.98
+            ],
+            "d_neto_arcsec": 8.668,
+            "dra_neto_arcsec": -8.596,
+            "ddec_neto_arcsec": 1.116,
+            "err_neto_arcsec": 0.826,
+            "sigma_neto": 10.5,
+            "candidata": true,
+            "D_p0_pN": 1.522,
+            "frac_roja_med": 0.957
+          }
+        }
+      },
+      "medido_P1_P3_arcsec": 8.668,
+      "err_formal_arcsec": 0.657,
+      "sigma_con_piso": 10.5,
+      "predicho_pm_plx_arcsec": 8.035,
+      "dif_vectorial_pred_arcsec": 0.751,
+      "sep_vecina_por_pasada": {
+        "1": {
+          "medida_arcsec": 11.36,
+          "predicha_arcsec": 11.4
+        },
+        "2": {
+          "medida_arcsec": 7.75,
+          "predicha_arcsec": 8.07
+        },
+        "3": {
+          "medida_arcsec": 3.3,
+          "predicha_arcsec": 4.27
+        }
+      },
+      "D_misma_fuente": {
+        "1-2": 2.165,
+        "2-3": 0.122,
+        "1-3": 1.522
+      },
+      "D_vs_estrella": {
+        "1-2": 4.71,
+        "2-3": 13.11,
+        "1-3": 4.71
+      },
+      "quietas_mediana_arcsec": 0.121,
+      "quietas_max_arcsec": 0.32
+    },
+    "eps_ind_b": {
+      "n_exp_total": 454,
+      "n_pasadas": 4,
+      "pasadas": [
+        {
+          "pasada": 1,
+          "n_exp": 117,
+          "mjd_min": 60789.86,
+          "mjd_max": 60836.19,
+          "mjd_media": 60805.05,
+          "duracion_dias": 46.33,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 2,
+          "n_exp": 146,
+          "mjd_min": 60946.96,
+          "mjd_max": 60991.86,
+          "mjd_media": 60959.26,
+          "duracion_dias": 44.89,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 3,
+          "n_exp": 73,
+          "mjd_min": 61148.84,
+          "mjd_max": 61164.12,
+          "mjd_media": 61155.23,
+          "duracion_dias": 15.27,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 4,
+          "n_exp": 118,
+          "mjd_min": 61305.23,
+          "mjd_max": 61315.48,
+          "mjd_media": 61310.83,
+          "duracion_dias": 10.25,
+          "bandas": [
+            2,
+            3,
+            5,
+            6
+          ]
+        }
+      ],
+      "estado": "exito_4_pasadas_paralaje",
+      "fuentes_por_pasada": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2
+      },
+      "separacion_estrella_campo_arcsec": 58.56,
+      "mjd_posiciones": {
+        "1": {
+          "g": "medio",
+          "mjd_grupo": 60791.98,
+          "mjd_largo_o_tot": 60805.72
+        },
+        "2": {
+          "g": "largo",
+          "mjd_grupo": 60957.65,
+          "mjd_largo_o_tot": 60957.65
+        },
+        "3": {
+          "g": "largo",
+          "mjd_grupo": 61158.56,
+          "mjd_largo_o_tot": 61158.56
+        },
+        "4": {
+          "g": "largo",
+          "mjd_grupo": 61310.83,
+          "mjd_largo_o_tot": 61310.83
+        }
+      },
+      "busqueda_ciega": {
+        "posicional": {
+          "n_completas": 2,
+          "rotas_desde_P1": 0,
+          "huerfanas_Pfin": 0,
+          "n_candidatas": 1
+        },
+        "huella": {
+          "n_completas": 2,
+          "rotas_desde_P1": 0,
+          "huerfanas_Pfin": 0,
+          "n_candidatas": 1,
+          "candidata": {
+            "cadena": {
+              "1": 1,
+              "2": 1,
+              "3": 0,
+              "4": 1
+            },
+            "x_y_ref": [
+              20.27,
+              19.85
+            ],
+            "d_neto_arcsec": 6.615,
+            "dra_neto_arcsec": 5.054,
+            "ddec_neto_arcsec": -4.268,
+            "err_neto_arcsec": 0.503,
+            "sigma_neto": 13.16,
+            "candidata": true,
+            "D_p0_pN": 0.668,
+            "frac_roja_med": 0.38
+          },
+          "estrella_quieta": {
+            "cadena": {
+              "1": 0,
+              "2": 0,
+              "3": 1,
+              "4": 0
+            },
+            "x_y_ref": [
+              13.95,
+              2.54
+            ],
+            "d_neto_arcsec": 0.364,
+            "dra_neto_arcsec": 0.311,
+            "ddec_neto_arcsec": -0.19,
+            "err_neto_arcsec": 0.974,
+            "sigma_neto": 0.37,
+            "candidata": false,
+            "D_p0_pN": 0.266,
+            "frac_roja_med": 0.099
+          }
+        }
+      },
+      "medido_P1_P4_arcsec": 6.615,
+      "predicho_pm_plx_arcsec": 6.306,
+      "dif_vectorial_pm_plx_arcsec": 0.566,
+      "predicho_pm_plx_mjd_grupo_arcsec": 6.518,
+      "dif_vectorial_pm_plx_mjd_grupo_arcsec": 0.484,
+      "predicho_solo_pm_arcsec": 6.476,
+      "dif_vectorial_solo_pm_arcsec": 0.968,
+      "zigzag_paralaje": [
+        {
+          "par": "1-2",
+          "medido_arcsec": 2.238,
+          "dra_med": 1.193,
+          "ddec_med": -1.894,
+          "pred_pm_plx_arcsec": 1.781,
+          "dra_pred": 1.216,
+          "ddec_pred": -1.302,
+          "dif_vectorial_arcsec": 0.593,
+          "D": 0.567
+        },
+        {
+          "par": "2-3",
+          "medido_arcsec": 2.895,
+          "dra_med": 2.815,
+          "ddec_med": -0.678,
+          "pred_pm_plx_arcsec": 2.816,
+          "dra_pred": 2.614,
+          "ddec_pred": -1.047,
+          "dif_vectorial_arcsec": 0.421,
+          "D": 1.156
+        },
+        {
+          "par": "3-4",
+          "medido_arcsec": 1.993,
+          "dra_med": 1.046,
+          "ddec_med": -1.696,
+          "pred_pm_plx_arcsec": 1.86,
+          "dra_pred": 1.273,
+          "ddec_pred": -1.355,
+          "dif_vectorial_arcsec": 0.409,
+          "D": 2.069
+        },
+        {
+          "par": "1-4",
+          "medido_arcsec": 6.615,
+          "dra_med": 5.054,
+          "ddec_med": -4.268,
+          "pred_pm_plx_arcsec": 6.306,
+          "dra_pred": 5.103,
+          "ddec_pred": -3.704,
+          "dif_vectorial_arcsec": 0.566,
+          "D": 0.668
+        }
+      ]
+    },
+    "barnard": {
+      "n_exp_total": 356,
+      "n_pasadas": 3,
+      "pasadas": [
+        {
+          "pasada": 1,
+          "n_exp": 118,
+          "mjd_min": 60902.86,
+          "mjd_max": 60949.27,
+          "mjd_media": 60916.19,
+          "duracion_dias": 46.4,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 2,
+          "n_exp": 120,
+          "mjd_min": 61110.09,
+          "mjd_max": 61165.08,
+          "mjd_media": 61119.44,
+          "duracion_dias": 54.99,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 3,
+          "n_exp": 118,
+          "mjd_min": 61268.63,
+          "mjd_max": 61305.63,
+          "mjd_media": 61274.64,
+          "duracion_dias": 37.0,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "estado": "exito_astrometria_sin_espectro_central",
+      "fuentes_detectadas_por_pasada": {
+        "1": 1,
+        "2": 1,
+        "3": 1
+      },
+      "medido_P1_P3_arcsec": 10.264,
+      "predicho_pm_plx_arcsec": 10.313,
+      "dif_vectorial_arcsec": 0.456,
+      "pares": [
+        {
+          "par": "1-2",
+          "medido_arcsec": 6.609,
+          "predicho_arcsec": 5.937,
+          "dif_vectorial_arcsec": 0.676
+        },
+        {
+          "par": "2-3",
+          "medido_arcsec": 4.101,
+          "predicho_arcsec": 4.575,
+          "dif_vectorial_arcsec": 0.955
+        },
+        {
+          "par": "1-3",
+          "medido_arcsec": 10.264,
+          "predicho_arcsec": 10.313,
+          "dif_vectorial_arcsec": 0.456
+        }
+      ],
+      "nota": "Nucleo brillante (~K=4,5): las posiciones P1-P3 siguen la orbita pm+paralaje a <0,5\", pero la PSF no gaussiana/saturacion parcial en exposiciones cortas impide un espectro PSF limpio en el pipeline automatico."
+    },
+    "rw_aur": {
+      "n_exp_total": 331,
+      "n_pasadas": 3,
+      "pasadas": [
+        {
+          "pasada": 1,
+          "n_exp": 110,
+          "mjd_min": 60919.42,
+          "mjd_max": 60938.23,
+          "mjd_media": 60928.2,
+          "duracion_dias": 18.81,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 2,
+          "n_exp": 112,
+          "mjd_min": 61091.72,
+          "mjd_max": 61111.0,
+          "mjd_media": 61102.22,
+          "duracion_dias": 19.28,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 3,
+          "n_exp": 109,
+          "mjd_min": 61285.1,
+          "mjd_max": 61299.9,
+          "mjd_media": 61294.63,
+          "duracion_dias": 14.8,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "estado": "variable_espectral_estacionaria_halo_psf",
+      "fuentes_por_pasada": {
+        "1": 14,
+        "2": 11,
+        "3": 10
+      },
+      "halo_secundarias_por_pasada": {
+        "1": 4,
+        "2": 1,
+        "3": 0
+      },
+      "rw_aur_indice": {
+        "1": 6,
+        "2": 6,
+        "3": 6
+      },
+      "rw_aur_pares": [
+        {
+          "par": "1-2",
+          "desplazamiento_arcsec": 0.486,
+          "D": 2.77
+        },
+        {
+          "par": "2-3",
+          "desplazamiento_arcsec": 0.207,
+          "D": 17.31
+        },
+        {
+          "par": "1-3",
+          "desplazamiento_arcsec": 0.279,
+          "D": 2.47
+        }
+      ],
+      "busqueda_ciega": {
+        "posicional_candidatas": 0,
+        "huella_candidatas": 0,
+        "huella_rotas": 6,
+        "nota_candidata_huella": []
+      },
+      "estrellas_campo_limpias": 9,
+      "campo_mediana_d13_arcsec": 0.132,
+      "campo_max_d13_aisladas_arcsec": 0.396,
+      "campo_max_d13_arcsec": 4.453,
+      "campo_mediana_D_13": 2.79,
+      "nota": "En RW Aur (1-3 Jy), las alas no gaussianas de la PSF generan detecciones residuales secundarias cerca del centro (~10-15\" del nucleo) que se confunden entre pasadas; las 8 fuentes exteriores del campo permanecen quietas (<0,4\")."
+    },
+    "r_dra": {
+      "n_exp_total": 519,
+      "n_pasadas": 3,
+      "pasadas": [
+        {
+          "pasada": 1,
+          "n_exp": 141,
+          "mjd_min": 60811.96,
+          "mjd_max": 60878.61,
+          "mjd_media": 60845.39,
+          "duracion_dias": 66.65,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 2,
+          "n_exp": 205,
+          "mjd_min": 60965.61,
+          "mjd_max": 61053.41,
+          "mjd_media": 61006.34,
+          "duracion_dias": 87.8,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "pasada": 3,
+          "n_exp": 173,
+          "mjd_min": 61152.33,
+          "mjd_max": 61237.87,
+          "mjd_media": 61198.7,
+          "duracion_dias": 85.54,
+          "bandas": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "estado": "saturada_central_fuera_de_regimen",
+      "exp_centro_3x3_no_finito": 518,
+      "frac_exp_saturadas": 0.9981,
+      "pilas_nans": {
+        "corto": {
+          "nans_total_3_pasadas": 20,
+          "nans_5x5_central_3_pasadas": 20,
+          "px_totales_3_pasadas": 5043
+        },
+        "medio": {
+          "nans_total_3_pasadas": 461,
+          "nans_5x5_central_3_pasadas": 74,
+          "px_totales_3_pasadas": 5043
+        },
+        "largo": {
+          "nans_total_3_pasadas": 47,
+          "nans_5x5_central_3_pasadas": 46,
+          "px_totales_3_pasadas": 5043
+        }
+      },
+      "ala_exterior_mediana_delta_MJy_sr": {
+        "corto": -0.49,
+        "medio": -0.705,
+        "largo": -0.974
+      }
+    }
+  }
+}
