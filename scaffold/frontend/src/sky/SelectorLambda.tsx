@@ -2,7 +2,7 @@
  * Selector de longitud de onda en acordeón. Dueño: Juan Pablo (V2). Tarea #18; reemplaza a `LambdaSlider`
  * (que queda como respaldo). Port a React de `docs/diseno/maqueta_acordeon_lambda.html`.
  *
- * - Gráfico SVG: eje x = λ (0,75–5 µm), eje y = respuesta ilustrativa; los 102 canales como curvas por banda.
+ * - Gráfico SVG: eje x = λ (0,75–5 µm), eje y = respuesta normalizada (pico = 1); los 102 canales como curvas por banda.
  * - Clic en una banda (botón o su nombre en el gráfico): se expande (~450 ms) y se ven sus 17 canales. Otro clic
  *   la cierra.
  * - Clic en el gráfico: elige el canal más cercano (el cielo pasa a ese plano). Arrastrar: elige un tramo, que
@@ -11,9 +11,12 @@
  *
  * λ: las del `properties` del cubo (`leerPlanos`). Si no se pueden leer, o para los planos 50 y 51 (vacíos, que
  * `leerPlanos` descarta), se usan las de la maqueta, que salen del mismo `properties` (14-nov-2026).
- * Ancho de cada curva: λ/R con R por banda de la literatura (sin verificar); altura ilustrativa.
+ * Ancho de cada curva: λ/R con R por banda. Hui et al. 2026 (arXiv:2602.09139) mide R ≈ 35–39 en D1–D4 y ≈ 120
+ * en D5–D6. Cada curva va normalizada a 1, como se suelen mostrar los filtros: no muestra cuánta luz deja pasar
+ * cada banda (la transmisión absoluta). Las curvas medidas píxel a píxel salen de IPAC; quedan como siguiente paso.
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as PE, type ReactElement } from "react";
+import { useMovimientoReducido } from "./movimiento";
 import { bandaDePlano, leerPlanos, PLANOS_VACIOS } from "./planos";
 import { useIdioma } from "../state/idioma";
 
@@ -36,9 +39,8 @@ const L_RESPALDO = [
   [4.43, 4.47, 4.5, 4.53, 4.57, 4.6, 4.63, 4.67, 4.7, 4.74, 4.77, 4.81, 4.84, 4.88, 4.92, 4.95, 4.99],
 ].flat();
 
-/** Poder de resolución R por banda (literatura, sin verificar) y altura ilustrativa de las curvas. */
+/** Poder de resolución R por banda (aproximado; ver Hui et al. 2026 arriba). Todas las curvas tienen pico 1. */
 const R = [39, 41, 41, 35, 112, 128];
-const H = [0.55, 0.75, 0.85, 0.8, 0.65, 0.6];
 const COL = ["#a39cf0", "#6aa8ec", "#3cc79a", "#8cc152", "#e0a33a", "#ef7b52"];
 
 const VB_W = 680;
@@ -49,6 +51,8 @@ const Y0 = 215;
 const Y1 = 30;
 const DURACION_MS = 450;
 const PASO_RECORRIDO_MS = 800;
+/** Con «reducir movimiento» del sistema: el acordeón se abre sin animación y «Recorrer» va a la mitad. */
+const PASO_RECORRIDO_REDUCIDO_MS = 1600;
 
 const BANDAS = [0, 1, 2, 3, 4, 5];
 const vacio = (p: number) => PLANOS_VACIOS.includes(p);
@@ -91,6 +95,8 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
   const emitido = useRef(plano);
   const onPlanoRef = useRef(onPlano);
   onPlanoRef.current = onPlano;
+  const reducir = useMovimientoReducido();
+  const pasoMs = reducir ? PASO_RECORRIDO_REDUCIDO_MS : PASO_RECORRIDO_MS;
 
   // λ reales del cubo.
   useEffect(() => {
@@ -154,6 +160,11 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
     setAbierta(nueva);
     const wt = BANDAS.map((i) => (nueva ? (i === nueva - 1 ? 9 : 0.6) : 1));
     if (anim.current !== null) cancelAnimationFrame(anim.current);
+    if (reducir) {
+      setW(wt);
+      anim.current = null;
+      return;
+    }
     const w0 = wRef.current.slice();
     const t0 = performance.now();
     const paso = (t: number) => {
@@ -263,7 +274,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         return;
       }
       emitir(recorrido[i]);
-    }, PASO_RECORRIDO_MS);
+    }, pasoMs);
     return () => window.clearInterval(id);
   }, [recorrido]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -295,7 +306,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
       for (let i = 0; i <= 30; i++) {
         const l = c - 3 * s + (6 * s * i) / 30;
         if (l < lo[b] || l > hi[b]) continue;
-        d += `${d ? "L" : "M"}${sx(l).toFixed(1)} ${sy(H[b] * Math.exp(-((l - c) ** 2) / (2 * s * s))).toFixed(1)}`;
+        d += `${d ? "L" : "M"}${sx(l).toFixed(1)} ${sy(Math.exp(-((l - c) ** 2) / (2 * s * s))).toFixed(1)}`;
       }
       const on = !vacio(p) && elegidos.includes(p);
       const activo = p === plano;
@@ -405,7 +416,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
           borderRadius: 6,
         }}
       >
-        <title>{tr("Ancho λ/R con R por banda de la literatura; altura ilustrativa", "Width λ/R with per-band R from the literature; illustrative height")}</title>
+        <title>{tr("Ancho λ/R con el R medido de cada banda; cada curva normalizada a 1", "Width λ/R with each band's measured R; each curve normalized to 1")}</title>
         {fondo}
         {sel && <rect x={xa} y={Y1 - 22} width={Math.max(1.5, xz - xa)} height={Y0 - Y1 + 22} fill="#2a3360" />}
         <line x1={X0} x2={X1} y1={Y0} y2={Y0} stroke="#3a4268" />
@@ -413,8 +424,10 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         {curvas}
         {textos}
         <text x={10} y={120} fontSize={10} fill="#a9b3cf" transform="rotate(-90 10 120)" textAnchor="middle">
-          {tr("Respuesta (ilustrativa)", "Response (illustrative)")}
+          {tr("Respuesta normalizada", "Normalized response")}
         </text>
+        <text x={X0 - 4} y={Y1 + 3} fontSize={9} fill="#a9b3cf" textAnchor="end">1</text>
+        <text x={X0 - 4} y={Y0 + 3} fontSize={9} fill="#a9b3cf" textAnchor="end">0</text>
       </svg>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6, alignItems: "center" }}>
         {!sel || elegidos.length === 0 ? (
@@ -446,7 +459,9 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
               type="button"
               style={botonChico}
               onClick={() => setRecorrido(elegidos)}
-              title={tr("Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)", "Steps the sky through each channel in the range, one after another (0.8 s per channel)")}
+              title={reducir
+                ? tr("Pasa el cielo por cada canal del tramo, uno tras otro (1,6 s por canal: más lento porque tu sistema pide reducir el movimiento)", "Steps the sky through each channel in the range, one after another (1.6 s per channel: slower because your system asks for reduced motion)")
+                : tr("Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)", "Steps the sky through each channel in the range, one after another (0.8 s per channel)")}
             >
               {tr("Recorrer", "Sweep")}
             </button>
@@ -465,7 +480,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         )}
       </div>
       <div style={{ color: "var(--suave)", fontSize: "0.75rem", marginTop: 4 }}>
-        {tr("Ancho λ/R con R por banda de la literatura; altura ilustrativa. Los canales 3.17 y 4.1 vienen vacíos en el cubo.", "Width λ/R with per-band R from the literature; illustrative height. Channels 3.17 and 4.1 are empty in the cube.")}
+        {tr("Cada curva es un canal: su centro sale del cubo de SPHEREx y su ancho de la resolución medida (R ≈ 35–40 en D1–D4, ≈ 120 en D5–D6; Hui et al. 2026). Altura normalizada a 1: no muestra cuánta luz deja pasar cada banda. Los canales 3.17 y 4.1 vienen vacíos en el cubo.", "Each curve is one channel: its center comes from the SPHEREx cube and its width from the measured resolution (R ≈ 35–40 in D1–D4, ≈ 120 in D5–D6; Hui et al. 2026). Height normalized to 1: it does not show how much light each band lets through. Channels 3.17 and 4.1 are empty in the cube.")}
         {fuente.tipo === "respaldo" && tr(` No se pudo leer el properties del cubo (${fuente.motivo}): λ de respaldo, redondeadas.`, ` Could not read the cube properties (${fuente.motivo}): fallback λ, rounded.`)}
         {fuente.tipo === "cargando" && tr(" Leyendo las λ del cubo…", " Reading the cube λ…")}
       </div>

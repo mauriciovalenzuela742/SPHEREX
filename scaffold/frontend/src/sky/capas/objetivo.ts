@@ -10,7 +10,7 @@ import A from "aladin-lite";
 import { EPOCA_J2000, propagar } from "../propagacion";
 import type { Capa } from "./index";
 
-type Objeto = {
+export type Objeto = {
   id: string;
   nombre: string;
   /** ICRS, época J2000.0, grados. */
@@ -59,7 +59,7 @@ function desdeTangente(ra0: number, dec0: number, xi: number, eta: number): [num
 }
 
 /** Objeto de prueba más cercano al centro, si está dentro del radio. */
-function objetoCercano(ra: number, dec: number): Objeto | null {
+export function objetoCercano(ra: number, dec: number): Objeto | null {
   let mejor: Objeto | null = null;
   let dMejor = RADIO_RECONOCER_DEG;
   for (const o of OBJETOS) {
