@@ -73,6 +73,11 @@ function Hueco({ titulo, quien }: { titulo: string; quien: string }) {
 export default function Visor({ estado, set, asistido }: Props) {
   const { t, tr, idioma } = useIdioma();
   const enMision = Boolean(estado.mision);
+  // Objeto de prueba en la posición actual (a menos de 0,05°): su botón queda marcado en naranja.
+  const campoActivo = CAMPOS.find((c) => {
+    const p = posicionActual(c);
+    return Math.hypot((p.ra - estado.ra) * Math.cos((estado.dec * Math.PI) / 180), p.dec - estado.dec) < 0.05;
+  });
   // Un solo origen de datos para el Explorador (tiempo) y el Prisma (colores).
   const datos = useDatosSpherex(estado.ra, estado.dec, estado.size, !enMision);
   // El cielo solo se reencuadra cuando cambia la posición o la dimensión. Si la persona alejó el mapa a mano,
@@ -153,8 +158,8 @@ export default function Visor({ estado, set, asistido }: Props) {
 
   return (
     <section className="visor">
-      {/* Primero, qué es SPHEREx (introducción). «Cómo leer el Explorador» va bajo los filtros, junto al
-          mapa y el Explorador, donde se usa. */}
+      {/* Primero, qué es SPHEREx (introducción). «Cómo leer el Explorador» va plegado a la derecha,
+          justo encima del Explorador, donde se usa. */}
       {!enMision && (
         <>
         <div className="tarjeta intro-spherex">
@@ -227,6 +232,8 @@ export default function Visor({ estado, set, asistido }: Props) {
         {CAMPOS.map((c) => (
           <button
             key={c.id}
+            className={campoActivo?.id === c.id ? "activo" : undefined}
+            aria-pressed={campoActivo?.id === c.id}
             onClick={() => set(posicionActual(c))}
             title={`${AYUDA_OBJETO[c.id] ? tr(...AYUDA_OBJETO[c.id]) : c.tipo} ${tr("(El mapa se centra donde está hoy.)", "(The map centers on where it is today.)")}`}
           >
@@ -235,38 +242,6 @@ export default function Visor({ estado, set, asistido }: Props) {
         ))}
       </div>
 
-      {/* Cómo leer el Explorador: bajo los filtros, justo encima del mapa y el Explorador. */}
-      {!enMision && (
-        <div className="tarjeta intro-spherex">
-          {/* Habla del Explorador SPHEREx (al lado del mapa), no del botón «Parpadear» del mapa, que alterna SPHEREx con AllWISE/2MASS. */}
-          <strong>{tr("Cómo leer el Explorador", "How to read the Explorer")}</strong>
-          <p>{tr("En el Explorador SPHEREx (al lado del mapa), cada cuadro es una visita, de la más antigua a la más reciente. En «Resta vs t₀», lo que apareció desde la primera fecha sale en rojo y lo que se fue, en azul: una pareja roja y azul pegada es algo que se movió. «Resta A − B» hace lo mismo entre dos fechas que eliges tú. Ojo: en «Color» el rojo es al revés: la primera fecha va en rojo y la actual en cian, y lo que no cambia se ve blanco.", "In the SPHEREx Explorer (beside the map), each frame is a visit, from oldest to newest. In “Subtract vs t₀”, what appeared since the first date shows in red and what left in blue: a touching red and blue pair is something that moved. “Subtract A − B” does the same between two dates you choose. Careful: in “Color” red is the other way around: the first date is red and the current one cyan, and what doesn't change looks white.")}</p>
-          {/* Detalle de «Resta vs t₀» y «Color» (render.ts de Bryan), cerrado hasta que se pide. */}
-          <details className="mas-info">
-            <summary>{tr("Más información: Resta y Color", "More info: Subtract and Color")}</summary>
-            <h4>{tr("Resta vs t₀", "Subtract vs t₀")}</h4>
-            <p>{tr("Para cada píxel calcula ahora − t₀:", "For each pixel it computes now − t₀:")}</p>
-            <ul>
-              <li>{tr("Gris = sin cambio. Las estrellas que no se mueven desaparecen en el gris.", "Gray = no change. Stars that don't move disappear into the gray.")}</li>
-              <li>{tr("Rojo = más brillante ahora (algo apareció).", "Red = brighter now (something appeared).")}</li>
-              <li>{tr("Azul = más brillante en t₀ (algo se fue).", "Blue = brighter in t₀ (something left).")}</li>
-            </ul>
-            <p>{tr("Solo ves lo que cambió. Una estrella que se mueve aparece como una pareja roja y azul, y todo lo demás desaparece. Es el modo más sensible para movimientos pequeños, pero también hace más visible el ruido (los puntitos de color tenues).", "All you see is what changed. A moving star shows up as a red and blue pair, and everything else vanishes. It's the most sensitive mode for small movements, but it also makes noise more visible (the faint colored speckles).")}</p>
-            <h4>{tr("Color", "Color")}</h4>
-            <p>{tr("Superpone las dos fotos, cada una de un color:", "It overlays the two photos, each in a different color:")}</p>
-            <ul>
-              <li>{tr("la foto de t₀ en rojo,", "the t₀ photo in red,")}</li>
-              <li>{tr("la foto actual en cian (verde + azul).", "the current photo in cyan (green + blue).")}</li>
-            </ul>
-            <p>{tr("Al sumarse:", "When the two add up:")}</p>
-            <ul>
-              <li>{tr("Blanco = está en las dos (estrella quieta). Las estrellas no desaparecen.", "White = it's in both (still star). Stars don't disappear.")}</li>
-              <li>{tr("Rojo = solo en t₀ (estaba antes).", "Red = only in t₀ (it was there before).")}</li>
-              <li>{tr("Cian = solo ahora.", "Cyan = only now.")}</li>
-            </ul>
-          </details>
-        </div>
-      )}
 
       {enMision ? (
         <div className="cuerpo cuerpo-mision">
@@ -282,6 +257,36 @@ export default function Visor({ estado, set, asistido }: Props) {
           <div className="dupla">
             <div className="dupla-col dupla-mapa">{mapa}</div>
             <div className="dupla-col">
+              {/* Cómo leer el Explorador: plegable y solo a la derecha, justo encima del Explorador. Habla del
+                  Explorador SPHEREx, no del botón «Parpadear» del mapa (que alterna SPHEREx con AllWISE/2MASS). */}
+              <details className="tarjeta explorador-ayuda">
+                <summary>ⓘ {tr("Cómo leer el Explorador", "How to read the Explorer")}</summary>
+              <p>{tr("En el Explorador SPHEREx, cada cuadro es una visita, de la más antigua a la más reciente. En «Resta vs t₀», lo que apareció desde la primera fecha sale en rojo y lo que se fue, en azul: una pareja roja y azul pegada es algo que se movió. «Resta A − B» hace lo mismo entre dos fechas que eliges tú. Ojo: en «Color» el rojo es al revés: la primera fecha va en rojo y la actual en cian, y lo que no cambia se ve blanco.", "In the SPHEREx Explorer, each frame is a visit, from oldest to newest. In “Subtract vs t₀”, what appeared since the first date shows in red and what left in blue: a touching red and blue pair is something that moved. “Subtract A − B” does the same between two dates you choose. Careful: in “Color” red is the other way around: the first date is red and the current one cyan, and what doesn't change looks white.")}</p>
+              {/* Detalle de «Resta vs t₀» y «Color» (render.ts de Bryan), cerrado hasta que se pide. */}
+              <details className="mas-info">
+                <summary>{tr("Más información: Resta y Color", "More info: Subtract and Color")}</summary>
+                <h4>{tr("Resta vs t₀", "Subtract vs t₀")}</h4>
+                <p>{tr("Para cada píxel calcula ahora − t₀:", "For each pixel it computes now − t₀:")}</p>
+                <ul>
+                  <li>{tr("Gris = sin cambio. Las estrellas que no se mueven desaparecen en el gris.", "Gray = no change. Stars that don't move disappear into the gray.")}</li>
+                  <li>{tr("Rojo = más brillante ahora (algo apareció).", "Red = brighter now (something appeared).")}</li>
+                  <li>{tr("Azul = más brillante en t₀ (algo se fue).", "Blue = brighter in t₀ (something left).")}</li>
+                </ul>
+                <p>{tr("Solo ves lo que cambió. Una estrella que se mueve aparece como una pareja roja y azul, y todo lo demás desaparece. Es el modo más sensible para movimientos pequeños, pero también hace más visible el ruido (los puntitos de color tenues).", "All you see is what changed. A moving star shows up as a red and blue pair, and everything else vanishes. It's the most sensitive mode for small movements, but it also makes noise more visible (the faint colored speckles).")}</p>
+                <h4>{tr("Color", "Color")}</h4>
+                <p>{tr("Superpone las dos fotos, cada una de un color:", "It overlays the two photos, each in a different color:")}</p>
+                <ul>
+                  <li>{tr("la foto de t₀ en rojo,", "the t₀ photo in red,")}</li>
+                  <li>{tr("la foto actual en cian (verde + azul).", "the current photo in cyan (green + blue).")}</li>
+                </ul>
+                <p>{tr("Al sumarse:", "When the two add up:")}</p>
+                <ul>
+                  <li>{tr("Blanco = está en las dos (estrella quieta). Las estrellas no desaparecen.", "White = it's in both (still star). Stars don't disappear.")}</li>
+                  <li>{tr("Rojo = solo en t₀ (estaba antes).", "Red = only in t₀ (it was there before).")}</li>
+                  <li>{tr("Cian = solo ahora.", "Cyan = only now.")}</li>
+                </ul>
+              </details>
+              </details>
               <Explorador datos={datos} />
             </div>
           </div>
