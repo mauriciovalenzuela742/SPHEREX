@@ -1,0 +1,50 @@
+title: 'AstroTRACK in 30 seconds: WISE 0855 moving and its spectrum (short cut for the original deck)'
+url: http://localhost:5191/?vista=visor
+viewport:
+- 1600
+- 900
+output: figures/demo_corto
+label: Real app · local copy · cached data
+lang: en
+steps:
+- click: .simple-idioma button:nth-child(2)
+  caption: 'Anyone can start: the sky, in SPHEREx photos'
+  wait: 2500
+  hold: 1020
+  zoom: false
+- click: .simple-chips button:has-text('WISE 0855')
+  caption: Pick WISE 0855, the coldest brown dwarf known
+  wait: 3500
+  hold: 1190
+- click: .luz-lejana
+  caption: 'Far infrared (3.8–5 µm): where cold objects glow'
+  wait: 1200
+  hold: 1105
+- click: .simple-fechas button:nth-child(2)
+  caption: May 2025…
+  wait: 900
+  hold: 765
+- click: .simple-fechas button:nth-child(4)
+  caption: …one year later
+  wait: 900
+  hold: 765
+- click: .interruptor-ciencia
+  caption: One switch opens the full science tools
+  wait: 6000
+  hold: 1020
+  zoom: false
+- zoom: .aladin-container
+  caption: 'Its path on the sky: 2MASS 1998 → WISE 2010 → SPHEREx 2025'
+  hold: 2040
+- zoom: .exp-escena canvas
+  caption: 'Median of 10 exposures, last visit minus first: blue = where it was, red = where it is'
+  hold: 2720
+- scroll: .huella
+  caption: Its spectrum from SPHEREx's 102 colors
+  hold: 1530
+- zoom: .ficha
+  caption: Clean measurements only at 3.8–4.8 µm, where WISE 0855 gives off almost all its light
+  hold: 2550
+- view: full
+  caption: Real NASA data, in any browser, free
+  hold: 1700
