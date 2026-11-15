@@ -16,6 +16,8 @@ import HuellaEspectral from "./HuellaEspectral";
 import OjoInfrarrojo from "./OjoInfrarrojo";
 import QueCambio from "./QueCambio";
 import FichaAstro from "./FichaAstro";
+import HuellaPasadas from "./HuellaPasadas";
+import FondoCielo from "./FondoCielo";
 import { COLORES_PASADA, desdePrecalc, desdeVivo, esPrecalc, etiquetaPasada, type PrecalcEspectro, type PuntoVista } from "./pasadas";
 import "./prisma.css";
 
@@ -133,10 +135,13 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
                 return c ? nombreDe(c, idioma) : null;
               })()}
             />
-            <QueCambio pasadas={pasadas} />
+            <QueCambio pasadas={pasadas} id={id} />
           </div>
         </div>
       )}
+      {/* Huella espectral entre pasadas y fondo del cielo (V2, PR #58): datos precalculados, no dependen de la carga */}
+      <HuellaPasadas id={id} />
+      <FondoCielo id={id} />
     </section>
   );
 }

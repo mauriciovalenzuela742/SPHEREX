@@ -1,0 +1,129 @@
+{
+ "wise_0855": {
+  "D_misma": {
+   "1-2": 2.165,
+   "2-3": 0.122,
+   "1-3": 1.522
+  },
+  "D_estrella_a_objeto": {
+   "1-2": 177.3,
+   "2-3": 257.1,
+   "1-3": 177.8
+  },
+  "D_objeto_a_estrella": {
+   "1-2": 4.71,
+   "2-3": 13.11,
+   "1-3": 4.71
+  },
+  "D_estaticas": {
+   "1-2": 0.4,
+   "2-3": 0.83,
+   "1-3": 0.87
+  },
+  "frac_roja": 0.957,
+  "frac_roja_vecina": 0.04,
+  "busqueda": {
+   "posicional": {
+    "n_completas": 6,
+    "rotas_desde_P1": 3,
+    "huerfanas_Pfin": 3,
+    "n_candidatas": 0
+   },
+   "huella": {
+    "n_completas": 7,
+    "rotas_desde_P1": 2,
+    "huerfanas_Pfin": 2,
+    "n_candidatas": 1
+   }
+  },
+  "medido": 8.67,
+  "err": 0.66,
+  "sigma": 10.5,
+  "predicho": 8.04,
+  "sep": {
+   "1": {
+    "medida_arcsec": 11.36,
+    "predicha_arcsec": 11.4
+   },
+   "2": {
+    "medida_arcsec": 7.75,
+    "predicha_arcsec": 8.07
+   },
+   "3": {
+    "medida_arcsec": 3.3,
+    "predicha_arcsec": 4.27
+   }
+  },
+  "fuente": "cinco_objetos_resultado.json[wise_0855], cifras_verificadas.json[D]; frac_roja_vecina = 4 % del documento de hallazgos (sec. 5)"
+ },
+ "casos": [
+  {
+   "id": "wise_0855",
+   "dpos": 8.67,
+   "sigma": 10.5,
+   "D": 2.165,
+   "D_rango": [
+    0.122,
+    2.165
+   ],
+   "clase": "movil",
+   "predicho": 8.04,
+   "pasadas": 3
+  },
+  {
+   "id": "eps_ind_b",
+   "dpos": 6.62,
+   "sigma": 13.16,
+   "D": 2.069,
+   "D_rango": [
+    0.567,
+    2.069
+   ],
+   "clase": "movil",
+   "predicho": 6.31,
+   "pasadas": 4,
+   "zigzag": [
+    2.24,
+    2.9,
+    1.99
+   ],
+   "predicho_grupo": 6.52,
+   "dif_con_paralaje": 0.48,
+   "dif_sin_paralaje": 0.97,
+   "candidatas_posicion": 1
+  },
+  {
+   "id": "barnard",
+   "dpos": 10.26,
+   "D": null,
+   "clase": "movil_sin_espectro",
+   "predicho": 10.31,
+   "pasadas": 3
+  },
+  {
+   "id": "rw_aur",
+   "dpos": 0.279,
+   "D": 17.31,
+   "D_pares": {
+    "1-2": 2.77,
+    "2-3": 17.31,
+    "1-3": 2.47
+   },
+   "clase": "variable",
+   "pasadas": 3,
+   "D_campo_mediana": 2.79,
+   "quietas_mediana": 0.132
+  },
+  {
+   "id": "r_dra",
+   "dpos": null,
+   "D": null,
+   "clase": "saturada",
+   "frac_saturadas": 0.9981,
+   "n_sat": 518,
+   "n_exp": 519,
+   "pasadas": 3
+  }
+ ],
+ "fuente_casos": "cinco_objetos_resultado.json"
+}

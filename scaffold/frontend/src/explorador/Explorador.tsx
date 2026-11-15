@@ -15,6 +15,7 @@ import { useIdioma } from "../state/idioma";
 import { dibujar, type Frame, type Modo } from "./render";
 import { clave, type DatosSpherex } from "./useDatosSpherex";
 import PanelApilar from "./PanelApilar";
+import PanelLimpieza from "./PanelLimpieza";
 import "./explorador.css";
 
 const BANDAS_UM: Record<number, [number, number]> = {
@@ -70,7 +71,9 @@ export default function Explorador({ datos }: Props) {
   const [ab, setAb] = useState<{ a: number | null; b: number | null }>({ a: null, b: null });
   useEffect(() => setAb({ a: null, b: null }), [grid]);
   const [suave, setSuave] = useState(false);
-  const [apilar, setApilar] = useState(false); // modo Apilar (PanelApilar.tsx, V2)
+  // Paneles que reemplazan la imagen grande: «Apilar» (PanelApilar.tsx) y «Limpiar estrellas» (PanelLimpieza.tsx), V2.
+  const [panel, setPanel] = useState<"apilar" | "limpiar" | null>(null);
+  const conPanel = panel !== null; // hay un panel en lugar de la imagen grande
   const [zoom, setZoom] = useState(1); // ampliación hacia la mira: el movimiento es de 1–2 px (docs/09)
   // Desplazamiento al arrastrar, en fracción del ancho del cuadro. Se limita para no dejar bordes negros.
   const [pan, setPan] = useState<Punto>({ x: 0, y: 0 });
@@ -121,6 +124,8 @@ export default function Explorador({ datos }: Props) {
   // Objetos débiles con preset (presets.ts): se abren en la resta contra la primera visita; los demás, en la imagen.
   const presetId = preset?.id;
   useEffect(() => setModo(presetId ? "resta" : "imagen"), [presetId]);
+  // «Limpiar estrellas» solo existe para WISE 0855: al cambiar de campo se cierra.
+  useEffect(() => setPanel((x) => (x === "limpiar" && presetId !== "wise_0855" ? null : x)), [presetId]);
 
   useEffect(() => {
     if (!play || visitas.length < 2) return;
@@ -211,10 +216,11 @@ export default function Explorador({ datos }: Props) {
           <span>{t.exploradorHint}</span>
         </div>
         {preset && <p className="exp-preset">{t.presetRazon(preset.muyDebil, preset.porVisita, preset.banda)}</p>}
-        {apilar && <PanelApilar datos={datos} />}
+        {panel === "apilar" && <PanelApilar datos={datos} />}
+        {panel === "limpiar" && <PanelLimpieza />}
         <div
           ref={caja}
-          style={apilar ? { display: "none" } : undefined}
+          style={conPanel ? { display: "none" } : undefined}
           data-tour="explorador-imagen"
           className={`exp-lienzo ${suave ? "suave" : ""} ${zoom > 1 ? "movible" : ""} ${arrastre.current ? "arrastrando" : ""}`}
           onPointerDown={(ev) => {
@@ -391,16 +397,22 @@ export default function Explorador({ datos }: Props) {
             </div>
             <div className="exp-modos" role="group" aria-label={t.modo}>
               {(["imagen", "resta", "color", "ab"] as Vista[]).map((m) => (
-                <button key={m} aria-pressed={!apilar && modo === m} onClick={() => { setModo(m); setApilar(false); }}>
+                <button key={m} aria-pressed={!conPanel && modo === m} onClick={() => { setModo(m); setPanel(null); }}>
                   {m === "imagen" ? t.modoImagen : m === "resta" ? t.modoResta : m === "color" ? t.modoColor : tr("Resta A − B", "Subtract A − B")}
                 </button>
               ))}
             </div>
-            <button className="exp-apilar" aria-pressed={apilar} onClick={() => setApilar((x) => !x)}
-              title={tr("Suma todas las visitas de la banda para bajar el ruido", "Adds up all visits of the band to lower the noise")}>
-              {tr("Apilar visitas", "Stack visits")}
-            </button>
-            {!apilar && modo === "ab" && (
+            <div className="exp-paneles">
+              <button className="exp-apilar" aria-pressed={panel === "apilar"} onClick={() => setPanel((x) => (x === "apilar" ? null : "apilar"))}
+                title={tr("Suma todas las visitas de la banda para bajar el ruido", "Adds up all visits of the band to lower the noise")}>
+                {tr("Apilar visitas", "Stack visits")}
+              </button>
+              {preset?.id === "wise_0855" && <button className="exp-apilar" aria-pressed={panel === "limpiar"} onClick={() => setPanel((x) => (x === "limpiar" ? null : "limpiar"))}
+                title={tr("Resta espectral B5–6 − α·B1–3: borra las estrellas y deja a la enana marrón (WISE 0855)", "Spectral subtraction B5–6 − α·B1–3: erases the stars and keeps the brown dwarf (WISE 0855)")}>
+                {tr("Limpiar estrellas (B5–6 − α·B1–3)", "Star-cleaned (B5–6 − α·B1–3)")}
+              </button>}
+            </div>
+            {!conPanel && modo === "ab" && (
               <div className="exp-ab">
                 {(["a", "b"] as const).map((k) => {
                   const v = k === "a" ? visA : visB;
@@ -426,7 +438,7 @@ export default function Explorador({ datos }: Props) {
                 )}
               </div>
             )}
-            <p className="exp-leyenda">{apilar ? tr("Apilar: quieto vs. siguiendo el movimiento propio. Ver los paneles.", "Stack: static vs. following the proper motion. See the panels.") : LEYENDA[modo]}</p>
+            <p className="exp-leyenda">{panel === "apilar" ? tr("Apilar: quieto vs. siguiendo el movimiento propio. Ver los paneles.", "Stack: static vs. following the proper motion. See the panels.") : panel === "limpiar" ? tr("Limpiar estrellas: bandas cortas, largas crudas y limpias de WISE 0855, por pasada. Ver los paneles.", "Star-cleaned: short, raw long and cleaned bands of WISE 0855, per pass. See the panels.") : LEYENDA[modo]}</p>
             <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {tr("Suavizar píxeles", "Smooth pixels")}</label>
             <p className="exp-ayuda">
               {tr("La mira marca la posición pedida (A.R./Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento está hecho para espectros de todo el cielo, no para detalle fino. El grano es ruido; baja con la mediana de más exposiciones por visita.",

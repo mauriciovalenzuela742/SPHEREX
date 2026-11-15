@@ -127,3 +127,18 @@
 .apl-controles .exp-modos { grid-template-columns: none; grid-auto-flow: column; }
 .exp-apilar { width: 100%; margin-top: 4px; }
 .exp-apilar[aria-pressed="true"] { background: var(--acento); color: #111; border-color: var(--acento); }
+
+/* «Limpiar estrellas» (PanelLimpieza.tsx, V2): resta espectral B5–6 − α·B1–3 de WISE 0855 */
+.exp-paneles { display: grid; gap: 4px; }
+.lmp { padding: 12px 16px; }
+.lmp-titulo { margin: 0 0 8px; font-size: 14px; }
+.lmp-titulo span { color: var(--suave); font-size: 12px; }
+.lmp-pasadas { margin-bottom: 10px; grid-template-columns: none; grid-auto-flow: column; justify-content: start; }
+.lmp-pie { color: var(--texto) !important; }
+.apl-lienzo .lmp-estrella { fill: none; stroke: #6ecbff; stroke-width: 0.18; }
+.apl-lienzo .lmp-ausente { fill: none; stroke: var(--acento); stroke-width: 0.15; stroke-dasharray: 0.4 0.4; opacity: 0.8; }
+.lmp-marcas { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12px; color: var(--suave); margin: 8px 0 0; }
+.lmp-marcas span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2px solid; }
+.lmp-m-est { border-color: #6ecbff !important; }
+.lmp-m-obj { border-color: var(--acento) !important; border-style: dashed !important; }
+.lmp-tabla .lmp-destacada td, .lmp-tabla .lmp-destacada th { color: var(--acento); font-weight: 600; }
