@@ -46,6 +46,7 @@ import { propagar } from "../propagacion";
 import type { Capa } from "./index";
 import { ponerEstado, TEXTO_SIN_RESPUESTA } from "./estado";
 import { SERVICIOS_TAP } from "./simbad";
+import { pedirEspectro, textoBotonCatwise } from "../../apuntar/espectroPunto";
 
 /** Época de referencia de RAPMdeg/DEPMdeg: MJD 57170,0 en años julianos. */
 export const EPOCA_CATWISE = 2000 + (57170.0 - 51544.5) / 365.25; // ≈ 2015,40
@@ -519,15 +520,38 @@ function llenarCaja(caja: HTMLDivElement, d: DatoFuente) {
   a.rel = "noopener noreferrer";
   a.textContent = "Ver en WiseView ↗";
   a.style.color = "#8fd3ff";
+  // «Modo descubrimiento»: su espectro SPHEREx, siguiendo su movimiento (pm de CatWISE en ″/año → mas/año).
+  const espectro = document.createElement("button");
+  espectro.type = "button";
+  espectro.textContent = textoBotonCatwise();
+  Object.assign(espectro.style, { padding: "1px 8px", fontSize: "12px" });
+  espectro.onclick = () =>
+    pedirEspectro({
+      ra: d.ra,
+      dec: d.dec,
+      pmra: d.pmra * 1000,
+      pmdec: d.pmdec * 1000,
+      epoca: EPOCA_CATWISE,
+      nombre: d.nombre,
+      origen: "catwise",
+    });
   const cerrar = document.createElement("button");
   cerrar.type = "button";
   cerrar.textContent = "Cerrar";
   Object.assign(cerrar.style, { marginLeft: "auto", padding: "1px 8px", fontSize: "12px" });
   cerrar.onclick = () => (caja.style.display = "none");
-  fila.append(a, cerrar);
+  fila.append(a, espectro, cerrar);
   caja.appendChild(fila);
   caja.style.display = "block";
 }
+
+/**
+ * Clic en un triángulo: Aladin avisa `objectClicked` y luego `click`, y el clic recentra el visor en el objeto
+ * («¿Qué hay aquí?»), lo que vuelve a montar las capas y borraba el recuadro recién abierto. Se recuerda aquí
+ * el último objeto abierto y, si el montaje llega justo después (< 2 s), se vuelve a abrir.
+ */
+let ultimoAbierto: { d: DatoFuente; t: number } | null = null;
+const REABRIR_MS = 2000;
 
 export const capaCatwise: Capa = {
   id: "catwise",
@@ -651,18 +675,45 @@ export const capaCatwise: Capa = {
         });
     };
     cargar();
+    if (caja && ultimoAbierto && Date.now() - ultimoAbierto.t < REABRIR_MS) llenarCaja(caja, ultimoAbierto.d);
+    ultimoAbierto = null;
 
     // Clic en un triángulo: recuadro con lo que sabemos y el enlace a WiseView.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const abrir = (d: DatoFuente) => {
+      if (!caja) return;
+      llenarCaja(caja, d);
+      ultimoAbierto = { d, t: Date.now() };
+    };
     const quitarClic = ctx.on("objectClicked", (fuente: any) => {
       const cat = fuente?.getCatalog?.() ?? fuente?.catalog;
-      if (!caja || !catalogos.includes(cat)) return;
-      llenarCaja(caja, fuente.data as DatoFuente);
+      if (catalogos.includes(cat)) abrir(fuente.data as DatoFuente);
+    });
+    // Con la vista del visor, Aladin 3.8.2 no siempre avisa `objectClicked` para estos triángulos (comprobado el
+    // 14-nov-2026: el clic justo encima solo daba `click`). Respaldo: el triángulo visible más cercano al clic,
+    // a menos de 10 píxeles de pantalla.
+    const quitarClicCielo = ctx.on("click", (e: { ra: number; dec: number; isDragging?: boolean }) => {
+      if (!caja || e?.isDragging || !Number.isFinite(e?.ra) || !Number.isFinite(e?.dec)) return;
+      if (ultimoAbierto && Date.now() - ultimoAbierto.t < 300) return; // ya lo abrió objectClicked
+      const ancho = aladin.aladinDiv?.clientWidth || 600;
+      const fov = Number(aladin.getFov?.()[0]) || radio * 4;
+      const tolerancia = (10 * fov * 3600) / ancho;
+      let mejor: { d: DatoFuente; sep: number } | null = null;
+      for (const cat of catalogos) {
+        if (cat.isShowing === false) continue;
+        for (const f of cat.getSources?.() ?? []) {
+          const dRa = (f.ra - e.ra) * Math.cos((e.dec * Math.PI) / 180);
+          const sep = Math.hypot(dRa, f.dec - e.dec) * 3600;
+          if (sep <= tolerancia && (!mejor || sep < mejor.sep)) mejor = { d: f.data as DatoFuente, sep };
+        }
+      }
+      if (mejor) abrir(mejor.d);
     });
 
     return () => {
       control.abort();
       quitarClic();
+      quitarClicCielo();
       quitarCatalogos();
       caja?.remove();
     };
