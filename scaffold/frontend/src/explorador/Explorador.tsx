@@ -43,7 +43,7 @@ const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 type Props = { datos: DatosSpherex };
 
 export default function Explorador({ datos }: Props) {
-  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando } = datos;
+  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando, preset } = datos;
 
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
@@ -95,6 +95,9 @@ export default function Explorador({ datos }: Props) {
   const [play, setPlay] = useState(false);
 
   useEffect(() => setPlay(false), [grid]);
+  // Objetos débiles con preset (presets.ts): se abren en la resta contra la primera visita; los demás, en la imagen.
+  const presetId = preset?.id;
+  useEffect(() => setModo(presetId ? "resta" : "imagen"), [presetId]);
 
   useEffect(() => {
     if (!play || visitas.length < 2) return;
@@ -172,6 +175,7 @@ export default function Explorador({ datos }: Props) {
           <strong>Explorador SPHEREx</strong>
           <span>Arrastra o pasa el mouse por la línea de tiempo para cambiar la fecha.</span>
         </div>
+        {preset && <p className="exp-preset">{preset.razon}</p>}
         <div
           ref={caja}
           data-tour="explorador-imagen"

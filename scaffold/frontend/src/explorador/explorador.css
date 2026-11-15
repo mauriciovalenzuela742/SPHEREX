@@ -11,6 +11,7 @@
 .exp-escena { display: flex; flex-direction: column; min-width: 0; }
 .exp-titulo { display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
 .exp-titulo span { color: var(--suave); font-size: 12px; }
+.exp-preset { margin: 0; padding: 8px 16px; font-size: 13px; border-bottom: 1px solid var(--borde); border-left: 3px solid var(--acento); }
 .exp-lienzo {
   position: relative; width: min(calc(100% - 24px), 640px); aspect-ratio: 1; margin: 12px auto;
   background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 0 1px var(--borde);
