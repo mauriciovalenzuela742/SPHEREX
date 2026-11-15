@@ -1,11 +1,13 @@
-/** Esqueleto genérico. Solo comprueba que el frontend habla con el backend. */
+/** Esqueleto móvil primero. Comprueba que el frontend habla con el backend y ofrece instalar la app. */
 import { useEffect, useState } from "react";
 
 type Salud = { ok: boolean; version: string };
+type EventoInstalar = Event & { prompt: () => Promise<void> };
 
 export default function App() {
   const [salud, setSalud] = useState<Salud | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [instalar, setInstalar] = useState<EventoInstalar | null>(null);
 
   useEffect(() => {
     fetch("/health")
@@ -17,22 +19,61 @@ export default function App() {
       .catch((e) => setError(String(e)));
   }, []);
 
+  // Chrome/Edge/Android ofrecen instalar con este evento. Safari (iPhone) no: allí es Compartir → Añadir a inicio.
+  useEffect(() => {
+    const alvolver = (e: Event) => {
+      e.preventDefault();
+      setInstalar(e as EventoInstalar);
+    };
+    window.addEventListener("beforeinstallprompt", alvolver);
+    return () => window.removeEventListener("beforeinstallprompt", alvolver);
+  }, []);
+
+  const esIphone = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const yaInstalada = window.matchMedia("(display-mode: standalone)").matches;
+
   return (
-    <main style={{ fontFamily: "system-ui, sans-serif", padding: "2rem", maxWidth: 640 }}>
-      <h1>Esqueleto</h1>
-      <p>
-        Backend:{" "}
-        {error ? (
-          <strong style={{ color: "crimson" }}>no responde ({error})</strong>
-        ) : salud ? (
-          <strong style={{ color: "green" }}>ok, versión {salud.version}</strong>
-        ) : (
-          "comprobando…"
+    <div className="app">
+      <header className="cabecera">
+        <h1>SPHEREX</h1>
+        <p>Visor de datos SPHEREx</p>
+      </header>
+
+      <main className="contenido">
+        <section className="tarjeta" aria-live="polite">
+          <h2>Servidor</h2>
+          {error ? (
+            <p className="estado mal">No responde ({error})</p>
+          ) : salud ? (
+            <p className="estado ok">Listo, versión {salud.version}</p>
+          ) : (
+            <p>Comprobando…</p>
+          )}
+        </section>
+
+        {!yaInstalada && (
+          <section className="tarjeta">
+            <h2>Instalar en el teléfono</h2>
+            {instalar ? (
+              <button
+                className="boton"
+                onClick={() => {
+                  void instalar.prompt();
+                  setInstalar(null);
+                }}
+              >
+                Instalar app
+              </button>
+            ) : esIphone ? (
+              <p>En Safari: toca Compartir y luego «Añadir a pantalla de inicio».</p>
+            ) : (
+              <p>Desde el menú del navegador elige «Instalar app» o «Añadir a pantalla de inicio».</p>
+            )}
+          </section>
         )}
-      </p>
-      <p style={{ color: "#666" }}>
-        Si ves &quot;ok&quot;, el entorno está listo. La aplicación se construye durante el hackatón.
-      </p>
-    </main>
+      </main>
+
+      <footer className="pie">Datos: NASA/IPAC IRSA</footer>
+    </div>
   );
 }

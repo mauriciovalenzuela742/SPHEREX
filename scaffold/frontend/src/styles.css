@@ -1,0 +1,62 @@
+/* Mobile-first: el diseño base es el de un teléfono de ~360 px. Lo ancho se añade con media queries. */
+:root {
+  --bg: #0b1020;
+  --panel: #151c33;
+  --texto: #eaf0ff;
+  --suave: #9aa6c7;
+  --acento: #6ea8ff;
+  --ok: #4ade80;
+  --mal: #ff6b6b;
+  --toque: 44px; /* tamaño mínimo de un objetivo táctil */
+  color-scheme: dark light;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f4f6fc; --panel: #ffffff; --texto: #10162b; --suave: #56607f; --acento: #2457d6; --ok: #15803d; --mal: #c62828; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overscroll-behavior-y: none;
+}
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.cabecera { padding: 16px 16px 8px; }
+.cabecera h1 { margin: 0; font-size: 1.5rem; letter-spacing: .04em; }
+.cabecera p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; }
+.contenido { flex: 1; padding: 8px 16px 16px; display: grid; gap: 12px; align-content: start; }
+.tarjeta { background: var(--panel); border-radius: 14px; padding: 14px 16px; }
+.tarjeta h2 { margin: 0 0 6px; font-size: 1rem; }
+.tarjeta p { margin: 0; color: var(--suave); font-size: .95rem; }
+.estado { font-weight: 600; }
+.estado.ok { color: var(--ok); }
+.estado.mal { color: var(--mal); }
+.boton {
+  min-height: var(--toque);
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--acento);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.boton:focus-visible { outline: 3px solid var(--texto); outline-offset: 2px; }
+.pie { padding: 12px 16px; color: var(--suave); font-size: .8rem; text-align: center; }
+
+/* Tablet y escritorio: el contenido se centra y se ordena en dos columnas. */
+@media (min-width: 720px) {
+  .cabecera, .contenido, .pie { width: 100%; max-width: 960px; margin-inline: auto; }
+  .contenido { grid-template-columns: 1fr 1fr; padding-top: 16px; }
+  .cabecera h1 { font-size: 1.9rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

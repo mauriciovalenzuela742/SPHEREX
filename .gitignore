@@ -42,3 +42,6 @@ desktop.ini
 # Claude Code: la configuración compartida SÍ se versiona,
 # la local de cada persona no.
 .claude/settings.local.json
+
+# Frontend
+*.tsbuildinfo
