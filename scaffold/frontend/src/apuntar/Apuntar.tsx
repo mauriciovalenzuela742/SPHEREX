@@ -93,14 +93,17 @@ type Estado =
   | { fase: "listo"; punto: Punto; hallazgos: Hallazgo[] }
   | { fase: "error"; punto: Punto; error: string };
 
-/** `punto`: lo último que se eligió con un clic o con «al azar» (null = nada todavía). */
+/** `punto`: lo último que se eligió con un clic o con «al azar» (null = nada todavía).
+ *  `azarArriba`: el Visor ya muestra «Explorar una zona al azar» y «¿Encontraste algo?» en la barra de filtros;
+ *  el panel no los repite (queda la latitud galáctica). */
 export function PanelDescubrir({
   ra,
   dec,
   punto,
   epoca,
   onAzar,
-}: Punto & { punto: Punto | null; epoca: number; onAzar: (p: Punto) => void }) {
+  azarArriba = false,
+}: Punto & { punto: Punto | null; epoca: number; onAzar: (p: Punto) => void; azarArriba?: boolean }) {
   const [estado, setEstado] = useState<Estado>({ fase: "nada" });
   const [intento, setIntento] = useState(0);
   const { tr } = useIdioma();
@@ -189,7 +192,7 @@ export function PanelDescubrir({
         )}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-        <button
+        {!azarArriba && <button
           type="button"
           onClick={() => onAzar(puntoAlAzar(20))}
           title={tr(
@@ -198,13 +201,13 @@ export function PanelDescubrir({
           )}
         >
           {tr("Explorar una zona al azar", "Explore a random area")}
-        </button>
+        </button>}
         <span style={{ fontSize: "0.8rem", color: "var(--suave)" }}>
           {tr("Latitud galáctica aquí", "Galactic latitude here")}: {b >= 0 ? "+" : ""}
           {b.toFixed(1)}° ({tr("longitud", "longitude")} {l.toFixed(1)}°)
         </span>
       </div>
-      <p style={{ marginTop: 8 }}>
+      {!azarArriba && <p style={{ marginTop: 8 }}>
         {/* El enlace a WiseView de este punto es «Ver en WiseView ↗», sobre el mapa (Visor.tsx): uno solo por vista. */}
         <strong>{tr("¿Encontraste algo?", "Found something?")}</strong>{" "}
         {tr(
@@ -215,7 +218,7 @@ export function PanelDescubrir({
           Backyard Worlds
         </a>
         {tr(", donde voluntarios buscan enanas marrones y el posible Planeta 9.", ", where volunteers hunt for brown dwarfs and the possible Planet 9.")}
-      </p>
+      </p>}
     </div>
   );
 }
