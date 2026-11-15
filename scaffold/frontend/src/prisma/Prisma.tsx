@@ -36,7 +36,12 @@ export default function Prisma({ datos }: { datos: DatosSpherex }) {
           <div className="prisma-col prisma-ancha" data-tour="prisma-huella">
             <h3>{prisma.huella.titulo}</h3>
             <p className="prisma-texto">{prisma.huella.texto}</p>
-            <HuellaEspectral puntos={puntos} sel={{ banda, visita }} onPunto={irA} />
+            <HuellaEspectral
+              puntos={puntos}
+              sel={{ banda, visita }}
+              onPunto={irA}
+              cargarTodas={datos.cargar.length < 6 ? () => datos.setCargar([1, 2, 3, 4, 5, 6]) : undefined}
+            />
           </div>
         </div>
       )}

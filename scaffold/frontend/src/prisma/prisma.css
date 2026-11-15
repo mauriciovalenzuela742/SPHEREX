@@ -43,9 +43,14 @@
 .h-leyenda span { display: inline-block; width: 12px; height: 12px; }
 .h-ley-medida { background: var(--b3); border-radius: 50%; }
 .h-ley-limite { background: var(--b3); opacity: 0.55; clip-path: polygon(0 0, 100% 0, 50% 100%); }
-.h-ley-sat { border: 2px solid var(--b3); border-radius: 50%; }
+.h-leyenda .h-ley-sat { color: var(--b3); width: auto; height: auto; line-height: 1; font-size: 13px; }
 .h-ley-vec { border-top: 2px dashed #a9b3cf; height: 0 !important; }
 .h-ley-mol { background: #a9b3cf; opacity: 0.25; }
 .h-actual { margin: 0; font: 0.85rem ui-monospace, monospace; }
 .h-aviso { margin: 0; font-size: 0.85rem; color: #f2b84b; }
+.h-aviso-fuerte { font-weight: 600; }
+.h-nota { margin: 0; font-size: 0.8rem; color: var(--suave); }
+.h-boton { font: inherit; font-size: 0.8rem; padding: 0.15rem 0.6rem; border-radius: 6px; border: 1px solid #f2b84b; background: transparent; color: #f2b84b; cursor: pointer; }
+.h-boton:hover { background: rgba(242, 184, 75, 0.15); }
+.h-sat-franja { fill: #f2b84b; opacity: 0.06; }
 .h-caveat { margin: 0; font-size: 0.78rem; color: var(--suave); }

@@ -43,8 +43,18 @@ export const prisma = {
       "Este objeto es muy débil en una sola foto: la mayoría de los puntos son límites. Para verlo bien hay que " +
       "sumar muchas exposiciones («Exp. por visita» en el explorador).",
     saturadoAviso:
-      "Este objeto es tan brillante que satura el detector en varias bandas: esos puntos se marcan huecos y no " +
-      "se usan para la forma.",
+      "Este objeto es tan brillante que satura el detector en algunas fotos: esos puntos van como ▲ huecos en la " +
+      "franja de arriba («saturado»), sin altura, y no se usan para la forma.",
+    todoSaturado:
+      "Demasiado brillante para medir con SPHEREx: todos los puntos están saturados. La franja de arriba solo " +
+      "marca en qué colores hay fotos; el brillo real es mayor de lo que el detector registra.",
+    unaBanda: (b: number) =>
+      `Solo hay fotos de la banda D${b}: eso no alcanza para ver la forma del espectro. Carga las 6 bandas ` +
+      "(«Bandas a cargar» en el explorador, ~1 min).",
+    cargarTodas: "Cargar las 6 bandas",
+    fechasDistintas: (n: number, desde: string, hasta: string) =>
+      `Ojo: los puntos vienen de fotos de ${n} fechas distintas (${desde} a ${hasta}). Si el objeto cambia de ` +
+      "brillo, el espectro mezcla momentos distintos.",
     pista: "Pasa el mouse por un punto para ver esa foto en el explorador.",
   },
 
@@ -97,8 +107,18 @@ export const prismaEN: typeof prisma = {
       "This object is very faint in a single photo: most points are upper limits. To see it well you need to " +
       "stack many exposures (\u201cExp. per visit\u201d in the explorer).",
     saturadoAviso:
-      "This object is so bright it saturates the detector in several bands: those points are drawn hollow and " +
-      "not used for the shape.",
+      "This object is so bright it saturates the detector in some photos: those points are hollow \u25b2 in the top " +
+      "strip (\u201csaturated\u201d), with no height, and are not used for the shape.",
+    todoSaturado:
+      "Too bright to measure with SPHEREx: every point is saturated. The top strip only marks which colors " +
+      "have photos; the real brightness is higher than the detector records.",
+    unaBanda: (b: number) =>
+      `Only band D${b} has photos: that is not enough to see the shape of the spectrum. Load all 6 bands ` +
+      "(\u201cBands to load\u201d in the explorer, ~1 min).",
+    cargarTodas: "Load all 6 bands",
+    fechasDistintas: (n: number, desde: string, hasta: string) =>
+      `Note: the points come from photos taken on ${n} different dates (${desde} to ${hasta}). If the object ` +
+      "changes brightness, the spectrum mixes different moments.",
     pista: "Hover over a point to see that photo in the explorer.",
   },
 
