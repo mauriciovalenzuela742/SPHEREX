@@ -11,7 +11,7 @@ from app.irsa import cache
 from app.irsa.config import COLECCIONES
 from app.irsa.sia2 import buscar_epocas, filtrar_fechas
 
-VERSION = "0.0.1"
+VERSION = "0.4.2"
 
 app = FastAPI(
     title="Backend",

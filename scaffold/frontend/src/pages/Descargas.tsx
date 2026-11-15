@@ -210,8 +210,8 @@ export default function Descargas() {
 
       <p className="nota dl-aviso">
         {tr(
-          "Los instaladores de escritorio y el APK no están firmados y no se han probado en todos los equipos; por eso Windows y macOS muestran un aviso la primera vez. Los de escritorio dicen 0.2.0 en el nombre del archivo: es solo etiquetado, la app abre el sitio y siempre muestra la última versión.",
-          "The desktop installers and the APK are unsigned and have not been tested on every device, so Windows and macOS show a warning the first time. The desktop files say 0.2.0 in their name: that is only labeling, the app opens the site and always shows the latest version.",
+          "Los instaladores de escritorio y el APK no están firmados y no se han probado en todos los equipos; por eso Windows y macOS muestran un aviso la primera vez.",
+          "The desktop installers and the APK are unsigned and have not been tested on every device, so Windows and macOS show a warning the first time.",
         )}
       </p>
       <p className="nota">

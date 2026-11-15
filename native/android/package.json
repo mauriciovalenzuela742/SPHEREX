@@ -1,7 +1,7 @@
 {
   "name": "astrotrack-android",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.4.2",
   "dependencies": {
     "@capacitor/android": "^6.2.0",
     "@capacitor/cli": "^6.2.0",

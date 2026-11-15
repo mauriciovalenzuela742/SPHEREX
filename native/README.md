@@ -1,4 +1,4 @@
-# Apps nativas de AstroTRACK
+# Apps nativas de AstroTrack
 
 Envoltorios mínimos del visor web. Abren el sitio publicado (`https://spherex-planet-x-tau.vercel.app`) en una
 ventana nativa, así que usan los mismos `/api` y `/proto-api` por rewrites, sin CORS, y siempre muestran la
@@ -6,13 +6,17 @@ versión desplegada. Necesitan internet (la app lo necesita igual para traer los
 
 | Plataforma | Carpeta | Herramienta | Archivo del release |
 |---|---|---|---|
-| Windows | `tauri/` | Tauri 2 | `AstroTRACK-windows-*.exe` (instalador) y `.msi` |
-| macOS (Intel y Apple Silicon) | `tauri/` | Tauri 2 | `AstroTRACK-macos-*.dmg` |
+| Windows | `tauri/` | Tauri 2 | `AstroTrack-windows-*.exe` (instalador) y `.msi` |
+| macOS (Intel y Apple Silicon) | `tauri/` | Tauri 2 | `AstroTrack-macos-*.dmg` |
 | Linux | `tauri/` | Tauri 2 | `.AppImage` y `.deb` |
-| Android | `android/` | Capacitor 6 | `AstroTRACK-android-vX.Y.Z.apk` |
+| Android | `android/` | Capacitor 6 | `AstroTrack-android-vX.Y.Z.apk` |
 | iPhone / iPad | — | PWA | Safari → Compartir → Añadir a pantalla de inicio |
 
 Todo se construye en GitHub Actions (`.github/workflows/release.yml`) al empujar una etiqueta `vX.Y.Z`.
+
+**La versión sale de la etiqueta.** `native/estampar_version.mjs` la escribe en `tauri.conf.json`/`Cargo.toml` (escritorio) y en
+`versionName`/`versionCode` (Android) antes de construir, así que `vX.Y.Z` da `X.Y.Z` en el nombre de los archivos y dentro de
+cada app. Los archivos del repositorio llevan la versión del último release solo como referencia.
 Para probar sin publicar: Actions → Release → *Run workflow* (deja los archivos como artefactos del run).
 
 ## Sin firmar
