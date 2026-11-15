@@ -61,11 +61,19 @@ export default function Tutorial({ onCerrar, onBarnard, onMision }: Props) {
   }, []);
 
   // Medir la burbuja (su alto cambia con el texto) para ubicarla bien.
+  // Dentro de un mismo paso el tamaño solo crece: si no, con secciones grandes (p. ej. «Longitud de onda», paso 6)
+  // la burbuja alternaba entre dos lugares de distinto tamaño, se volvía a medir en cada uno y React cortaba el bucle
+  // con «Maximum update depth exceeded» (el tutorial desaparecía). Al cambiar de paso se mide de nuevo desde cero.
+  const pasoMedido = useRef(-1);
   useLayoutEffect(() => {
     const b = burbuja.current;
     if (!b) return;
     const r = b.getBoundingClientRect();
-    if (Math.abs(r.width - tam.w) > 2 || Math.abs(r.height - tam.h) > 2) setTam({ w: r.width, h: r.height });
+    const nuevo = pasoMedido.current !== i;
+    const w = nuevo ? r.width : Math.max(r.width, tam.w);
+    const h = nuevo ? r.height : Math.max(r.height, tam.h);
+    pasoMedido.current = i;
+    if (Math.abs(w - tam.w) > 2 || Math.abs(h - tam.h) > 2) setTam({ w, h });
   });
 
   // Al cambiar de paso, el foco va al botón principal.
