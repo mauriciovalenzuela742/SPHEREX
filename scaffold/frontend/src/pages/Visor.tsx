@@ -16,6 +16,7 @@ import Prisma from "../prisma/Prisma";
 import type { Accion } from "../spherix/motor";
 import { epocaDeFecha } from "../sky/propagacion";
 import { EntradaCoordenadas, PanelDescubrir } from "../apuntar/Apuntar";
+import PanelEspectro from "../apuntar/PanelEspectro";
 import { useIdioma } from "../state/idioma";
 
 // Misma fecha que usa posicionActual() para centrar: así la marca del objeto cae en el centro del recorte.
@@ -130,6 +131,8 @@ export default function Visor({ estado, set, asistido }: Props) {
             onSelect={(ra, dec) => irA({ ra: Number(ra.toFixed(6)), dec: Number(dec.toFixed(6)) })}
           />
           <PanelDescubrir ra={estado.ra} dec={estado.dec} punto={punto} epoca={EPOCA_SPHEREX} onAzar={(p) => irA({ ra: p.ra, dec: p.dec })} />
+          {/* Espectro del punto o del candidato de CatWISE que se pidió («modo descubrimiento»). */}
+          <PanelEspectro />
           <p className="quien">
             {t.cieloDesc(estado.band === "all" ? "D2" : `D${estado.band}`)}
           </p>
