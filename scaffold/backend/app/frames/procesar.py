@@ -49,8 +49,11 @@ class Fotograma:
     )
 
 
+MAX_PIXELES_VISOR = 150  # suficiente para el blink; evita reproyecciones lentas en campos grandes
+
 def n_pixeles(size_deg: float) -> int:
-    return max(8, int(math.ceil(size_deg * 3600 / ESCALA_ARCSEC)))
+    n = max(8, int(math.ceil(size_deg * 3600 / ESCALA_ARCSEC)))
+    return min(n, MAX_PIXELES_VISOR)
 
 
 def wcs_destino(ra: float, dec: float, n: int) -> WCS:

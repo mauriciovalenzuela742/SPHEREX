@@ -6,6 +6,7 @@ import re
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import demo
 from app.irsa import cache
 from app.irsa.config import COLECCIONES
 from app.irsa.sia2 import buscar_epocas, filtrar_fechas
@@ -50,6 +51,7 @@ def api_health() -> dict:
 
 
 @app.get("/api/epochs")
+@app.get("/api/grid")
 def epochs(
     ra: float = Query(ge=0, le=360),
     dec: float = Query(ge=-90, le=90),
@@ -60,25 +62,79 @@ def epochs(
 ) -> dict:
     """Qué observaciones existen para esa posición. No baja imágenes (docs/03)."""
     cols = tuple(c for c in collections.split(",") if c)
+    # Los 5 campos de la demo salen del paquete precalculado (sin tocar IRSA).
+    base = demo.epocas(ra, dec, size) if cols == COLECCIONES else None
     try:
-        lista = filtrar_fechas(buscar_epocas(ra, dec, size, cols), desde, hasta)
+        lista = filtrar_fechas(base if base is not None else buscar_epocas(ra, dec, size, cols),
+                               desde, hasta)
     except cache.FueraDeCache as e:
         raise HTTPException(status_code=503, detail=str(e)) from e
-    salida = [{"id": e["id"], "t": e["t"], "band": _banda(e["detector"]), "detector": e["detector"],
-               "collection": e["collection"], "access_url": e["access_url"]} for e in lista]
+    salida = [{"id": e["id"], "t": e["t"], "t_mjd": e.get("t_mjd", 0.0),
+               "band": _banda(e["detector"]), "detector": e["detector"],
+               "collection": e["collection"], "access_url": e["access_url"],
+               "pixel_scale_arcsec": e.get("pixel_scale_arcsec", 6.15)} for e in lista]
+
+    # Construir estructura de visitas agrupada por banda (formato que espera el frontend)
+    visitas_por_banda: dict[str, list[dict]] = {}
+    pixel_scale = 6.15
+    for e in salida:
+        b = e["band"]
+        if b is not None:
+            clave_b = str(b)
+            lst = visitas_por_banda.setdefault(clave_b, [])
+            if e["pixel_scale_arcsec"]:
+                pixel_scale = e["pixel_scale_arcsec"]
+            lst.append({
+                "id": e["id"],
+                "mjd": e["t_mjd"],
+                "start": e["t"],   # ISO string, e.g. "2025-05-05T16:48:02Z"
+                "n": 1,            # 1 exposición por época
+            })
+
+    bands_list = sorted(int(b) for b in visitas_por_banda)
+
+    # Construir columns: una columna por fecha, con índice de visita por banda
+    dates_seen: dict[str, dict[str, int]] = {}
+    for b_str, vlist in visitas_por_banda.items():
+        for v_idx, v in enumerate(vlist):
+            date_str = v["start"][:10]
+            if date_str not in dates_seen:
+                dates_seen[date_str] = {}
+            if b_str not in dates_seen[date_str]:
+                dates_seen[date_str][b_str] = v_idx
+
+    columns = [
+        {"date": d, "celdas": celdas}
+        for d, celdas in sorted(dates_seen.items())
+    ]
+
     return {
         "ra": ra, "dec": dec, "size": size, "n_epochs": len(salida),
         "time_range": [salida[0]["t"], salida[-1]["t"]] if salida else None,
-        "bands_available": sorted({e["band"] for e in salida if e["band"]}),
+        # Formato que espera el frontend:
+        "bands": bands_list,
+        "visits": visitas_por_banda,
+        "columns": columns,
+        "pixel_scale_arcsec": pixel_scale,
+        # Compatibilidad hacia atrás:
+        "bands_available": bands_list,
         "epochs": salida,
+        "source": "precalculado" if base is not None else "vivo",
     }
 
 
+@app.get("/api/demo")
+def api_demo() -> dict:
+    """Los campos precalculados (los 5 de la demo) y sus parámetros; vacío si no hay paquete."""
+    return {"campos": demo.manifiesto()}
+
+
 @app.get("/api/frames")
+@app.get("/api/frame")
 def frames(
     ra: float = Query(ge=0, lt=360),
     dec: float = Query(ge=-90, le=90),
-    size: float = Query(0.1, gt=0.005, le=0.5),
+    size: float = Query(0.1, gt=0.005, le=1.0),
     band: int = Query(4, ge=1, le=6),
     stretch: str = Query("asinh", pattern="^(asinh|linear)$"),
     mode: str = Query(
@@ -99,10 +155,17 @@ def frames(
     from app.frames.servicio import fotogramas
     from app.irsa.descarga import IrsaNoDisponible
 
+    # Parámetros por defecto de la demo sobre uno de los 5 campos: respuesta precalculada.
+    if (stretch == "asinh" and desde is None and hasta is None and per_visit == 1
+            and not epochs and vmin is None and vmax is None):
+        previa = demo.fotogramas(ra, dec, size, band, mode)
+        if previa is not None:
+            return previa
     try:
-        return fotogramas(ra, dec, size, band, mode, stretch, desde, hasta, per_visit, budget_s,
+        vivo = fotogramas(ra, dec, size, band, mode, stretch, desde, hasta, per_visit, budget_s,
                           [e for e in epochs.split(",") if e] if epochs else None, vmin, vmax, fast,
                           max_per_sweep)
+        return {**vivo, "source": "vivo"}
     except (cache.FueraDeCache, IrsaNoDisponible) as e:
         raise HTTPException(status_code=503, detail=f"IRSA no está disponible ahora: {e}") from e
 

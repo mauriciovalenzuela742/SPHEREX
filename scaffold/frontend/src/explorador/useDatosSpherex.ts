@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { decodificar, escalaDe, type Frame, type MetaFrame } from "./render";
+import { leerJson, mensajeDeError } from "./errores";
 
 export const API = "/proto-api";
 const PARALELO = 3;
@@ -78,11 +79,9 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
       let g: Grid;
       try {
         const r = await fetch(`${API}/grid?${new URLSearchParams({ ...base, bands: bandas })}`, { signal: ctl.signal });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
-        g = j;
+        g = await leerJson(r); // con error, lanza un mensaje legible (no «[object Object]»)
       } catch (e) {
-        if (gen === generacion.current && (e as Error).name !== "AbortError") setMensaje((e as Error).message);
+        if (gen === generacion.current && (e as Error).name !== "AbortError") setMensaje(mensajeDeError(e));
         return;
       }
       if (gen !== generacion.current) return;
@@ -121,11 +120,11 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
           const [b, v] = tareas[i++];
           const q = new URLSearchParams({
             ...base, band: String(b), visit: String(v), size: String(size), per_visit: String(porVisita),
+            budget_s: String(size > 0.15 ? Math.min(55, Math.round(size * 80)) : 8),
           });
           try {
             const r = await fetch(`${API}/frame?${q}`, { signal: ctl.signal });
-            const j = await r.json();
-            if (!r.ok) throw new Error(j.detail || `HTTP ${r.status}`);
+            const j = await leerJson(r);
             if (gen !== generacion.current) return;
             frames.current.set(clave(b, v), { meta: j as MetaFrame, arr: decodificar((j as MetaFrame).data) });
             const deBanda = [...frames.current.entries()].filter(([k]) => k.startsWith(`${b}:`)).map(([, f]) => f);
@@ -133,7 +132,7 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
           } catch (e) {
             if (gen !== generacion.current || (e as Error).name === "AbortError") return;
             nErr++;
-            errores.current.set(clave(b, v), (e as Error).message);
+            errores.current.set(clave(b, v), mensajeDeError(e));
           }
           hechos++;
           setProg({ hechos, total: tareas.length, errores: nErr });
@@ -175,8 +174,54 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
   );
   const mjdActual = visitas[visita]?.mjd ?? 0;
 
+  // ── Reintentar fotos sueltas que fallaron (V1, Antonia) ──
+  // «Reintentar» de arriba repite toda la búsqueda; esto vuelve a pedir solo las que dieron error, sin
+  // perder las que ya llegaron. Un 500/503/504 a ratos se arregla solo, o la foto ya quedó en la caché.
+  const [reintentando, setReintentando] = useState(false);
+  const pedirUna = useCallback(
+    async (b: number, v: number, gen: number) => {
+      errores.current.delete(clave(b, v));
+      setProg((p) => ({ ...p, errores: errores.current.size }));
+      setVersion((x) => x + 1); // sin foto y sin error, la vista muestra «Cargando…»
+      const q = new URLSearchParams({
+        ra: String(ra), dec: String(dec), start: desde, end: hasta,
+        band: String(b), visit: String(v), size: String(size), per_visit: String(porVisita),
+      });
+      try {
+        const j = await leerJson(await fetch(`${API}/frame?${q}`));
+        if (gen !== generacion.current) return;
+        frames.current.set(clave(b, v), { meta: j as MetaFrame, arr: decodificar((j as MetaFrame).data) });
+        const deBanda = [...frames.current.entries()].filter(([k]) => k.startsWith(`${b}:`)).map(([, f]) => f);
+        escalas.current.set(b, escalaDe(deBanda));
+      } catch (e) {
+        if (gen !== generacion.current) return;
+        errores.current.set(clave(b, v), mensajeDeError(e));
+      }
+      setProg((p) => ({ ...p, errores: errores.current.size }));
+      setVersion((x) => x + 1);
+    },
+    [ra, dec, size, desde, hasta, porVisita],
+  );
+  const reintentarImagen = useCallback((b: number, v: number) => pedirUna(b, v, generacion.current), [pedirUna]);
+  const reintentarFallidas = useCallback(async () => {
+    const gen = generacion.current;
+    const pendientes = [...errores.current.keys()].map((k) => k.split(":").map(Number) as [number, number]);
+    setReintentando(true);
+    // De a PARALELO, como la carga normal: IRSA devuelve 503 si se le piden muchas a la vez.
+    let i = 0;
+    const trabajador = async () => {
+      while (i < pendientes.length && gen === generacion.current) {
+        const [b, v] = pendientes[i++];
+        await pedirUna(b, v, gen);
+      }
+    };
+    await Promise.all(Array.from({ length: PARALELO }, trabajador));
+    setReintentando(false);
+  }, [pedirUna]);
+
   return {
     desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual,
+    reintentarImagen, reintentarFallidas, reintentando,
   };
 }
 

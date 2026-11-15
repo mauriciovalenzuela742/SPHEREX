@@ -94,3 +94,4 @@
 .exp-minis .mini.sel { border-color: var(--texto); }
 .exp-minis .vacia { background: repeating-linear-gradient(45deg, var(--panel) 0 4px, #080b12 4px 8px); }
 .explorador kbd { font: 10px var(--mono); border: 1px solid var(--borde); border-radius: 3px; padding: 0 4px; }
+.exp-reintentar { margin-top: 6px; width: 100%; font-size: 0.85rem; padding: 0.3rem 0.6rem; }

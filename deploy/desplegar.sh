@@ -7,7 +7,7 @@
 set -euo pipefail
 cual="${1:?usa: api | prototipo}"
 case "$cual" in
-  api)       nombre=spherex-api;          rutas="scaffold/backend/app data/campos_de_prueba.yml" ;;
+  api)       nombre=spherex-api;          rutas="scaffold/backend/app data/campos_de_prueba.yml data/demo" ;;
   prototipo) nombre=spherex-prototipo-d2; rutas="prototipos/rango_fechas data/campos_de_prueba.yml" ;;
   *) echo "usa: api | prototipo" >&2; exit 1 ;;
 esac

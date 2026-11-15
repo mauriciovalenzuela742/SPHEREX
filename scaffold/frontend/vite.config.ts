@@ -5,12 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    // El backend del esqueleto corre en 8000. Con este proxy, el frontend
-    // llama a /api/... sin preocuparse de CORS en desarrollo.
     proxy: {
       "/api": { target: "http://localhost:8000", changeOrigin: true },
       "/health": { target: "http://localhost:8000", changeOrigin: true },
-      // Modo Misión: fotos reales vía el prototipo D2 desplegado (igual que el rewrite de vercel.json).
+      // Modo Misión: imágenes vía Vercel (formato float32 por visita).
+      // El grid se resuelve en el backend local (ya arreglado para devolver bands/visits/columns).
       "/proto-api": {
         target: "https://spherex-prototipo-d2.vercel.app",
         changeOrigin: true,

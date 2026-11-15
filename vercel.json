@@ -13,5 +13,11 @@
       "source": "/proto-api/:path*",
       "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "**": false
+    }
+  }
 }
