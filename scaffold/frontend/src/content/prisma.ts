@@ -78,6 +78,22 @@ export const prisma = {
     todas: "todas",
   },
 
+  ficha: {
+    titulo: "Ficha del astro",
+    seParece: "Se parece a:",
+    indeterminado: "Tipo probable: no se puede decir con estos datos.",
+    porque: "Porque:",
+    tipos: {
+      estrella: "una estrella",
+      estrella_joven_polvo: "una estrella joven con polvo",
+      enana_marron: "una enana marrón",
+    } as Record<string, string>,
+    confianza: { baja: "confianza baja", media: "confianza media" } as Record<string, string>,
+    aviso:
+      "Orientativo: reglas simples sobre la forma del espectro entre 0,75 y 5 µm, sin modelos ni catálogos. " +
+      "No reemplaza una clasificación espectral.",
+  },
+
   cambio: {
     titulo: "¿Qué cambió entre pasadas?",
     frase: (sube: boolean, rango: string, meses: number, razon: string) =>
@@ -176,6 +192,22 @@ export const prismaEN: typeof prisma = {
   pasadas: {
     titulo: "Passes",
     todas: "all",
+  },
+
+  ficha: {
+    titulo: "Object card",
+    seParece: "Looks like:",
+    indeterminado: "Probable type: cannot be told from this data.",
+    porque: "Because:",
+    tipos: {
+      estrella: "a star",
+      estrella_joven_polvo: "a young star with dust",
+      enana_marron: "a brown dwarf",
+    },
+    confianza: { baja: "low confidence", media: "medium confidence" },
+    aviso:
+      "Indicative only: simple rules on the shape of the spectrum between 0.75 and 5 µm, no models or catalogs. " +
+      "It does not replace a spectral classification.",
   },
 
   cambio: {

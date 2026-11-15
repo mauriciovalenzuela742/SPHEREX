@@ -15,6 +15,7 @@ import { espectro } from "./fotometria";
 import HuellaEspectral from "./HuellaEspectral";
 import OjoInfrarrojo from "./OjoInfrarrojo";
 import QueCambio from "./QueCambio";
+import FichaAstro from "./FichaAstro";
 import { COLORES_PASADA, desdePrecalc, desdeVivo, esPrecalc, etiquetaPasada, type PrecalcEspectro, type PuntoVista } from "./pasadas";
 import "./prisma.css";
 
@@ -118,6 +119,10 @@ export default function Prisma({ datos, ra, dec }: { datos: DatosSpherex; ra: nu
               cargarTodas={!usaPre && datos.cargar.length < 6 ? () => datos.setCargar([1, 2, 3, 4, 5, 6]) : undefined}
             />
             {usaPre && pre && <p className="h-caveat">{prisma.fuente.notaPre(pre.generado.slice(0, 10))} {pre.caveat}</p>}
+            <FichaAstro
+              puntos={pasadas.filter((pa) => verValido === "todas" || pa.id === verValido).flatMap((pa) => pa.puntos)}
+              nombre={CAMPOS.find((c) => c.id === id)?.nombre ?? null}
+            />
             <QueCambio pasadas={pasadas} />
           </div>
         </div>

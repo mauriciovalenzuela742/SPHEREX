@@ -75,3 +75,13 @@
 .qc-tramos li.sube .qc-barra span { background: #ffa94d; }
 .qc-tramos li.baja { color: #a5d8ff; }
 .qc-tramos li.baja .qc-barra span { background: #74c0fc; }
+
+/* Ficha del astro */
+.ficha { border: 1px solid var(--borde); border-left: 4px solid #5c6a8a; border-radius: 8px; padding: 0.6rem 0.8rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.ficha-enana_marron { border-left-color: #b197fc; }
+.ficha-estrella_joven_polvo { border-left-color: #ffa94d; }
+.ficha-estrella { border-left-color: #74c0fc; }
+.ficha h4 { margin: 0; font-size: 0.92rem; }
+.ficha-tipo { margin: 0; font-size: 1rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.6rem; }
+.ficha-conf { font-size: 0.75rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--borde); color: var(--suave); }
+.ficha-motivo { margin: 0; font-size: 0.86rem; }
