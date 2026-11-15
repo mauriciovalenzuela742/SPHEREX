@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { decodificar, escalaDe, type Frame, type MetaFrame } from "./render";
 import { leerJson, mensajeDeError } from "./errores";
+import { distanciaArcsec, presetEn } from "./presets";
 
 export const API = "/proto-api";
 const PARALELO = 3;
@@ -22,15 +23,36 @@ export type Grid = {
 
 export const clave = (b: number, v: number) => `${b}:${v}`;
 const hoy = () => new Date().toISOString().slice(0, 10);
+const DESDE = "2025-04-01";
+const TODAS = [1, 2, 3, 4, 5, 6];
+
+/** Fotos precalculadas de un objeto con preset (scripts/precalcular_explorador.ts). */
+type Precalc = { ra: number; dec: number; size: number; banda: number; porVisita: number; desde: string; grid: Grid; frames: Record<string, MetaFrame> };
 
 /** `activo = false` (p. ej. en el Modo Misión) no descarga nada. */
 export function useDatosSpherex(ra: number, dec: number, size: number, activo = true) {
   // ── Qué cargar ──
-  const [desde, setDesde] = useState("2025-04-01");
+  // Objetos débiles (WISE 0855, eps Ind B): su banda y 10 exposiciones por visita, o el movimiento no se ve (presets.ts).
+  const preset = useMemo(() => presetEn(ra, dec), [ra, dec]);
+  const [desde, setDesde] = useState(DESDE);
   const [hasta, setHasta] = useState(hoy());
-  const [cargar, setCargar] = useState<number[]>([1, 2, 3, 4, 5, 6]);
-  const [porVisita, setPorVisita] = useState(1);
+  const [cargar, setCargar] = useState<number[]>(() => (preset ? [preset.banda] : TODAS));
+  const [porVisita, setPorVisita] = useState(() => preset?.porVisita ?? 1);
   const [intento, setIntento] = useState(0);
+  // Al llegar a un objeto con preset se aplica; al salir de él, se vuelve a lo de siempre. La persona puede cambiarlo después.
+  const presetPrevio = useRef(preset?.id);
+  useEffect(() => {
+    if (preset?.id === presetPrevio.current) return;
+    if (preset) {
+      setCargar([preset.banda]);
+      setPorVisita(preset.porVisita);
+    } else if (presetPrevio.current) {
+      setCargar(TODAS);
+      setPorVisita(1);
+    }
+    presetPrevio.current = preset?.id;
+  }, [preset]);
+  const presetVigente = preset && porVisita === preset.porVisita && cargar.includes(preset.banda) ? preset : null;
 
   // ── Selección (banda y visita visibles; compartida con el Prisma) ──
   const [banda, setBanda] = useState(0);
@@ -75,7 +97,34 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
     const bandas = [...cargar].sort().join(",");
     const base = { ra: String(ra), dec: String(dec), start: desde, end: hasta };
 
+    const guardar = (b: number, v: number, m: MetaFrame) => {
+      frames.current.set(clave(b, v), { meta: m, arr: decodificar(m.data) });
+      const deBanda = [...frames.current.entries()].filter(([k]) => k.startsWith(`${b}:`)).map(([, f]) => f);
+      escalas.current.set(b, escalaDe(deBanda));
+    };
+
     const t = window.setTimeout(async () => {
+      // Objeto con preset y la configuración de siempre: fotos precalculadas, sin consultar IRSA.
+      if (preset && cargar.length === 1 && cargar[0] === preset.banda && porVisita === preset.porVisita && desde === DESDE && hasta === hoy()) {
+        try {
+          const r = await fetch(`/precalc/explorador/${preset.id}.json`, { signal: ctl.signal });
+          const p: Precalc | null = r.ok ? await r.json() : null;
+          if (gen !== generacion.current) return;
+          if (p && p.size === size && p.banda === preset.banda && p.porVisita === porVisita && distanciaArcsec(ra, dec, p.ra, p.dec) < 3) {
+            const vs = p.grid.visits[p.banda] ?? [];
+            vs.forEach((_, v) => p.frames[clave(p.banda, v)] && guardar(p.banda, v, p.frames[clave(p.banda, v)]));
+            setGrid(p.grid);
+            setBanda(p.banda);
+            setVisita(Math.max(0, vs.length - 1));
+            setProg({ hechos: vs.length, total: vs.length, errores: 0 });
+            setVersion((x) => x + 1);
+            return;
+          }
+        } catch (e) {
+          if ((e as Error).name === "AbortError") return;
+        }
+      }
+
       let g: Grid;
       try {
         const r = await fetch(`${API}/grid?${new URLSearchParams({ ...base, bands: bandas })}`, { signal: ctl.signal });
@@ -93,7 +142,8 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
       const b0 = fs.includes(5) && porVisita > 1 ? 5 : fs[0];
       setGrid(g);
       setBanda(b0);
-      setVisita(0);
+      // Con preset se abre en la última visita (la resta contra la primera muestra el movimiento).
+      setVisita(presetVigente && b0 === preset?.banda ? g.visits[b0].length - 1 : 0);
 
       // t₀ y la última de cada banda primero; después el resto.
       const tareas: [number, number][] = [];
@@ -126,9 +176,7 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
             const r = await fetch(`${API}/frame?${q}`, { signal: ctl.signal });
             const j = await leerJson(r);
             if (gen !== generacion.current) return;
-            frames.current.set(clave(b, v), { meta: j as MetaFrame, arr: decodificar((j as MetaFrame).data) });
-            const deBanda = [...frames.current.entries()].filter(([k]) => k.startsWith(`${b}:`)).map(([, f]) => f);
-            escalas.current.set(b, escalaDe(deBanda));
+            guardar(b, v, j as MetaFrame);
           } catch (e) {
             if (gen !== generacion.current || (e as Error).name === "AbortError") return;
             nErr++;
@@ -221,7 +269,7 @@ export function useDatosSpherex(ra: number, dec: number, size: number, activo = 
 
   return {
     desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual,
-    reintentarImagen, reintentarFallidas, reintentando,
+    reintentarImagen, reintentarFallidas, reintentando, preset: presetVigente,
   };
 }
 

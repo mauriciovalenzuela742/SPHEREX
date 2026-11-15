@@ -61,6 +61,20 @@ const ES = {
   visitaSiguiente: "Visita siguiente",
   reproducir: "Reproducir",
   pausa: "Pausa",
+  // Explorador: objetos débiles con preset (explorador/presets.ts). Es una mediana, no una suma.
+  presetRazon: (muyDebil: boolean, n: number, banda: number) =>
+    `Este objeto es ${muyDebil ? "muy " : ""}débil: para verlo usamos la mediana de hasta ${n} fotos de cada visita en la banda ${banda}. ` +
+    "Ves la resta de la última visita contra la primera: azul es donde estaba y rojo, donde está.",
+  lienzoAyudaZoom: "Arrastra (o desliza con dos dedos) para moverte · pellizca para el zoom · doble clic: volver a la mira",
+  lienzoAyuda: "Pellizca el touchpad o usa + para acercar",
+  lienzoAria: (banda: number, fecha: string, zoom: string) => `Banda ${banda}, ${fecha}, zoom ${zoom}`,
+  sinImagen: "Sin imagen",
+  noSePudoTraer: (e: string) => `No se pudo traer esta imagen: ${e}`,
+  cargandoImagenDel: (f: string) => `Cargando la imagen del ${f}…`,
+  nExposiciones: (n: number) => `${n} exposiciones`,
+  conError: "con error",
+  estado: "Estado",
+  cargandoEstado: "cargando…",
   cieloDesc: (band: string) =>
     `Cielo: cubo SPHEREx DR1 de IRSA (mosaico de todas las épocas, sin eje de tiempo). Banda ${band}, canal central.`,
 
@@ -123,6 +137,19 @@ const EN: typeof ES = {
   visitaSiguiente: "Next visit",
   reproducir: "Play",
   pausa: "Pause",
+  presetRazon: (muyDebil: boolean, n: number, banda: number) =>
+    `This object is ${muyDebil ? "very " : ""}faint: to see it we take the median of up to ${n} images from each visit in band ${banda}. ` +
+    "You see the last visit minus the first: blue is where it was and red is where it is now.",
+  lienzoAyudaZoom: "Drag (or swipe with two fingers) to move · pinch to zoom · double-click: back to the crosshair",
+  lienzoAyuda: "Pinch the touchpad or press + to zoom in",
+  lienzoAria: (banda: number, fecha: string, zoom: string) => `Band ${banda}, ${fecha}, zoom ${zoom}`,
+  sinImagen: "No image",
+  noSePudoTraer: (e: string) => `Could not fetch this image: ${e}`,
+  cargandoImagenDel: (f: string) => `Loading the image from ${f}…`,
+  nExposiciones: (n: number) => `${n} exposures`,
+  conError: "with errors",
+  estado: "Status",
+  cargandoEstado: "loading…",
   cieloDesc: (band: string) =>
     `Sky: SPHEREx DR1 cube from IRSA (mosaic of all epochs, no time axis). Band ${band}, central channel.`,
 

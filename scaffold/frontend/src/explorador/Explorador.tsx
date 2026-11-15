@@ -47,7 +47,7 @@ type Props = { datos: DatosSpherex };
 export default function Explorador({ datos }: Props) {
   const { t, idioma, tr } = useIdioma();
   const MESES = idioma === "en" ? MESES_EN : MESES_ES;
-  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando } = datos;
+  const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando, preset } = datos;
 
   // ── Leyenda dinámica ──
   const LEYENDA: Record<Modo, string> = { imagen: t.modoImagenDesc, resta: t.modoRestaDesc, color: t.modoColorDesc };
@@ -102,6 +102,9 @@ export default function Explorador({ datos }: Props) {
   const [play, setPlay] = useState(false);
 
   useEffect(() => setPlay(false), [grid]);
+  // Objetos débiles con preset (presets.ts): se abren en la resta contra la primera visita; los demás, en la imagen.
+  const presetId = preset?.id;
+  useEffect(() => setModo(presetId ? "resta" : "imagen"), [presetId]);
 
   useEffect(() => {
     if (!play || visitas.length < 2) return;
@@ -180,6 +183,7 @@ export default function Explorador({ datos }: Props) {
           <strong>{t.exploradorTitulo}</strong>
           <span>{t.exploradorHint}</span>
         </div>
+        {preset && <p className="exp-preset">{t.presetRazon(preset.muyDebil, preset.porVisita, preset.banda)}</p>}
         <div
           ref={caja}
           data-tour="explorador-imagen"
@@ -198,14 +202,14 @@ export default function Explorador({ datos }: Props) {
           onPointerUp={() => { arrastre.current = null; setPan((p) => ({ ...p })); }}
           onPointerCancel={() => { arrastre.current = null; }}
           onDoubleClick={() => mover({ x: 0, y: 0 })}
-          title={zoom > 1 ? "Arrastra (o desliza con dos dedos) para moverte · pellizca para el zoom · doble clic: volver a la mira" : "Pellizca el touchpad o usa + para acercar"}
+          title={zoom > 1 ? t.lienzoAyudaZoom : t.lienzoAyuda}
         >
           <canvas
             ref={lienzo}
             width={59}
             height={59}
             style={{ transform: `translate(${pan.x * 100}%, ${pan.y * 100}%) scale(${zoom})` }}
-            aria-label={actual ? `Banda ${banda}, ${actual.meta.t.slice(0, 10)}, zoom ${textoZoom(zoom)}` : "Sin imagen"}
+            aria-label={actual ? t.lienzoAria(banda, actual.meta.t.slice(0, 10), textoZoom(zoom)) : t.sinImagen}
           />
           {actual && (
             <>
@@ -239,8 +243,8 @@ export default function Explorador({ datos }: Props) {
               {!grid
                 ? mensaje
                 : error
-                  ? `No se pudo traer esta imagen: ${error}`
-                  : `Cargando la imagen del ${visitas[visita]?.start.slice(0, 10) ?? ""}…`}
+                  ? t.noSePudoTraer(error)
+                  : t.cargandoImagenDel(visitas[visita]?.start.slice(0, 10) ?? "")}
               {/* Reintentar cuando puede servir: errores de IRSA, de red o del servidor (mensajes de errores.ts) */}
               {!grid && /IRSA|HTTP|\(50\d\)|conexión|servidor/.test(mensaje) && (
                 <button onClick={() => setIntento((x) => x + 1)}>{t.reintentar}</button>
@@ -290,7 +294,7 @@ export default function Explorador({ datos }: Props) {
                 key={v.start}
                 className={`marca ${frames.current.has(clave(banda, k)) ? "lista" : ""} ${errores.current.has(clave(banda, k)) ? "error" : ""}`}
                 style={{ left: `${xDe(v.mjd)}%`, ["--c" as string]: `var(--b${banda})` }}
-                title={`${v.start.slice(0, 10)} · ${v.n} exposiciones`}
+                title={`${v.start.slice(0, 10)} · ${t.nExposiciones(v.n)}`}
               />
             ))}
             {fantasma !== null && <div className="fantasma" style={{ left: `${fantasma}%` }} />}
@@ -326,7 +330,7 @@ export default function Explorador({ datos }: Props) {
           {prog.total > 0 && (
             <div className="exp-estado">
               {prog.hechos < prog.total ? t.cargando : t.listo} {prog.hechos}/{prog.total} {t.imagenes}
-              {prog.errores > 0 && <span className="aviso"> · {prog.errores} con error</span>}
+              {prog.errores > 0 && <span className="aviso"> · {prog.errores} {t.conError}</span>}
               <div className="exp-barrita"><i style={{ width: `${pct}%` }} /></div>
               {/* Cuando terminó la carga normal y quedaron fotos con error: pedir de nuevo solo esas */}
               {prog.errores > 0 && prog.hechos >= prog.total && (
@@ -359,8 +363,8 @@ export default function Explorador({ datos }: Props) {
             <p className="exp-leyenda">{LEYENDA[modo]}</p>
             <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {tr("Suavizar píxeles", "Smooth pixels")}</label>
             <p className="exp-ayuda">
-              {tr("La mira marca la posición pedida (A.R./Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento está hecho para espectros de todo el cielo, no para detalle fino. El grano es ruido; baja sumando exposiciones por visita.",
-                  "The crosshair marks the requested position (R.A./Dec). Each square is a 6.15″ SPHEREx pixel: the instrument is built for all-sky spectra, not fine detail. The grain is noise; it drops when you stack exposures per visit.")}
+              {tr("La mira marca la posición pedida (A.R./Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento está hecho para espectros de todo el cielo, no para detalle fino. El grano es ruido; baja con la mediana de más exposiciones por visita.",
+                  "The crosshair marks the requested position (R.A./Dec). Each square is a 6.15″ SPHEREx pixel: the instrument is built for all-sky spectra, not fine detail. The grain is noise; it drops with the median of more exposures per visit.")}
             </p>
           </div>
         )}
@@ -378,7 +382,7 @@ export default function Explorador({ datos }: Props) {
                     [tr("Colección", "Collection"), actual.meta.collection],
                     [tr("Método", "Method"), actual.meta.method === "rangos" ? tr("rápido (solo píxeles)", "fast (pixels only)") : tr("recorte de IRSA", "IRSA cutout")],
                   ]
-                : [["Fecha", visitas[visita].start.slice(0, 10)], ["Exposiciones", String(visitas[visita].n)], ["Estado", "cargando…"]]
+                : [[t.fecha, visitas[visita].start.slice(0, 10)], [t.exposiciones, String(visitas[visita].n)], [t.estado, t.cargandoEstado]]
               ).map(([k, x]) => (
                 <div key={k} className="exp-info-fila"><dt>{k}</dt><dd>{x}</dd></div>
               ))}
