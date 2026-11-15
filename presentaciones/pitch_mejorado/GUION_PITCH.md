@@ -1,6 +1,8 @@
 # Pitch de AstroTRACK · versión alternativa (2 minutos)
 
 Para Mauricio, de parte de JP. **Tu versión sigue intacta**; esto es una segunda opción para comparar.
+
+**El diálogo exacto, con tiempos y sincronizado con el video de 30 s, está en `DIALOGO_PRESENTADOR.md` (y `.docx`). La presentación en PowerPoint es `astrotrack_pitch.pptx` (video incrustado y guion en las notas).**
 Las láminas están en inglés (jurado NASA) y el guion hablado en español, igual que en tu propuesta.
 
 ## Qué hay en esta carpeta
@@ -39,43 +41,11 @@ del mapa sí se cargaron en vivo. El rótulo del video lo dice: «Real app · lo
    preguntan.
 6. **Cierre con QR real** al visor (probado: se lee bien).
 
-## Guion · versión alternativa (español, ~2:00)
+## Guion · versión alternativa (español)
 
-> Ritmo de referencia: unas 2,5 palabras por segundo. Las pausas están marcadas.
-
-**Lámina 1 · Pregunta (0:00–0:08)**
-«Levanten la mano: ¿quién cree que podría descubrir una estrella que nadie conoce? *(pausa de 2 s, mirar al
-público)* Bien… porque doscientas mil personas ya lo hicieron.»
-
-**Lámina 2 · Cualquiera puede descubrir (0:08–0:32)**
-«En Backyard Worlds, de la NASA, voluntarios hicieron parpadear fotos del cielo y encontraron más de tres mil enanas
-marrones nuevas: duplicaron las que se conocían. Pero el telescopio que usaban, WISE, se apagó en 2024. Hoy SPHEREx
-fotografía todo el cielo cada seis meses, en 102 colores infrarrojos. Lo que faltaba era la herramienta.»
-
-**Lámina 3 · ¿Chile lo necesita? (0:32–0:42)**
-«¿Y a Chile le importa? Tenemos telescopios gigantes, pero solo el 7,5 % de quienes estudian STEM elige ciencias
-naturales o matemáticas.»
-
-**Lámina 4 · Demo en video (0:42–1:12)** — *el video corre solo (30 s); habla siguiendo los subtítulos*
-- *(«Anyone can start»)* «Por eso creamos AstroTRACK. Entras y ves una foto de SPHEREx: Epsilon Indi B,
-  una enana marrón cercana.
-- *(«Spring 2025… October 2026»)* Marcas primavera de 2025 y octubre de 2026,
-- *(«A − B»)* las restas, y aparece: rojo donde estaba, azul donde está.
-- *(«One switch»)* Con un interruptor se abre lo científico:
-- *(«Its spectrum»)* su espectro en 102 colores, con huecos de agua y metano,
-- *(«The tool's reading»)* y la herramienta dice: enana marrón.
-- *(«Leave a note»)* Dejas una nota para el próximo explorador.
-- *(Barnard)* Y Barnard: en 2000, en 2010 y hoy.»
-
-**Lámina 5 · Lo que puedes hacer + resultado (1:12–1:42)**
-«Y no es un juguete. Solo con imágenes de SPHEREx, sin catálogos, medimos que WISE 0855 se movió 8,7 segundos de
-arco en un año; la física predecía 8,0. Y cuando se cruza con una estrella, usamos sus colores para borrar las
-estrellas quietas y dejarla aislada. Cualquiera puede explorar y ganarse su insignia, Spherix le explica cada paso,
-y quien quiera hace ciencia de verdad.»
-
-**Lámina 6 · Cierre (1:42–2:00)**
-«Somos Transientes: un equipo de 17 a 52 años, y nos ilusiona democratizar el acceso a la ciencia de frontera.
-Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)* Yo ya tengo mi insignia.»
+El texto exacto, lámina por lámina y con los tiempos del video, está en **`DIALOGO_PRESENTADOR.md`** (también en
+`.docx` y en las notas del orador del PowerPoint y del HTML). Es la única versión: si se cambia, se cambia en
+`tools/dialogo.py` y se regenera.
 
 ## Script · English version (same timing)
 
