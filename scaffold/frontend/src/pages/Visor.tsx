@@ -30,6 +30,33 @@ const EPOCA_SPHEREX = 2025.94;
 
 type Props = { estado: Estado; set: (p: Partial<Estado>) => void; asistido: boolean };
 
+/**
+ * Texto al pasar el mouse por cada objeto de prueba: qué es y qué buscar, en ES y EN.
+ * Movimientos propios de content/campos.ts; el resto, de content/mision.ts y docs/11.
+ */
+const AYUDA_OBJETO: Record<string, [string, string]> = {
+  barnard: [
+    "La estrella que más rápido se mueve en nuestro cielo: 10,4″ por año. En la resta, busca la pareja roja y azul.",
+    "The fastest-moving star in our sky: 10.4″ per year. In Subtract, look for the red and blue pair.",
+  ],
+  eps_ind_b: [
+    "Una pareja de enanas marrones a 12 años luz, que se mueve 4,7″ por año. En la resta, busca la pareja roja y azul en la mira.",
+    "A pair of brown dwarfs 12 light-years away, moving 4.7″ per year. In Subtract, look for the red and blue pair at the crosshair.",
+  ],
+  wise_0855: [
+    "La enana marrón más fría que se conoce, a 7 años luz; se mueve 8,2″ por año. Es muy débil: casi solo se ve en las bandas largas (D5–D6).",
+    "The coldest known brown dwarf, 7 light-years away; it moves 8.2″ per year. It is very faint: it shows up almost only in the long bands (D5–D6).",
+  ],
+  rw_aur: [
+    "Estrella joven rodeada de gas y polvo, que cambia de brillo sin ritmo fijo. Casi no se mueve, y es tan brillante que satura: una mancha en la resta no siempre es movimiento.",
+    "Young star surrounded by gas and dust, changing brightness irregularly. It barely moves, and it is so bright it saturates: a spot in Subtract is not always motion.",
+  ],
+  r_dra: [
+    "Estrella vieja que se infla y se desinfla: su brillo sube y baja en un ciclo de varios meses. En la resta sale de un solo color: cambió de brillo, no se movió.",
+    "Old star that swells and shrinks: its brightness rises and falls over a cycle of several months. In Subtract it shows one color: it changed brightness, it did not move.",
+  ],
+};
+
 function Hueco({ titulo, quien }: { titulo: string; quien: string }) {
   return (
     <div className="hueco">
@@ -120,9 +147,9 @@ export default function Visor({ estado, set, asistido }: Props) {
           </select>
         </label>
         <label>
-          {tr("Bandas", "Bands")}
+          {tr("Banda del mapa", "Map band")}
+          {/* Sin «Todas»: mostraba solo el canal central de D2. El mapa muestra un canal a la vez. */}
           <select value={estado.band} onChange={(e) => set({ band: e.target.value })}>
-            <option value="all">{tr("Todas", "All")}</option>
             {[1, 2, 3, 4, 5, 6].map((b) => (
               <option key={b} value={String(b)}>
                 D{b}
@@ -134,7 +161,11 @@ export default function Visor({ estado, set, asistido }: Props) {
 
       <div className="objetos" role="group" aria-label={tr("Objetos de prueba", "Test objects")} data-tour="objetos">
         {CAMPOS.map((c) => (
-          <button key={c.id} onClick={() => set(posicionActual(c))} title={`${c.tipo} · ${tr("centrado en su posición de hoy", "centered on its current position")}`}>
+          <button
+            key={c.id}
+            onClick={() => set(posicionActual(c))}
+            title={`${AYUDA_OBJETO[c.id] ? tr(...AYUDA_OBJETO[c.id]) : c.tipo} ${tr("(El mapa se centra donde está hoy.)", "(The map centers on where it is today.)")}`}
+          >
             {c.nombre}
           </button>
         ))}
@@ -166,6 +197,18 @@ export default function Visor({ estado, set, asistido }: Props) {
               {tr("Ver en WiseView ↗", "View in WiseView ↗")}
             </a>
           </div>
+          {/* Lo esencial para usar el mapa, plegado para no tapar el cielo. */}
+          <details className="tarjeta mapa-ayuda">
+            <summary>ⓘ {tr("Cómo usar el mapa", "How to use the map")}</summary>
+            <ul>
+              <li>{tr("El fondo es el cielo de SPHEREx (todas sus fechas juntas) en un color de infrarrojo. El menú «Banda del mapa» y el panel «Longitud de onda» de abajo eligen cuál.", "The background is the SPHEREx sky (all its dates combined) in one infrared color. The “Map band” menu and the “Wavelength” panel below choose which.")}</li>
+              <li>{tr("Arrastra para moverte; usa la rueda, el pellizco o − / + (abajo a la izquierda) para acercar o alejar.", "Drag to move around; use the scroll wheel, a pinch or − / + (bottom left) to zoom in or out.")}</li>
+              <li>{tr("Haz clic en el cielo: el visor va a ese punto y «¿Qué hay aquí?» busca qué se conoce ahí.", "Click on the sky: the viewer moves to that point and “What is here?” looks up what is known there.")}</li>
+              <li>{tr("La marca es el objeto; el cuadrado punteado, el recorte que usan el Explorador y el Prisma; los círculos y la flecha, dónde estaba el objeto en cada época y hacia dónde se mueve.", "The marker is the object; the dashed square, the cutout the Explorer and the Prism use; the circles and the arrow, where the object was in each epoch and where it is heading.")}</li>
+              <li>{tr("Debajo del mapa: «AllWISE 2010» y «2MASS ~2000» cambian el fondo a fotos antiguas, y «Parpadear» las alterna con SPHEREx para ver qué se movió. «Mostrar catálogos» marca Gaia (círculos), CatWISE (triángulos) y SIMBAD (cuadrados).", "Below the map: “AllWISE 2010” and “2MASS ~2000” switch the background to older photos, and “Blink” alternates them with SPHEREx to see what moved. “Show catalogs” marks Gaia (circles), CatWISE (triangles) and SIMBAD (squares).")}</li>
+              <li>{tr("«⤢ Encuadrar el recorte» vuelve al objeto y a su tamaño.", "“⤢ Frame the cutout” goes back to the object at its size.")}</li>
+            </ul>
+          </details>
           <AladinView
             ra={estado.ra}
             dec={estado.dec}
@@ -175,12 +218,13 @@ export default function Visor({ estado, set, asistido }: Props) {
             size={estado.size}
             epoca={EPOCA_HOY}
             onSelect={(ra, dec) => irA({ ra: Number(ra.toFixed(6)), dec: Number(dec.toFixed(6)) })}
+            onBanda={(b) => set({ band: String(b) })}
           />
           <PanelDescubrir ra={estado.ra} dec={estado.dec} punto={punto} epoca={EPOCA_SPHEREX} onAzar={(p) => irA({ ra: p.ra, dec: p.dec })} />
           {/* Espectro del punto o del candidato de CatWISE que se pidió («modo descubrimiento»). */}
           <PanelEspectro />
           <p className="quien">
-            {t.cieloDesc(estado.band === "all" ? "D2" : `D${estado.band}`)}
+            {t.cieloDesc(`D${estado.band}`)}
           </p>
           {!enMision && (
             <>
