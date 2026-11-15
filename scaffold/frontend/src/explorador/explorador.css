@@ -60,6 +60,12 @@
 .exp-pista .puntero::before { content: ""; position: absolute; top: -2px; left: -6px; border: 7px solid transparent; border-top-color: var(--texto); }
 .exp-pista .fantasma { position: absolute; top: 4px; bottom: 18px; width: 1px; background: rgba(228, 233, 243, 0.35); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .exp-pista .puntero { transition: none; } }
+/* «Resta A − B»: líneas ámbar con su letra en la línea de tiempo y los botones de la barra */
+.exp-pista .ab-marca { position: absolute; top: 2px; bottom: 18px; width: 2px; margin-left: -1px; background: #ffb000; pointer-events: none; }
+.exp-pista .ab-marca::after { content: attr(data-l); position: absolute; top: -4px; left: 4px; font: bold 12px var(--mono); color: #ffb000; }
+.exp-ab { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; font-size: 0.85rem; }
+.exp-ab-fila { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.exp-ab button { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
 
 /* Barra derecha */
 .exp-barra { border-left: 1px solid var(--borde); background: var(--panel); padding: 14px; display: flex; flex-direction: column; gap: 16px; overflow-x: hidden; }
