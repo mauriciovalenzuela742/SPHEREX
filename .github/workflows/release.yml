@@ -79,6 +79,9 @@ jobs:
       - name: Íconos a partir de native/app-icon.png
         working-directory: native/tauri/src-tauri
         run: npx --yes @tauri-apps/cli@2 icon ../../app-icon.png
+      - name: Versión desde la etiqueta
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node native/estampar_version.mjs tauri "${GITHUB_REF_NAME#v}"
       - name: Construir instaladores
         working-directory: native/tauri/src-tauri
         run: npx --yes @tauri-apps/cli@2 build ${{ matrix.args }}
@@ -88,7 +91,7 @@ jobs:
           find native/tauri/src-tauri/target -path '*/release/bundle/*' -type f \
             \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.AppImage' -o -name '*.deb' \) \
             -print0 | while IFS= read -r -d '' f; do
-              cp "$f" "salida/AstroTRACK-${{ matrix.etiqueta }}-$(basename "$f")"
+              cp "$f" "salida/AstroTrack-${{ matrix.etiqueta }}-$(basename "$f")"
             done
           ls -la salida
           test -n "$(ls -A salida)"
@@ -120,6 +123,9 @@ jobs:
           npm install
           npx cap add android
           npx cap sync android
+      - name: Versión desde la etiqueta
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node native/estampar_version.mjs android "${GITHUB_REF_NAME#v}"
       - name: Construir APK
         working-directory: native/android/android
         run: ./gradlew assembleDebug --no-daemon
@@ -127,7 +133,7 @@ jobs:
         run: |
           V="${GITHUB_REF_NAME//\//-}"
           mkdir salida
-          cp native/android/android/app/build/outputs/apk/debug/app-debug.apk "salida/AstroTRACK-android-${V}.apk"
+          cp native/android/android/app/build/outputs/apk/debug/app-debug.apk "salida/AstroTrack-android-${V}.apk"
           ls -la salida
       - uses: actions/upload-artifact@v4
         with:

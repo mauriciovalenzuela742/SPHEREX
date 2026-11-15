@@ -5,5 +5,5 @@
 fn main() {
     tauri::Builder::default()
         .run(tauri::generate_context!())
-        .expect("error al iniciar AstroTRACK");
+        .expect("error al iniciar AstroTrack");
 }

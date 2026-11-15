@@ -88,7 +88,7 @@ fechas en **ISO 8601 UTC**.
 ### `GET /api/health`
 
 ```json
-{ "ok": true, "version": "0.1.0", "irsa_reachable": true, "cache_entries": 128 }
+{ "ok": true, "version": "0.4.2", "irsa_reachable": true, "cache_entries": 128 }
 ```
 
 > **Nota (14-nov):** el esqueleto del backend expone hoy `/health` (sin `/api`) y responde `{ "ok": true }`. Si pasa a `/api/health` lo decide D1.
