@@ -34,8 +34,10 @@ function listaDe(d: unknown): unknown[] | null {
     : null;
 }
 
-async function leerJson(url: string): Promise<unknown> {
-  const r = await fetch(url, { cache: "no-cache" });
+/** Lee un JSON con tiempo máximo: si el Explorador tiene ocupadas las conexiones o el backend no responde,
+ *  no se queda «Cargando» para siempre. */
+async function leerJson(url: string, ms = 8000): Promise<unknown> {
+  const r = await fetch(url, { cache: "no-cache", signal: AbortSignal.timeout(ms) });
   if (!r.ok) throw new Error(String(r.status));
   // Sin archivo o sin backend, el servidor de desarrollo puede responder index.html con 200: JSON.parse falla.
   return JSON.parse(await r.text());
@@ -52,8 +54,11 @@ export default function Comentarios() {
   const [sitio, setSitio] = useState(""); // campo trampa para bots (invisible)
   const [envio, setEnvio] = useState<Envio>({ fase: "nada" });
 
+  const [intento, setIntento] = useState(0);
+
   useEffect(() => {
     let vivo = true;
+    setLista({ fase: "cargando" });
     (async () => {
       let crudos: unknown[] | null = null;
       let desdeApi = false;
@@ -80,7 +85,7 @@ export default function Comentarios() {
     return () => {
       vivo = false;
     };
-  }, []);
+  }, [intento]);
 
   const nombreLimpio = nombre.trim();
   const textoLimpio = texto.trim();
@@ -156,7 +161,12 @@ export default function Comentarios() {
       </form>
 
       {lista.fase === "cargando" && <p className="com-vacio">{tr("Cargando comentarios…", "Loading comments…")}</p>}
-      {lista.fase === "error" && <p className="com-vacio">{tr("No se pudieron cargar los comentarios.", "Could not load the comments.")}</p>}
+      {lista.fase === "error" && (
+        <p className="com-vacio">
+          {tr("No se pudieron cargar los comentarios.", "Could not load the comments.")}{" "}
+          <button type="button" onClick={() => setIntento((n) => n + 1)}>{tr("Reintentar", "Retry")}</button>
+        </p>
+      )}
       {lista.fase === "listo" && lista.lista.length === 0 && (
         <p className="com-vacio">{tr("Todavía no hay comentarios: ¡sé el primero!", "No comments yet: be the first!")}</p>
       )}
