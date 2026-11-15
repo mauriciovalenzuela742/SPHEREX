@@ -2,7 +2,7 @@
  * Vista simple (sin «Modo ciencia»): una imagen grande de SPHEREx con el objeto marcado, las fechas
  * (una por pasada de ~6 meses) y la barra «Luz» (normal / cercana / media / lejana). Para el público general.
  * Usa las mismas fotos reales que el Explorador (useDatosSpherex), con las 6 bandas.
- * «Normal»: la imagen sin filtro, toda la luz junta (promedio de las 6 bandas) en blanco y negro.
+ * «Normal»: el promedio por píxel de las 6 bandas, cada una ajustada a su propio brillo, en blanco y negro (no es la luz sumada).
  * Cercana / media / lejana: solo esas bandas, teñidas de su color.
  */
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
@@ -290,12 +290,34 @@ export default function Simple({ estado, set, onCiencia }: Props) {
     else setIntento((x) => x + 1);
   };
   const escala30 = grid && n ? (30 / grid.pixel_scale_arcsec / n) * 100 : 0;
+  // Cada luz: qué se ve mejor en ella (el color de un objeto depende de su temperatura: cuanto más frío, más
+  // larga la longitud de onda en que más brilla). Bandas: LUCES arriba.
   const textoLuz: Record<Luz, string> = {
-    normal: tr("normal, sin filtro: toda la luz infrarroja junta", "normal, no filter: all the infrared light together"),
-    cercana: tr("cercana (0,75–1,6 µm): la que más se parece a la que ven tus ojos", "near (0.75–1.6 µm): the closest to what your eyes see"),
-    media: tr("media (1,6–3,8 µm)", "middle (1.6–3.8 µm)"),
-    lejana: tr("lejana (3,8–5 µm): el calor de los objetos fríos, como las enanas marrones", "far (3.8–5 µm): the heat of cold objects such as brown dwarfs"),
+    // Es un promedio por píxel de las 6 bandas, cada una estirada a su propio rango (asinh01): no es la luz sumada.
+    normal: tr(
+      "normal: el promedio de las 6 bandas (D1–D6, 0,75–5 µm), cada una ajustada a su propio brillo",
+      "normal: the average of the 6 bands (D1–D6, 0.75–5 µm), each scaled to its own brightness",
+    ),
+    cercana: tr(
+      "cercana (D1–D2, 0,75–1,6 µm): donde más brillan las estrellas como el Sol; la que más se parece a la que ven tus ojos",
+      "near (D1–D2, 0.75–1.6 µm): where Sun-like stars shine brightest; the closest to what your eyes see",
+    ),
+    media: tr(
+      "media (D3–D4, 1,6–3,8 µm): resaltan las estrellas frías y las enanas marrones tibias; cerca de 3 µm absorben los hielos",
+      "middle (D3–D4, 1.6–3.8 µm): cool stars and warm brown dwarfs stand out; near 3 µm, ices absorb light",
+    ),
+    lejana: tr(
+      "lejana (D5–D6, 3,8–5 µm): el brillo propio de los objetos fríos, como las enanas marrones más frías",
+      "far (D5–D6, 3.8–5 µm): the glow of cold objects themselves, such as the coldest brown dwarfs",
+    ),
   };
+  const nombreLuz: Record<Luz, string> = {
+    normal: tr("Normal (promedio)", "Normal (average)"),
+    cercana: tr("Cercana (estrellas)", "Near (stars)"),
+    media: tr("Media (estrellas frías)", "Middle (cool stars)"),
+    lejana: tr("Lejana (objetos fríos)", "Far (cold objects)"),
+  };
+  const bandasDeLuz: Record<Luz, string> = { normal: "D1–D6", cercana: "D1–D2", media: "D3–D4", lejana: "D5–D6" };
 
   return (
     <div className="simple">
@@ -526,14 +548,19 @@ export default function Simple({ estado, set, onCiencia }: Props) {
       </div>
 
       <footer className="simple-luz">
-        <p>
-          <b>{tr("Luz:", "Light:")}</b> {textoLuz[luz]}
-        </p>
         <div className="simple-luz-botones" role="radiogroup" aria-label={tr("Luz", "Light")}>
           {(["normal", "cercana", "media", "lejana"] as Luz[]).map((l) => (
-            <button key={l} role="radio" aria-checked={luz === l} className={`luz-${l}${luz === l ? " activo" : ""}`} onClick={() => setLuz(l)}>
-              {l === "normal" ? tr("Normal", "Normal") : l === "cercana" ? tr("Cercana", "Near") : l === "media" ? tr("Media", "Middle") : tr("Lejana (calor)", "Far (heat)")}
-            </button>
+            <div key={l} className={`luz-celda${luz === l ? " activa" : ""}`}>
+              <button role="radio" aria-checked={luz === l} aria-describedby={`luz-texto-${l}`} className={`luz-${l}${luz === l ? " activo" : ""}`} onClick={() => setLuz(l)}>
+                {nombreLuz[l]}
+                {/* Nota al pie: las bandas de SPHEREx que usa esta luz. */}
+                <small className="luz-bandas">{bandasDeLuz[l]}</small>
+              </button>
+              {/* Debajo de cada botón, qué muestra esa luz (todas a la vista, no solo la elegida). */}
+              <p id={`luz-texto-${l}`} className="luz-texto">
+                <b>{tr("Luz:", "Light:")}</b> {textoLuz[l]}
+              </p>
+            </div>
           ))}
         </div>
         <div className="simple-luz-ejes">
