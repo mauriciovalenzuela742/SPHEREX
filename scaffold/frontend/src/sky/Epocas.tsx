@@ -12,6 +12,7 @@
  */
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import A from "aladin-lite";
+import { CAMPOS, posicionActual } from "../content/campos";
 
 type IdEpoca = "spherex" | "allwise" | "2mass";
 
@@ -27,6 +28,10 @@ type EpocaAntigua = {
 
 // 2MASS: t_min / t_max de su `properties` (MJD 50600–51941 = 1997-06-01 a 2001-02-01, calculado el 14-nov-2026);
 // la toma de cada objeto cae en ese rango (Barnard 2000,4; WISE 0855 1999,0).
+// 2MASS color trae parches VERDES de fondo en algunas franjas de barrido (p. ej. cerca de WISE 0855): vienen
+// dentro de las teselas (IRSA y ESA sirven los mismos bytes, Norder8/Npix654477), no de nuestra mezcla de capas.
+// Por eso se usa la banda K sola (2,16 µm, dentro del rango de SPHEREx; mismas fechas). La ESA no sirve 2MASS K:
+// el respaldo sigue siendo el color de la ESA (igual que AllWISE, cuyo respaldo también es color).
 // AllWISE: se rotula «época ~2010». El t_min / t_max de su `properties` (MJD 55378–55414) NO es el periodo
 // de observación de AllWISE, así que no se usa para dar fechas.
 const EPOCAS: EpocaAntigua[] = [
@@ -40,13 +45,24 @@ const EPOCAS: EpocaAntigua[] = [
   {
     id: "2mass",
     boton: "2MASS ~2000",
-    rotulo: "2MASS color J·H·K · 1997–2001",
+    rotulo: "2MASS K · 2,16 µm · 1997–2001",
     atribucion: "2MASS: UMass/IPAC-Caltech (NASA/NSF)",
-    urls: ["https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color", "https://skies.esac.esa.int/2MASSColor"],
+    urls: ["https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/K", "https://skies.esac.esa.int/2MASSColor"],
   },
 ];
 
 const ROTULO_SPHEREX = "SPHEREx · 2025–26";
+
+// WISE 0855 en su posición de hoy: el aviso de 2MASS solo se muestra si cae dentro de la vista.
+const WISE_0855 = posicionActual(CAMPOS.find((c) => c.id === "wise_0855")!);
+
+/** Separación angular en grados (fórmula del haversine; basta para distancias de minutos de arco). */
+function separacionDeg(ra1: number, dec1: number, ra2: number, dec2: number): number {
+  const r = Math.PI / 180;
+  const s =
+    Math.sin(((dec2 - dec1) * r) / 2) ** 2 + Math.cos(dec1 * r) * Math.cos(dec2 * r) * Math.sin(((ra2 - ra1) * r) / 2) ** 2;
+  return (2 * Math.asin(Math.min(1, Math.sqrt(s)))) / r;
+}
 const PERIODO_MS = 1000;
 
 /** Devuelve la primera URL cuyo `properties` responde 200; lanza si ninguna responde. */
@@ -68,9 +84,13 @@ type Props = {
   /** Instancia de Aladin ya iniciada, o null mientras carga. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   aladin: any;
+  /** Centro y campo de la vista (grados), para saber si WISE 0855 está a la vista. */
+  ra: number;
+  dec: number;
+  fovDeg: number;
 };
 
-export default function ControlEpocas({ aladin }: Props) {
+export default function ControlEpocas({ aladin, ra, dec, fovDeg }: Props) {
   const [elegida, setElegida] = useState<EpocaAntigua["id"]>("allwise");
   const [mostrada, setMostrada] = useState<IdEpoca>("spherex");
   const [parpadeando, setParpadeando] = useState(false);
@@ -129,6 +149,9 @@ export default function ControlEpocas({ aladin }: Props) {
   const antigua = EPOCAS.find((e) => e.id === mostrada);
   const rotuloActual = antigua ? antigua.rotulo : ROTULO_SPHEREX;
   const atribuciones = EPOCAS.map((e) => e.atribucion).join(" · ");
+  // 2MASS «activo»: a la vista, o elegido para el parpadeo (así el aviso no titila cada segundo).
+  const conDosMass = parpadeando ? elegida === "2mass" : mostrada === "2mass";
+  const avisoWise0855 = conDosMass && separacionDeg(ra, dec, WISE_0855.ra, WISE_0855.dec) <= fovDeg / 2;
 
   function elegir(id: IdEpoca) {
     if (id === "spherex") {
@@ -201,7 +224,7 @@ export default function ControlEpocas({ aladin }: Props) {
           {error}
         </span>
       )}
-      {elegida === "2mass" && (
+      {avisoWise0855 && (
         <span style={{ color: "var(--suave)", fontSize: "0.85rem", flexBasis: "100%" }}>
           En 2MASS no se ven objetos muy fríos como WISE 0855: compara con AllWISE.
         </span>

@@ -10,20 +10,13 @@
  * Dueña de la integración: Antonia (V1). Lógica de datos y render: Bryan (D2).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useIdioma } from "../state/idioma";
 import { dibujar, type Frame, type Modo } from "./render";
 import { clave, type DatosSpherex } from "./useDatosSpherex";
 import "./explorador.css";
 
 const BANDAS_UM: Record<number, [number, number]> = {
   1: [0.75, 1.09], 2: [1.1, 1.62], 3: [1.63, 2.41], 4: [2.42, 3.82], 5: [3.83, 4.41], 6: [4.42, 5.0],
-};
-const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-
-
-const LEYENDA: Record<Modo, string> = {
-  imagen: "Brillo con escala común para todas las fechas de la banda. La mira marca el punto pedido.",
-  resta: "Rojo = brillo que aparece respecto de t₀ · Azul = brillo que estaba. Un par rojo/azul que se separa al avanzar el tiempo = movimiento.",
-  color: "Primera visita en rojo, la actual en cian. Lo quieto se ve blanco.",
 };
 
 // Pasos de los botones y teclas. Con el touchpad (pellizcar) el zoom es continuo entre el primero y el último.
@@ -43,7 +36,11 @@ const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 type Props = { datos: DatosSpherex };
 
 export default function Explorador({ datos }: Props) {
+  const { t } = useIdioma();
   const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando, preset } = datos;
+
+  // ── Leyenda dinámica ──
+  const LEYENDA: Record<Modo, string> = { imagen: t.modoImagenDesc, resta: t.modoRestaDesc, color: t.modoColorDesc };
 
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
@@ -161,21 +158,21 @@ export default function Explorador({ datos }: Props) {
     const paso = span > 500 ? 3 : span > 200 ? 2 : 1;
     const out: { x: number; txt: string }[] = [];
     for (let d = new Date(Date.UTC(ini.getUTCFullYear(), ini.getUTCMonth() + 1, 1)); d <= fin; d.setUTCMonth(d.getUTCMonth() + paso)) {
-      out.push({ x: ((+d / 864e5 + 40587 - tMin) / (tMax - tMin)) * 100, txt: `${MESES[d.getUTCMonth()]}-${String(d.getUTCFullYear()).slice(2)}` });
+      out.push({ x: ((+d / 864e5 + 40587 - tMin) / (tMax - tMin)) * 100, txt: `${t.meses[d.getUTCMonth()]}-${String(d.getUTCFullYear()).slice(2)}` });
     }
     return out;
-  }, [grid, tMin, tMax]);
+  }, [grid, tMin, tMax, t.meses]);
 
   const pct = prog.total ? Math.round((prog.hechos / prog.total) * 100) : 0;
 
   return (
-    <section className="explorador" aria-label="Explorador SPHEREx: bandas y fechas">
+    <section className="explorador" aria-label={t.exploradorAria}>
       <div className="exp-escena">
         <div className="exp-titulo">
-          <strong>Explorador SPHEREx</strong>
-          <span>Arrastra o pasa el mouse por la línea de tiempo para cambiar la fecha.</span>
+          <strong>{t.exploradorTitulo}</strong>
+          <span>{t.exploradorHint}</span>
         </div>
-        {preset && <p className="exp-preset">{preset.razon}</p>}
+        {preset && <p className="exp-preset">{t.presetRazon(preset.muyDebil, preset.porVisita, preset.banda)}</p>}
         <div
           ref={caja}
           data-tour="explorador-imagen"
@@ -194,14 +191,14 @@ export default function Explorador({ datos }: Props) {
           onPointerUp={() => { arrastre.current = null; setPan((p) => ({ ...p })); }}
           onPointerCancel={() => { arrastre.current = null; }}
           onDoubleClick={() => mover({ x: 0, y: 0 })}
-          title={zoom > 1 ? "Arrastra (o desliza con dos dedos) para moverte · pellizca para el zoom · doble clic: volver a la mira" : "Pellizca el touchpad o usa + para acercar"}
+          title={zoom > 1 ? t.lienzoAyudaZoom : t.lienzoAyuda}
         >
           <canvas
             ref={lienzo}
             width={59}
             height={59}
             style={{ transform: `translate(${pan.x * 100}%, ${pan.y * 100}%) scale(${zoom})` }}
-            aria-label={actual ? `Banda ${banda}, ${actual.meta.t.slice(0, 10)}, zoom ${textoZoom(zoom)}` : "Sin imagen"}
+            aria-label={actual ? t.lienzoAria(banda, actual.meta.t.slice(0, 10), textoZoom(zoom)) : t.sinImagen}
           />
           {actual && (
             <>
@@ -212,10 +209,10 @@ export default function Explorador({ datos }: Props) {
           )}
           {grid && (
             <div className="exp-zoom" role="group" aria-label="Zoom" data-tour="explorador-zoom">
-              <button aria-label="Acercar" title="Acercar (tecla +)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, +1))} disabled={zoom >= ZOOM_MAX}>+</button>
+              <button aria-label={t.acercar} title={t.acercar} onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, +1))} disabled={zoom >= ZOOM_MAX}>+</button>
               <span aria-live="polite">{textoZoom(zoom)}</span>
-              <button aria-label="Alejar" title="Alejar (tecla −)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, -1))} disabled={zoom <= ZOOM_MIN}>−</button>
-              <button aria-label="Volver a la mira" title="Volver a la mira (doble clic)" onClick={() => mover({ x: 0, y: 0 })} disabled={!pan.x && !pan.y}>⌖</button>
+              <button aria-label={t.alejar} title={t.alejar} onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, -1))} disabled={zoom <= ZOOM_MIN}>−</button>
+              <button aria-label={t.volverMira} title={t.volverMira} onClick={() => mover({ x: 0, y: 0 })} disabled={!pan.x && !pan.y}>⌖</button>
             </div>
           )}
           {grid && banda > 0 && visitas[visita] && (
@@ -223,42 +220,42 @@ export default function Explorador({ datos }: Props) {
               B{banda} · {(actual?.meta.t ?? visitas[visita].start).slice(0, 10)}
               {actual && (
                 <small>
-                  {dias >= 0 ? "+" : ""}{(dias / 365.25).toFixed(2)} años desde t₀ · λ {actual.meta.wavelength_um ?? "?"} µm
+                  {dias >= 0 ? "+" : ""}{(dias / 365.25).toFixed(2)} {t.aniosDesdeT0} · λ {actual.meta.wavelength_um ?? "?"} µm
                 </small>
               )}
             </div>
           )}
           <span className="exp-orient">N↑ E←</span>
-          {prog.total > 0 && prog.hechos < prog.total && <div className="exp-cargando">cargando {prog.hechos}/{prog.total}</div>}
+          {prog.total > 0 && prog.hechos < prog.total && <div className="exp-cargando">{t.cargandoMin} {prog.hechos}/{prog.total}</div>}
           {!actual && (
             <div className="exp-mensaje">
               {!grid
                 ? mensaje
                 : error
-                  ? `No se pudo traer esta imagen: ${error}`
-                  : `Cargando la imagen del ${visitas[visita]?.start.slice(0, 10) ?? ""}…`}
+                  ? t.noSePudoTraer(error)
+                  : t.cargandoImagenDel(visitas[visita]?.start.slice(0, 10) ?? "")}
               {/* Reintentar cuando puede servir: errores de IRSA, de red o del servidor (mensajes de errores.ts) */}
               {!grid && /IRSA|HTTP|\(50\d\)|conexión|servidor/.test(mensaje) && (
-                <button onClick={() => setIntento((x) => x + 1)}>Reintentar</button>
+                <button onClick={() => setIntento((x) => x + 1)}>{t.reintentar}</button>
               )}
               {/* Una foto suelta falló (la búsqueda sí funcionó): pedir solo esa */}
-              {grid && error && <button onClick={() => reintentarImagen(banda, visita)}>Reintentar esta imagen</button>}
+              {grid && error && <button onClick={() => reintentarImagen(banda, visita)}>{t.reintentarEsta}</button>}
             </div>
           )}
         </div>
 
         <div className="exp-tiempo" data-tour="explorador-tiempo">
           <div className="exp-botones">
-            <button aria-label="Visita anterior" onClick={() => irA(banda, visita - 1)} disabled={!grid}>◀</button>
-            <button aria-label={play ? "Pausa" : "Reproducir"} aria-pressed={play} onClick={() => setPlay(!play)} disabled={!grid}>{play ? "⏸" : "▶"}</button>
-            <button aria-label="Visita siguiente" onClick={() => irA(banda, visita + 1)} disabled={!grid}>▶▶</button>
+            <button aria-label={t.visitaAnterior} onClick={() => irA(banda, visita - 1)} disabled={!grid}>◀</button>
+            <button aria-label={play ? t.pausa : t.reproducir} aria-pressed={play} onClick={() => setPlay(!play)} disabled={!grid}>{play ? "⏸" : "▶"}</button>
+            <button aria-label={t.visitaSiguiente} onClick={() => irA(banda, visita + 1)} disabled={!grid}>▶▶</button>
           </div>
           <div
             ref={pista}
             className="exp-pista"
             tabIndex={0}
             role="slider"
-            aria-label="Fecha"
+            aria-label={t.fechaAria}
             aria-valuemin={0}
             aria-valuemax={Math.max(0, visitas.length - 1)}
             aria-valuenow={visita}
@@ -286,7 +283,7 @@ export default function Explorador({ datos }: Props) {
                 key={v.start}
                 className={`marca ${frames.current.has(clave(banda, k)) ? "lista" : ""} ${errores.current.has(clave(banda, k)) ? "error" : ""}`}
                 style={{ left: `${xDe(v.mjd)}%`, ["--c" as string]: `var(--b${banda})` }}
-                title={`${v.start.slice(0, 10)} · ${v.n} exposiciones`}
+                title={`${v.start.slice(0, 10)} · ${t.nExposiciones(v.n)}`}
               />
             ))}
             {fantasma !== null && <div className="fantasma" style={{ left: `${fantasma}%` }} />}
@@ -297,12 +294,12 @@ export default function Explorador({ datos }: Props) {
 
       <aside className="exp-barra">
         <div className="exp-seccion">
-          <h3>Qué cargar</h3>
+          <h3>{t.queCargar}</h3>
           <div className="exp-fila2">
-            <label>Desde<input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} /></label>
-            <label>Hasta<input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} /></label>
+            <label>{t.desde}<input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} /></label>
+            <label>{t.hasta}<input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} /></label>
           </div>
-          <div className="exp-chips" role="group" aria-label="Bandas a cargar">
+          <div className="exp-chips" role="group" aria-label={t.bandasACargar}>
             {[1, 2, 3, 4, 5, 6].map((b) => (
               <button
                 key={b}
@@ -315,19 +312,19 @@ export default function Explorador({ datos }: Props) {
               </button>
             ))}
           </div>
-          <label title="Mediana de varias exposiciones de la visita: objetos débiles se ven mejor">
-            Exp. por visita
+          <label title={t.expPorVisitaAyuda}>
+            {t.expPorVisita}
             <input type="number" min={1} max={10} value={porVisita} onChange={(e) => setPorVisita(Math.max(1, Math.min(10, Number(e.target.value) || 1)))} />
           </label>
           {prog.total > 0 && (
             <div className="exp-estado">
-              {prog.hechos < prog.total ? "Cargando" : "Listo:"} {prog.hechos}/{prog.total} imágenes
-              {prog.errores > 0 && <span className="aviso"> · {prog.errores} con error</span>}
+              {prog.hechos < prog.total ? t.cargando : t.listo} {prog.hechos}/{prog.total} {t.imagenes}
+              {prog.errores > 0 && <span className="aviso"> · {prog.errores} {t.conError}</span>}
               <div className="exp-barrita"><i style={{ width: `${pct}%` }} /></div>
               {/* Cuando terminó la carga normal y quedaron fotos con error: pedir de nuevo solo esas */}
               {prog.errores > 0 && prog.hechos >= prog.total && (
                 <button className="exp-reintentar" onClick={reintentarFallidas} disabled={reintentando}>
-                  {reintentando ? "Reintentando…" : `Reintentar las ${prog.errores} con error`}
+                  {reintentando ? t.reintentando : t.reintentarFallidas(prog.errores)}
                 </button>
               )}
             </div>
@@ -337,44 +334,41 @@ export default function Explorador({ datos }: Props) {
 
         {grid && (
           <div className="exp-seccion" data-tour="explorador-modos">
-            <h3>Banda visible</h3>
-            <div className="exp-chips" role="group" aria-label="Banda visible">
+            <h3>{t.bandaVisible}</h3>
+            <div className="exp-chips" role="group" aria-label={t.bandaVisible}>
               {filas.map((b) => (
                 <button key={b} style={{ ["--c" as string]: `var(--b${b})` }} aria-pressed={b === banda} onClick={() => irA(b, visitaMasCercana(b, mjdActual))}>
                   B{b}
                 </button>
               ))}
             </div>
-            <div className="exp-modos" role="group" aria-label="Modo">
+            <div className="exp-modos" role="group" aria-label={t.modo}>
               {(["imagen", "resta", "color"] as Modo[]).map((m) => (
                 <button key={m} aria-pressed={modo === m} onClick={() => setModo(m)}>
-                  {m === "imagen" ? "Imagen" : m === "resta" ? "Resta vs t₀" : "Color"}
+                  {m === "imagen" ? t.modoImagen : m === "resta" ? t.modoResta : t.modoColor}
                 </button>
               ))}
             </div>
             <p className="exp-leyenda">{LEYENDA[modo]}</p>
-            <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> Suavizar píxeles</label>
-            <p className="exp-ayuda">
-              La mira marca la posición pedida (A.R./Dec). Cada cuadrado es un píxel de SPHEREx de 6,15″: el instrumento está hecho para
-              espectros de todo el cielo, no para detalle fino. El grano es ruido; baja sumando exposiciones por visita.
-            </p>
+            <label className="exp-interruptor"><input type="checkbox" checked={suave} onChange={(e) => setSuave(e.target.checked)} /> {t.suavizar}</label>
+            <p className="exp-ayuda">{t.ayudaPixel}</p>
           </div>
         )}
 
         {grid && visitas[visita] && (
           <div className="exp-seccion">
-            <h3>Esta imagen</h3>
+            <h3>{t.estaImagen}</h3>
             <dl className="exp-info">
               {(actual
                 ? [
-                    ["Fecha (UTC)", actual.meta.t.replace("T", " ").replace("Z", "")],
-                    ["Longitud de onda", `${actual.meta.wavelength_um ?? "?"} µm`],
-                    ["Exposiciones", actual.meta.n_stacked > 1 ? `mediana de ${actual.meta.n_stacked}` : "1"],
-                    ["Observación", actual.meta.epoch_id],
-                    ["Colección", actual.meta.collection],
-                    ["Método", actual.meta.method === "rangos" ? "rápido (solo píxeles)" : "recorte de IRSA"],
+                    [t.fecha, actual.meta.t.replace("T", " ").replace("Z", "")],
+                    [t.longitudOnda, `${actual.meta.wavelength_um ?? "?"} µm`],
+                    [t.exposiciones, actual.meta.n_stacked > 1 ? t.mediana(actual.meta.n_stacked) : "1"],
+                    [t.observacion, actual.meta.epoch_id],
+                    [t.coleccion, actual.meta.collection],
+                    [t.metodo, actual.meta.method === "rangos" ? t.metodoRapido : t.metodoRecorte],
                   ]
-                : [["Fecha", visitas[visita].start.slice(0, 10)], ["Exposiciones", String(visitas[visita].n)], ["Estado", "cargando…"]]
+                : [[t.fecha, visitas[visita].start.slice(0, 10)], [t.exposiciones, String(visitas[visita].n)], [t.estado, t.cargandoEstado]]
               ).map(([k, x]) => (
                 <div key={k} className="exp-info-fila"><dt>{k}</dt><dd>{x}</dd></div>
               ))}
@@ -384,14 +378,14 @@ export default function Explorador({ datos }: Props) {
 
         {grid && (
           <div className="exp-seccion" data-tour="explorador-rejilla">
-            <h3>Todas las bandas y fechas</h3>
+            <h3>{t.todasBandasFechas}</h3>
             <div className="exp-minis">
               <table>
                 <thead>
                   <tr>
                     <th />
                     {grid.columns.map((c) => (
-                      <th key={c.date}>{MESES[+c.date.slice(5, 7) - 1]}<br />{c.date.slice(2, 4)}</th>
+                      <th key={c.date}>{t.meses[+c.date.slice(5, 7) - 1]}<br />{c.date.slice(2, 4)}</th>
                     ))}
                   </tr>
                 </thead>
@@ -426,7 +420,7 @@ export default function Explorador({ datos }: Props) {
               </table>
             </div>
             <p className="exp-ayuda">
-              <kbd>←</kbd><kbd>→</kbd> visita · <kbd>↑</kbd><kbd>↓</kbd> banda · <kbd>espacio</kbd> reproducir
+              <kbd>←</kbd><kbd>→</kbd> {t.teclaVisita} · <kbd>↑</kbd><kbd>↓</kbd> {t.teclaBanda} · <kbd>{t.teclaEspacio}</kbd> {t.teclaReproducir}
             </p>
           </div>
         )}

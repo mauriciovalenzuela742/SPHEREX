@@ -134,7 +134,7 @@ def api_demo() -> dict:
 def frames(
     ra: float = Query(ge=0, lt=360),
     dec: float = Query(ge=-90, le=90),
-    size: float = Query(0.1, gt=0.005, le=1.0),
+    size: float = Query(0.1, gt=0.005, le=0.5),
     band: int = Query(4, ge=1, le=6),
     stretch: str = Query("asinh", pattern="^(asinh|linear)$"),
     mode: str = Query(
