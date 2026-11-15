@@ -85,7 +85,9 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
   const [w, setW] = useState<number[]>([1, 1, 1, 1, 1, 1]);
   const [abierta, setAbierta] = useState(0); // 0 = ninguna; 1–6 = banda
   const [sel, setSel] = useState<[number, number] | null>(null);
-  const [recorrido, setRecorrido] = useState<number[] | null>(null);
+  // «Recorrer»: avanza por los canales del tramo en bucle. Pausar deja el cielo en el canal actual;
+  // ◀ ▶ (o las flechas) se mueven dentro del tramo y «Continuar» sigue desde ahí.
+  const [reproduciendo, setReproduciendo] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const anim = useRef<number | null>(null);
   const wRef = useRef(w);
@@ -180,7 +182,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
   useEffect(() => {
     if (plano === emitido.current) return;
     emitido.current = plano;
-    setRecorrido(null);
+    setReproduciendo(false);
     setSel([lam[plano], lam[plano]]);
     const b = bandaDePlano(plano);
     if (abierta && abierta !== b) abrir(b, true);
@@ -218,7 +220,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
   const alBajar = (e: PE<SVGSVGElement>) => {
     const px = pxDe(e);
     inicio.current = { l: lx(px), px };
-    setRecorrido(null);
+    setReproduciendo(false);
     svgRef.current?.setPointerCapture(e.pointerId);
   };
   const alMover = (e: PE<SVGSVGElement>) => {
@@ -248,35 +250,44 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
     if (ps.length) emitir(ps[0]);
   };
 
-  // Teclado: ← y → mueven el cielo un canal (saltando los vacíos).
-  const alTecla = (e: KeyboardEvent<SVGSVGElement>) => {
+  // Posición del cielo dentro del tramo elegido (−1 si el canal del cielo está fuera del tramo).
+  const enTramo = elegidos.indexOf(plano);
+  /** Un canal adelante (+1) o atrás (−1) dentro del tramo; al pasar el último vuelve al primero (y al revés). */
+  const pasoEnTramo = (d: 1 | -1) => {
+    const n = elegidos.length;
+    if (n < 2) return;
+    const i = enTramo < 0 ? (d > 0 ? 0 : n - 1) : (enTramo + d + n) % n;
+    emitir(elegidos[i]);
+  };
+  // El intervalo de «Recorrer» llama siempre a la versión al día (con el tramo y el canal actuales).
+  const pasoRef = useRef(pasoEnTramo);
+  pasoRef.current = pasoEnTramo;
+
+  // Teclado: ← y →. Con un tramo de varios canales se mueven dentro del tramo (y pausan «Recorrer»);
+  // si no, mueven el cielo un canal (saltando los vacíos), como antes.
+  const alTecla = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
     e.preventDefault();
+    e.stopPropagation(); // que las flechas no cambien también la fecha del Explorador
     const d = e.key === "ArrowRight" ? 1 : -1;
+    setReproduciendo(false);
+    if (elegidos.length > 1) {
+      pasoEnTramo(d);
+      return;
+    }
     let p = plano + d;
     while (p >= 0 && p < 102 && vacio(p)) p += d;
     if (p < 0 || p > 101) return;
-    setRecorrido(null);
     setSel([lam[p], lam[p]]);
     emitir(p);
   };
 
-  // Recorrido: un canal cada PASO_RECORRIDO_MS, una sola pasada.
+  // Recorrido: un canal cada PASO_RECORRIDO_MS, en bucle (del último vuelve al primero) hasta pausar.
   useEffect(() => {
-    if (!recorrido) return;
-    let i = 0;
-    emitir(recorrido[0]);
-    const id = window.setInterval(() => {
-      i += 1;
-      if (i >= recorrido.length) {
-        window.clearInterval(id);
-        setRecorrido(null);
-        return;
-      }
-      emitir(recorrido[i]);
-    }, pasoMs);
+    if (!reproduciendo) return;
+    const id = window.setInterval(() => pasoRef.current(1), pasoMs);
     return () => window.clearInterval(id);
-  }, [recorrido]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [reproduciendo, pasoMs]);
 
   // ---- Dibujo ----
   const fondo: ReactElement[] = [];
@@ -368,7 +379,7 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
   const xActivo = sx(lam[plano] ?? lam[0]);
 
   return (
-    <div style={caja}>
+    <div style={caja} onKeyDown={alTecla}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap", alignItems: "center" }}>
           <strong style={{ marginRight: 4 }}>{tr("Longitud de onda", "Wavelength")}</strong>
@@ -403,7 +414,6 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
         onPointerMove={alMover}
         onPointerUp={alSoltar}
         onPointerCancel={() => (inicio.current = null)}
-        onKeyDown={alTecla}
         style={{
           width: "100%",
           height: "auto",
@@ -449,29 +459,64 @@ export default function SelectorLambda({ plano, onPlano, survey }: Props) {
           </>
         )}
         <span style={{ flex: 1 }} />
-        {elegidos.length > 1 &&
-          (recorrido ? (
-            <button type="button" style={botonChico} onClick={() => setRecorrido(null)}>
-              {tr("Detener", "Stop")}
-            </button>
-          ) : (
+        {elegidos.length > 1 && (
+          <span role="group" aria-label="Recorrer" style={{ display: "inline-flex", gap: 6, alignItems: "center", whiteSpace: "nowrap" }}>
             <button
               type="button"
               style={botonChico}
-              onClick={() => setRecorrido(elegidos)}
-              title={reducir
-                ? tr("Pasa el cielo por cada canal del tramo, uno tras otro (1,6 s por canal: más lento porque tu sistema pide reducir el movimiento)", "Steps the sky through each channel in the range, one after another (1.6 s per channel: slower because your system asks for reduced motion)")
-                : tr("Pasa el cielo por cada canal del tramo, uno tras otro (0,8 s por canal)", "Steps the sky through each channel in the range, one after another (0.8 s per channel)")}
+              onClick={() => {
+                setReproduciendo(false);
+                pasoEnTramo(-1);
+              }}
+              aria-label={tr("Canal anterior del tramo", "Previous channel in the range")}
+              title={tr("Canal anterior del tramo (también con ←)", "Previous channel in the range (also with ←)")}
             >
-              {tr("Recorrer", "Sweep")}
+              ◀
             </button>
-          ))}
+            <button
+              type="button"
+              style={botonChico}
+              aria-pressed={reproduciendo}
+              onClick={() => {
+                if (reproduciendo) {
+                  setReproduciendo(false);
+                  return;
+                }
+                // Si el cielo no está en el tramo, se empieza por el primer canal; si está, se sigue desde ahí.
+                if (enTramo < 0) emitir(elegidos[0]);
+                setReproduciendo(true);
+              }}
+              title={reducir
+                ? tr("Pasa el cielo por cada canal del tramo, en bucle (1,6 s por canal: más lento porque tu sistema pide reducir el movimiento)", "Steps the sky through each channel in the range, looping (1.6 s per channel: slower because your system asks for reduced motion)")
+                : tr("Pasa el cielo por cada canal del tramo, en bucle (0,8 s por canal)", "Steps the sky through each channel in the range, looping (0.8 s per channel)")}
+            >
+              {reproduciendo ? `⏸ ${tr("Pausa", "Pause")}` : enTramo > 0 ? `▶ ${tr("Continuar", "Continue")}` : `▶ ${tr("Recorrer", "Sweep")}`}
+            </button>
+            <button
+              type="button"
+              style={botonChico}
+              onClick={() => {
+                setReproduciendo(false);
+                pasoEnTramo(1);
+              }}
+              aria-label={tr("Canal siguiente del tramo", "Next channel in the range")}
+              title={tr("Canal siguiente del tramo (también con →)", "Next channel in the range (also with →)")}
+            >
+              ▶
+            </button>
+            {enTramo >= 0 && (
+              <span style={{ color: "var(--suave)", fontSize: "0.8rem", fontVariantNumeric: "tabular-nums" }}>
+                {enTramo + 1}/{elegidos.length}
+              </span>
+            )}
+          </span>
+        )}
         {sel && (
           <button
             type="button"
             style={botonChico}
             onClick={() => {
-              setRecorrido(null);
+              setReproduciendo(false);
               setSel(null);
             }}
           >
