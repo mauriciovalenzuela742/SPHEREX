@@ -166,7 +166,7 @@ def record(spec_path: Path) -> list[dict]:
                 if page.evaluate("[scrollX, scrollY]") != before:   # the page moved: show it moving
                     page.wait_for_timeout(250)
                     current = shot()
-                    beat(current, None, camera, "", move=300, hold=150)  # la página se movió: la cámara mantiene su encuadre
+                    beat(current, None, _camera_for(None, vw, vh) if step.get("scroll_full") else camera, "", move=300, hold=150)  # la página se movió: la cámara mantiene su encuadre (o vista completa con scroll_full)
                 bb = loc.bounding_box()
                 if not bb:
                     sys.exit(f"[ERROR] element not found or not visible: {selector}")
@@ -192,7 +192,7 @@ def record(spec_path: Path) -> list[dict]:
                     bx = box_of(sel)
                     center = (bx[0] + bx[2] / 2, bx[1] + bx[3] / 2)
                     cam = frame_cam(bx)
-                    beat(current, bx, cam, cap, move=900, hold=250, click=True, cur=center)
+                    beat(current, bx, cam, cap, move=int(step.get("move", 900)), hold=int(step.get("pre", 250)), click=True, cur=center)
                     if "click" in step:
                         page.click(sel)
                         page.wait_for_timeout(int(step.get("wait", 500)))

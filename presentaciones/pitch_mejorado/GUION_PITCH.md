@@ -8,9 +8,8 @@ Las láminas están en inglés (jurado NASA) y el guion hablado en español, igu
 | Archivo | Qué es |
 |---|---|
 | `astrotrack_pitch.html` | Presentación alternativa, con el estilo de tu Canva (mismas imágenes y colores). Doble clic para abrir |
-| `figures/demo_pitch.mp4` | Video de la demo, **46 s**, mudo, con subtítulos en inglés. Va en la lámina 4 de la versión alternativa |
-| `figures/demo_corto.mp4` | Corte de **28 s** (vista simple, resta, espectro y ficha de Epsilon Indi B), para tu lámina 4 («video») si te quedas con tu guion |
-| `demo.yml`, `demo_corto.yml` | La receta de cada video (para regrabarlos) |
+| `figures/demo_pitch.mp4` | Video de la demo, **30 s**, mudo, subtítulos en inglés. Sirve para la entrega (pide 30 s o menos) y para la lámina «video» de las dos versiones |
+| `demo.yml`, `tools/demo_pitch.py` | La receta del video y el grabador (para regrabarlo) |
 
 **Teclas de la presentación:** → o espacio avanza · ← retrocede · **N** muestra el guion debajo · **T** cronómetro
 (se pone rojo después de 2:00) · **F** pantalla completa · **V** pausa el video. El video parte solo al llegar a la
@@ -24,10 +23,11 @@ del mapa sí se cargaron en vivo. El rótulo del video lo dice: «Real app · lo
 
 1. **Una sola pregunta al inicio.** La de vida extraterrestre no conecta con lo que mostramos y cuesta 4 segundos.
    «¿Quién podría descubrir una estrella que nadie conoce?» lleva directo a Backyard Worlds.
-2. **La demo es un video de 46 s con ejemplos que se ven:** Epsilon Indi B (se mueve un píxel entre 2025 y 2026; la
-   resta A − B lo deja clarísimo; su espectro muestra agua y metano y la ficha dice «parece una enana marrón») y la
-   Estrella de Barnard en el mapa (aparece dentro de cada aro: 2000, 2010 y 2026). Cada ejemplo se probó antes de
-   grabar; WISE 0855 quedó fuera del video porque en las fotos casi no se distingue y su ficha no concluye nada.
+2. **Un solo video de 30 s**, que sirve para la entrega y para las dos versiones del pitch, con ejemplos probados antes
+   de grabar: Epsilon Indi B (la resta A − B lo deja clarísimo; su espectro muestra agua y metano y la ficha dice
+   «parece una enana marrón"), un comentario guardado y la Estrella de Barnard dentro de cada aro (2000, 2010 y 2026).
+   WISE 0855 no aparece porque en las fotos casi no se distingue; su resultado va en la lámina 5. La limpieza de
+   estrellas tampoco: en pocos segundos no se entiende, así que va dicha en la lámina 5.
 3. **La penúltima lámina queda como imagen fija** (tenías razón: hace falta algo que se quede en la cabeza), pero
    agrega **el resultado científico**: con imágenes de SPHEREx solamente, medimos que WISE 0855 se movió
    **8,67″ ± 0,66″ en un año (lo predicho es 8,04″)**. Es lo que separa a AstroTRACK de un juguete ante un jurado
@@ -47,33 +47,33 @@ del mapa sí se cargaron en vivo. El rótulo del video lo dice: «Real app · lo
 «Levanten la mano: ¿quién cree que podría descubrir una estrella que nadie conoce? *(pausa de 2 s, mirar al
 público)* Bien… porque doscientas mil personas ya lo hicieron.»
 
-**Lámina 2 · Cualquiera puede descubrir (0:08–0:28)**
+**Lámina 2 · Cualquiera puede descubrir (0:08–0:32)**
 «En Backyard Worlds, de la NASA, voluntarios hicieron parpadear fotos del cielo y encontraron más de tres mil enanas
 marrones nuevas: duplicaron las que se conocían. Pero el telescopio que usaban, WISE, se apagó en 2024. Hoy SPHEREx
 fotografía todo el cielo cada seis meses, en 102 colores infrarrojos. Lo que faltaba era la herramienta.»
 
-**Lámina 3 · ¿Chile lo necesita? (0:28–0:37)**
+**Lámina 3 · ¿Chile lo necesita? (0:32–0:42)**
 «¿Y a Chile le importa? Tenemos telescopios gigantes, pero solo el 7,5 % de quienes estudian STEM elige ciencias
 naturales o matemáticas.»
 
-**Lámina 4 · Demo en video (0:37–1:24)** — *el video corre solo (46 s); habla siguiendo los subtítulos*
-- *(«Anyone can start»)* «Por eso creamos AstroTRACK. Cualquiera entra y ve una foto de SPHEREx: Epsilon Indi B, una
-  enana marrón cercana.
-- *(«Spring 2025… October 2026»)* Primavera de 2025… y octubre de 2026: se corrió apenas un píxel.
-- *(«A − B»)* Si restamos las dos fechas se ve clarísimo: rojo donde estaba, azul donde está. Se movió.
-- *(«One switch»)* Con un interruptor se abren las herramientas científicas:
-- *(«Median of 10 exposures»)* la misma resta, con la mediana de diez fotos por visita.
-- *(«Its spectrum»)* Con los 102 colores armamos su espectro: tiene huecos donde absorben el agua y el metano,
-- *(«The tool's reading»)* y la herramienta lo lee: parece una enana marrón.
-- *(«Barnard's Star»)* Y cualquier estrella tiene historia: la de Barnard,
-- *(2MASS, WISE, SPHEREx)* en 2000, en 2010 y hoy, siempre avanzando.»
+**Lámina 4 · Demo en video (0:42–1:12)** — *el video corre solo (30 s); habla siguiendo los subtítulos*
+- *(«Anyone can start»)* «Por eso creamos AstroTRACK. Entras y ves una foto de SPHEREx: Epsilon Indi B,
+  una enana marrón cercana.
+- *(«Spring 2025… October 2026»)* Marcas primavera de 2025 y octubre de 2026,
+- *(«A − B»)* las restas, y aparece: rojo donde estaba, azul donde está.
+- *(«One switch»)* Con un interruptor se abre lo científico:
+- *(«Its spectrum»)* su espectro en 102 colores, con huecos de agua y metano,
+- *(«The tool's reading»)* y la herramienta dice: enana marrón.
+- *(«Leave a note»)* Dejas una nota para el próximo explorador.
+- *(Barnard)* Y Barnard: en 2000, en 2010 y hoy.»
 
-**Lámina 5 · Lo que puedes hacer + resultado (1:24–1:44)**
+**Lámina 5 · Lo que puedes hacer + resultado (1:12–1:42)**
 «Y no es un juguete. Solo con imágenes de SPHEREx, sin catálogos, medimos que WISE 0855 se movió 8,7 segundos de
-arco en un año; la física predecía 8,0. Cualquiera puede explorar y ganarse su insignia, Spherix le explica cada
-paso, y quien quiera hace ciencia de verdad.»
+arco en un año; la física predecía 8,0. Y cuando se cruza con una estrella, usamos sus colores para borrar las
+estrellas quietas y dejarla aislada. Cualquiera puede explorar y ganarse su insignia, Spherix le explica cada paso,
+y quien quiera hace ciencia de verdad.»
 
-**Lámina 6 · Cierre (1:44–2:00)**
+**Lámina 6 · Cierre (1:42–2:00)**
 «Somos Transientes: un equipo de 17 a 52 años, y nos ilusiona democratizar el acceso a la ciencia de frontera.
 Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)* Yo ya tengo mi insignia.»
 
@@ -86,22 +86,21 @@ Escaneen el QR y conviértanse en los próximos cazadores de estrellas. *(pausa)
    sky every six months in 102 infrared colors. What was missing was the tool.»
 3. «Does Chile care? We host some of the largest telescopes on Earth, yet only 7.5% of STEM students choose natural
    sciences or math.»
-4. *(video)* «So we built AstroTRACK. Anyone opens a SPHEREx photo: Epsilon Indi B, a nearby brown dwarf. Spring
-   2025… and October 2026: it shifted by just one pixel. Subtract the two dates and it's obvious: red where it was,
-   blue where it is. It moved. One switch opens the science tools: the same subtraction, with the median of ten
-   exposures per visit. From 102 colors we build its spectrum: dips where water and methane absorb, and the tool reads
-   it: it looks like a brown dwarf. And every star has a history: Barnard's Star in 2000, in 2010 and today, always
-   moving.»
+4. *(video, 30 s)* «So we built AstroTRACK. Anyone opens a SPHEREx photo of Epsilon Indi B, a nearby brown dwarf.
+   Mark spring 2025 and October 2026, subtract them, and there it is: red where it was, blue where it is. One switch
+   opens the science: its spectrum in 102 colors, with water and methane dips, and the tool says it looks like a
+   brown dwarf. Leave a note for the next explorer. And every star has a history: Barnard's Star in 2000, 2010 and
+   today.»
 5. «And it's not a toy. Using SPHEREx images alone, no catalogs, we measured WISE 0855 moving 8.7 arcseconds in one
-   year; physics predicts 8.0. Anyone can explore and earn a badge, Spherix explains each step, and anyone who wants
+   year; physics predicts 8.0. When it crosses a star, its colors let us erase the still stars and isolate it. Anyone can explore and earn a badge, Spherix explains each step, and anyone who wants
    can do real science.»
 6. «We are Transientes, a team aged 17 to 52, and we want frontier science within everyone's reach. Scan the QR and
    become the next star hunter. *(pause)* I already have my badge.»
 
 ## Si te quedas con tu versión
 
-- **Video para tu lámina 4:** `figures/demo_corto.mp4` (28 s). Calza con tu frase de Epsilon Indi B: muestra el
-  movimiento, el espectro con agua y metano y la ficha «parece una enana marrón».
+- **Video para tu lámina 4:** el mismo `figures/demo_pitch.mp4` (30 s). Calza con tu frase de Epsilon Indi B (metano,
+  agua, «se parece a una enana marrón») y muestra la resta roja/azul.
 - **Correcciones de texto** en el Canva: las del punto 4 de arriba.
 
 ## Si el jurado pregunta (respuestas de 15 s)

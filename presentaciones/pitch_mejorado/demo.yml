@@ -1,11 +1,10 @@
-title: AstroTRACK, from blinking photos to a brown dwarf's spectrum
-# Grabado de la app real (main #65 + los arreglos de la rama c/pitch-alternativa) corrida en local con
-# vite.demo.config.ts. Se graba con una copia local del grabador del kit que deja encuadrar un elemento distinto del
-# que se cliquea (frame/frac/pad): tools/demo_pitch.py. Ejemplos elegidos tras revisarlos uno por uno:
-# - Epsilon Indi B: par rojo/azul nítido en A − B (vista simple y Explorador) y ficha «parece una enana marrón».
-#   Sus fotos vienen del precalculado del sitio (IRSA estaba caído al grabar, 15-nov 07:00).
-# - Barnard: en el mapa, la estrella aparece dentro de cada aro (2MASS ~2000, AllWISE 2010, SPHEREx 2026).
-# Se evita la fecha oct-nov 2025 de eps Ind B: trae marcas de rayos cósmicos.
+title: AstroTRACK in 30 seconds
+# Video de 30 s para la entrega (subtítulos en inglés) y para la lámina 4 del pitch. App real (rama
+# c/pitch-alternativa) en local con vite.demo.config.ts; grabado con tools/demo_pitch.py (copia del grabador del kit con
+# frame/frac/pad/move). Ejemplos revisados uno por uno antes de grabar:
+# - Epsilon Indi B: A − B con par rojo/azul nítido; espectro con agua y metano; ficha «parece una enana marrón».
+#   Fotos del precalculado del sitio (IRSA caído al grabar, 15-nov).
+# - Barnard: en el mapa, la estrella dentro de cada aro (2MASS ~2000, AllWISE 2010, SPHEREx 2026).
 url: "http://localhost:5191/?ra=331.098404&dec=-56.801258&size=0.1&band=4"
 init_script: "localStorage.setItem('astrotrack.idioma','en');localStorage.setItem('astrotrack.tutorial.visto','1')"
 viewport: [1600, 900]
@@ -14,79 +13,72 @@ label: "Real app · local copy · cached data"
 lang: en
 steps:
 - caption: ''
-  wait: 4000
+  wait: 30000
   hold: 100
   zoom: false
 - click: .simple-aviso button
   caption: 'Anyone can start: a SPHEREx photo of Epsilon Indi B, a nearby brown dwarf'
   zoom: false
-  wait: 1500
-  hold: 2200
-- click: .simple-fechas button:nth-child(2)
-  frame: .simple-imagen
-  frac:
-  - 0
-  - 0
-  - 1
-  - 1.13
-  pad: 1.05
-  caption: Spring 2025…
-  wait: 500
-  hold: 1100
-- click: .simple-fechas button:nth-child(5)
-  frame: .simple-imagen
-  frac:
-  - 0
-  - 0
-  - 1
-  - 1.13
-  pad: 1.05
-  caption: '…and October 2026: a small shift, about one pixel'
-  wait: 500
+  move: 600
+  wait: 600
   hold: 1500
 - click: .simple-fechas button:nth-child(2)
-  frame: .simple-centro
-  pad: 1.0
-  caption: Subtract them to see it clearly
-  wait: 300
-  hold: 250
+  frame: .simple-imagen
+  frac:
+  - 0
+  - 0
+  - 1
+  - 1.13
+  pad: 1.05
+  move: 600
+  caption: Spring 2025…
+  wait: 400
+  hold: 700
 - click: .simple-ab button:nth-child(2)
   frame: .simple-centro
   pad: 1.0
-  caption: Subtract them to see it clearly
-  wait: 300
-  hold: 250
+  move: 450
+  pre: 100
+  caption: Spring 2025…
+  wait: 250
+  hold: 150
 - click: .simple-fechas button:nth-child(5)
-  frame: .simple-centro
-  pad: 1.0
-  caption: Subtract them to see it clearly
-  wait: 300
-  hold: 250
+  frame: .simple-imagen
+  frac:
+  - 0
+  - 0
+  - 1
+  - 1.13
+  pad: 1.05
+  move: 500
+  caption: '…and October 2026: it shifted about one pixel'
+  wait: 400
+  hold: 1000
 - click: .simple-ab button:nth-child(3)
   frame: .simple-centro
   pad: 1.0
-  caption: Subtract them to see it clearly
-  wait: 300
-  hold: 250
+  move: 450
+  pre: 100
+  caption: '…and October 2026: it shifted about one pixel'
+  wait: 250
+  hold: 150
 - click: .simple-ab-ver
   frame: .simple-imagen
   pad: 1.05
-  caption: 'A − B: red where it was in 2025, blue where it is in 2026. It moved.'
-  wait: 700
-  hold: 2600
+  move: 500
+  caption: 'A − B: red where it was, blue where it is now. It moved.'
+  wait: 600
+  hold: 2000
 - click: .interruptor-ciencia
   caption: One switch opens the science tools
   zoom: false
+  move: 600
   wait: 9000
-  hold: 1300
-- zoom: .exp-escena canvas
-  pad: 1.25
-  caption: 'Median of 10 exposures per visit: the same motion, measured'
-  hold: 2400
+  hold: 500
 - zoom: .huella
   pad: 1.08
   caption: 'Its spectrum in 102 colors: dips where water and methane absorb'
-  hold: 2800
+  hold: 1800
 - zoom: .ficha
   frame: .ficha
   frac:
@@ -96,12 +88,55 @@ steps:
   - 1
   pad: 1.1
   caption: 'The tool''s reading: it looks like a brown dwarf'
-  hold: 2600
+  hold: 1600
+- type:
+    selector: .com-form input
+    text: Ana
+  scroll_full: true
+  frame: .comentarios
+  frac:
+  - 0
+  - 0
+  - 0.5
+  - 1
+  pad: 1.08
+  move: 500
+  pre: 80
+  caption: Leave a note for the next explorer
+  hold: 80
+- type:
+    selector: .com-form textarea
+    text: It moved!
+  frame: .comentarios
+  frac:
+  - 0
+  - 0
+  - 0.5
+  - 1
+  pad: 1.08
+  move: 350
+  pre: 80
+  caption: Leave a note for the next explorer
+  hold: 80
+- click: .com-form button[type=submit]
+  frame: .comentarios
+  frac:
+  - 0
+  - 0
+  - 0.5
+  - 1
+  pad: 1.08
+  move: 350
+  pre: 80
+  caption: 'Saved: the note stays on this object for the next explorer'
+  wait: 600
+  hold: 2000
 - click: .objetos button:has-text('Barnard')
-  caption: 'Any star has a history: Barnard''s Star'
+  caption: 'Every star has a history: Barnard''s Star'
   zoom: false
+  move: 600
   wait: 6000
-  hold: 500
+  hold: 400
 - zoom: .dupla-mapa button:has-text('2MASS')
   frame: .aladin-container
   frac:
@@ -112,7 +147,7 @@ steps:
   pad: 1.05
   nobox: true
   caption: 'Circles: where it should be in each survey'
-  hold: 1800
+  hold: 800
 - click: .dupla-mapa button:has-text('2MASS')
   frame: .aladin-container
   frac:
@@ -121,9 +156,11 @@ steps:
   - 0.5
   - 0.66
   pad: 1.05
+  move: 400
+  pre: 80
   wait: 8000
-  caption: '~2000 (2MASS): in the pink circle'
-  hold: 1700
+  caption: ~2000 (2MASS)
+  hold: 1000
 - click: .dupla-mapa button:has-text('AllWISE')
   frame: .aladin-container
   frac:
@@ -132,9 +169,11 @@ steps:
   - 0.5
   - 0.66
   pad: 1.05
+  move: 400
+  pre: 80
   wait: 8000
-  caption: '2010 (WISE): in the yellow one'
-  hold: 1700
+  caption: 2010 (WISE)
+  hold: 1000
 - click: .dupla-mapa button:has-text('SPHEREx 2025')
   frame: .aladin-container
   frac:
@@ -143,6 +182,8 @@ steps:
   - 0.5
   - 0.66
   pad: 1.05
+  move: 400
+  pre: 80
   wait: 6000
   caption: '2026 (SPHEREx): still moving. Real NASA data, free, in any browser'
-  hold: 2600
+  hold: 1500
