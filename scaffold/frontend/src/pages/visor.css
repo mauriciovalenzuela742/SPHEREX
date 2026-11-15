@@ -1,0 +1,19 @@
+/* Visor: mapa del cielo (izquierda) y Explorador SPHEREx (derecha) lado a lado, bajo la misma barra de filtros. */
+.dupla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.dupla-col { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+/* Con media pantalla, el panel del Explorador va debajo de su imagen en vez de al lado. */
+.dupla .explorador { grid-template-columns: 1fr; }
+.dupla .exp-barra { border-left: 0; border-top: 1px solid var(--borde); }
+
+.bajo-dupla { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+.visor .prisma { margin-top: 1rem; }
+
+/* Pantallas angostas: uno debajo del otro (mapa primero), sin pegado. */
+@media (max-width: 1100px) {
+  .dupla { grid-template-columns: 1fr; }
+}
