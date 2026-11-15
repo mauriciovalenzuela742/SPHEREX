@@ -4,13 +4,16 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
   gap: 1rem;
-  align-items: start;
+  /* Las dos columnas terminan a la misma altura: el Explorador se estira hasta el final de «Longitud de onda». */
+  align-items: stretch;
 }
+.dupla-col > .explorador { flex: 1; }
 .dupla-col { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
 /* Mapa más bajo para que no domine el centro. */
 .dupla .aladin { height: 380px; }
 /* Explorador: imagen al centro (más chica) y su panel de controles a la derecha. */
-.dupla .exp-lienzo { width: min(calc(100% - 24px), 460px); }
+.dupla .exp-lienzo { width: min(calc(100% - 24px), 540px); margin: auto; }
+.dupla .exp-escena { justify-content: space-between; }
 /* Panel del Explorador repartido: los controles (qué cargar, banda visible, modo) a la derecha de la imagen y
    las secciones largas («Esta imagen» y la tabla de bandas y fechas) en una caja debajo, para que la columna
    derecha no quede más larga que la imagen. `display: contents` deja las secciones como celdas de la rejilla. */
