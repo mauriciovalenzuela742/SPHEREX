@@ -3,12 +3,13 @@
 /* El lienzo del cielo queda fijo detrás de todo y no recibe clics. Para que se vea, <body> no pinta fondo (styles.css). */
 .cielo-animado { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-/* La portada ocupa todo el ancho (anula el padding de <main>) y el alto que deja el header. */
+/* La portada ocupa todo el ancho (anula el padding de <main>) y el alto que deja el header. Todas las opciones deben
+   verse sin bajar: logo, textos, Spherix y botones se achican con la altura de la ventana (unidades vh). */
 .portada {
   position: relative; overflow: hidden; margin: -1rem;
-  min-height: calc(100dvh - 140px);
+  min-height: calc(100dvh - 64px);
   display: grid; grid-template-columns: 1fr minmax(0, 540px); align-items: center;
-  padding: 3rem clamp(1rem, 6vw, 6rem) 4rem;
+  padding: clamp(0.75rem, 3vh, 3rem) clamp(1rem, 6vw, 6rem) clamp(1.75rem, 4vh, 4rem);
 }
 
 /* ── Escena: Tierra, órbita y SPHEREx ── */
@@ -40,16 +41,16 @@
 }
 
 /* ── Contenido ── */
-.portada-contenido { grid-column: 2; position: relative; display: flex; flex-direction: column; gap: 1.2rem; }
+.portada-contenido { grid-column: 2; position: relative; display: flex; flex-direction: column; gap: clamp(0.5rem, 1.8vh, 1.2rem); }
 .portada-titulo { margin: 0; line-height: 0; }
-.portada-titulo img { width: min(260px, 60vw); height: auto; }
-.portada-linea { margin: 0; font-size: 1.2rem; color: var(--suave); max-width: 32ch; }
+.portada-titulo img { width: clamp(100px, 24vh, 260px); height: auto; }
+.portada-linea { margin: 0; font-size: clamp(1rem, 2.1vh, 1.2rem); color: var(--suave); max-width: 32ch; }
 
-.portada-spherix { display: flex; align-items: center; gap: 1rem; margin-top: 0.6rem; }
-.portada-spherix .portada-cara { width: 88px; height: 88px; flex: none; }
+.portada-spherix { display: flex; align-items: center; gap: 1rem; }
+.portada-spherix .portada-cara { width: clamp(48px, 9vh, 88px); height: clamp(48px, 9vh, 88px); flex: none; }
 .portada-burbuja {
-  position: relative; margin: 0; padding: 0.7rem 1rem; border-radius: 12px;
-  background: var(--panel); border: 1px solid var(--borde); font-size: 1.15rem; font-weight: 600;
+  position: relative; margin: 0; padding: clamp(0.4rem, 1.1vh, 0.7rem) 1rem; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--borde); font-size: clamp(1rem, 2vh, 1.15rem); font-weight: 600;
 }
 .portada-burbuja::before { /* piquito hacia Spherix */
   content: ""; position: absolute; left: -7px; top: 50%; width: 12px; height: 12px; margin-top: -6px;
@@ -62,8 +63,8 @@
 }
 @keyframes portada-parpadeo { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
 
-.portada-respuestas { display: flex; flex-direction: column; align-items: stretch; gap: 0.6rem; max-width: 380px; }
-.portada-respuestas button { text-align: left; padding: 0.7rem 1rem; font-size: 1.05rem; }
+.portada-respuestas { display: flex; flex-direction: column; align-items: stretch; gap: clamp(0.35rem, 1vh, 0.6rem); max-width: 380px; }
+.portada-respuestas button { text-align: left; padding: clamp(0.4rem, 1.2vh, 0.7rem) 1rem; font-size: 1.05rem; }
 .portada-respuestas button:not(.primario) { background: rgba(20, 27, 51, 0.88); }
 .portada-descargas {
   align-self: flex-start; background: none; border: none; padding: 0.2rem 0; color: var(--suave);
@@ -79,17 +80,17 @@
 /* ── Tablet y móvil (< 1100 px, donde la escena chocaría con el contenido): Tierra más chica asomando abajo,
    sin SPHEREx ni órbita, contenido centrado ── */
 @media (max-width: 1100px) {
-  /* Abajo queda espacio para lo que asoma de la Tierra (28 % de su diámetro). */
-  .portada { grid-template-columns: 1fr; padding: 1.5rem 1rem calc(min(80vw, 560px) * 0.28 + 1.5rem); align-items: start; }
+  /* Abajo queda espacio para lo que asoma de la Tierra (14 % de su diámetro). */
+  .portada { grid-template-columns: 1fr; padding: clamp(0.75rem, 2.5vh, 1.5rem) 1rem calc(min(80vw, 560px) * 0.14 + 0.5rem); align-items: start; }
   .portada-contenido { grid-column: 1; align-items: center; text-align: center; }
   .portada-linea { max-width: none; }
   .portada-escena { --tierra: min(80vw, 560px); }
-  .portada-tierra { left: 50%; transform: translateX(-50%); bottom: calc(var(--tierra) * -0.72); }
+  .portada-tierra { left: 50%; transform: translateX(-50%); bottom: calc(var(--tierra) * -0.86); }
   .portada-orbita, .portada-spherex { display: none; }
   .portada-respuestas { width: 100%; }
   .portada-respuestas button { text-align: center; }
   .portada-descargas { align-self: center; }
-  .portada-creditos { position: relative; right: auto; bottom: auto; margin-top: 1.5rem; text-align: center; }
+  .portada-creditos { position: relative; right: auto; bottom: auto; margin-top: 0.5rem; text-align: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
