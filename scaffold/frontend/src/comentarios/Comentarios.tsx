@@ -101,6 +101,8 @@ export default function Comentarios() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre: nombreLimpio, texto: textoLimpio, sitio }),
+        // En producción el commit a GitHub tarda unos segundos; más de 20 s es que el backend no responde.
+        signal: AbortSignal.timeout(20000),
       });
       const j: unknown = await r.json().catch(() => null);
       if (r.status === 429)
@@ -117,8 +119,14 @@ export default function Comentarios() {
       if (nuevo) setLista((l) => ({ fase: "listo", lista: [nuevo, ...(l.fase === "listo" ? l.lista : [])] }));
       setTexto("");
       setEnvio({ fase: "ok" });
-    } catch {
-      setEnvio({ fase: "error", motivo: tr("No hay conexión con el servidor de comentarios.", "Could not reach the comments server.") });
+    } catch (err) {
+      const tiempo = err instanceof DOMException && (err.name === "TimeoutError" || err.name === "AbortError");
+      setEnvio({
+        fase: "error",
+        motivo: tiempo
+          ? tr("El servidor de comentarios no respondió (más de 20 s). Inténtalo de nuevo.", "The comments server did not answer (over 20 s). Try again.")
+          : tr("No hay conexión con el servidor de comentarios.", "Could not reach the comments server."),
+      });
     }
   };
 
