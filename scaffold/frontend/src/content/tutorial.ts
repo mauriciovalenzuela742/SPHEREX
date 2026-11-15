@@ -146,13 +146,13 @@ const ES = {
     {
       titulo: "¡Ahora te toca a ti!",
       texto:
-        "Ya conoces AstroTRACK. Lo mejor es probar: busca la Estrella de Barnard, la que más rápido cruza nuestro cielo, y mira " +
-        "cómo se corre entre una visita y otra. O ponte a prueba en el Modo Misión.",
+        "Ya conoces AstroTRACK. Lo mejor es probar: mira Epsilon Indi B, una pareja de enanas marrones a 12 años luz, y compara " +
+        "la primera fecha con la última para ver cómo se corre. O ponte a prueba en el Modo Misión.",
     },
   ] as PasoTutorial[],
 
   final: {
-    barnard: "Probar con la Estrella de Barnard",
+    probar: "Probar con Epsilon Indi B",
     mision: "Ir al Modo Misión",
     libre: "Explorar libre",
   },
@@ -225,13 +225,13 @@ const ES = {
     {
       titulo: "¡Ahora te toca a ti!",
       texto:
-        "Prueba con la Estrella de Barnard, la que más rápido cruza nuestro cielo: reproduce las fechas y mira cómo se corre. " +
+        "Prueba con Epsilon Indi B, una pareja de enanas marrones a 12 años luz: reproduce las fechas y mira cómo se corre. " +
         "O pasa al Modo ciencia cuando quieras.",
     },
   ] as PasoTutorial[],
 
   finalSimple: {
-    barnard: "Probar con la Estrella de Barnard",
+    probar: "Probar con Epsilon Indi B",
     ciencia: "Abrir el Modo ciencia",
     libre: "Explorar libre",
   },
@@ -363,13 +363,13 @@ const EN: typeof ES = {
     {
       titulo: "Now it's your turn!",
       texto:
-        "Now you know AstroTRACK. The best thing is to try it: find Barnard's Star, the fastest star across our sky, and watch " +
-        "how it shifts from one visit to the next. Or test yourself in Mission Mode.",
+        "Now you know AstroTRACK. The best thing is to try it: look at Epsilon Indi B, a pair of brown dwarfs 12 light-years " +
+        "away, and compare the first date with the last to see how it shifts. Or test yourself in Mission Mode.",
     },
   ],
 
   final: {
-    barnard: "Try Barnard's Star",
+    probar: "Try Epsilon Indi B",
     mision: "Go to Mission Mode",
     libre: "Explore freely",
   },
@@ -440,13 +440,13 @@ const EN: typeof ES = {
     {
       titulo: "Now it's your turn!",
       texto:
-        "Try Barnard's Star, the fastest star across our sky: play the dates and watch it shift. Or switch to Science mode " +
-        "whenever you want.",
+        "Try Epsilon Indi B, a pair of brown dwarfs 12 light-years away: play the dates and watch it shift. Or switch to " +
+        "Science mode whenever you want.",
     },
   ],
 
   finalSimple: {
-    barnard: "Try Barnard's Star",
+    probar: "Try Epsilon Indi B",
     ciencia: "Open Science mode",
     libre: "Explore freely",
   },

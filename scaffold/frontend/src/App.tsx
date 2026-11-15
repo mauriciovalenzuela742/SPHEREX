@@ -10,10 +10,14 @@ import { useIdioma } from "./state/idioma";
 import { CAMPOS, posicionActual } from "./content/campos";
 import "./styles.css";
 
-/** El tutorial y el «probar» del final usan la Estrella de Barnard: tiene datos en todas las secciones. */
-const BARNARD: Partial<Estado> = {
-  ...posicionActual(CAMPOS.find((c) => c.id === "barnard")!),
-  band: "2",
+/**
+ * Los dos tutoriales empiezan y terminan («Probar con…») en Epsilon Indi B (pedido de V1): es el objeto por defecto del visor y tiene fotos
+ * precalculadas (explorador/presets.ts: banda 5, mediana de 10), así que el Explorador y la vista simple cargan
+ * al instante. Banda 5 para el mapa, la misma del preset.
+ */
+const EPS_IND_B: Partial<Estado> = {
+  ...posicionActual(CAMPOS.find((c) => c.id === "eps_ind_b")!),
+  band: "5",
   size: 0.1,
 };
 
@@ -33,9 +37,9 @@ export default function App() {
   const [menu, setMenu] = useState(false);
 
   // Dos recorridos: el del Modo ciencia (menú ☰) y el de la vista simple (botón «?» de esa vista y la portada,
-  // que abre la vista simple). Los dos empiezan en Barnard, que tiene datos en todas las secciones.
+  // que abre la vista simple). Los dos empiezan en Epsilon Indi B.
   const abrirTutorial = (tipo: "ciencia" | "simple" = "ciencia") =>
-    set({ ...BARNARD, vista: "visor", mision: undefined, tutorial: tipo, ciencia: tipo === "ciencia" ? true : undefined });
+    set({ ...EPS_IND_B, vista: "visor", mision: undefined, tutorial: tipo, ciencia: tipo === "ciencia" ? true : undefined });
   const cerrarTutorial = (siguiente: Partial<Estado> = {}) => {
     marcarVisto();
     set({ tutorial: undefined, ...siguiente });
@@ -137,7 +141,7 @@ export default function App() {
           key={estado.tutorial}
           variante={estado.tutorial}
           onCerrar={() => cerrarTutorial()}
-          onBarnard={() => cerrarTutorial(BARNARD)}
+          onProbar={() => cerrarTutorial(EPS_IND_B)}
           onMision={() => cerrarTutorial(estado.tutorial === "simple" ? { ciencia: true } : { mision: "intro" })}
         />
       )}
