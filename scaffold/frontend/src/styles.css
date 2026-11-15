@@ -65,7 +65,9 @@ footer { padding: 0.8rem 1rem; color: var(--suave); font-size: 0.85rem; border-t
 .reproductor { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .reproductor input[type="range"] { flex: 1; min-width: 120px; }
 .quien { color: var(--suave); font-size: 0.8rem; }
-.encuadrar { align-self: flex-start; font-size: 0.85rem; padding: 0.3rem 0.7rem; }
+.sobre-mapa { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; }
+.encuadrar { font-size: 0.85rem; padding: 0.3rem 0.7rem; }
+.wiseview { font-size: 0.85rem; }
 .tira { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
 .lateral { display: flex; flex-direction: column; gap: 0.8rem; }
 .tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 8px; padding: 0.8rem; }
