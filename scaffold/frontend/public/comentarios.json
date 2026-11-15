@@ -1,0 +1,4 @@
+{
+  "_instrucciones": "Para agregar un comentario, suma un objeto a la lista «comentarios» con nombre, fecha (AAAA-MM-DD) y texto. Se muestra al final del Visor tal cual (texto plano, sin HTML). Límites: nombre hasta 60 caracteres y texto hasta 600; las entradas que no cumplan no se muestran. Revisa que el JSON siga siendo válido (comas y comillas) antes de hacer commit.",
+  "comentarios": []
+}
