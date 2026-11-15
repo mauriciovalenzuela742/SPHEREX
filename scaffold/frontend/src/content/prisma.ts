@@ -8,8 +8,9 @@ import { useIdioma } from "../state/idioma";
 export const prisma = {
   titulo: "Prisma: la luz invisible en colores",
   intro:
-    "SPHEREx no saca una foto: saca 102, cada una en un «color» de infrarrojo que tus ojos no ven. " +
-    "Aquí las traducimos a colores visibles y armamos la huella de luz del objeto, como un prisma.",
+    "SPHEREx mira el cielo en 102 «colores» de infrarrojo que tus ojos no ven. " +
+    "Aquí los traducimos a colores visibles y, midiendo el brillo del objeto en cada foto, armamos su espectro: " +
+    "su huella de luz, como un prisma.",
 
   ojo: {
     titulo: "Ojo infrarrojo",
@@ -166,8 +167,9 @@ export const prisma = {
 export const prismaEN: typeof prisma = {
   titulo: "Prism: invisible light in colors",
   intro:
-    "SPHEREx doesn't take one photo: it takes 102, each in an infrared \u201ccolor\u201d your eyes can't see. " +
-    "Here we translate them into visible colors and build the object's light fingerprint, like a prism.",
+    "SPHEREx sees the sky in 102 infrared \u201ccolors\u201d your eyes can't see. " +
+    "Here we translate them into visible colors and, by measuring the object's brightness in each photo, build its spectrum: " +
+    "its light fingerprint, like a prism.",
 
   ojo: {
     titulo: "Infrared eye",
