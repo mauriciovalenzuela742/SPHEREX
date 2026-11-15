@@ -1,31 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "api": {
-      "root": "deploy/api",
-      "framework": "fastapi"
-    },
-    "prototipo": {
-      "root": "deploy/prototipo",
-      "framework": "fastapi"
-    },
-    "frontend": {
-      "root": "scaffold/frontend",
-      "framework": "vite"
-    }
-  },
+  "buildCommand": "cd scaffold/frontend && npm install && npm run build",
+  "outputDirectory": "scaffold/frontend/dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": {
-        "service": "api"
-      }
+      "source": "/proto-api/:path*",
+      "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
     },
     {
-      "source": "/(.*)",
-      "destination": {
-        "service": "frontend"
-      }
+      "source": "/api/:path*",
+      "destination": "https://spherex-prototipo-d2.vercel.app/api/:path*"
     }
   ]
 }
