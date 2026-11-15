@@ -13,6 +13,27 @@
 export type Lectura = { ok: true; valor: number } | { ok: false; error: string };
 export type LecturaPar = { ok: true; ra: number; dec: number } | { ok: false; error: string };
 
+/** Los mensajes de error en inglés, para el selector ES/EN. Si se agrega un error nuevo, agregarlo aquí. */
+const ERRORES_EN: Record<string, string> = {
+  "En grados, la A.R. va de 0 a 360 (sin incluir 360).": "In degrees, R.A. goes from 0 to 360 (not including 360).",
+  "La A.R. lleva a lo más tres números: horas, minutos y segundos.": "R.A. takes at most three numbers: hours, minutes and seconds.",
+  "La A.R. no puede llegar a 24 h.": "R.A. cannot reach 24 h.",
+  "La A.R. no puede ser negativa.": "R.A. cannot be negative.",
+  "La Dec lleva a lo más tres números: grados, minutos y segundos.": "Dec takes at most three numbers: degrees, minutes and seconds.",
+  "La Dec va de -90 a +90 grados.": "Dec goes from -90 to +90 degrees.",
+  "Las horas de la A.R. van de 0 a 23.": "R.A. hours go from 0 to 23.",
+  "Las horas de la A.R. van sin decimales si das minutos.": "R.A. hours have no decimals if you give minutes.",
+  "Los grados de la Dec van sin decimales si das minutos.": "Dec degrees have no decimals if you give minutes.",
+  "Los minutos y segundos van de 0 a 59,99…": "Minutes and seconds go from 0 to 59.99…",
+  "No entendí la A.R. Escríbela en grados (133.795) o en horas, minutos y segundos (08 55 10.83).":
+    "I didn't understand the R.A. Type it in degrees (133.795) or in hours, minutes and seconds (08 55 10.83).",
+  "No entendí la Dec. Escríbela en grados (-7.245) o en grados, minutos y segundos (-07 14 42.5).":
+    "I didn't understand the Dec. Type it in degrees (-7.245) or in degrees, minutes and seconds (-07 14 42.5).",
+};
+
+/** Un mensaje de error en inglés (si no está en la tabla, queda en español). */
+export const errorEnIngles = (es: string) => ERRORES_EN[es] ?? es;
+
 const NUM = /^\d+(?:\.\d*)?$|^\.\d+$/;
 
 /** Separa el texto en signo y números. Devuelve null si trae caracteres que no son de coordenadas. */
@@ -82,6 +103,9 @@ export function leerDec(texto: string): Lectura {
  */
 export function leerPar(texto: string): LecturaPar | null {
   const t = texto.trim().replace(/[−–—]/g, "-");
+  // Un número suelto con coma decimal («133,795», «-7,245») no es un par: lo lee leerRA/leerDec.
+  // Sin esto, la coma se tomaba como separador y «-7,245» daba A.R. −7 y Dec 245.
+  if (/^[+-]?\d+,\d+\s*°?$/.test(t)) return null;
   let ra: string | null = null;
   let dec: string | null = null;
   const conSigno = t.match(/^(.+?)\s*,?\s*([+-]\s*\d.*)$/);
