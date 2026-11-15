@@ -85,3 +85,13 @@
 .ficha-tipo { margin: 0; font-size: 1rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.6rem; }
 .ficha-conf { font-size: 0.75rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid var(--borde); color: var(--suave); }
 .ficha-motivo { margin: 0; font-size: 0.86rem; }
+
+/* Zonas de moléculas: explicación al pasar el mouse y caída de luz resaltada */
+.h-mol-zona { cursor: help; }
+.h-mol-zona.sobre .h-mol { opacity: 0.2; }
+.h-mol-zona.dep .h-mol { fill: #ffd43b; opacity: 0.13; }
+.h-mol-zona.dep.sobre .h-mol { opacity: 0.25; }
+.h-mol-zona.dep .h-mol-t { fill: #ffd43b; opacity: 1; }
+.h-mol-dep { fill: #ffd43b; font: 700 13px ui-monospace, monospace; }
+.h-mol-info { margin: 0; font-size: 0.82rem; color: #e9ecef; }
+.h-mol-info strong { color: #ffd43b; font-weight: 600; }

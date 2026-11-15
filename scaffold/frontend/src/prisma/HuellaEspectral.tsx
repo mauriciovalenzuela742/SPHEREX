@@ -4,9 +4,11 @@
  * Puntos: lleno = medida; ▽ = límite superior (S/N < 3); △ en la franja de arriba = saturado (sin altura).
  * Con dos o más pasadas, cada pasada tiene su color y una línea por sus medianas. Gris = forma de las vecinas.
  */
+import { useState } from "react";
 import { usePrisma } from "../content/prisma";
 import { useIdioma } from "../state/idioma";
 import { useFmt } from "./formato";
+import { depresion } from "./moleculas";
 import { COLORES_PASADA, etiquetaPasada, usable, valorLimite, type Pasada, type PuntoVista } from "./pasadas";
 
 type Props = {
@@ -57,6 +59,7 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
   const prisma = usePrisma();
   const { tr, idioma } = useIdioma();
   const fmt = useFmt();
+  const [molSobre, setMolSobre] = useState<string | null>(null);
   const porColor = pasadas.length > 1;
   const visibles = pasadas.map((pa, i) => ({ pa, color: COLORES_PASADA[i % COLORES_PASADA.length] })).filter(({ pa }) => ver === "todas" || pa.id === ver);
   const puntos = visibles.flatMap(({ pa, color }) => pa.puntos.map((p) => ({ p, color })));
@@ -110,6 +113,13 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
       : p.estado === "medida"
         ? `${fmt(p.mJy)} ± ${fmt(p.err)} mJy`
         : `< ${fmt(valorLimite(p))} mJy`;
+  // Zonas de moléculas: ¿falta luz ahí en este objeto? (misma regla de 3σ que «qué cambió»).
+  const zonas = prisma.moleculas.flatMap((m, mi) =>
+    m.rangos.map((r, i) => ({ k: `${mi}:${i}`, m, a: r[0], z: r[1], dep: depresion(todosPuntos, r, m.refs[i] ?? []) })),
+  );
+  const zonaSobre = zonas.find((zn) => zn.k === molSobre);
+  const textoDep = (zn: (typeof zonas)[number]) =>
+    zn.dep ? prisma.faltaLuz(zn.m.nombre, `${fmt(zn.a, 2)}–${fmt(zn.z, 2)} µm`, fmt(zn.dep.razon, 2), fmt(zn.dep.sigma, 0)) : "";
   const rotulo = (p: PuntoVista) =>
     `D${p.banda} · ${p.fecha} · λ ${fmt(p.lam, 2)} µm · ${valor(p)}${p.sospechoso ? ` · ${prisma.huella.sospechosoCorto}` : ""}`;
 
@@ -145,14 +155,21 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
         ))}
 
         {/* Regiones de moléculas */}
-        {prisma.moleculas.map((m) =>
-          m.rangos.map(([a, z], i) => (
-            <g key={m.formula + i}>
-              <rect x={lx(a)} y={M.arr} width={lx(z) - lx(a)} height={H - M.arr - M.aba} className="h-mol" />
-              <text x={(lx(a) + lx(z)) / 2} y={H - M.aba - 6} className="h-mol-t" textAnchor="middle">{m.formula}</text>
-            </g>
-          )),
-        )}
+        {zonas.map((zn) => (
+          <g
+            key={zn.k}
+            className={`h-mol-zona ${zn.dep ? "dep" : ""} ${molSobre === zn.k ? "sobre" : ""}`}
+            onMouseEnter={() => setMolSobre(zn.k)}
+            onMouseLeave={() => setMolSobre((k) => (k === zn.k ? null : k))}
+          >
+            <title>{`${zn.m.texto}${zn.dep ? ` ${textoDep(zn)}` : ""}`}</title>
+            <rect x={lx(zn.a)} y={M.arr} width={lx(zn.z) - lx(zn.a)} height={H - M.arr - M.aba} className="h-mol" />
+            <text x={(lx(zn.a) + lx(zn.z)) / 2} y={H - M.aba - 6} className="h-mol-t" textAnchor="middle">{zn.m.formula}</text>
+            {zn.dep && (
+              <text x={(lx(zn.a) + lx(zn.z)) / 2} y={M.arr + 12} className="h-mol-dep" textAnchor="middle">↓</text>
+            )}
+          </g>
+        ))}
 
         {/* Ejes */}
         {TICKS.map((t) => (
@@ -259,6 +276,24 @@ export default function HuellaEspectral({ pasadas, ver, sel, onPunto, cargarToda
               : rotulo(actual)
             : prisma.huella.pista}
         </p>
+        {zonaSobre ? (
+          <p className="h-mol-info">
+            {zonaSobre.m.texto} <strong>{zonaSobre.dep ? textoDep(zonaSobre) : prisma.sinDepresion}</strong>
+          </p>
+        ) : (
+          zonas.some((zn) => zn.dep) && (
+            <p className="h-mol-info">
+              ↓{" "}
+              {prisma.faltaLuzResumen(
+                prisma.moleculas
+                  .map((m) => ({ m, n: zonas.filter((zn) => zn.m === m && zn.dep).length }))
+                  .filter((x) => x.n > 0)
+                  .map((x) => `${x.m.nombre} (${x.m.formula}${x.n > 1 ? ` ×${x.n}` : ""})`)
+                  .join(", "),
+              )}
+            </p>
+          )
+        )}
         {todosPuntos.length > 0 && nDebil > todosPuntos.length / 2 && <p className="h-aviso">{prisma.huella.debil}</p>}
         {todoSaturado ? (
           <p className="h-aviso h-aviso-fuerte">{prisma.huella.todoSaturado}</p>

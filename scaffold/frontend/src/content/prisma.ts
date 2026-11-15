@@ -112,12 +112,44 @@ export const prisma = {
 
 
   // Rangos aproximados (µm) donde suelen aparecer bandas de absorción en el infrarrojo cercano.
+  // `refs[i]`: tramos vecinos sin esa absorción contra los que se compara el rango `rangos[i]` para decir si
+  // «falta luz» ahí (regla de 3σ con piso de calibración, ver prisma/moleculas.ts).
   moleculas: [
-    { nombre: "agua", formula: "H₂O", rangos: [[1.33, 1.48], [1.8, 1.95], [2.6, 2.95]] },
-    { nombre: "metano", formula: "CH₄", rangos: [[2.2, 2.4], [3.2, 3.45]] },
-    { nombre: "dióxido de carbono", formula: "CO₂", rangos: [[4.2, 4.35]] },
-    { nombre: "monóxido de carbono", formula: "CO", rangos: [[4.55, 4.75]] },
-  ] as { nombre: string; formula: string; rangos: [number, number][] }[],
+    {
+      nombre: "agua", formula: "H₂O", rangos: [[1.33, 1.48], [1.8, 1.95], [2.6, 2.95]],
+      refs: [[[1.2, 1.32], [1.5, 1.75]], [[1.5, 1.75], [2.0, 2.2]], [[2.0, 2.2]]],
+      texto:
+        "Agua (H₂O): en estrellas frías y enanas marrones es vapor de su atmósfera; en las nubes frías donde nacen " +
+        "estrellas aparece como hielo sobre el polvo, cerca de 3 µm.",
+    },
+    {
+      nombre: "metano", formula: "CH₄", rangos: [[2.2, 2.4], [3.2, 3.45]],
+      refs: [[[2.0, 2.18]], [[3.9, 4.2]]],
+      texto:
+        "Metano (CH₄): solo existe como gas en atmósferas muy frías, como las de enanas marrones y planetas " +
+        "gigantes, y se come la luz cerca de 2,3 y 3,3 µm. También hay hielo de metano en nubes frías.",
+    },
+    {
+      nombre: "dióxido de carbono", formula: "CO₂", rangos: [[4.2, 4.35]],
+      refs: [[[4.0, 4.15], [4.4, 4.5]]],
+      texto:
+        "Dióxido de carbono (CO₂): hielo en los granos de polvo de nubes frías (4,27 µm), uno de los blancos de " +
+        "SPHEREx; también gas en enanas marrones muy frías.",
+    },
+    {
+      nombre: "monóxido de carbono", formula: "CO", rangos: [[4.55, 4.75]],
+      refs: [[[4.4, 4.5], [4.8, 5.0]]],
+      texto:
+        "Monóxido de carbono (CO): gas en estrellas frías y enanas marrones (~4,6 µm) y hielo en nubes frías " +
+        "(4,67 µm).",
+    },
+  ] as { nombre: string; formula: string; rangos: [number, number][]; refs: [number, number][][]; texto: string }[],
+  faltaLuz: (nombre: string, rango: string, razon: string, sigma: string) =>
+    `Aquí falta luz: posible ${nombre}. En ${rango} el brillo es ×${razon} el de los tramos vecinos (${sigma}σ).`,
+  faltaLuzResumen: (lista: string) =>
+    `Falta luz (más de 3σ bajo sus vecinos) en zonas de: ${lista}. Pasa el mouse por una zona sombreada para ` +
+    "ver qué molécula es y cuánto falta.",
+  sinDepresion: "En este objeto no se ve una caída clara de luz en este rango (o faltan medidas).",
 };
 
 /** Versión en inglés: misma forma que `prisma`. */
@@ -227,11 +259,39 @@ export const prismaEN: typeof prisma = {
   },
 
   moleculas: [
-    { nombre: "water", formula: "H₂O", rangos: [[1.33, 1.48], [1.8, 1.95], [2.6, 2.95]] },
-    { nombre: "methane", formula: "CH₄", rangos: [[2.2, 2.4], [3.2, 3.45]] },
-    { nombre: "carbon dioxide", formula: "CO₂", rangos: [[4.2, 4.35]] },
-    { nombre: "carbon monoxide", formula: "CO", rangos: [[4.55, 4.75]] },
+    {
+      nombre: "water", formula: "H₂O", rangos: [[1.33, 1.48], [1.8, 1.95], [2.6, 2.95]],
+      refs: [[[1.2, 1.32], [1.5, 1.75]], [[1.5, 1.75], [2.0, 2.2]], [[2.0, 2.2]]],
+      texto:
+        "Water (H₂O): in cool stars and brown dwarfs it is vapor in the atmosphere; in the cold clouds where stars " +
+        "are born it appears as ice on dust grains, near 3 µm.",
+    },
+    {
+      nombre: "methane", formula: "CH₄", rangos: [[2.2, 2.4], [3.2, 3.45]],
+      refs: [[[2.0, 2.18]], [[3.9, 4.2]]],
+      texto:
+        "Methane (CH₄): it only exists as a gas in very cold atmospheres, like those of brown dwarfs and giant " +
+        "planets, and it absorbs light near 2.3 and 3.3 µm. There is also methane ice in cold clouds.",
+    },
+    {
+      nombre: "carbon dioxide", formula: "CO₂", rangos: [[4.2, 4.35]],
+      refs: [[[4.0, 4.15], [4.4, 4.5]]],
+      texto:
+        "Carbon dioxide (CO₂): ice on the dust grains of cold clouds (4.27 µm), one of SPHEREx's targets; also a " +
+        "gas in very cold brown dwarfs.",
+    },
+    {
+      nombre: "carbon monoxide", formula: "CO", rangos: [[4.55, 4.75]],
+      refs: [[[4.4, 4.5], [4.8, 5.0]]],
+      texto: "Carbon monoxide (CO): gas in cool stars and brown dwarfs (~4.6 µm) and ice in cold clouds (4.67 µm).",
+    },
   ],
+  faltaLuz: (nombre: string, rango: string, razon: string, sigma: string) =>
+    `Light is missing here: possible ${nombre}. At ${rango} the brightness is ×${razon} that of the neighboring ranges (${sigma}σ).`,
+  faltaLuzResumen: (lista: string) =>
+    `Light is missing (more than 3σ below its neighbors) in the zones of: ${lista}. Hover over a shaded zone ` +
+    "to see which molecule it is and how much is missing.",
+  sinDepresion: "This object shows no clear drop in light in this range (or measurements are missing).",
 };
 
 /** Textos del Prisma en el idioma activo. */
