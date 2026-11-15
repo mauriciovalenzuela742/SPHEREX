@@ -52,7 +52,13 @@ export default function QueCambio({ pasadas, id }: { pasadas: Pasada[]; id?: str
           </li>
         ))}
       </ul>
-      <p className="h-nota">{t.regla}</p>
+      <p className="h-nota">
+        {t.regla}{" "}
+        {tr(
+          "El cambio Doppler por la órbita de la Tierra entre pasadas semestrales (hasta 58,8 km/s, < 0,02 % en λ) es más de 100 veces menor que la resolución de SPHEREx (2.300–8.565 km/s por canal), por lo que no altera el espectro entre pasadas.",
+          "The barycentric Doppler shift from Earth's orbit between six-month passes (up to 58.8 km/s, < 0.02% in λ) is over 100 times smaller than SPHEREx's spectral resolution (2,300–8,565 km/s per channel), so it does not alter the spectrum across passes.",
+        )}
+      </p>
     </div>
   );
 }

@@ -58,7 +58,10 @@ $DATA = "D:\dev\informes_v2\huella_espectral"
 # 8. Analisis del fondo real del cielo (sin restar mediana, 1.918 exposiciones) y residuos PSF
 & $PY analisis_fondo.py $DATA
 
-# 9. Generacion de figuras 16:9 en ingles y espanol (fig1 a fig4 -> ../../docs/hallazgos/img/)
+# 9. Escala Doppler baricentrica, acoplamiento LVF y movimiento intra-pasada (43-55 dias)
+& $PY doppler_y_escaneo.py $DATA
+
+# 10. Generacion de figuras 16:9 en ingles y espanol (fig1 a fig4 -> ../../docs/hallazgos/img/)
 & $PY figuras_pitch.py $DATA ..\..\docs\hallazgos\img
 ```
 
@@ -79,4 +82,5 @@ $DATA = "D:\dev\informes_v2\huella_espectral"
 | `cinco_objetos.py` | Pipeline unificado en `wise_0855`, `eps_ind_b`, `barnard`, `rw_aur` y `r_dra` (`1.918` exposiciones) | [`cinco_objetos_resultado.json`](cinco_objetos_resultado.json) |
 | `limpieza_fondo.py` | Limpieza por resta PSF de estáticas ciegas y por resta espectral directa $I_{\text{largo}} - \alpha\,I_{\text{corto}}$ | [`limpieza_fondo_resultado.json`](limpieza_fondo_resultado.json) + `limpieza_wise0855.npz` (fuera de git) |
 | `analisis_fondo.py` | Espectro de fondo zodiacal/galáctico sin restar mediana, residuos 2D PSF y cobertura nebular | [`analisis_fondo_resultado.json`](analisis_fondo_resultado.json) |
+| `doppler_y_escaneo.py` | Escala Doppler vs resolución SPHEREx, salto baricéntrico por pasada, acoplamiento LVF y movimiento intra-pasada | [`doppler_y_escaneo_resultado.json`](doppler_y_escaneo_resultado.json) |
 | `figuras.py`, `figuras_pitch.py` | Figuras originales y figuras finales `16:9` en EN y ES (`fig1` a `fig4`) | `../../docs/hallazgos/img/huella_espectral_fig*.png` |

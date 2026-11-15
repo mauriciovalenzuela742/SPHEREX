@@ -195,8 +195,8 @@ export default function PanelEspectro() {
       {pedido.pmra !== undefined && (
         <p style={{ fontSize: "0.8rem" }}>
           {tr(
-            "Siguiendo su movimiento propio: en cada foto se mide donde estaba ese día.",
-            "Following its proper motion: each photo is measured where it was that day.",
+            "Siguiendo su movimiento propio en cada foto: corrige el desplazamiento entre pasadas y durante los 43–55 días de cada escaneo, evitando perder brillo en la apertura y el corrimiento aparente de longitud de onda en el filtro lineal variable (LVF).",
+            "Following its proper motion in every photo: corrects the position shift across passes and during the 43–55 days of each scan, preventing aperture flux loss and apparent wavelength drift on the Linear Variable Filter (LVF).",
           )}
         </p>
       )}

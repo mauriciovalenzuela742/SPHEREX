@@ -20,7 +20,17 @@ const RADIO_RAPIDAS_DEG = 0.1;
 const PM_RAPIDA = 300;
 const ESPERA_MS = 30000;
 
-export type Hallazgo = { nombre: string; tipo: string; distancia: number; propagado: boolean };
+export type Hallazgo = {
+  nombre: string;
+  tipo: string;
+  distancia: number;
+  propagado: boolean;
+  ra?: number;
+  dec?: number;
+  pmra?: number;
+  pmdec?: number;
+  epoca?: number;
+};
 
 function consulta(ra: number, dec: number): string {
   const punto = `POINT('ICRS', ra, dec)`;
@@ -72,13 +82,21 @@ export async function queHayAqui(ra: number, dec: number, epoca: number, senal: 
         const [pRa, pDec] = propagar(oRa, oDec, pmra, pmdec, EPOCA_J2000, epoca);
         const distancia = separacion(ra, dec, pRa, pDec);
         if (distancia <= RADIO_ARCSEC) {
-          hallazgos.push({
+          const item: Hallazgo = {
             nombre: String(f[iId]).trim().replace(/^NAME /, ""),
             tipo: String(f[iTipo] ?? "").trim(),
             distancia,
             // Se dice «contando lo que se movió» solo si se movió algo apreciable (> 1″) desde 2000.
             propagado: separacion(oRa, oDec, pRa, pDec) > 1,
-          });
+            ra: pRa,
+            dec: pDec,
+          };
+          if (pmra !== 0 || pmdec !== 0) {
+            item.pmra = pmra;
+            item.pmdec = pmdec;
+            item.epoca = epoca;
+          }
+          hallazgos.push(item);
         }
       }
       // Vienen ordenados por citas (nbref): el sort estable deja primero al más citado entre los muy cercanos.
