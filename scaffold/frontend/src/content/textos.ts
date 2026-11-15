@@ -29,6 +29,13 @@ const ES = {
   empecemos: "Empecemos",
   empecemosTutorial: "Empecemos con un tutorial",
   tutorialAyuda: "Spherix te muestra todo en un par de minutos.",
+  // Portada: Spherix pregunta y los tres caminos son respuestas a su pregunta
+  lineaPortada: "Mira cómo cambia el cielo infrarrojo con fotos reales de SPHEREx, la misión de la NASA.",
+  queInvestigamos: "¿Qué investigaremos hoy?",
+  respuestaTutorial: "Muéstrame cómo funciona",
+  respuestaExplorar: "Quiero explorar el cielo",
+  respuestaMision: "Quiero ser cazador de planetas",
+  creditosPortada: "Tierra: NASA, Apolo 17 · SPHEREx: cortesía NASA/JPL-Caltech",
 
   // Explorador
   exploradorTitulo: "Explorador SPHEREx",
@@ -116,6 +123,12 @@ const EN: typeof ES = {
   empecemos: "Get started",
   empecemosTutorial: "Start with a tutorial",
   tutorialAyuda: "Spherix will show you everything in a couple of minutes.",
+  lineaPortada: "Watch the infrared sky change with real photos from NASA's SPHEREx mission.",
+  queInvestigamos: "What shall we explore today?",
+  respuestaTutorial: "Show me how it works",
+  respuestaExplorar: "I want to explore the sky",
+  respuestaMision: "I want to be a planet hunter",
+  creditosPortada: "Earth: NASA, Apollo 17 · SPHEREx: courtesy NASA/JPL-Caltech",
 
   exploradorTitulo: "SPHEREx Explorer",
   exploradorHint: "Click or drag on the timeline to pick a date.",

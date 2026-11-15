@@ -1,36 +1,50 @@
-/** Portada de AstroTrack. Dueña del layout: Antonia (V1); textos: Javiera (N). */
+/**
+ * Portada de AstroTrack. Dueña del layout: Antonia (V1); textos: Javiera (N), en content/textos.ts.
+ *
+ * Cielo animado de fondo, la Tierra (foto real, Apolo 17) cortada abajo a la izquierda, SPHEREx flotando en su
+ * órbita y Spherix preguntando «¿Qué investigaremos hoy?». Los tres caminos son respuestas a esa pregunta.
+ * Las imágenes son decorativas (alt="" y aria-hidden); los créditos van abajo. Estilos: landing/landing.css.
+ */
 import { useIdioma } from "../state/idioma";
-import { mision } from "../content/mision";
+import { Cara } from "../spherix/Spherix";
+import CieloAnimado from "./landing/CieloAnimado";
+import "./landing/landing.css";
 
 type Props = { onEmpezar: () => void; onMision: () => void; onTutorial: () => void; onDescargas: () => void };
 
 export default function Landing({ onEmpezar, onMision, onTutorial, onDescargas }: Props) {
-  const { t, idioma } = useIdioma();
+  const { t } = useIdioma();
   return (
-    <section className="landing">
-      <h1>{t.bienvenida}</h1>
-      <h2>{idioma === "es" ? "¿Qué somos?" : "What are we?"}</h2>
-      <p className="lead">{t.queSomos}</p>
+    <section className="portada">
+      <CieloAnimado />
 
-      <div className="acciones">
-        <button className="primario" onClick={onTutorial}>
-          {t.empecemosTutorial}
-        </button>
-        <button onClick={onEmpezar}>{t.empecemos}</button>
-      </div>
-      <p className="nota">{t.tutorialAyuda}</p>
-
-      <div className="mision-invitacion">
-        <p className="mision-etiqueta">{mision.nombre}</p>
-        <p>{mision.subtitulo}</p>
-        <button onClick={onMision}>{mision.botonLanding}</button>
+      <div className="portada-escena" aria-hidden="true">
+        <div className="portada-orbita" />
+        <img className="portada-tierra" src="/img/tierra.webp" alt="" width={900} height={900} />
+        <img className="portada-spherex" src="/img/spherex.webp" alt="" width={900} height={749} />
       </div>
 
-      <div className="mision-invitacion">
-        <p className="mision-etiqueta">{t.descargas.toUpperCase()}</p>
-        <p>{idioma === "es" ? "Instala AstroTrack en tu computador o teléfono." : "Install AstroTrack on your computer or phone."}</p>
-        <button onClick={onDescargas}>{t.descargarApp}</button>
+      <div className="portada-contenido">
+        <h1 className="portada-titulo">
+          <img src="/logo.webp" alt={t.titulo} width={602} height={640} />
+        </h1>
+        <p className="portada-linea">{t.lineaPortada}</p>
+
+        <div className="portada-spherix">
+          <Cara className="portada-cara" />
+          <p className="portada-burbuja">{t.queInvestigamos}</p>
+        </div>
+
+        <div className="portada-respuestas">
+          <button className="primario" onClick={onTutorial}>{t.respuestaTutorial}</button>
+          <button onClick={onEmpezar}>{t.respuestaExplorar}</button>
+          <button onClick={onMision}>{t.respuestaMision}</button>
+        </div>
+        {/* Descargas (PR #84): un enlace discreto bajo las respuestas, para no competir con ellas. */}
+        <button className="portada-descargas" onClick={onDescargas}>↓ {t.descargarApp}</button>
       </div>
+
+      <p className="portada-creditos">{t.creditosPortada}</p>
     </section>
   );
 }
