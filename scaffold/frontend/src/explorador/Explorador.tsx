@@ -10,6 +10,7 @@
  * Dueña de la integración: Antonia (V1). Lógica de datos y render: Bryan (D2).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useIdioma } from "../state/idioma";
 import { dibujar, type Frame, type Modo } from "./render";
 import { clave, type DatosSpherex } from "./useDatosSpherex";
 import "./explorador.css";
@@ -20,7 +21,7 @@ const BANDAS_UM: Record<number, [number, number]> = {
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
 
-const LEYENDA: Record<Modo, string> = {
+const LEYENDA_ES: Record<Modo, string> = {
   imagen: "Brillo con escala común para todas las fechas de la banda. La mira marca el punto pedido.",
   resta: "Rojo = brillo que aparece respecto de t₀ · Azul = brillo que estaba. Un par rojo/azul que se separa al avanzar el tiempo = movimiento.",
   color: "Primera visita en rojo, la actual en cian. Lo quieto se ve blanco.",
@@ -43,7 +44,11 @@ const fechaDeMjd = (mjd: number) => new Date((mjd - 40587) * 864e5);
 type Props = { datos: DatosSpherex };
 
 export default function Explorador({ datos }: Props) {
+  const { t } = useIdioma();
   const { desde, setDesde, hasta, setHasta, cargar, setCargar, porVisita, setPorVisita, intento, setIntento, banda, setBanda, visita, setVisita, grid, mensaje, version, prog, frames, escalas, errores, filas, visitas, tMin, tMax, irA, visitaMasCercana, mjdActual, reintentarImagen, reintentarFallidas, reintentando } = datos;
+
+  // ── Leyenda dinámica ──
+  const LEYENDA: Record<Modo, string> = { imagen: t.modoImagenDesc, resta: t.modoRestaDesc, color: t.modoColorDesc };
 
   // ── Vista ──
   const [modo, setModo] = useState<Modo>("imagen");
@@ -169,8 +174,8 @@ export default function Explorador({ datos }: Props) {
     <section className="explorador" aria-label="Explorador SPHEREx: bandas y fechas">
       <div className="exp-escena">
         <div className="exp-titulo">
-          <strong>Explorador SPHEREx</strong>
-          <span>Arrastra o pasa el mouse por la línea de tiempo para cambiar la fecha.</span>
+          <strong>{t.exploradorTitulo}</strong>
+          <span>{t.exploradorHint}</span>
         </div>
         <div
           ref={caja}
@@ -208,10 +213,10 @@ export default function Explorador({ datos }: Props) {
           )}
           {grid && (
             <div className="exp-zoom" role="group" aria-label="Zoom" data-tour="explorador-zoom">
-              <button aria-label="Acercar" title="Acercar (tecla +)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, +1))} disabled={zoom >= ZOOM_MAX}>+</button>
+              <button aria-label={t.acercar} title={t.acercar} onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, +1))} disabled={zoom >= ZOOM_MAX}>+</button>
               <span aria-live="polite">{textoZoom(zoom)}</span>
-              <button aria-label="Alejar" title="Alejar (tecla −)" onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, -1))} disabled={zoom <= ZOOM_MIN}>−</button>
-              <button aria-label="Volver a la mira" title="Volver a la mira (doble clic)" onClick={() => mover({ x: 0, y: 0 })} disabled={!pan.x && !pan.y}>⌖</button>
+              <button aria-label={t.alejar} title={t.alejar} onClick={() => aplicarZoom(cambiarZoom(vista.current.zoom, -1))} disabled={zoom <= ZOOM_MIN}>−</button>
+              <button aria-label={t.volverMira} title={t.volverMira} onClick={() => mover({ x: 0, y: 0 })} disabled={!pan.x && !pan.y}>⌖</button>
             </div>
           )}
           {grid && banda > 0 && visitas[visita] && (
@@ -235,19 +240,19 @@ export default function Explorador({ datos }: Props) {
                   : `Cargando la imagen del ${visitas[visita]?.start.slice(0, 10) ?? ""}…`}
               {/* Reintentar cuando puede servir: errores de IRSA, de red o del servidor (mensajes de errores.ts) */}
               {!grid && /IRSA|HTTP|\(50\d\)|conexión|servidor/.test(mensaje) && (
-                <button onClick={() => setIntento((x) => x + 1)}>Reintentar</button>
+                <button onClick={() => setIntento((x) => x + 1)}>{t.reintentar}</button>
               )}
               {/* Una foto suelta falló (la búsqueda sí funcionó): pedir solo esa */}
-              {grid && error && <button onClick={() => reintentarImagen(banda, visita)}>Reintentar esta imagen</button>}
+              {grid && error && <button onClick={() => reintentarImagen(banda, visita)}>{t.reintentarEsta}</button>}
             </div>
           )}
         </div>
 
         <div className="exp-tiempo" data-tour="explorador-tiempo">
           <div className="exp-botones">
-            <button aria-label="Visita anterior" onClick={() => irA(banda, visita - 1)} disabled={!grid}>◀</button>
-            <button aria-label={play ? "Pausa" : "Reproducir"} aria-pressed={play} onClick={() => setPlay(!play)} disabled={!grid}>{play ? "⏸" : "▶"}</button>
-            <button aria-label="Visita siguiente" onClick={() => irA(banda, visita + 1)} disabled={!grid}>▶▶</button>
+            <button aria-label={t.visitaAnterior} onClick={() => irA(banda, visita - 1)} disabled={!grid}>◀</button>
+            <button aria-label={play ? t.pausa : t.reproducir} aria-pressed={play} onClick={() => setPlay(!play)} disabled={!grid}>{play ? "⏸" : "▶"}</button>
+            <button aria-label={t.visitaSiguiente} onClick={() => irA(banda, visita + 1)} disabled={!grid}>▶▶</button>
           </div>
           <div
             ref={pista}
@@ -293,10 +298,10 @@ export default function Explorador({ datos }: Props) {
 
       <aside className="exp-barra">
         <div className="exp-seccion">
-          <h3>Qué cargar</h3>
+          <h3>{t.queCargar}</h3>
           <div className="exp-fila2">
-            <label>Desde<input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} /></label>
-            <label>Hasta<input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} /></label>
+            <label>{t.desde}<input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} /></label>
+            <label>{t.hasta}<input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} /></label>
           </div>
           <div className="exp-chips" role="group" aria-label="Bandas a cargar">
             {[1, 2, 3, 4, 5, 6].map((b) => (
@@ -317,13 +322,13 @@ export default function Explorador({ datos }: Props) {
           </label>
           {prog.total > 0 && (
             <div className="exp-estado">
-              {prog.hechos < prog.total ? "Cargando" : "Listo:"} {prog.hechos}/{prog.total} imágenes
+              {prog.hechos < prog.total ? t.cargando : t.listo} {prog.hechos}/{prog.total} {t.imagenes}
               {prog.errores > 0 && <span className="aviso"> · {prog.errores} con error</span>}
               <div className="exp-barrita"><i style={{ width: `${pct}%` }} /></div>
               {/* Cuando terminó la carga normal y quedaron fotos con error: pedir de nuevo solo esas */}
               {prog.errores > 0 && prog.hechos >= prog.total && (
                 <button className="exp-reintentar" onClick={reintentarFallidas} disabled={reintentando}>
-                  {reintentando ? "Reintentando…" : `Reintentar las ${prog.errores} con error`}
+                  {reintentando ? t.reintentando : t.reintentarFallidas(prog.errores)}
                 </button>
               )}
             </div>
@@ -333,7 +338,7 @@ export default function Explorador({ datos }: Props) {
 
         {grid && (
           <div className="exp-seccion" data-tour="explorador-modos">
-            <h3>Banda visible</h3>
+            <h3>{t.bandaVisible}</h3>
             <div className="exp-chips" role="group" aria-label="Banda visible">
               {filas.map((b) => (
                 <button key={b} style={{ ["--c" as string]: `var(--b${b})` }} aria-pressed={b === banda} onClick={() => irA(b, visitaMasCercana(b, mjdActual))}>
@@ -341,10 +346,10 @@ export default function Explorador({ datos }: Props) {
                 </button>
               ))}
             </div>
-            <div className="exp-modos" role="group" aria-label="Modo">
+            <div className="exp-modos" role="group" aria-label={t.modo}>
               {(["imagen", "resta", "color"] as Modo[]).map((m) => (
                 <button key={m} aria-pressed={modo === m} onClick={() => setModo(m)}>
-                  {m === "imagen" ? "Imagen" : m === "resta" ? "Resta vs t₀" : "Color"}
+                  {m === "imagen" ? t.modoImagen : m === "resta" ? t.modoResta : t.modoColor}
                 </button>
               ))}
             </div>
@@ -359,13 +364,13 @@ export default function Explorador({ datos }: Props) {
 
         {grid && visitas[visita] && (
           <div className="exp-seccion">
-            <h3>Esta imagen</h3>
+            <h3>{t.estaImagen}</h3>
             <dl className="exp-info">
               {(actual
                 ? [
-                    ["Fecha (UTC)", actual.meta.t.replace("T", " ").replace("Z", "")],
-                    ["Longitud de onda", `${actual.meta.wavelength_um ?? "?"} µm`],
-                    ["Exposiciones", actual.meta.n_stacked > 1 ? `mediana de ${actual.meta.n_stacked}` : "1"],
+                    [t.fecha, actual.meta.t.replace("T", " ").replace("Z", "")],
+                    [t.longitudOnda, `${actual.meta.wavelength_um ?? "?"} µm`],
+                    [t.exposiciones, actual.meta.n_stacked > 1 ? t.mediana(actual.meta.n_stacked) : "1"],
                     ["Observación", actual.meta.epoch_id],
                     ["Colección", actual.meta.collection],
                     ["Método", actual.meta.method === "rangos" ? "rápido (solo píxeles)" : "recorte de IRSA"],
